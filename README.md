@@ -5,6 +5,7 @@
 ![image](https://github.com/user-attachments/assets/ffee3d42-bdfa-4811-81c4-a446117cfbbe)
 
 請大家嚴格遵守 upload 規範<br/>
+請大家嚴格遵守 upload 規範<br/>
 
 <h3>**在上傳前update你的版本極度重要**</h3><br/>
 Commit — git pull origin dev — 有衝突解衝突 — 再pull origin dev — 最後再push origin dev<br/>
@@ -30,7 +31,8 @@ EX: Commit  mm/dd 簡要描述更新的內容<br/>
 
 任務清單
 <br/>
-**會員系統+主視覺**-柏羽
+
+**會員系統+主視覺**-柏羽 !!
 
 - [ ] 首頁
 - [ ] footer
@@ -57,11 +59,13 @@ EX: Commit  mm/dd 簡要描述更新的內容<br/>
 - [ ] 上傳課程
 - [ ] 會員中心-課程
 - [ ] 觀看課程\*\*
+- [ ] 觀看課程\*\*
 
 **訂桌/揪團**-功吾
 
 - [ ] 棋牌室首頁
 - [ ] 訂桌/揪團列表
+- [ ] GOOGLE MAP API\*\*
 - [ ] GOOGLE MAP API\*\*
 - [ ] 訂桌詳細
 - [ ] 揪團詳細
@@ -70,6 +74,9 @@ EX: Commit  mm/dd 簡要描述更新的內容<br/>
 
 - [ ] 企業會員登入註冊
 - [ ] 企業會員資訊、修改
+- [ ] POS 機畫面
+- [ ] 客服中心\*\*
+- [ ] 數據分析\*\*
 - [ ] POS 機畫面
 - [ ] 客服中心\*\*
 - [ ] 數據分析\*\*
