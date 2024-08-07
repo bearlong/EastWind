@@ -7,7 +7,7 @@
 請大家嚴格遵守upload規範<br/>
 
 <h3>**在上傳前update你的版本極度重要**</h3><br/>
-Commit — Pull dev — 有衝突解衝突 — 再pull dev — 最後再Push dev<br/>
+Commit — git pull origin dev — 有衝突解衝突 — 再pull origin dev — 最後再push origin dev<br/>
 <br/>
 Commit內容:  mm/dd 簡要描述更新的內容<br/>
 先對本地commit 版本<br/>
