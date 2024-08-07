@@ -15,9 +15,10 @@ import styles from '@/styles/productList.module.scss'
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
-//test
+
 export default function ProductList() {
   const [products, setProducts] = useState([])
+
   const getProducts = async () => {
     let newProducts, error
     const url = 'http://localhost:3005/api/products'
@@ -42,9 +43,6 @@ export default function ProductList() {
   useEffect(() => {
     getProducts()
   }, [])
-  useEffect(() => {
-    console.log(products) // 當 products 狀態改變時打印
-  }, [products])
 
   return (
     <>
@@ -429,7 +427,7 @@ export default function ProductList() {
           <div className={styles['products-bl']}>
             {products.map((product) => {
               return (
-                <div key={product.id} className={styles['productCard']}>
+                <div key={product.id} className={`${styles['productCard']} `}>
                   <div className={styles['imgBox']}>
                     <Image
                       src={`../../images/product/${product.img}`}
@@ -795,6 +793,14 @@ export default function ProductList() {
             flex-direction: column;
           }
 
+          .boxHidden {
+            transition: 1s;
+            opacity: 0;
+          }
+
+          .boxActive {
+            transition: 1s;
+          }
           .productCard {
             .imgBox {
               img {
