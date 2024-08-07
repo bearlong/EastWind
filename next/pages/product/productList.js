@@ -15,7 +15,6 @@ import styles from '@/styles/productList.module.scss'
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
-//testtest
 export default function ProductList() {
   const [products, setProducts] = useState([])
   const getProducts = async () => {
