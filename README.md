@@ -15,12 +15,10 @@ pull origin dev(拉雲端 dev 下來確認為最新檔案)　-><br/> git checkou
 " (回到自己的分支) -> git merge dev(合併 dev 檔案至 A，有衝突解衝突) -><br/> git
 push origin "自己的分支"(備份"自己的分支"檔案至雲端) -><br/> git checkout dev (
 跳至 dev 分支) -> git merge "自己的分支"(合併整合好的"自己的分支"到 dev 分支)
--><br/> git push origin dev(上傳 dev 檔案)<br/> **git checkout A** 最後要再記得
-切回 A 開發!!!重要!!!<br/>
+-><br/> git push origin dev(上傳 dev 檔案)<br/> **git checkout "自己的分支"** 最後要再記得
+切回 "自己的分支" 開發!!!重要!!!<br/>
 
-Commit — git pull origin dev — 有衝突解衝突 — 再 pull origin dev — 最後再 push
-origin dev<br/> <br/> Commit 內容: mm/dd 簡要描述更新的內容<br/> 先對本地 commit
-版本<br/> pull 更新遠程版本至本地<br/> 推送本地版本致遠程<br/>
+
 
 <h3>**在上傳前update你的版本極度重要**</h3><br/>
 <br/>
