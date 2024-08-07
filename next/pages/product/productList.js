@@ -15,7 +15,11 @@ import styles from '@/styles/productList.module.scss'
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
-// 測試測fddd
+<<<<<<< HEAD
+// 測試5.55
+=======
+// 測試最終版
+>>>>>>> dev
 export default function ProductList() {
   const [products, setProducts] = useState([])
   const getProducts = async () => {
