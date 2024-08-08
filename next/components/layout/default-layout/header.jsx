@@ -7,7 +7,7 @@ import { FaShoppingCart } from 'react-icons/fa'
 export default function Header() {
   return (
     <header
-      className={`${styles['header-bo']} fixed-top container-fluid sticky-top py-3`}
+      className={`${styles['header-bo']} sticky-top container-fluid sticky-top py-3`}
     >
       <div
         className={`container-xl d-flex justify-content-between align-items-center ${styles['nav-bar-bo']}`}
