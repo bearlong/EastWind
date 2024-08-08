@@ -5,6 +5,8 @@ import Head from 'next/head'
 import NextBreadCrumb from '@/components/common/next-breadcrumb'
 import { useLoader } from '@/hooks/use-loader'
 
+import Header from './header'
+
 export default function DefaultLayout({ title = 'Next-BS5', children }) {
   const { loader } = useLoader()
 
@@ -15,6 +17,7 @@ export default function DefaultLayout({ title = 'Next-BS5', children }) {
         <meta name="viewport" content="width=device-width" />
       </Head>
       <MyNavbarBS5 />
+      <Header />
       <main className="flex-shrink-0 mt-3">
         <NextBreadCrumb isHomeIcon isChevron bgClass="" />
         {children}
