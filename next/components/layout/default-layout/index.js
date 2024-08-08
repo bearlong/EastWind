@@ -5,7 +5,8 @@ import Head from 'next/head'
 import NextBreadCrumb from '@/components/common/next-breadcrumb'
 import { useLoader } from '@/hooks/use-loader'
 
-import Header from './header'
+import Header from './header.jsx'
+import Footer from './footer.jsx'
 
 export default function DefaultLayout({ title = 'Next-BS5', children }) {
   const { loader } = useLoader()
@@ -25,6 +26,7 @@ export default function DefaultLayout({ title = 'Next-BS5', children }) {
         {loader()}
       </main>
       <MyFooter />
+      <Footer />
     </>
   )
 }
