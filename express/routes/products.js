@@ -1,6 +1,7 @@
 import express from 'express'
 const router = express.Router()
 import db from '##/configs/mysql.js'
+import dbPromise from '##/configs/mysql-promise.js'
 
 // 檢查空物件, 轉換req.params為數字
 import { getIdParam } from '#db-helpers/db-tool.js'
@@ -8,25 +9,147 @@ import { getIdParam } from '#db-helpers/db-tool.js'
 // 資料庫使用
 import sequelize from '#configs/db.js'
 const { Product } = sequelize.models
-import { QueryTypes, Op } from 'sequelize'
 
 /* 
 測試連結:
 /products?page=3&perpage=10&brand_ids=1,2,4&cat_ids=4,5,6,10,11,12&color_ids=1,2&size_ids=2,3&tag_ids=1,2,4&name_like=e&price_gte=1500&price_lte=10000&sort=price&order=asc
 */
 // GET 獲得所有資料，加入分頁與搜尋字串功能，單一資料表處理
-router.get('/', (req, res) => {
-  db.execute(
-    'SELECT `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name` FROM `product` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1',
-    (error, results) => {
-      if (error) {
-        console.log(error)
-        return
-      }
+router.get('/', async (req, res) => {
+  let page = 1
+  let { brand_id, category_id, color, size, style, search, max, min } =
+    req.query
+  let filter
 
-      res.json(results)
+  if (req.query.page) {
+    page = req.query.page
+  }
+  const prepage = 12 * page
+  const sqlPage = ` LIMIT  0, ${prepage}`
+  const filterArr = {
+    brand_id,
+    category_id,
+    color,
+    size,
+    style,
+  }
+  for (const key in filterArr) {
+    if (filterArr[key]) {
+      if (!filter) {
+        if (key === 'color' || key === 'size' || key === 'style') {
+          filter = ` Where \`product_specifications\`.\`${key}\` = '${filterArr[key]}'`
+        } else {
+          filter = ` Where \`${key}\` = '${filterArr[key]}'`
+        }
+      } else {
+        if (key === 'color' || key === 'size' || key === 'style') {
+          filter += ` AND \`product_specifications\`.\`${key}\` = '${filterArr[key]}'`
+        } else {
+          filter += ` AND \`${key}\` = '${filterArr[key]}'`
+        }
+      }
     }
-  )
+  }
+
+  if (search) {
+    if (!filter) {
+      filter = ` WHERE (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
+    } else {
+      filter += ` AND (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
+    }
+  }
+
+  if (max && min) {
+    if (!filter) {
+      filter = ` WHERE \`product\`.\`price\` BETWEEN ${min} AND ${max}`
+    } else {
+      filter += ` AND \`product\`.\`price\` BETWEEN ${min} AND ${max}`
+    }
+  }
+
+  const product = {}
+  const [top] = await dbPromise
+    .execute(
+      'SELECT `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`,  MIN(`product_images`.`img`) AS `img2`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` FROM `product` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `product_images` ON `product_images`.`product_id` = `product`.`id` LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product" GROUP BY `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name`, `brand`.`name` ORDER BY `average_star` DESC LIMIT 4'
+    )
+    .catch((err) => {
+      if (err) {
+        console.error(err)
+        return []
+      }
+    })
+  const [brandAll] = await dbPromise
+    .execute('SELECT * FROM`brand`')
+    .catch((err) => {
+      if (err) {
+        console.error(err)
+        return []
+      }
+    })
+
+  const [categoryAll] = await dbPromise
+    .execute('SELECT * FROM `product_category`')
+    .catch((err) => {
+      if (err) {
+        console.error(err)
+        return []
+      }
+    })
+  const [colorAll] = await dbPromise
+    .execute('SELECT DISTINCT `color` FROM `product_specifications`')
+    .catch((err) => {
+      if (err) {
+        console.error(err)
+        return []
+      }
+    })
+
+  const [styleAll] = await dbPromise
+    .execute('SELECT DISTINCT `style` FROM `product_specifications`')
+    .catch((err) => {
+      if (err) {
+        console.error(err)
+        return []
+      }
+    })
+
+  const [list] = await dbPromise
+    .execute(
+      'SELECT `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`, `product_specifications`.*,  MIN(`product_images`.`img`) AS `img2`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` FROM `product` JOIN `product_specifications` ON `product_specifications`.`product_id` = `product`.`id` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `product_images` ON `product_images`.`product_id` = `product`.`id` LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product"' +
+        `${filter ? filter : ''}` +
+        ' GROUP BY `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name`, `brand`.`name`' +
+        sqlPage
+    )
+    .catch((err) => {
+      if (err) {
+        console.error(err)
+        return []
+      }
+    })
+
+  const [total] = await dbPromise
+    .execute(
+      'SELECT `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`, `product_specifications`.*,  MIN(`product_images`.`img`) AS `img2`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` FROM `product` JOIN `product_specifications` ON `product_specifications`.`product_id` = `product`.`id` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `product_images` ON `product_images`.`product_id` = `product`.`id` LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product"' +
+        `${filter ? filter : ''}` +
+        ' GROUP BY `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name`, `brand`.`name`'
+    )
+    .catch((err) => {
+      if (err) {
+        console.error(err)
+        return []
+      }
+    })
+  product['total'] = total.length
+  product['top'] = top
+  product['list'] = list
+  product['color'] = colorAll
+  product['style'] = styleAll
+  product['brand'] = brandAll
+  product['category'] = categoryAll
+
+  console.log(filter)
+  res.json(product)
+
   // 獲取query參數值
   // const {
   //   page = 1, // number,  用於 OFFSET =  (Number(page) - 1) * Number(perpage),

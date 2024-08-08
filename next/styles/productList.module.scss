@@ -124,6 +124,7 @@
 
   .cardBody {
     text-align: center;
+    color: var(--text-color);
     .productName-bl {
       display: flex;
       flex-direction: column;
@@ -142,7 +143,9 @@
     }
   }
   &:hover {
-    color: var(--text-hover-color);
+    .cardBody {
+      color: var(--text-hover-color);
+    }
     .imgBox {
       opacity: 0;
     }
@@ -226,7 +229,10 @@
 }
 
 .loadMore-bl {
-  color: var(--primary);
+  p {
+    color: var(--primary);
+    transition: 0.3s;
+  }
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -255,8 +261,10 @@
     }
 
     &:hover {
-      color: var(--primary-dark);
       border-color: var(--primary-dark);
+      p {
+        color: var(--primary-dark);
+      }
       .edit-icon {
         background-image: url('../public/images/web/btnMoreHover.svg');
         transform: translateX(3px);
