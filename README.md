@@ -9,16 +9,20 @@
 <h3>**在上傳前update你的版本極度重要**</h3><br/>
 協作流程<br/>
 
-git checkout "自己的分支" -> 到自己的分支下做事<br/> 做到一段落要上傳的流程為
-:<br/> git commit -m "更新内容" -> <br/> git checkout dev (跳至 dev 分支) -> git
-pull origin dev(拉雲端 dev 下來確認為最新檔案)　-><br/> git checkout "自己的分支
-" (回到自己的分支) -> git merge dev(合併 dev 檔案至 A，有衝突解衝突) -><br/> git
-push origin "自己的分支"(備份"自己的分支"檔案至雲端) -><br/> git checkout dev (
-跳至 dev 分支) -> git merge "自己的分支"(合併整合好的"自己的分支"到 dev 分支)
--><br/> git push origin dev(上傳 dev 檔案)<br/> **git checkout "自己的分支"** 最後要再記得
-切回 "自己的分支" 開發!!!重要!!!<br/>
+git checkout "自己的分支" -> 到自己的分支下做事<br/>
 
+做到一段落要上傳的流程為: <br/>
+git commit -m "更新内容" -> <br/>
+git checkout dev (跳至 dev 分支) -> <br/>
+git pull origin dev (拉雲端 dev 下來確認為最新檔案)　-><br/>
+git checkout "自己的分支" (回到自己的分支) -><br/>
+git merge dev (合併 dev 檔案至 A，有衝突解衝突) -><br/>
+git push origin "自己的分支" (備份 "自己的分支" 檔案至雲端) -><br/>
+git checkout dev (跳至 dev 分支) -><br/>  
+git merge "自己的分支" (合併整合好的 "自己的分支" 到 dev 分支) -><br/>
+git push origin dev (上傳 dev 檔案)<br/>
 
+**git checkout "自己的分支"** 最後要再記得 切回 "自己的分支" 開發!!!重要!!!<br/>
 
 <h3>**在上傳前update你的版本極度重要**</h3><br/>
 <br/>
@@ -39,9 +43,9 @@ EX: Commit  mm/dd 簡要描述更新的內容<br/>
 
 **會員系統+主視覺**-柏羽 !!
 
-- [ ] 首頁
-- [ ] footer
-- [ ] header
+- [切板完成] 首頁
+- [切板完成] footer
+- [切板完成] header
 - [ ] 登入/註冊
 - [ ] 會員中心-個人資訊
 - [ ] 會員中心-訂桌紀錄
