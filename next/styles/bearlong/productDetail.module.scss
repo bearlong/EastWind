@@ -1,0 +1,349 @@
+.main {
+  max-width: 1440px;
+  margin: auto;
+  padding: 0 4rem;
+}
+.productDetailSection1-bl {
+  margin-bottom: 6rem;
+  padding-inline: 8rem;
+  .imgSmallBox-bl {
+    width: 90px;
+    height: 90px;
+    border: 3px solid transparent;
+    &:hover {
+      border: 3px solid var(--primary);
+    }
+  }
+  .active {
+    border: 3px solid var(--primary);
+  }
+
+  .imgMain-bl {
+    height: 500px;
+    width: 500px;
+  }
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .productDetailContent-bl {
+    width: 45rem;
+    .productName-bl {
+      line-height: 1.5;
+      min-height: calc(2 * 2.4rem * 1.5);
+      margin-bottom: 10px;
+      display: grid;
+      align-items: center;
+    }
+  }
+  i {
+    color: var(--primary);
+    font-size: 1.6rem;
+  }
+  .plusMinus {
+    i {
+      cursor: pointer;
+    }
+  }
+
+  .buttonGroup-bl {
+    width: 100%;
+
+    .btnRectangle {
+      color: var(--primary);
+      width: 100%;
+      height: 50px;
+      display: grid;
+      justify-content: center;
+      align-items: center;
+      background: var();
+      border: 1px solid var(--primary);
+      border-radius: 5px;
+      font-size: 2.4rem;
+      font-weight: 900;
+      transition: 0.3s;
+      &:hover {
+        border-color: var(--primary-dark);
+        color: var(--primary-dark);
+      }
+    }
+
+    .buy {
+      background: var(--primary);
+      color: var(--white);
+      &:hover {
+        background: var(--primary-dark);
+        color: var(--white);
+      }
+    }
+  }
+}
+
+.productDetailSection2-bl {
+  .underLine-bl {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--primary);
+  }
+  .star-bl {
+    width: 100%;
+    padding: 4rem;
+    background: var(--form-bg);
+    border: 1px solid var(--primary-dark);
+    .starBox-bl {
+      color: var(--primary);
+      font-size: 3rem;
+      text-align: center;
+    }
+  }
+  .btnBox-bl {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 10px;
+    .btnComment {
+      color: var(--primary);
+      font-size: 1.6rem;
+      font-weight: 900;
+      display: grid;
+      justify-content: center;
+      align-items: center;
+      width: 130px;
+      height: 30px;
+      border: 2px solid var(--primary);
+      transition: 0.3s;
+      cursor: pointer;
+      &:hover {
+        background: var(--primary);
+        color: var(--white);
+      }
+    }
+    .active {
+      background: var(--primary);
+      color: var(--white);
+    }
+  }
+
+  .commentBox-bl {
+    margin-block: 2rem;
+    transition: 0.5s;
+
+    .commentCard-bl {
+      .pic-bl {
+        flex: 0 0 auto;
+        width: 60px;
+        height: 60px;
+        border-radius: 100%;
+        overflow: hidden;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+      .userInfo-bl {
+        color: var(--primary-dark);
+      }
+    }
+  }
+  .collapseButton {
+    display: none;
+  }
+
+  div.fold > div {
+    overflow: hidden;
+  }
+
+  input.collapse + div.fold {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: 0.5s;
+  }
+
+  input.collapse:checked + div.fold {
+    grid-template-rows: 1fr;
+  }
+}
+
+.section2Right-bl {
+  padding: 0 4rem;
+
+  .column1 {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 1.6rem;
+  }
+  .productCard {
+    width: 290px;
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: 0.5s;
+    .swiperImg {
+      position: relative;
+    }
+    .imgBox {
+      width: 280px;
+      height: 280px;
+      border: 1px solid var(--text-hover-color);
+      margin-bottom: 2rem;
+      opacity: 1;
+      transition: 0.5s;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+    .secondImg {
+      position: absolute;
+      left: 5px;
+      top: 0;
+      opacity: 0;
+    }
+    .swiperImg {
+      position: relative;
+      .secondImg {
+        left: 0;
+      }
+    }
+
+    .cardBody {
+      text-align: center;
+      .productName-bl {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 3px;
+        align-self: stretch;
+
+        .productDescription {
+          min-height: calc(1.2em * 2);
+          line-height: 1.2em;
+          display: grid;
+          justify-content: center;
+          align-items: center;
+        }
+
+        p {
+          margin: 0;
+        }
+      }
+    }
+    &:hover {
+      color: var(--text-hover-color);
+      .imgBox {
+        opacity: 0;
+      }
+      .secondImg {
+        opacity: 1;
+      }
+    }
+    .star {
+      color: var(--primary);
+    }
+  }
+}
+
+@media (max-width: 1200px) {
+  .productDetailSection1-bl {
+    padding: 0;
+  }
+}
+
+@media (max-width: 992px) {
+  .product-header-bl {
+    .subBar-bl {
+      padding: 2rem 0;
+    }
+  }
+  .main {
+    padding: 0 2rem;
+  }
+  .productDetailSection1-bl {
+    .imgMain-bl {
+      width: 400px;
+      height: 400px;
+    }
+  }
+  .btnBox-bl {
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-rows: repeat(3, auto) !important;
+  }
+  .productDetailSection2-bl {
+    .productCard {
+      width: 175px;
+      .imgBox {
+        width: 175px;
+        height: 175px;
+      }
+
+      .secondImg {
+        left: 0;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .productDetailSection1-bl {
+    .imgSmall-bl {
+      padding-inline: 4rem;
+    }
+    .productDetailContent-bl {
+      width: 100%;
+      padding-inline: 4rem;
+    }
+    .buttonGroup-bl {
+      .btnRectangle {
+        font-size: 2rem;
+        font-weight: 900;
+        transition: 0.3s;
+      }
+    }
+  }
+
+  .productDetailSection2-bl {
+    .btnBox-bl {
+      justify-items: center;
+      align-items: center;
+    }
+    .star-bl {
+      padding: 2rem;
+    }
+
+    .collapseButton {
+      display: inline-block;
+    }
+  }
+
+  .swiper {
+    width: 100%;
+    height: 100%;
+  }
+  .section2Right-bl {
+    padding: 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .productDetailSection1-bl {
+    .imgMain-bl {
+      width: 315px;
+      height: 315px;
+    }
+    .imgSmallBox-bl {
+      width: 60px;
+      height: 60px;
+    }
+    .productDetailContent-bl {
+      padding-inline: 0;
+    }
+  }
+}
