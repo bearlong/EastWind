@@ -15,12 +15,38 @@ import styles from '@/styles/productList.module.scss'
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 export default function ProductList() {
-  const [products, setProducts] = useState([])
-  const getProducts = async () => {
+  const router = useRouter()
+  const [products, setProducts] = useState({ top: [], list: [] })
+  const [pages, setPages] = useState(1)
+  const { page, brand_id, category_id, color, sizes, style, search, max, min } =
+    router.query
+  const [filters, setFilters] = useState({
+    brand_id: '',
+    category_id: '',
+    color: '',
+    sizes: '',
+    style: '',
+    search: '',
+    max: '',
+    min: '',
+  })
+  const [selectedOptions, setSelectedOptions] = useState({
+    brand_ids: [],
+    category_ids: [],
+    colors: [],
+  })
+
+  const getProducts = async (filters) => {
     let newProducts, error
-    const url = 'http://localhost:3005/api/products'
+    const url = `http://localhost:3005/api/products?page=${pages}&${Object.entries(
+      filters
+    )
+      .map(([key, value]) => `${key}=${value}`)
+      .join('&')}`
     newProducts = await fetch(url)
       .then((res) => res.json())
       .then((results) => {
@@ -39,12 +65,59 @@ export default function ProductList() {
     }
   }
 
+  const handleLoadMore = () => {
+    if (pages * 12 < products.total) {
+      setPages((page) => page + 1)
+    }
+  }
+  const handleCheckboxChange = (key, value) => {
+    setSelectedOptions((prevOptions) => {
+      const currentValues = prevOptions[key]
+      const valueIndex = currentValues.indexOf(value)
+
+      if (valueIndex > -1) {
+        return {
+          ...prevOptions,
+          [key]: currentValues.filter((_, index) => index !== valueIndex),
+        }
+      } else {
+        return {
+          ...prevOptions,
+          [key]: [...currentValues, value],
+        }
+      }
+    })
+    console.log(selectedOptions)
+  }
+
+  useEffect(() => {})
+
   useEffect(() => {
-    getProducts()
-  }, [])
+    const searchParams = new URLSearchParams(window.location.search)
+    const category_idParam = searchParams.get('category_id')
+    const brand_idParam = searchParams.get('brand_id')
+    const colorParam = searchParams.get('color')
+    const sizesParam = searchParams.get('sizes')
+    const styleParam = searchParams.get('style')
+    const searchParam = searchParams.get('search')
+    const maxParam = searchParams.get('max')
+    const minParam = searchParams.get('min')
+    setFilters({
+      brand_id: brand_idParam || '',
+      category_id: category_idParam || '',
+      color: colorParam || '',
+      sizes: sizesParam || '',
+      style: styleParam || '',
+      search: searchParam || '',
+      max: maxParam || '',
+      min: minParam || '',
+    })
+  }, [router.isReady])
+
   useEffect(() => {
-    console.log(products) // 當 products 狀態改變時打印
-  }, [products])
+    getProducts(filters)
+    console.log(filters)
+  }, [pages, filters])
 
   return (
     <>
@@ -56,9 +129,9 @@ export default function ProductList() {
             </div>
           </li>
           <li>
-            <div className={styles['subNav']} href="">
+            <a className={styles['subNav']} href="productList?category_id=1">
               <h6>麻將牌</h6>
-            </div>
+            </a>
             <div className={styles['subBarBody-bl']}>
               <div className="d-flex">
                 <div>
@@ -96,9 +169,9 @@ export default function ProductList() {
             </div>
           </li>
           <li>
-            <div className={styles['subNav']} href="">
+            <a className={styles['subNav']} href="productList?category_id=2">
               <h6>排尺</h6>
-            </div>
+            </a>
             <div className={styles['subBarBody-bl']}>
               <div className="d-flex">
                 <div>
@@ -124,9 +197,9 @@ export default function ProductList() {
             </div>
           </li>
           <li>
-            <div className={styles['subNav']} href="">
+            <a className={styles['subNav']} href="productList?category_id=3">
               <h6>麻將桌</h6>
-            </div>
+            </a>
             <div className={styles['subBarBody-bl']}>
               <div className="d-flex">
                 <div>
@@ -161,9 +234,9 @@ export default function ProductList() {
             </div>
           </li>
           <li>
-            <div className={styles['subNav']} href="">
+            <a className={styles['subNav']} href="productList?category_id=4">
               <h6>周邊</h6>
-            </div>
+            </a>
             <div
               className={`${styles['subBarBody-bl']} ${styles['rightBar-bl']}`}
             >
@@ -188,9 +261,9 @@ export default function ProductList() {
             </div>
           </li>
           <li>
-            <div className={styles['subNav']} href="">
+            <a className={styles['subNav']} href="productList?category_id=5">
               <h6>桌遊</h6>
-            </div>
+            </a>
             <div
               className={`${styles['subBarBody-bl']} ${styles['rightBar-bl']}`}
             >
@@ -237,149 +310,52 @@ export default function ProductList() {
               onSlideChange={() => console.log('slide change')}
               onSwiper={(swiper) => console.log(swiper)}
             >
-              <SwiperSlide>
-                <div className={`${styles['productCard']} swiper-slide`}>
-                  <div className={styles['swiperImg']}>
-                    <div className={styles['imgBox']}>
-                      <div className={`${styles['top']}`}>1</div>
-                      <Image
-                        src="../../images/product/015.jpg"
-                        width={280}
-                        height={280}
-                        alt=""
-                      />
-                    </div>
-                    <div
-                      className={`${styles['imgBox']} ${styles['secondImg']}`}
-                    >
-                      <Image
-                        src="../../images/product/019.jpg"
-                        width={280}
-                        height={280}
-                        alt=""
-                      />
-                    </div>
-                  </div>
-                  <div className={styles['cardBody']}>
-                    <div className={styles['productName-bl']}>
-                      <p>馬丘machill</p>
-                      <p className={` ${styles['productDescription']}`}>
-                        馬丘麻將【電動麻將桌用版】
-                      </p>
-                    </div>
-                    <p>NT. 2,500</p>
-                  </div>
-                </div>
-              </SwiperSlide>
-              <SwiperSlide>
-                <div className={`${styles['productCard']} swiper-slide`}>
-                  <div className={styles['swiperImg']}>
-                    <div className={styles['imgBox']}>
-                      <div className={`${styles['top']} ${styles['top2']}`}>
-                        2
+              {products.top.map((product, i) => {
+                return (
+                  <SwiperSlide key={product.id}>
+                    <Link href={`/product/productList?page=5`}>
+                      <div className={`${styles['productCard']} swiper-slide`}>
+                        <div className={styles['swiperImg']}>
+                          <div className={styles['imgBox']}>
+                            <div
+                              className={`${styles['top']} ${
+                                styles[`top${i + 1}`]
+                              }`}
+                            >
+                              {i + 1}
+                            </div>
+                            <Image
+                              src={`../../images/product/${product.img}`}
+                              width={280}
+                              height={280}
+                              alt=""
+                            />
+                          </div>
+                          <div
+                            className={`${styles['imgBox']} ${styles['secondImg']}`}
+                          >
+                            <Image
+                              src={`../../images/product/${product.img2}`}
+                              width={280}
+                              height={280}
+                              alt=""
+                            />
+                          </div>
+                        </div>
+                        <div className={styles['cardBody']}>
+                          <div className={styles['productName-bl']}>
+                            <p>{product.brand_name}</p>
+                            <p className={` ${styles['productDescription']}`}>
+                              {product.name}
+                            </p>
+                          </div>
+                          <p>NT. {product.price}</p>
+                        </div>
                       </div>
-                      <Image
-                        src="../../images/product/015.jpg"
-                        width={280}
-                        height={280}
-                        alt=""
-                      />
-                    </div>
-                    <div
-                      className={`${styles['imgBox']} ${styles['secondImg']}`}
-                    >
-                      <Image
-                        src="../../images/product/019.jpg"
-                        width={280}
-                        height={280}
-                        alt=""
-                      />
-                    </div>
-                  </div>
-                  <div className={styles['cardBody']}>
-                    <div className={styles['productName-bl']}>
-                      <p>馬丘machill</p>
-                      <p className={` ${styles['productDescription']}`}>
-                        馬丘麻將【電動麻將桌用版】
-                      </p>
-                    </div>
-                    <p>NT. 2,500</p>
-                  </div>
-                </div>
-              </SwiperSlide>
-              <SwiperSlide>
-                <div className={`${styles['productCard']} swiper-slide`}>
-                  <div className={styles['swiperImg']}>
-                    <div className={styles['imgBox']}>
-                      <div className={`${styles['top']} ${styles['top3']}`}>
-                        3
-                      </div>
-                      <Image
-                        src="../../images/product/015.jpg"
-                        width={280}
-                        height={280}
-                        alt=""
-                      />
-                    </div>
-                    <div
-                      className={`${styles['imgBox']} ${styles['secondImg']}`}
-                    >
-                      <Image
-                        src="../../images/product/019.jpg"
-                        width={280}
-                        height={280}
-                        alt=""
-                      />
-                    </div>
-                  </div>
-                  <div className={styles['cardBody']}>
-                    <div className={styles['productName-bl']}>
-                      <p>馬丘machill</p>
-                      <p className={`${styles['productDescription']}`}>
-                        馬丘麻將【電動麻將桌用版】
-                      </p>
-                    </div>
-                    <p>NT. 2,500</p>
-                  </div>
-                </div>
-              </SwiperSlide>
-              <SwiperSlide>
-                <div className={`${styles['productCard']} swiper-slide`}>
-                  <div className={styles['swiperImg']}>
-                    <div className={styles['imgBox']}>
-                      <div className={`${styles['top']} ${styles['top4']}`}>
-                        4
-                      </div>
-                      <Image
-                        src="../../images/product/015.jpg"
-                        width={280}
-                        height={280}
-                        alt=""
-                      />
-                    </div>
-                    <div
-                      className={`${styles['imgBox']} ${styles['secondImg']}`}
-                    >
-                      <Image
-                        src="../../images/product/019.jpg"
-                        width={280}
-                        height={280}
-                        alt=""
-                      />
-                    </div>
-                  </div>
-                  <div className={styles['cardBody']}>
-                    <div className={styles['productName-bl']}>
-                      <p>馬丘machill</p>
-                      <p className={`${styles['productDescription']}`}>
-                        馬丘麻將【電動麻將桌用版】
-                      </p>
-                    </div>
-                    <p>NT. 2,500</p>
-                  </div>
-                  {/* </div> */}
-                </div>
-              </SwiperSlide>
+                    </Link>
+                  </SwiperSlide>
+                )
+              })}
             </Swiper>
           </div>
         </div>
@@ -427,131 +403,77 @@ export default function ProductList() {
             </div>
           </div>
           <div className={styles['products-bl']}>
-            {products.map((product) => {
+            {products.list.map((product) => {
               return (
-                <div key={product.id} className={styles['productCard']}>
-                  <div className={styles['imgBox']}>
-                    <Image
-                      src={`../../images/product/${product.img}`}
-                      width={280}
-                      height={280}
-                      alt=""
-                    />
-                  </div>
-                  <div className={`${styles['imgBox']} ${styles['secondImg']}`}>
-                    <Image
-                      src={`../../images/product/${product.img}`}
-                      width={280}
-                      height={280}
-                      alt=""
-                    />
-                  </div>
-                  <div className={styles['heart']}>
-                    <FaHeart width={24} />
-                  </div>
-                  <div className={styles['cardBody']}>
-                    <div className={styles['productName-bl']}>
-                      <p>{product.brand_name}</p>
-                      <p className={styles['productDescription']}>
-                        {product.name}
-                      </p>
+                <div key={product.id} className={`${styles['productCard']} `}>
+                  <Link href={`/product/${product.id}`}>
+                    <div className={styles['imgBox']}>
+                      <Image
+                        src={`../../images/product/${product.img}`}
+                        width={280}
+                        height={280}
+                        alt=""
+                      />
                     </div>
                     <div
-                      className={`${styles['star']} d-flex justify-content-center gap-1`}
+                      className={`${styles['imgBox']} ${styles['secondImg']}`}
                     >
-                      <p>
-                        4.7 <FaStar width={16} />
-                      </p>
+                      <Image
+                        src={`../../images/product/${product.img2}`}
+                        width={280}
+                        height={280}
+                        alt=""
+                      />
                     </div>
-                    <p>NT. {product.price}</p>
-                  </div>
+                    <div className={styles['heart']}>
+                      <FaHeart width={24} />
+                    </div>
+                    <div className={styles['cardBody']}>
+                      <div className={styles['productName-bl']}>
+                        <p>{product.brand_name}</p>
+                        <p className={styles['productDescription']}>
+                          {product.name}
+                        </p>
+                      </div>
+                      <div
+                        className={`${styles['star']} d-flex justify-content-center gap-1`}
+                      >
+                        <p>
+                          {product.average_star ? (
+                            <>
+                              {product.average_star} <FaStar width={16} />
+                            </>
+                          ) : (
+                            '尚無評星'
+                          )}
+                        </p>
+                      </div>
+                      <p>NT. {product.price}</p>
+                    </div>
+                  </Link>
                 </div>
               )
             })}
-            <div className={styles['productCard']}>
-              <div className={styles['imgBox']}>
-                <Image
-                  src="../../images/product/015.jpg"
-                  width={280}
-                  height={280}
-                  alt=""
-                />
-              </div>
-              <div className={`${styles['imgBox']} ${styles['secondImg']}`}>
-                <Image
-                  src="../../images/product/019.jpg"
-                  width={280}
-                  height={280}
-                  alt=""
-                />
-              </div>
-              <div className={styles['heart']}>
-                <FaHeart width={24} />
-              </div>
-              <div className={styles['cardBody']}>
-                <div className={styles['productName-bl']}>
-                  <p>馬丘machill</p>
-                  <p className={styles['productDescription']}>
-                    馬丘麻將【電動麻將桌用版】
-                  </p>
-                </div>
-                <div
-                  className={`${styles['star']} d-flex justify-content-center gap-1`}
-                >
-                  <p>
-                    4.7 <FaStar width={16} />
-                  </p>
-                </div>
-                <p>NT. 2,500</p>
-              </div>
-            </div>
-            <div className={`${styles['productCard']} ${styles['boxHidden']} `}>
-              <div className={styles['imgBox']}>
-                <Image
-                  src="../../images/product/015.jpg"
-                  width={280}
-                  height={280}
-                  alt=""
-                />
-              </div>
-              <div className={`${styles['imgBox']} ${styles['secondImg']}`}>
-                <Image
-                  src="../../images/product/019.jpg"
-                  width={280}
-                  height={280}
-                  alt=""
-                />
-              </div>
-              <div className={styles['heart']}>
-                <FaHeart width={24} />
-              </div>
-              <div className={styles['cardBody']}>
-                <div className={styles['productName-bl']}>
-                  <p>馬丘machill</p>
-                  <p className={styles['productDescription']}>
-                    馬丘麻將【電動麻將桌用版】
-                  </p>
-                </div>
-                <div
-                  className={`${styles['star']} d-flex justify-content-center gap-1`}
-                >
-                  <p>
-                    4.7 <FaStar width={16} />
-                  </p>
-                </div>
-                <p>NT. 2,500</p>
-              </div>
-            </div>
           </div>
           <div className={styles['loadMore-bl']}>
-            <p>24 / {products.length}</p>
+            <p>
+              {pages * 12 > products.total ? products.total : pages * 12} /{' '}
+              {products.total}
+            </p>
             <div className="progress" role="progressbar">
-              <div className="progress-bar" style={{ width: '50%' }} />
+              <div
+                className="progress-bar"
+                style={{ width: `${((pages * 12) / products.total) * 100}%` }}
+              />
             </div>
-            <div className={`${styles['btn-more']} d-flex`}>
+
+            <button
+              className={`${styles['btn-more']} d-flex`}
+              onClick={handleLoadMore}
+            >
               <p>查看更多</p>
               <i className={styles['edit-icon']} />
-            </div>
+            </button>
           </div>
         </div>
         <div
@@ -795,6 +717,14 @@ export default function ProductList() {
             flex-direction: column;
           }
 
+          .boxHidden {
+            transition: 1s;
+            opacity: 0;
+          }
+
+          .boxActive {
+            transition: 1s;
+          }
           .productCard {
             .imgBox {
               img {
