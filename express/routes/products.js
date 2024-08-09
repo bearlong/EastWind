@@ -1,6 +1,5 @@
 import express from 'express'
 const router = express.Router()
-import db from '##/configs/mysql.js'
 import dbPromise from '##/configs/mysql-promise.js'
 
 // 檢查空物件, 轉換req.params為數字
@@ -17,9 +16,18 @@ const { Product } = sequelize.models
 // GET 獲得所有資料，加入分頁與搜尋字串功能，單一資料表處理
 router.get('/', async (req, res) => {
   let page = 1
-  let { brand_id, category_id, color, size, style, search, max, min } =
-    req.query
-  let filter
+  let {
+    brand_id,
+    category_id,
+    size,
+    style,
+    search,
+    max,
+    min,
+    orderBy,
+    isFilter,
+  } = req.query
+  let filter, topFilter, orderCondition
 
   if (req.query.page) {
     page = req.query.page
@@ -29,23 +37,28 @@ router.get('/', async (req, res) => {
   const filterArr = {
     brand_id,
     category_id,
-    color,
     size,
     style,
   }
   for (const key in filterArr) {
     if (filterArr[key]) {
-      if (!filter) {
-        if (key === 'color' || key === 'size' || key === 'style') {
-          filter = ` Where \`product_specifications\`.\`${key}\` = '${filterArr[key]}'`
+      if (filterArr[key].includes(',')) {
+        const values = filterArr[key].split(',').map((value) => value.trim())
+        const condition = values
+          .map((value) => `\`${key}\` = '${value}'`)
+          .join(' OR ')
+        const fieldPrefix =
+          key === 'size' || key === 'style' ? '`product_specifications`.' : ''
+        if (!filter) {
+          filter = ` WHERE ${fieldPrefix}${condition}`
         } else {
-          filter = ` Where \`${key}\` = '${filterArr[key]}'`
+          filter += ` ${isFilter ? 'OR' : 'AND'} ${fieldPrefix}${condition}`
         }
       } else {
-        if (key === 'color' || key === 'size' || key === 'style') {
-          filter += ` AND \`product_specifications\`.\`${key}\` = '${filterArr[key]}'`
+        if (!filter) {
+          filter = ` Where ${key === 'size' || key === 'style' ? '`product_specifications`.' : ''}\`${key}\` = '${filterArr[key]}'`
         } else {
-          filter += ` AND \`${key}\` = '${filterArr[key]}'`
+          filter += ` ${isFilter ? 'OR' : 'AND'} ${key === 'size' || key === 'style' ? '`product_specifications`.' : ''}\`${key}\` = '${filterArr[key]}'`
         }
       }
     }
@@ -55,7 +68,7 @@ router.get('/', async (req, res) => {
     if (!filter) {
       filter = ` WHERE (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
     } else {
-      filter += ` AND (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
+      filter += ` ${isFilter ? 'OR' : 'AND'} (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
     }
   }
 
@@ -67,10 +80,46 @@ router.get('/', async (req, res) => {
     }
   }
 
+  if (filterArr['category_id']) {
+    if (filterArr['category_id'].includes(',')) {
+      const values = filterArr['category_id']
+        .split(',')
+        .map((value) => value.trim())
+      const condition = values
+        .map((value) => `\`category_id\` = '${value}'`)
+        .join(' OR ')
+      topFilter = ` WHERE ${condition}`
+    } else {
+      topFilter = ` WHERE \`category_id\` = ${filterArr['category_id']}`
+    }
+  }
+
+  if (orderBy) {
+    switch (Number(orderBy)) {
+      case 0:
+        orderCondition = ''
+        break
+      case 1:
+        orderCondition = ' ORDER BY `product`.`create_at` DESC'
+        break
+      case 2:
+        orderCondition = ' ORDER BY `average_star` DESC'
+        break
+      case 3:
+        orderCondition = ' ORDER BY `product`.`price` DESC'
+        break
+      case 4:
+        orderCondition = ' ORDER BY `product`.`price` ASC'
+        break
+    }
+  }
+
   const product = {}
   const [top] = await dbPromise
     .execute(
-      'SELECT `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`,  MIN(`product_images`.`img`) AS `img2`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` FROM `product` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `product_images` ON `product_images`.`product_id` = `product`.`id` LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product" GROUP BY `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name`, `brand`.`name` ORDER BY `average_star` DESC LIMIT 4'
+      'SELECT `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`,  MAX(`product_images`.`img`) AS `img2`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` FROM `product` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `product_images` ON `product_images`.`product_id` = `product`.`id` LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product"' +
+        `${topFilter ? topFilter : ''}` +
+        ' GROUP BY `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name`, `brand`.`name` ORDER BY `average_star` DESC LIMIT 4'
     )
     .catch((err) => {
       if (err) {
@@ -95,14 +144,6 @@ router.get('/', async (req, res) => {
         return []
       }
     })
-  const [colorAll] = await dbPromise
-    .execute('SELECT DISTINCT `color` FROM `product_specifications`')
-    .catch((err) => {
-      if (err) {
-        console.error(err)
-        return []
-      }
-    })
 
   const [styleAll] = await dbPromise
     .execute('SELECT DISTINCT `style` FROM `product_specifications`')
@@ -115,9 +156,10 @@ router.get('/', async (req, res) => {
 
   const [list] = await dbPromise
     .execute(
-      'SELECT `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`, `product_specifications`.*,  MIN(`product_images`.`img`) AS `img2`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` FROM `product` JOIN `product_specifications` ON `product_specifications`.`product_id` = `product`.`id` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `product_images` ON `product_images`.`product_id` = `product`.`id` LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product"' +
+      'SELECT `product`.`id`, `product`.`name`, `product`.`price`, `product`.`create_at`, `product`.`img`, `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`, `product_specifications`.*,  MAX(`product_images`.`img`) AS `img2`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` FROM `product` JOIN `product_specifications` ON `product_specifications`.`product_id` = `product`.`id` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `product_images` ON `product_images`.`product_id` = `product`.`id` LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product"' +
         `${filter ? filter : ''}` +
         ' GROUP BY `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name`, `brand`.`name`' +
+        `${orderCondition ? orderCondition : ''}` +
         sqlPage
     )
     .catch((err) => {
@@ -142,7 +184,6 @@ router.get('/', async (req, res) => {
   product['total'] = total.length
   product['top'] = top
   product['list'] = list
-  product['color'] = colorAll
   product['style'] = styleAll
   product['brand'] = brandAll
   product['category'] = categoryAll
