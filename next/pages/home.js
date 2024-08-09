@@ -1,5 +1,5 @@
 import styles from '@/styles/boyu/home.module.scss'
-import { FaArrowRight } from 'react-icons/fa'
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 
 export default function Home() {
   return (
@@ -233,47 +233,122 @@ export default function Home() {
           >
             <img
               className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room1.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room2.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room3.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room4.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room5.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room6.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room7.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room8.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room9.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room10.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room11.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room12.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room13.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room14.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room15.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room16.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room17.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room18.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room19.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room20.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room21.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room22.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room23.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room24.jpg"
               alt=""
             />
           </div>
@@ -343,47 +418,122 @@ export default function Home() {
           >
             <img
               className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room1.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room2.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room3.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room4.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room5.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room6.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room7.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room8.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room9.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room10.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room11.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room12.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room13.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room14.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room15.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room16.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room17.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room18.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room19.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room20.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room21.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room22.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room23.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room24.jpg"
               alt=""
             />
           </div>
@@ -475,15 +625,22 @@ export default function Home() {
               <div
                 className={`${styles['mahjong-card-btn-bo']} d-flex flex-row flex-sm-column gap-5 align-items-center`}
               >
-              
-                <i className="fa-solid fa-arrow-left btn-move-card-left-bo"></i>
-                <i className="fa-solid fa-arrow-right btn-move-card-right-bo"></i>
+                <div
+                  className={`${styles['move-card-btn-box']} d-flex justify-content-center align-items-center`}
+                >
+                  <FaArrowLeft className={styles['btn-move-card-left-bo']} />
+                </div>
+                <div
+                  className={`${styles['move-card-btn-box']} d-flex justify-content-center align-items-center`}
+                >
+                  <FaArrowRight className={styles['btn-move-card-left-bo']} />
+                </div>
               </div>
               <div
                 className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
               >
                 <div className={styles['imgBox']}>
-                  <img src="/image/product/product.png" alt="" />
+                  <img src="/images/boyu/product/product.png" alt="" />
                 </div>
                 <div className={`${styles['cardBody']} text-center`}>
                   <div
@@ -503,7 +660,7 @@ export default function Home() {
                 className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
               >
                 <div className={styles['imgBox']}>
-                  <img src="/image/product/product.png" alt="" />
+                  <img src="/images/boyu/product/product.png" alt="" />
                 </div>
                 <div className={`${styles['cardBody']} text-center`}>
                   <div
@@ -523,7 +680,7 @@ export default function Home() {
                 className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
               >
                 <div className={styles['imgBox']}>
-                  <img src="/image/product/product.png" alt="" />
+                  <img src="/images/boyu/product/product.png" alt="" />
                 </div>
                 <div className={`${styles['cardBody']} text-center`}>
                   <div
@@ -543,7 +700,7 @@ export default function Home() {
                 className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
               >
                 <div className={styles['imgBox']}>
-                  <img src="/image/product/product.png" alt="" />
+                  <img src="/images/boyu/product/product.png" alt="" />
                 </div>
                 <div className={`${styles['cardBody']} text-center`}>
                   <div
@@ -563,7 +720,7 @@ export default function Home() {
                 className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
               >
                 <div className={styles['imgBox']}>
-                  <img src="/image/product/product.png" alt="" />
+                  <img src="/images/boyu/product/product.png" alt="" />
                 </div>
                 <div className={`${styles['cardBody']} text-center`}>
                   <div
@@ -608,8 +765,11 @@ export default function Home() {
                 >
                   <p className="h6 d-none d-sm-block">查看更多桌遊商品</p>
                   <p className="h6 d-block d-sm-none">查看更多</p>
-                  <div className={styles['btn-more-mini']}>
-                    <i className="fa-solid fa-arrow-right more-mini-icon"></i>
+
+                  <div
+                    className={`${styles['btn-more-mini']} d-flex justify-content-center align-items-center`}
+                  >
+                    <FaArrowRight className={styles['more-mini-icon']} />
                   </div>
                 </div>
               </div>
@@ -620,14 +780,22 @@ export default function Home() {
               <div
                 className={`${styles['boardGame-card-btn-bo']} d-flex flex-row flex-sm-column align-items-center gap-5`}
               >
-                <i className="fa-solid fa-arrow-left btn-move-card-left-bo"></i>
-                <i className="fa-solid fa-arrow-right btn-move-card-right-bo"></i>
+                <div
+                  className={`${styles['move-card-btn-box']} d-flex justify-content-center align-items-center`}
+                >
+                  <FaArrowLeft className={styles['btn-move-card-left-bo']} />
+                </div>
+                <div
+                  className={`${styles['move-card-btn-box']} d-flex justify-content-center align-items-center`}
+                >
+                  <FaArrowRight className={styles['btn-move-card-left-bo']} />
+                </div>
               </div>
               <div
                 className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
               >
                 <div className={styles['imgBox']}>
-                  <img src="/image/product/product1.jpg" alt="" />
+                  <img src="/images/boyu/product/product1.jpg" alt="" />
                 </div>
                 <div className={`${styles['cardBody']} text-center`}>
                   <div
@@ -647,7 +815,7 @@ export default function Home() {
                 className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
               >
                 <div className={styles['imgBox']}>
-                  <img src="/image/product/product1.jpg" alt="" />
+                  <img src="/images/boyu/product/product1.jpg" alt="" />
                 </div>
                 <div className={`${styles['cardBody']} text-center`}>
                   <div
@@ -667,7 +835,7 @@ export default function Home() {
                 className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
               >
                 <div className={styles['imgBox']}>
-                  <img src="/image/product/product1.jpg" alt="" />
+                  <img src="/images/boyu/product/product1.jpg" alt="" />
                 </div>
                 <div className={`${styles['cardBody']} text-center`}>
                   <div
@@ -687,7 +855,7 @@ export default function Home() {
                 className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
               >
                 <div className={styles['imgBox']}>
-                  <img src="/image/product/product1.jpg" alt="" />
+                  <img src="/images/boyu/product/product1.jpg" alt="" />
                 </div>
                 <div className={`${styles['cardBody']} text-center`}>
                   <div
@@ -707,7 +875,7 @@ export default function Home() {
                 className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
               >
                 <div className={styles['imgBox']}>
-                  <img src="/image/product/product1.jpg" alt="" />
+                  <img src="/images/boyu/product/product1.jpg" alt="" />
                 </div>
                 <div className={`${styles['cardBody']} text-center`}>
                   <div
@@ -737,38 +905,38 @@ export default function Home() {
             <div className="d-flex gap-2">
               <img
                 className={styles['icon-mahjong-bo']}
-                src="/image/mahjong/Sou1.svg"
+                src="/images/boyu/mahjong/Sou1.svg"
                 alt=""
               />
               <img
                 className={styles['icon-mahjong-bo']}
-                src="/image/mahjong/Sou2.svg"
+                src="/images/boyu/mahjong/Sou2.svg"
                 alt=""
               />
               <img
                 className={`${styles['icon-mahjong-bo']} d-none d-sm-block`}
-                src="/image/mahjong/Sou3.svg"
+                src="/images/boyu/mahjong/Sou3.svg"
                 alt=""
               />
             </div>
-            <div className={styles['course-title-bo']}>
+            <div className={`${styles['course-title-bo']} d-flex`}>
               <h2>線上</h2>
               <h2>課程</h2>
             </div>
             <div className="d-flex gap-2">
               <img
                 className={styles['icon-mahjong-bo']}
-                src="/image/mahjong/Sou1.svg"
+                src="/images/boyu/mahjong/Sou1.svg"
                 alt=""
               />
               <img
                 className={styles['icon-mahjong-bo']}
-                src="/image/mahjong/Sou2.svg"
+                src="/images/boyu/mahjong/Sou2.svg"
                 alt=""
               />
               <img
                 className={`${styles['icon-mahjong-bo']} d-none d-sm-block`}
-                src="/image/mahjong/Sou3.svg"
+                src="/images/boyu/mahjong/Sou3.svg"
                 alt=""
               />
             </div>
@@ -793,8 +961,11 @@ export default function Home() {
               >
                 <p className="h6 d-none d-sm-block">查看更多線上課程</p>
                 <p className="h6 d-block d-sm-none">查看更多</p>
-                <div className={styles['btn-more-mini']}>
-                  <i className="fa-solid fa-arrow-right more-mini-icon"></i>
+
+                <div
+                  className={`${styles['btn-more-mini']} d-flex justify-content-center align-items-center`}
+                >
+                  <FaArrowRight className={styles['more-mini-icon']} />
                 </div>
               </div>
             </div>
@@ -815,7 +986,7 @@ export default function Home() {
                     <div
                       className={`${styles['course-more']} d-flex justify-content-end align-items-center`}
                     >
-                      <i className="edit-icon"></i>
+                      <i className={`${styles['edit-icon']}`}></i>
                     </div>
                   </div>
                 </div>
@@ -836,7 +1007,7 @@ export default function Home() {
                     <div
                       className={`${styles['course-more']} d-flex justify-content-end align-items-center`}
                     >
-                      <i className="edit-icon"></i>
+                      <i className={`${styles['edit-icon']}`}></i>
                     </div>
                   </div>
                 </div>
@@ -857,7 +1028,7 @@ export default function Home() {
                     <div
                       className={`${styles['course-more']} d-flex justify-content-end align-items-center`}
                     >
-                      <i className="edit-icon"></i>
+                      <i className={`${styles['edit-icon']}`}></i>
                     </div>
                   </div>
                 </div>
@@ -878,7 +1049,7 @@ export default function Home() {
                     <div
                       className={`${styles['course-more']} d-flex justify-content-end align-items-center`}
                     >
-                      <i className="edit-icon"></i>
+                      <i className={`${styles['edit-icon']}`}></i>
                     </div>
                   </div>
                 </div>
@@ -899,7 +1070,7 @@ export default function Home() {
                     <div
                       className={`${styles['course-more']} d-flex justify-content-end align-items-center`}
                     >
-                      <i className="edit-icon"></i>
+                      <i className={`${styles['edit-icon']}`}></i>
                     </div>
                   </div>
                 </div>
@@ -907,8 +1078,18 @@ export default function Home() {
               </div>
 
               <div className="course-card-btn-bo d-block d-md-none d-flex gap-5">
-                <i className="fa-solid fa-arrow-left btn-course-move-left-bo"></i>
-                <i className="fa-solid fa-arrow-right btn-course-move-right-bo"></i>
+                <div
+                  className={`${styles['move-course-btn-box-left-bo']} ${styles['move-course-btn-box-bo']} d-flex justify-content-center align-items-center`}
+                >
+                  <FaArrowLeft className={styles['btn-course-move-left-bo']} />
+                </div>
+                <div
+                  className={`${styles['move-course-btn-box-right-bo']} ${styles['move-course-btn-box-bo']} d-flex justify-content-center align-items-center`}
+                >
+                  <FaArrowRight
+                    className={styles['btn-course-move-right-bo']}
+                  />
+                </div>
               </div>
             </div>
           </div>

@@ -317,39 +317,50 @@
   }
 }
 
-.btn-move-card-left-bo,
-.btn-move-card-right-bo {
-  font-size: 3rem;
-  color: var(--primary);
-  padding: 2.4rem;
+.move-card-btn-box {
+  width: 8rem;
+  height: 8rem;
   border-radius: 50%;
   border: 3px solid var(--primary);
   cursor: pointer;
   transition: 0.3s;
 
-  @media (max-width: 576px) {
-    font-size: 2.4rem;
-  }
-
   &:hover {
     color: var(--primary-dark);
     border-color: var(--primary-dark);
     background-color: rgba(250, 247, 240, 0.5);
+    transform: translateX(3px);
+
+    & .btn-move-card-right-bo,
+    & .btn-move-card-left-bo {
+      color: var(--primary-dark);
+    }
+  }
+
+  @media (max-width: 768px) {
+    width: 6.4rem;
+    height: 6.4rem;
+  }
+}
+
+.btn-move-card-left-bo,
+.btn-move-card-right-bo {
+  font-size: 3rem;
+  color: var(--primary);
+  transition: 0.3s;
+
+  @media (max-width: 576px) {
+    font-size: 2.4rem;
   }
 }
 
 .btn-move-card-right-bo {
-  &:hover {
-    transform: translateX(3px);
-  }
   @media (max-width: 576px) {
     left: 0;
   }
 }
+
 .btn-move-card-left-bo {
-  &:hover {
-    transform: translateX(-3px);
-  }
   @media (max-width: 576px) {
     right: 0;
   }
@@ -405,31 +416,40 @@
   }
 }
 
-.btn-course-move-left-bo,
-.btn-course-move-right-bo {
+.move-course-btn-box-bo {
   color: var(--bg-text-color);
   border: 3px solid var(--bg-text-color);
+  border-radius: 50%;
+  width: 6.4rem;
+  height: 6.4rem;
   position: absolute;
   top: 50%;
   z-index: 4;
-
-  font-size: 3rem;
-  padding: 2.4rem;
-  border-radius: 50%;
-  cursor: pointer;
   transition: 0.3s;
+  cursor: pointer;
 
   &:hover {
     color: var(--primary-dark);
     border-color: var(--primary-dark);
     background-color: rgba(250, 247, 240, 0.5);
+
+    & .btn-course-move-left-bo,
+    & .btn-course-move-right-bo {
+      color: var(--primary-dark);
+    }
   }
 }
 
-.btn-course-move-left-bo {
+.btn-course-move-left-bo,
+.btn-course-move-right-bo {
+  font-size: 3rem;
+  color: var(--bg-text-color);
+}
+
+.move-course-btn-box-left-bo {
   left: 0;
 }
 
-.btn-course-move-right-bo {
+.move-course-btn-box-right-bo {
   right: 0;
 }
