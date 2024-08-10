@@ -262,7 +262,7 @@
 
     .edit-icon {
       text-align: start;
-      background-image: url('../public/images/web/btnMore.svg');
+      background-image: url('../../public/images/web/btnMore.svg');
       background-repeat: no-repeat;
       background-size: cover;
       width: 50px;
@@ -276,7 +276,7 @@
         color: var(--primary-dark);
       }
       .edit-icon {
-        background-image: url('../public/images/web/btnMoreHover.svg');
+        background-image: url('../../public/images/web/btnMoreHover.svg');
         transform: translateX(3px);
       }
     }

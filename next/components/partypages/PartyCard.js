@@ -1,6 +1,8 @@
+import cardStyles from '@/styles/gw/_card.module.sass'
+
 export default function PartyCard() {
   return (
-    <div className="gw-infoCard g-3" id="party">
+    <div className={cardStyles.Card} id="party">
       <h6>桌號：MGM8555412DF</h6>
       <h6>開團時間：2024/07/20 (sat) 18:00-22:00</h6>
       <p>台麻十六張</p>

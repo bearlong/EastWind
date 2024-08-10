@@ -11,12 +11,13 @@ import {
   FaPlus,
   FaMinus,
 } from 'react-icons/fa6'
-import styles from '@/styles/productList.module.scss'
+import styles from '@/styles/bearlong/productList.module.scss'
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import ProductNav from '@/components/product/product-nav'
 
 export default function ProductList() {
   const router = useRouter()
@@ -122,44 +123,37 @@ export default function ProductList() {
   }
   const handleBrandChecked = (id) => {
     const nextBrandOptions = brandOptions.map((v) => {
-      // 如果符合條件(id是傳入的id)，回傳修改其中屬性checked為反向布林值的物件值
       if (v.id === id) {
         return { ...v, checked: !v.checked }
       }
-      // 否則回傳原物件
       return v
     })
     setBrandOption(nextBrandOptions)
   }
   const handleCateChecked = (id) => {
     const nextCateOptions = cateOptions.map((v) => {
-      // 如果符合條件(id是傳入的id)，回傳修改其中屬性checked為反向布林值的物件值
       if (v.id === id) {
         return { ...v, checked: !v.checked }
       }
-      // 否則回傳原物件
       return v
     })
     setCateOption(nextCateOptions)
   }
   const handleSizeChecked = (id) => {
     const nextSizeOptions = sizeOptions.map((v) => {
-      // 如果符合條件(id是傳入的id)，回傳修改其中屬性checked為反向布林值的物件值
       if (v.id === id) {
         return { ...v, checked: !v.checked }
       }
-      // 否則回傳原物件
       return v
     })
     setSizeOption(nextSizeOptions)
   }
   const handleStyleChecked = (id) => {
     const nextStyleOptions = styleOptions.map((v) => {
-      // 如果符合條件(id是傳入的id)，回傳修改其中屬性checked為反向布林值的物件值
       if (v.id === id) {
         return { ...v, checked: !v.checked }
       }
-      // 否則回傳原物件
+
       return v
     })
     setStyleOption(nextStyleOptions)
@@ -264,12 +258,10 @@ export default function ProductList() {
 
       setFilters(filter)
       getProducts(filter)
-      console.log(router.query)
     }
   }, [router.isReady])
 
   useEffect(() => {
-    console.log(router.query)
     const filter = {
       brand_id: brand_id || '',
       category_id: category_id || '',
@@ -285,350 +277,8 @@ export default function ProductList() {
 
   return (
     <>
-      <div className={styles['product-header-bl']}>
-        <ul className={` d-flex ${styles['subBar-bl']} `}>
-          <li>
-            <Link className={styles['subNav']} href="productList">
-              <h6>預覽全部</h6>
-            </Link>
-          </li>
-          <li>
-            <Link className={styles['subNav']} href="productList?category_id=1">
-              <h6>麻將牌</h6>
-            </Link>
-            <div className={styles['subBarBody-bl']}>
-              <div className="d-flex">
-                <div>
-                  <h6 className={styles['title']}>精選推薦</h6>
-                  <ul>
-                    <li>
-                      <Link href="productList?category_id=1&orderBy=1">
-                        最新上架
-                      </Link>
-                    </li>
-                    <li>活動促銷</li>
-                    <li>
-                      <Link href="productList?category_id=1&orderBy=2">
-                        評價最高
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h6 className={styles['title']}>品牌</h6>
-                  <ul>
-                    <li>
-                      <Link href="productList?category_id=1&brand_id=1">
-                        東方不敗
-                      </Link>
-                    </li>
-                    <li>
-                      {' '}
-                      <Link href="productList?category_id=1&brand_id=9">
-                        商密特SUMMIT
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=1&brand_id=11">
-                        麻將大俠
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=1&brand_id=16">
-                        馬丘machill
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h6 className={styles['title']}>尺寸</h6>
-                  <ul>
-                    <li>
-                      <Link href="productList?category_id=1&size=33mm">
-                        33mm
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=1&size=34mm">
-                        34mm
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=1&size=36mm">
-                        36mm
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h6 className={styles['title']}>類別</h6>
-                  <ul>
-                    <li>
-                      <Link href="productList?category_id=1&style=電麻款">
-                        電動麻將桌專用
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>
-            <Link className={styles['subNav']} href="productList?category_id=2">
-              <h6>排尺</h6>
-            </Link>
-            <div className={styles['subBarBody-bl']}>
-              <div className="d-flex">
-                <div>
-                  <h6 className={styles['title']}>精選推薦</h6>
-                  <ul>
-                    <li>
-                      <Link href="productList?category_id=2&orderBy=1">
-                        最新上架
-                      </Link>
-                    </li>
-                    <li>活動促銷</li>
-                    <li>
-                      <Link href="productList?category_id=2&orderBy=2">
-                        評價最高
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h6 className={styles['title']}>品牌</h6>
-                  <ul>
-                    <li>
-                      <Link href="productList?category_id=2&brand_id=1">
-                        東方不敗
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=2&brand_id=2">
-                        雀王
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=2&brand_id=9">
-                        商密特SUMMIT
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=2&brand_id=10">
-                        長勝
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=2&brand_id=11">
-                        麻將大俠
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=2&brand_id=16">
-                        馬丘machill
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>
-            <Link className={styles['subNav']} href="productList?category_id=3">
-              <h6>麻將桌</h6>
-            </Link>
-            <div className={styles['subBarBody-bl']}>
-              <div className="d-flex">
-                <div>
-                  <h6 className={styles['title']}>精選推薦</h6>
-                  <ul>
-                    <li>
-                      <Link href="productList?category_id=3&orderBy=1">
-                        最新上架
-                      </Link>
-                    </li>
-                    <li>活動促銷</li>
-                    <li>
-                      <Link href="productList?category_id=3&orderBy=2">
-                        評價最高
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h6 className={styles['title']}>品牌</h6>
-                  <ul>
-                    <li>
-                      <Link href="productList?category_id=3&brand_id=1">
-                        東方不敗
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=3&brand_id=2">
-                        雀王
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=3&brand_id=9">
-                        商密特SUMMIT
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=3&brand_id=10">
-                        長勝
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=3&brand_id=11">
-                        麻將大俠
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=3&brand_id=12">
-                        雀友
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=3&brand_id=14">
-                        輝葉良品
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h6 className={styles['title']}>類別</h6>
-                  <ul>
-                    <li>
-                      <Link href="productList?category_id=3&style=餐桌款">
-                        餐桌款
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=3&style=折疊款">
-                        折疊款
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=3&style=套裝款">
-                        套裝款
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>
-            <Link className={styles['subNav']} href="productList?category_id=4">
-              <h6>周邊</h6>
-            </Link>
-            <div
-              className={`${styles['subBarBody-bl']} ${styles['rightBar-bl']}`}
-            >
-              <div className="d-flex">
-                <div>
-                  <h6 className={styles['title']}>精選推薦</h6>
-                  <ul>
-                    <li>
-                      <Link href="productList?category_id=4&orderBy=1">
-                        最新上架
-                      </Link>
-                    </li>
-                    <li>活動促銷</li>
-                    <li>
-                      <Link href="productList?category_id=4&orderBy=2">
-                        評價最高
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h6 className={styles['title']}>類別</h6>
-                  <ul>
-                    <li>
-                      <Link href="productList?category_id=4&style=籌碼">
-                        籌碼
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=4&style=骰子">
-                        骰子
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=4&style=麻將周邊">
-                        麻將周邊
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>
-            <Link className={styles['subNav']} href="productList?category_id=5">
-              <h6>桌遊</h6>
-            </Link>
-            <div
-              className={`${styles['subBarBody-bl']} ${styles['rightBar-bl']}`}
-            >
-              <div className="d-flex">
-                <div>
-                  <h6 className={styles['title']}>精選推薦</h6>
-                  <ul>
-                    <li>
-                      <Link href="productList?category_id=5&orderBy=1">
-                        最新上架
-                      </Link>
-                    </li>
-                    <li>活動促銷</li>
-                    <li>
-                      <Link href="productList?category_id=5&orderBy=2">
-                        評價最高
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h6 className={styles['title']}>類別</h6>
-                  <ul>
-                    <li>
-                      <Link href="productList?category_id=5&style=台灣元素">
-                        台灣元素
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=5&style=策略">
-                        策略
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=5&style=派對">
-                        派對
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=5&style=RPG">
-                        RPG
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=5&style=家庭">
-                        家庭
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="productList?category_id=5&style=親子">
-                        親子
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
+      <ProductNav />
+
       <main>
         <div className={styles['topSection-bl']}>
           <h4 className={`${styles['topTitle']} mb-5`}>人氣商品</h4>
@@ -650,7 +300,7 @@ export default function ProductList() {
               {products.top.map((product, i) => {
                 return (
                   <SwiperSlide key={product.id}>
-                    <Link href={`/product/productList?page=5`}>
+                    <Link href={`/product/${product.id}`}>
                       <div className={`${styles['productCard']} swiper-slide`}>
                         <div className={styles['swiperImg']}>
                           <div className={styles['imgBox']}>
@@ -672,7 +322,11 @@ export default function ProductList() {
                             className={`${styles['imgBox']} ${styles['secondImg']}`}
                           >
                             <Image
-                              src={`../../images/product/${product.img2}`}
+                              src={
+                                product.img2
+                                  ? `../../images/product/${product.img2}`
+                                  : '../../images/boyu/logo.svg'
+                              }
                               width={280}
                               height={280}
                               alt=""
@@ -759,7 +413,11 @@ export default function ProductList() {
                       className={`${styles['imgBox']} ${styles['secondImg']}`}
                     >
                       <Image
-                        src={`../../images/product/${product.img2}`}
+                        src={
+                          product.img2
+                            ? `../../images/product/${product.img2}`
+                            : '../../images/boyu/logo.svg'
+                        }
                         width={280}
                         height={280}
                         alt=""
@@ -1217,44 +875,11 @@ export default function ProductList() {
             padding: 0 4rem;
           }
 
-          .swiper {
-            height: 500px;
-          }
           .swiper-slide {
             display: flex;
             flex-direction: column;
           }
 
-          .boxHidden {
-            transition: 1s;
-            opacity: 0;
-          }
-
-          .boxActive {
-            transition: 1s;
-          }
-          .productCard {
-            .imgBox {
-              img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-              }
-            }
-            .cardBody {
-              .productName-bl {
-                p {
-                  margin: 0;
-                }
-              }
-            }
-          }
-
-          .btn-more {
-            p {
-              font-size: 1.4rem;
-            }
-          }
           .progress {
             width: 250px;
             --bs-progress-bar-bg: var(--primary);
@@ -1412,12 +1037,6 @@ export default function ProductList() {
           }
 
           @media (max-width: 992px) {
-            .product-header-bl {
-              .subBar-bl {
-                padding: 2rem 0;
-              }
-            }
-
             .products-bl {
               grid-template-columns: repeat(2, 1fr);
               padding: 0;
