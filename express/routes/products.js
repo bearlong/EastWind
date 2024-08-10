@@ -415,13 +415,62 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res, next) => {
   // 轉為數字
   const id = getIdParam(req)
+  let cateId = 0
+
+  const [product] = await dbPromise
+    .execute(
+      'SELECT `product`.* , `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` FROM `product` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product" WHERE `product`.`id` = ' +
+        id
+    )
+    .catch((err) => {
+      if (err) {
+        console.error(err)
+        return []
+      }
+    })
+
+  cateId = product.category_id
+
+  const [specifications] = await dbPromise
+    .execute('SELECT * from product_specifications WHERE `product_id` = ' + id)
+    .catch((err) => {
+      if (err) {
+        console.error(err)
+        return []
+      }
+    })
+
+  const [comment] = await dbPromise
+    .execute(
+      "SELECT * from comment WHERE `object_type` = 'product' AND `object_id` = " +
+        id
+    )
+    .catch((err) => {
+      if (err) {
+        console.error(err)
+        return []
+      }
+    })
+  const [like] = await dbPromise.execute(
+    'SELECT `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`,  MAX(`product_images`.`img`) AS `img2`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` FROM `product` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `product_images` ON `product_images`.`product_id` = `product`.`id` LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product" WHERE `category_id` = ' +
+      product.cateId +
+      '  GROUP BY `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name`, `brand`.`name` ORDER BY `average_star` DESC LIMIT 4'
+  )
 
   // 只會回傳單筆資料
-  const product = await Product.findByPk(id, {
-    raw: true, // 只需要資料表中資料
+  // const product = await Product.findByPk(id, {
+  //   raw: true, // 只需要資料表中資料
+  // })
+  const specificationsNotNull = specifications.map((v) => {
+    return Object.fromEntries(
+      Object.entries(v).filter(([key, value]) => value !== null)
+    )
   })
 
-  return res.json({ status: 'success', data: { product } })
+  return res.json({
+    status: 'success',
+    data: { product, specifications: specificationsNotNull, comment, like },
+  })
 })
 
 // 獲得所有資料(測試用，不適合資料太多使用)
