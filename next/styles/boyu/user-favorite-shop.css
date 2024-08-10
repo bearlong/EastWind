@@ -1,0 +1,267 @@
+.user-favorite-box-bo {
+  color: var(--primary);
+  padding: 4.8rem;
+  height: auto;
+
+  @media (max-width: 768px) {
+    padding: 3.6rem;
+  }
+  @media (max-width: 576px) {
+    padding: 2.4rem;
+  }
+}
+
+.favorite-list-box-bo {
+  background-color: var(--form-bg);
+
+  @media (max-width: 992px) {
+  }
+
+  @media (max-width: 768px) {
+  }
+}
+.favorite-list-head-bo li {
+  width: 100%;
+}
+
+.favorite-state-bo {
+  display: block;
+  padding: 1.6rem 0;
+  width: 100%;
+  background: var(--form-bg-dark);
+  color: var(--primary-dark);
+  border: 3px solid transparent;
+  margin-bottom: -2px;
+
+  @media (max-width: 768px) {
+    padding: 1.2rem 0;
+  }
+
+  @media (max-width: 576px) {
+    padding: 0.8rem 0;
+  }
+
+  &:hover {
+    position: relative;
+    z-index: 2;
+    background: var(--form-bg);
+    color: var(--primary);
+    border: 3px solid var(--primary);
+    border-bottom: var(--form-bg);
+    margin-bottom: -3px;
+  }
+}
+
+.favorite-state-bo.state-choose-bo {
+  position: relative;
+  z-index: 2;
+  background: var(--form-bg);
+  color: var(--primary);
+  border: 3px solid var(--primary);
+  border-bottom: var(--form-bg);
+  margin-bottom: -3px;
+}
+
+.favorite-list-body-bo {
+  display: grid;
+  column-gap: 1.6rem;
+  row-gap: 2.4rem;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  justify-items: center;
+  grid-template-columns: repeat(2, 1fr);
+
+  margin-top: -3px;
+  border: 3px solid var(--primary);
+  padding: 3.6rem 4.8rem;
+
+  @media (max-width: 1200px) {
+    padding: 2.4em 2rem;
+    gap: 1.6rem;
+  }
+
+  @media (max-width: 992px) {
+    padding: 2.4em;
+    gap: 1.6rem;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(1, 1fr);
+
+    padding: 3.6em 2.4rem;
+  }
+  @media (max-width: 576px) {
+    padding: 2.4rem 1.2rem;
+  }
+}
+
+.shop-card-bo {
+  color: var(--bg-text-color);
+  background: var(--background);
+  cursor: pointer;
+  width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
+  max-width: 44rem; /* 設置卡片最大寬度 */
+  position: relative; /* 設置產品卡片的相對定位 */
+  padding: 2rem;
+
+  @media (max-width: 992px) {
+    padding: 1.6rem 1.2rem;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
+    max-width: 35rem;
+  }
+
+  &:hover {
+    background: var(--bg-text-light-color);
+    color: var(--text-color);
+
+    .normal-icon {
+      display: none;
+
+      opacity: 0;
+    }
+
+    .hover-icon {
+      display: block;
+      opacity: 1;
+    }
+
+    .shop-img-bo {
+      transform: scale(1.05);
+      transition: transform 0.4s ease; /* 添加過渡效果 */
+    }
+
+    .btn-shop-detail {
+      background-color: var(--primary-dark);
+      color: var(--bg-text-color);
+    }
+  }
+  .shop-card-body-bo {
+    gap: 1.6rem;
+    @media (max-width: 992px) {
+      gap: 1.2rem;
+    }
+    @media (max-width: 768px) {
+      gap: 1rem;
+    }
+  }
+
+  /* 設置圖片容器的樣式 */
+  .shop-img-box-bo {
+    width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
+    max-width: 12rem; /* 設置卡片最大寬度 */
+    height: 100%; /* 設置圖片容器的高度為 28rem */
+    max-height: 12rem; /* 設置卡片最大寬度 */
+    margin-bottom: 1.6rem; /* 設置圖片容器的底部外邊距為 2rem */
+    overflow: hidden;
+    position: relative;
+
+    @media (max-width: 992px) {
+      width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
+      max-width: 10rem; /* 設置卡片最大寬度 */
+      height: 100%; /* 設置圖片容器的高度為 28rem */
+      max-height: 10rem; /* 設置卡片最大寬度 */
+      margin-bottom: 0.8rem; /* 設置圖片容器的底部外邊距為 2rem */
+    }
+
+    @media (max-width: 768px) {
+      width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
+      max-width: 10rem; /* 設置卡片最大寬度 */
+      height: 100%; /* 設置圖片容器的高度為 28rem */
+      max-height: 10rem; /* 設置卡片最大寬度 */
+      margin-bottom: 0.8rem; /* 設置圖片容器的底部外邊距為 2rem */
+    }
+  }
+
+  .hover-icon {
+    display: none;
+    opacity: 0;
+  }
+
+  .list-text-bo {
+    text-wrap: wrap;
+    gap: 1rem;
+    @media (max-width: 768px) {
+      gap: 0.5rem;
+    }
+  }
+
+  .col-icon-bo {
+    width: 2rem;
+  }
+  .icon-heart-bo {
+    color: var(--error-color);
+  }
+
+  .icon-star-bo {
+    color: var(--primary);
+  }
+}
+
+.time-text-box-bo {
+  flex-direction: row;
+  @media (max-width: 915px) {
+    flex-direction: column;
+  }
+}
+
+.btn-shop-detail {
+  gap: 1.2rem;
+  padding: 0 1.2rem;
+  color: var(--bg-text-color);
+  border-radius: 5px;
+  background-color: var(--primary);
+
+  @media (max-width: 576px) {
+    gap: 0.8rem;
+    padding: 0 0.8rem;
+  }
+
+  .btn-text-bo {
+    flex-direction: row;
+    text-wrap: nowrap;
+  }
+}
+
+.btn-more {
+  color: var(--primary);
+  width: 20rem;
+  padding: 1rem 0 1rem 2rem;
+  border: 2px solid var(--primary);
+  border-radius: 4rem;
+  gap: 6rem;
+  transition: 0.3s;
+  cursor: pointer;
+  grid-column: -1 / 1;
+
+  @media (max-width: 768px) {
+    width: 18rem;
+    gap: 4rem;
+  }
+
+  .edit-icon {
+    text-align: start;
+    background-image: url("../image/btn/btnMore.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 5rem;
+    height: 1.2rem;
+    transition: 0.3s;
+  }
+
+  p {
+    font-size: 1.4rem;
+  }
+
+  &:hover {
+    color: var(--primary-dark);
+    border-color: var(--primary-dark);
+    .edit-icon {
+      background-image: url("../image/btn/btnMoreHoverDark.svg");
+      transform: translateX(3px);
+    }
+  }
+}
