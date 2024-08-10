@@ -1,8 +1,10 @@
+import styles from "@/styles/gw/_roomNav.module.scss"
 export default function RoomNav() {
+
   return (
-    <div className="leftNav">
-      <nav>
-        <ul className="nav nav-fill">
+
+      <nav className={styles.roomNav}>
+        <ul className="nav nav-fill ">
           <li className="nav-item">
             <a aria-current="page" className="nav-active h6" href="#party">
               揪團
@@ -25,6 +27,6 @@ export default function RoomNav() {
           </li>
         </ul>
       </nav>
-    </div>
+ 
   )
 }

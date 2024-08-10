@@ -1,0 +1,48 @@
+.pagesplit {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+.progress {
+  width: 600px;
+}
+.btnMore {
+  color: var(--primary);
+  width: 150px;
+  padding: 1rem 0 1rem 2rem;
+  border: 2px solid var(--primary);
+  border-radius: 4rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: 0.3s;
+  margin-bottom: 8px;
+  cursor: pointer;
+
+  .editIcon {
+    text-align: start;
+    background-image: url('/images/web/btnMore.svg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 50px;
+    height: 12px;
+    transition: 0.3s;
+  }
+
+  p {
+    font-size: 1.4rem;
+  }
+
+  &:hover {
+    color: var(--primary-dark);
+    border-color: var(--primary-dark);
+
+    .editIcon {
+      background-image: url('/images/web/btnMoreHover.svg');
+      transform: translateX(3px);
+    }
+  }
+}

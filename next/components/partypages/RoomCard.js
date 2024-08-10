@@ -1,4 +1,5 @@
 import styles from '@/styles/gw/_RoomCard.module.scss'
+import cardStyles from '@/styles/gw/_card.module.sass'
 import { TiStarFullOutline } from 'react-icons/ti'
 
 import { FaAngleDown } from "react-icons/fa";
@@ -7,7 +8,7 @@ import Server from '../serverIcon/server';
 
 export default function RoomCard() {
   return (
-    <div className={styles.RoomCard} id="roomInfo">
+    <div className={cardStyles.Card} id="roomInfo">
       <div className={styles.roomTitle}>
         <div className={styles.logoArea}>
           <img
