@@ -5,10 +5,13 @@ import styles from '@/styles/gw/_partyRight.module.scss'
 
 export default function PartyRightArea() {
   return (
-    <div className={styles.rightArea}>
+    <>
+       <div className={styles.rightArea}>
       <PartyNav />
       <PartyPlayers />
       <JoinPartyBTN />
     </div>
+    </>
+   
   )
 }
