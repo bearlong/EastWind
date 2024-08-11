@@ -233,47 +233,122 @@ export default function Home() {
           >
             <img
               className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room1.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room2.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room3.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room4.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room5.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room6.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room7.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room8.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room9.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room10.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room11.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room12.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room13.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room14.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room15.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room16.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room17.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room18.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room19.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room20.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room21.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room22.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room23.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
+              src="/images/boyu/rooms/room24.jpg"
               alt=""
             />
           </div>
@@ -343,47 +418,122 @@ export default function Home() {
           >
             <img
               className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room1.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room2.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room3.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room4.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room5.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room6.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room7.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room8.jpg"
               alt=""
             />
             <img
               className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-              src="/images/boyu/rooms/24H自助桌遊逢甲館電動麻將桌-1.jpg"
+              src="/images/boyu/rooms/room9.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room10.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room11.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room12.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room13.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room14.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room15.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room16.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room17.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room18.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room19.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room20.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room21.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room22.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room23.jpg"
+              alt=""
+            />
+            <img
+              className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
+              src="/images/boyu/rooms/room24.jpg"
               alt=""
             />
           </div>

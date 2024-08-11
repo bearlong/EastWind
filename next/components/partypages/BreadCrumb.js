@@ -1,6 +1,6 @@
 export default function BreadCrumb() {
-  return (
-    <nav
+  return (<>
+ <nav
     aria-label="breadcrumb"
     className="BC-gw"
   >
@@ -28,5 +28,8 @@ export default function BreadCrumb() {
       </li>
     </ol>
   </nav>
+
+  </>
+   
   );
 }
