@@ -8,7 +8,8 @@ import Server from '../serverIcon/server';
 
 export default function RoomCard() {
   return (
-    <div className={cardStyles.Card} id="roomInfo">
+    <>
+       <div className={cardStyles.Card} id="roomInfo">
       <div className={styles.roomTitle}>
         <div className={styles.logoArea}>
           <img
@@ -104,5 +105,7 @@ export default function RoomCard() {
         </div>
       </div>
     </div>
+    </>
+   
   )
 }
