@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import Image from 'next/image'
 import Link from 'next/link'
 
-export default function classList() {
+export default function ClassList() {
 
 
   return (
