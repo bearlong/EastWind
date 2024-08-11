@@ -1,24 +1,11 @@
 .user-favorite-box-bo {
   color: var(--primary);
-  padding: 4.8rem;
+  padding: 2.4rem;
   height: auto;
-
-  @media (max-width: 768px) {
-    padding: 3.6rem;
-  }
-  @media (max-width: 576px) {
-    padding: 2.4rem;
-  }
 }
 
 .favorite-list-box-bo {
   background-color: var(--form-bg);
-
-  @media (max-width: 992px) {
-  }
-
-  @media (max-width: 768px) {
-  }
 }
 .favorite-list-head-bo li {
   width: 100%;
@@ -63,22 +50,13 @@
 }
 
 .favorite-list-body-bo {
-  display: grid;
-  row-gap: 2.4rem;
-  column-gap: 2rem;
-  justify-content: center;
-  align-content: center;
-  align-items: center;
-  justify-items: center;
-  grid-template-columns: repeat(4, 1fr);
-
   margin-top: -2px;
   border: 3px solid var(--primary);
-  padding: 3.6rem 4.8rem;
+  padding: 3.6rem 2.4rem;
 
   @media (max-width: 992px) {
     grid-template-columns: repeat(3, 1fr);
-    padding: 2.4em 3.6rem;
+    padding: 2.4em;
   }
 
   @media (max-width: 768px) {
@@ -91,17 +69,56 @@
   }
 }
 
+.favorite-product-box-bo,
+.favorite-course-box-bo,
+.favorite-shop-box-bo {
+  width: 100%;
+  display: grid;
+  row-gap: 2.4rem;
+  column-gap: 2rem;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  justify-items: center;
+  grid-template-columns: repeat(4, 1fr);
+
+  @media (max-width: 992px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 576px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.favorite-product-box-bo {
+  gap: 1.6rem;
+}
+
+.favorite-shop-box-bo {
+  gap: 2.4rem;
+  grid-template-columns: repeat(2, 1fr);
+
+  @media (max-width: 1200px) {
+    gap: 1.6rem;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
 /* 這段代碼主要用於設置產品卡片的樣式 */
 
 /* 設置產品卡片的樣式 */
+.productCard,
 .courseCard {
   cursor: pointer;
   width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
-  max-width: 29rem; /* 設置卡片最大寬度 */
+  max-width: 29rem;
+  /* 設置卡片最大寬度 */
   position: relative; /* 設置產品卡片的相對定位 */
 
   @media (max-width: 768px) {
-    width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
     max-width: 24rem;
   }
 
@@ -118,7 +135,8 @@
   }
 
   /* 設置圖片容器的樣式 */
-  .imgBox {
+  .courseImgBox,
+  .productImgBox {
     width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
     max-width: 28rem; /* 設置卡片最大寬度 */
     height: 100%; /* 設置圖片容器的高度為 28rem */
@@ -128,24 +146,19 @@
     position: relative;
 
     @media (max-width: 768px) {
-      width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
       max-width: 23rem; /* 設置卡片最大寬度 */
-      height: 100%; /* 設置圖片容器的高度為 28rem */
       max-height: 23rem; /* 設置卡片最大寬度 */
       margin-bottom: 0.8rem; /* 設置圖片容器的底部外邊距為 2rem */
     }
 
     @media (max-width: 576px) {
-      width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
       max-width: 20rem; /* 設置卡片最大寬度 */
-      height: 100%; /* 設置圖片容器的高度為 28rem */
       max-height: 20rem; /* 設置卡片最大寬度 */
-      margin-bottom: 0.8rem; /* 設置圖片容器的底部外邊距為 2rem */
     }
 
     /* 添加半透明黑色遮罩層 */
     &::before {
-      content: "";
+      content: '';
       position: absolute;
       top: 0;
       left: 0;
@@ -157,9 +170,11 @@
     }
   }
 
-  .icon-heart-bo {
+  .product-icon-heart-bo,
+  .course-icon-heart-bo {
     color: var(--error-color);
     position: absolute;
+    z-index: 999;
     top: 1.2rem;
     right: 1.2rem;
     font-size: 2.4rem;
@@ -177,20 +192,178 @@
     }
   }
 
+  .product-icon-heart-bo {
+    top: 1.6rem;
+    right: 1.6rem;
+    font-size: 2.8rem;
+    @media (max-width: 768px) {
+      font-size: 2.4rem;
+    }
+    @media (max-width: 576px) {
+      font-size: 2rem;
+    }
+  }
+
   /* 設置卡片主體的樣式 */
   .cardBody {
     text-align: center; /* 確保卡片主體內的文本居中對齊 */
 
     /* 設置產品名稱區塊的樣式 */
-    .courseName {
+    .courseName,
+    .productName {
       gap: 3px; /* 設置產品名稱區塊內元素的間隙為 3px */
 
       /* 設置產品描述的樣式 */
-      .courseDescription {
+      .courseDescription,
+      .productDescription {
         min-height: calc(1.2em * 2); /* 設置產品描述的最小高度為 1.2em 的兩倍 */
         line-height: 1.2em; /* 設置產品描述的行高為 1.2em */
       }
     }
+  }
+}
+.productCard {
+  margin-bottom: 1.6rem;
+}
+
+.shop-card-bo {
+  color: var(--bg-text-color);
+  background: var(--background);
+  cursor: pointer;
+  width: 90%; /* 設置卡片寬度為 100%，以適應父容器 */
+  // max-width: 44rem;
+  position: relative; /* 設置產品卡片的相對定位 */
+  padding: 2rem 1.6rem;
+
+  @media (max-width: 1400px) {
+    width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
+    padding: 1.6rem 1.2rem;
+  }
+
+  @media (max-width: 992px) {
+    padding: 1.6rem 1rem;
+  }
+
+  &:hover {
+    background: var(--bg-text-light-color);
+    color: var(--text-color);
+
+    .normal-icon {
+      display: none;
+
+      opacity: 0;
+    }
+
+    .hover-icon {
+      display: block;
+      opacity: 1;
+    }
+
+    .shop-img-bo {
+      transform: scale(1.05);
+      transition: transform 0.4s ease; /* 添加過渡效果 */
+    }
+
+    .btn-shop-detail {
+      background-color: var(--primary-dark);
+      color: var(--bg-text-color);
+    }
+  }
+  .shop-card-body-bo {
+    gap: 1.6rem;
+    @media (max-width: 992px) {
+      gap: 1.2rem;
+    }
+    @media (max-width: 768px) {
+      gap: 1rem;
+    }
+  }
+
+  /* 設置圖片容器的樣式 */
+  .shop-img-box-bo {
+    width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
+    max-width: 12rem; /* 設置卡片最大寬度 */
+    height: 100%; /* 設置圖片容器的高度為 28rem */
+    max-height: 12rem; /* 設置卡片最大寬度 */
+    margin-bottom: 1.6rem; /* 設置圖片容器的底部外邊距為 2rem */
+    overflow: hidden;
+    position: relative;
+
+    @media (max-width: 1200px) {
+      max-width: 10rem; /* 設置卡片最大寬度 */
+      max-height: 10rem; /* 設置卡片最大寬度 */
+    }
+
+    @media (max-width: 992px) {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      display: block;
+      max-width: 11rem; /* 設置卡片最大寬度 */
+      max-height: 11rem; /* 設置卡片最大寬度 */
+    }
+
+    @media (max-width: 576px) {
+      max-width: 9rem; /* 設置卡片最大寬度 */
+      max-height: 9rem; /* 設置卡片最大寬度 */
+    }
+  }
+
+  .hover-icon {
+    display: none;
+    opacity: 0;
+  }
+
+  .list-text-bo {
+    text-wrap: wrap;
+    gap: 1rem;
+    @media (max-width: 768px) {
+      gap: 0.5rem;
+    }
+  }
+
+  .icon-heart-bo {
+    color: var(--error-color);
+  }
+
+  .icon-star-bo {
+    color: var(--primary);
+  }
+}
+
+.time-text-box-bo {
+  flex-direction: row;
+  @media (max-width: 1100px) {
+    flex-direction: column;
+  }
+  @media (max-width: 992px) {
+    flex-direction: row;
+  }
+  @media (max-width: 810px) {
+    flex-direction: column;
+  }
+  @media (max-width: 768px) {
+    flex-direction: row;
+  }
+}
+
+.btn-shop-detail {
+  margin-top: 0.8rem;
+  gap: 1.2rem;
+  padding: 0 1.2rem;
+  color: var(--bg-text-color);
+  border-radius: 5px;
+  background-color: var(--primary);
+
+  @media (max-width: 576px) {
+    gap: 0.8rem;
+    padding: 0 0.8rem;
+  }
+
+  .btn-text-bo {
+    flex-direction: row;
+    text-wrap: nowrap;
   }
 }
 
@@ -212,7 +385,7 @@
 
   .edit-icon {
     text-align: start;
-    background-image: url("../image/btn/btnMore.svg");
+    background-image: url('/images/boyu/btn/btnMore.svg');
     background-repeat: no-repeat;
     background-size: cover;
     width: 5rem;
@@ -228,7 +401,7 @@
     color: var(--primary-dark);
     border-color: var(--primary-dark);
     .edit-icon {
-      background-image: url("../image/btn/btnMoreHoverDark.svg");
+      background-image: url('/images/boyu/btn/btnMoreHoverDark.svg');
       transform: translateX(3px);
     }
   }

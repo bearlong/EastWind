@@ -1,37 +1,87 @@
-.user-favorite-box-bo {
-  color: var(--primary);
-  padding: 4.8rem;
-  height: auto;
-
-  @media (max-width: 768px) {
-    padding: 3.6rem;
-  }
-  @media (max-width: 576px) {
-    padding: 2.4rem;
-  }
-}
-
-.favorite-list-box-bo {
+.add-coupon-box-bo {
+  border: 3px solid var(--primary);
+  margin-bottom: 4.8rem;
   background-color: var(--form-bg);
+  color: var(--primary);
+  padding: 1.6rem 0.6rem;
 
-  @media (max-width: 992px) {
+  @media (max-width: 768px) {
+    margin-bottom: 2.8rem;
+  }
+}
+
+.input-add-bo {
+  height: 5rem;
+  outline: 3px solid var(--primary);
+  border: none;
+
+  border-radius: 5px;
+  color: var(--primary);
+  padding: 1rem 1rem;
+  width: 50%;
+
+  &::placeholder {
+    color: var(--primary);
+  }
+
+  &:focus {
+    outline: 3px solid var(--primary-dark);
   }
 
   @media (max-width: 768px) {
+    height: 4rem;
+  }
+
+  @media (max-width: 576px) {
+    width: 80%;
   }
 }
-.favorite-list-head-bo li {
+
+.btn-coupon-add {
+  gap: 1.2rem;
+  padding: 0.4rem 1.2rem;
+  border: none;
+  height: 100%;
+  color: var(--bg-text-color);
+  border-radius: 5px;
+  background-color: var(--primary);
+
+  @media (max-width: 576px) {
+    gap: 0.8rem;
+    padding: 0.4rem 1.2rem;
+  }
+
+  .btn-text-bo {
+    text-wrap: nowrap;
+  }
+
+  &:hover {
+    background-color: var(--primary-dark);
+    color: var(--bg-text-color);
+  }
+}
+
+.user-coupon-box-bo {
+  color: var(--primary);
+  padding: 2.4rem;
+  height: auto;
+}
+
+.coupon-list-box-bo {
+  background-color: var(--form-bg);
+}
+.coupon-list-head-bo li {
   width: 100%;
 }
 
-.favorite-state-bo {
+.coupon-state-bo {
   display: block;
   padding: 1.6rem 0;
   width: 100%;
   background: var(--form-bg-dark);
   color: var(--primary-dark);
   border: 3px solid transparent;
-  margin-bottom: -2px;
+  margin-bottom: -3px;
 
   @media (max-width: 768px) {
     padding: 1.2rem 0;
@@ -48,21 +98,21 @@
     color: var(--primary);
     border: 3px solid var(--primary);
     border-bottom: var(--form-bg);
-    margin-bottom: -3px;
+    margin-bottom: -1px;
   }
 }
 
-.favorite-state-bo.state-choose-bo {
+.coupon-state-bo.state-choose-bo {
   position: relative;
   z-index: 2;
   background: var(--form-bg);
   color: var(--primary);
   border: 3px solid var(--primary);
   border-bottom: var(--form-bg);
-  margin-bottom: -3px;
+  margin-bottom: -1px;
 }
 
-.favorite-list-body-bo {
+.coupon-list-body-bo {
   display: grid;
   column-gap: 1.6rem;
   row-gap: 2.4rem;
@@ -74,72 +124,59 @@
 
   margin-top: -3px;
   border: 3px solid var(--primary);
-  padding: 3.6rem 4.8rem;
+  padding: 3.6rem 2.4rem;
 
   @media (max-width: 1200px) {
-    padding: 2.4em 2rem;
+    padding: 2.4rem;
     gap: 1.6rem;
   }
 
   @media (max-width: 992px) {
-    padding: 2.4em;
-    gap: 1.6rem;
+    padding: 1.6rem 2.4rem;
   }
 
   @media (max-width: 768px) {
     grid-template-columns: repeat(1, 1fr);
 
-    padding: 3.6em 2.4rem;
+    padding: 1.6em 2.4rem;
   }
   @media (max-width: 576px) {
     padding: 2.4rem 1.2rem;
   }
 }
 
-.shop-card-bo {
+.coupon-card-bo {
   color: var(--bg-text-color);
   background: var(--background);
   cursor: pointer;
-  width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
-  max-width: 44rem; /* 設置卡片最大寬度 */
+  width: 90%; /* 設置卡片寬度為 100%，以適應父容器 */
+
   position: relative; /* 設置產品卡片的相對定位 */
   padding: 2rem;
 
-  @media (max-width: 992px) {
+  @media (max-width: 1400px) {
+    width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
     padding: 1.6rem 1.2rem;
   }
 
-  @media (max-width: 768px) {
-    width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
-    max-width: 35rem;
+  @media (max-width: 992px) {
+    padding: 1.6rem 1rem;
   }
 
   &:hover {
     background: var(--bg-text-light-color);
     color: var(--text-color);
 
-    .normal-icon {
-      display: none;
-
-      opacity: 0;
-    }
-
-    .hover-icon {
-      display: block;
-      opacity: 1;
-    }
-
-    .shop-img-bo {
-      transform: scale(1.05);
-      transition: transform 0.4s ease; /* 添加過渡效果 */
-    }
-
-    .btn-shop-detail {
+    .btn-coupon-detail {
       background-color: var(--primary-dark);
       color: var(--bg-text-color);
     }
+    .coupon-type-box-bo {
+      background-color: var(--primary-dark);
+    }
   }
-  .shop-card-body-bo {
+
+  .coupon-card-body-bo {
     gap: 1.6rem;
     @media (max-width: 992px) {
       gap: 1.2rem;
@@ -150,35 +187,21 @@
   }
 
   /* 設置圖片容器的樣式 */
-  .shop-img-box-bo {
-    width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
-    max-width: 12rem; /* 設置卡片最大寬度 */
-    height: 100%; /* 設置圖片容器的高度為 28rem */
-    max-height: 12rem; /* 設置卡片最大寬度 */
-    margin-bottom: 1.6rem; /* 設置圖片容器的底部外邊距為 2rem */
-    overflow: hidden;
-    position: relative;
+  .coupon-type-box-bo {
+    width: 11rem; /* 設置卡片寬度為 100%，以適應父容器 */
+    height: 11rem; /* 設置圖片容器的高度為 28rem */
+
+    background-color: var(--primary);
+    color: var(--bg-text-color);
 
     @media (max-width: 992px) {
-      width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
-      max-width: 10rem; /* 設置卡片最大寬度 */
-      height: 100%; /* 設置圖片容器的高度為 28rem */
-      max-height: 10rem; /* 設置卡片最大寬度 */
-      margin-bottom: 0.8rem; /* 設置圖片容器的底部外邊距為 2rem */
+      width: 10rem; /* 設置卡片寬度為 100%，以適應父容器 */
+      height: 10rem; /* 設置圖片容器的高度為 28rem */
     }
 
-    @media (max-width: 768px) {
-      width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
-      max-width: 10rem; /* 設置卡片最大寬度 */
-      height: 100%; /* 設置圖片容器的高度為 28rem */
-      max-height: 10rem; /* 設置卡片最大寬度 */
-      margin-bottom: 0.8rem; /* 設置圖片容器的底部外邊距為 2rem */
+    .icon-shop-bo {
+      font-size: 4.8rem;
     }
-  }
-
-  .hover-icon {
-    display: none;
-    opacity: 0;
   }
 
   .list-text-bo {
@@ -188,17 +211,6 @@
       gap: 0.5rem;
     }
   }
-
-  .col-icon-bo {
-    width: 2rem;
-  }
-  .icon-heart-bo {
-    color: var(--error-color);
-  }
-
-  .icon-star-bo {
-    color: var(--primary);
-  }
 }
 
 .time-text-box-bo {
@@ -206,24 +218,36 @@
   @media (max-width: 915px) {
     flex-direction: column;
   }
+  @media (max-width: 768px) {
+    flex-direction: row;
+  }
+  @media (max-width: 350px) {
+    flex-direction: column;
+  }
 }
 
-.btn-shop-detail {
+.btn-coupon-detail {
+  border: none;
   gap: 1.2rem;
-  padding: 0 1.2rem;
+  padding: 0.6rem 1.2rem;
   color: var(--bg-text-color);
   border-radius: 5px;
   background-color: var(--primary);
 
   @media (max-width: 576px) {
     gap: 0.8rem;
-    padding: 0 0.8rem;
+    padding: 0.4rem 0.8rem;
   }
 
   .btn-text-bo {
     flex-direction: row;
     text-wrap: nowrap;
   }
+}
+
+.text-coupon-detail {
+  gap: 1.2rem;
+  padding: 0 1.2rem;
 }
 
 .btn-more {
@@ -244,7 +268,7 @@
 
   .edit-icon {
     text-align: start;
-    background-image: url("../image/btn/btnMore.svg");
+    background-image: url('/images/boyu/btn/btnMore.svg');
     background-repeat: no-repeat;
     background-size: cover;
     width: 5rem;
@@ -260,7 +284,7 @@
     color: var(--primary-dark);
     border-color: var(--primary-dark);
     .edit-icon {
-      background-image: url("../image/btn/btnMoreHoverDark.svg");
+      background-image: url('/images/boyu/btn/btnMoreHoverDark.svg');
       transform: translateX(3px);
     }
   }
