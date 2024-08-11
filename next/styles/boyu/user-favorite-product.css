@@ -1,0 +1,229 @@
+.user-favorite-box-bo {
+  color: var(--primary);
+  padding: 4.8rem;
+  height: auto;
+
+  @media (max-width: 768px) {
+    padding: 3.6rem;
+  }
+  @media (max-width: 576px) {
+    padding: 2.4rem;
+  }
+}
+
+.favorite-list-box-bo {
+  background-color: var(--form-bg);
+}
+
+.favorite-list-head-bo li {
+  width: 100%;
+}
+
+.favorite-state-bo {
+  display: block;
+  padding: 1.6rem 0;
+  width: 100%;
+  background: var(--form-bg-dark);
+  color: var(--primary-dark);
+  border: 3px solid transparent;
+  margin-bottom: -2px;
+
+  @media (max-width: 768px) {
+    padding: 1.2rem 0;
+  }
+
+  @media (max-width: 576px) {
+    padding: 0.8rem 0;
+  }
+
+  &:hover {
+    position: relative;
+    z-index: 2;
+    background: var(--form-bg);
+    color: var(--primary);
+    border: 3px solid var(--primary);
+    border-bottom: var(--form-bg);
+    margin-bottom: -3px;
+  }
+}
+
+.favorite-state-bo.state-choose-bo {
+  position: relative;
+  z-index: 2;
+  background: var(--form-bg);
+  color: var(--primary);
+  border: 3px solid var(--primary);
+  border-bottom: var(--form-bg);
+  margin-bottom: -3px;
+}
+
+.favorite-list-body-bo {
+  display: grid;
+  gap: 1.6rem;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  justify-items: center;
+  grid-template-columns: repeat(4, 1fr);
+
+  margin-top: -2px;
+  border: 3px solid var(--primary);
+  padding: 3.6rem 4.8rem;
+
+  @media (max-width: 992px) {
+    grid-template-columns: repeat(3, 1fr);
+    padding: 2.4em 3.6rem;
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.6em 2.4rem;
+  }
+  @media (max-width: 576px) {
+    grid-template-columns: repeat(2, 1fr);
+
+    padding: 2.4rem 1.2rem;
+  }
+}
+
+/* 這段代碼主要用於設置產品卡片的樣式 */
+
+/* 設置產品卡片的樣式 */
+.productCard {
+  cursor: pointer;
+  width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
+  max-width: 29rem; /* 設置卡片最大寬度 */
+  position: relative; /* 設置產品卡片的相對定位 */
+
+  @media (max-width: 768px) {
+    width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
+    max-width: 24rem;
+  }
+
+  &:hover {
+    img {
+      transform: scale(1.05);
+      transition: transform 0.4s ease; /* 添加過渡效果 */
+    }
+
+    p {
+      transition: all 0.4s ease; /* 添加過渡效果 */
+      color: var(--primary-dark);
+    }
+  }
+
+  /* 設置圖片容器的樣式 */
+  .imgBox {
+    width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
+    max-width: 28rem; /* 設置卡片最大寬度 */
+    height: 100%; /* 設置圖片容器的高度為 28rem */
+    max-height: 28rem; /* 設置卡片最大寬度 */
+    margin-bottom: 1.6rem; /* 設置圖片容器的底部外邊距為 2rem */
+    overflow: hidden;
+    position: relative;
+
+    @media (max-width: 768px) {
+      width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
+      max-width: 23rem; /* 設置卡片最大寬度 */
+      height: 100%; /* 設置圖片容器的高度為 28rem */
+      max-height: 23rem; /* 設置卡片最大寬度 */
+      margin-bottom: 0.8rem; /* 設置圖片容器的底部外邊距為 2rem */
+    }
+
+    @media (max-width: 576px) {
+      width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
+      max-width: 20rem; /* 設置卡片最大寬度 */
+      height: 100%; /* 設置圖片容器的高度為 28rem */
+      max-height: 20rem; /* 設置卡片最大寬度 */
+      margin-bottom: 0.8rem; /* 設置圖片容器的底部外邊距為 2rem */
+    }
+
+    .icon-heart-bo {
+      color: var(--error-color);
+      position: absolute;
+      top: 1.6rem;
+      right: 1.6rem;
+      font-size: 2.8rem;
+
+      @media (max-width: 768px) {
+        top: 1rem;
+        right: 1rem;
+        font-size: 2.4rem;
+      }
+
+      @media (max-width: 576px) {
+        top: 1rem;
+        right: 1rem;
+        font-size: 2rem;
+      }
+    }
+
+    /* 添加半透明黑色遮罩層 */
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.05); /* 半透明黑色 */
+      z-index: 2; /* 确保遮罩层在图片上方 */
+      pointer-events: none; /* 禁止點擊 */
+    }
+  }
+
+  /* 設置卡片主體的樣式 */
+  .cardBody {
+    text-align: center; /* 確保卡片主體內的文本居中對齊 */
+
+    /* 設置產品名稱區塊的樣式 */
+    .productName {
+      gap: 3px; /* 設置產品名稱區塊內元素的間隙為 3px */
+
+      /* 設置產品描述的樣式 */
+      .productDescription {
+        min-height: calc(1.2em * 2); /* 設置產品描述的最小高度為 1.2em 的兩倍 */
+        line-height: 1.2em; /* 設置產品描述的行高為 1.2em */
+      }
+    }
+  }
+}
+
+.btn-more {
+  color: var(--primary);
+  width: 20rem;
+  padding: 1rem 0 1rem 2rem;
+  border: 2px solid var(--primary);
+  border-radius: 4rem;
+  gap: 6rem;
+  transition: 0.3s;
+  cursor: pointer;
+  grid-column: -1 / 1;
+
+  @media (max-width: 768px) {
+    width: 18rem;
+    gap: 4rem;
+  }
+
+  .edit-icon {
+    text-align: start;
+    background-image: url("../image/btn/btnMore.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 5rem;
+    height: 1.2rem;
+    transition: 0.3s;
+  }
+
+  p {
+    font-size: 1.4rem;
+  }
+
+  &:hover {
+    color: var(--primary-dark);
+    border-color: var(--primary-dark);
+    .edit-icon {
+      background-image: url("../image/btn/btnMoreHoverDark.svg");
+      transform: translateX(3px);
+    }
+  }
+}

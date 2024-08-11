@@ -36,6 +36,16 @@
       display: grid;
       align-items: center;
     }
+    .starBox-bl {
+      position: relative;
+      .starRating-bl {
+        position: absolute;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    }
   }
   i {
     color: var(--primary);
@@ -58,7 +68,7 @@
       justify-content: center;
       align-items: center;
       background: var();
-      border: 1px solid var(--primary);
+      border: 2px solid var(--primary);
       border-radius: 5px;
       font-size: 2.4rem;
       font-weight: 900;
@@ -93,8 +103,15 @@
     border: 1px solid var(--primary-dark);
     .starBox-bl {
       color: var(--primary);
-      font-size: 3rem;
       text-align: center;
+      position: relative;
+      .starRating-bl {
+        position: absolute;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+        white-space: nowrap;
+      }
     }
   }
   .btnBox-bl {
@@ -149,20 +166,6 @@
   }
   .collapseButton {
     display: none;
-  }
-
-  div.fold > div {
-    overflow: hidden;
-  }
-
-  input.collapse + div.fold {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: 0.5s;
-  }
-
-  input.collapse:checked + div.fold {
-    grid-template-rows: 1fr;
   }
 }
 
@@ -316,10 +319,49 @@
     }
     .star-bl {
       padding: 2rem;
+      .starBox-bl {
+        .starRating-bl {
+          position: absolute;
+          top: 0;
+          left: 0;
+          overflow: hidden;
+          white-space: nowrap;
+        }
+      }
     }
 
     .collapseButton {
       display: inline-block;
+    }
+    div.fold > div {
+      overflow: hidden;
+    }
+
+    input.collapse {
+      display: none;
+    }
+
+    .down {
+      display: none;
+    }
+
+    input.collapse ~ div.fold {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: 0.5s;
+    }
+
+    input.collapse:checked ~ div.fold {
+      grid-template-rows: 1fr;
+    }
+
+    input.collapse:checked + label {
+      .down {
+        display: inline-block;
+      }
+      .up {
+        display: none;
+      }
     }
   }
 

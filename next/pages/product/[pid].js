@@ -3,7 +3,15 @@ import Carousel from '@/components/product/carousel'
 import ProductNav from '@/components/product/product-nav'
 import Image from 'next/image'
 import Link from 'next/link'
-import { FaHeart, FaStar, FaPlus, FaMinus } from 'react-icons/fa6'
+import {
+  FaHeart,
+  FaStar,
+  FaRegStar,
+  FaChevronDown,
+  FaChevronUp,
+  FaPlus,
+  FaMinus,
+} from 'react-icons/fa6'
 import styles from '@/styles/bearlong/productDetail.module.scss'
 
 export default function Detail() {
@@ -64,17 +72,29 @@ export default function Detail() {
                     className={`${styles['productStar']} d-flex align-items-center`}
                   >
                     <p className="me-2">4.7</p>
-                    <i className="fas fa-star" />
-                    <i className="fas fa-star" />
-                    <i className="fas fa-star" />
-                    <i className="fas fa-star" />
-                    <i className="fas fa-star" />
+                    <div className={styles['starBox-bl']}>
+                      <FaRegStar fontSize={16} style={{ color: '#b79347' }} />
+                      <FaRegStar fontSize={16} style={{ color: '#b79347' }} />
+                      <FaRegStar fontSize={16} style={{ color: '#b79347' }} />
+                      <FaRegStar fontSize={16} style={{ color: '#b79347' }} />
+                      <FaRegStar fontSize={16} style={{ color: '#b79347' }} />
+                      <div
+                        className={styles['starRating-bl']}
+                        style={{ width: '10%' }}
+                      >
+                        <FaStar fontSize={16} style={{ color: '#b79347' }} />
+                        <FaStar fontSize={16} style={{ color: '#b79347' }} />
+                        <FaStar fontSize={16} style={{ color: '#b79347' }} />
+                        <FaStar fontSize={16} style={{ color: '#b79347' }} />
+                        <FaStar fontSize={16} style={{ color: '#b79347' }} />
+                      </div>
+                    </div>
                     <p className="ms-2">(48)</p>
                   </div>
                   <div
                     className={`${styles['like']} d-flex align-items-center`}
                   >
-                    <i className="fa-solid fa-heart" />
+                    <FaHeart fontSize={16} />
                     <p className="ms-2">已收藏</p>
                   </div>
                 </div>
@@ -104,9 +124,15 @@ export default function Detail() {
                   <div
                     className={`${styles['plusMinus']} d-flex align-items-center`}
                   >
-                    <i className="fa-solid fa-minus me-5" />
+                    <FaMinus
+                      style={{ marginInlineEnd: '30px' }}
+                      fontSize={16}
+                    />
                     <h5 className={styles['amount']}>1</h5>
-                    <i className="fa-solid fa-plus ms-5" />
+                    <FaPlus
+                      style={{ marginInlineStart: '30px' }}
+                      fontSize={16}
+                    />
                   </div>
                 </div>
               </div>
@@ -150,15 +176,27 @@ export default function Detail() {
                 <h6>商品評論:</h6>
               </div>
               <div
-                className={`${styles['star-bl']}   d-flex justify-content-between flex-column flex-md-row`}
+                className={`${styles['star-bl']}   d-flex justify-content-between align-items-center flex-column flex-md-row`}
               >
                 <div className={`${styles['starBox-bl']}   mb-3 mb-md-0`}>
                   <h5>4.7 / 5</h5>
-                  <i className="fas fa-star" />
-                  <i className="fas fa-star" />
-                  <i className="fas fa-star" />
-                  <i className="fas fa-star" />
-                  <i className="fas fa-star" />
+                  <div className={styles['starBox-bl']}>
+                    <FaRegStar fontSize={24} style={{ color: '#b79347' }} />
+                    <FaRegStar fontSize={24} style={{ color: '#b79347' }} />
+                    <FaRegStar fontSize={24} style={{ color: '#b79347' }} />
+                    <FaRegStar fontSize={24} style={{ color: '#b79347' }} />
+                    <FaRegStar fontSize={24} style={{ color: '#b79347' }} />
+                    <div
+                      className={styles['starRating-bl']}
+                      style={{ width: '50%' }}
+                    >
+                      <FaStar fontSize={24} style={{ color: '#b79347' }} />
+                      <FaStar fontSize={24} style={{ color: '#b79347' }} />
+                      <FaStar fontSize={24} style={{ color: '#b79347' }} />
+                      <FaStar fontSize={24} style={{ color: '#b79347' }} />
+                      <FaStar fontSize={24} style={{ color: '#b79347' }} />
+                    </div>
+                  </div>
                 </div>
                 <div className={styles['btnBox-bl']}>
                   <div
@@ -173,17 +211,17 @@ export default function Detail() {
                   <div className={styles['btnComment']}>1星</div>
                 </div>
               </div>
-              <label htmlFor="collapse" className={styles['collapseButton']}>
-                <i className="fa-solid fa-chevron-down h5 my-3" />
-                <i className="fa-solid fa-chevron-up d-none h5 my-3" />
-              </label>
               <input
                 id="collapse"
-                className={styles['collapse']}
+                className={`${styles['collapse']} d-none`}
                 type="checkbox"
                 hidden=""
                 defaultChecked=""
               />
+              <label htmlFor="collapse" className={styles['collapseButton']}>
+                <FaChevronDown fontSize={24} className={styles['down']} />
+                <FaChevronUp fontSize={24} className={styles['up']} />
+              </label>
               <div className={styles['fold']}>
                 <div className={styles['commentBox-bl']}>
                   <div
@@ -207,121 +245,41 @@ export default function Detail() {
                       </div>
                     </div>
                   </div>
-                  <div className="commentCard-bl underLine-bl d-flex">
-                    <div className="pic-bl me-3">
-                      <img src="./images/web/pic/18.jpg" alt="" />
-                    </div>
-                    <div className="cardBody-bl">
-                      <div className="userInfo-bl mb-4">
-                        <p>poxxxxin</p>
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <p>2024-07-11</p>
-                      </div>
-                      <div className="commentContent-bl">
-                        <p>讚讚攢五星好評，老鐵六六六</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="commentCard-bl underLine-bl d-flex">
-                    <div className="pic-bl me-3">
-                      <img src="./images/web/pic/18.jpg" alt="" />
-                    </div>
-                    <div className="cardBody-bl">
-                      <div className="userInfo-bl mb-4">
-                        <p>poxxxxin</p>
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <p>2024-07-11</p>
-                      </div>
-                      <div className="commentContent-bl">
-                        <p>
-                          這款麻將牌具備高品質的材質，手感極佳，每次摸牌都能感受到流暢的質感。細緻的雕刻和清晰的字樣，不僅提升了遊戲的體驗，也讓每一局麻將都變得更加精彩。無論是家庭聚會還是朋友相聚，這款麻將都是您最佳的選擇。帶上它，讓您的麻將之夜更加難忘。
-                        </p>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="col-12 col-md-4 section2Right-bl">
-            <div className="underLine-bl">
+          <div className={`${styles['section2Right-bl']} col-12 col-md-4 `}>
+            <div className={styles['underLine-bl']}>
               <h6>你可能也會喜歡:</h6>
             </div>
-            <div className="products-bl swiper">
-              <div className="swiper-wrapper column1">
-                <div className="productCard swiper-slide">
-                  <div className="swiperImg">
-                    <div className="imgBox">
+            <div className={`${styles['products-bl']} ${styles['swiper']} `}>
+              <div
+                className={`${styles['swiper-wrapper']} ${styles['column1']} `}
+              >
+                <div
+                  className={`${styles['productCard']} ${styles['swiper-slide']} `}
+                >
+                  <div className={styles['swiperImg']}>
+                    <div className={styles['imgBox']}>
                       <img src="./images/product/015.jpg" alt="" />
                     </div>
-                    <div className="imgBox secondImg">
+                    <div
+                      className={`${styles['imgBox']} ${styles['secondImg']} `}
+                    >
                       <img src="./images/product/019.jpg" alt="" />
                     </div>
                   </div>
-                  <div className="cardBody">
-                    <div className="productName-bl">
+                  <div className={styles['cardBody']}>
+                    <div className={styles['productName-bl']}>
                       <p>馬丘machill</p>
-                      <p className="productDescription">
+                      <p className={styles['productDescription']}>
                         馬丘麻將【電動麻將桌用版】
                       </p>
                     </div>
-                    <div className="star d-flex justify-content-center gap-1">
-                      <p>
-                        4.7 <i className="fa-solid fa-star" />
-                      </p>
-                    </div>
-                    <p>NT. 2,500</p>
-                  </div>
-                </div>
-                <div className="productCard swiper-slide">
-                  <div className="swiperImg">
-                    <div className="imgBox">
-                      <img src="./images/product/015.jpg" alt="" />
-                    </div>
-                    <div className="imgBox secondImg">
-                      <img src="./images/product/019.jpg" alt="" />
-                    </div>
-                  </div>
-                  <div className="cardBody">
-                    <div className="productName-bl">
-                      <p>馬丘machill</p>
-                      <p className="productDescription">
-                        馬丘麻將【電動麻將桌用版】
-                      </p>
-                    </div>
-                    <div className="star d-flex justify-content-center gap-1">
-                      <p>
-                        4.7 <i className="fa-solid fa-star" />
-                      </p>
-                    </div>
-                    <p>NT. 2,500</p>
-                  </div>
-                </div>
-                <div className="productCard swiper-slide">
-                  <div className="swiperImg">
-                    <div className="imgBox">
-                      <img src="./images/product/015.jpg" alt="" />
-                    </div>
-                    <div className="imgBox secondImg">
-                      <img src="./images/product/019.jpg" alt="" />
-                    </div>
-                  </div>
-                  <div className="cardBody">
-                    <div className="productName-bl">
-                      <p>馬丘machill</p>
-                      <p className="productDescription">
-                        馬丘麻將【電動麻將桌用版】
-                      </p>
-                    </div>
-                    <div className="star d-flex justify-content-center gap-1">
+                    <div
+                      className={`${styles['star']} d-flex justify-content-center gap-1`}
+                    >
                       <p>
                         4.7 <i className="fa-solid fa-star" />
                       </p>
