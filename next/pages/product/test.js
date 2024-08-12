@@ -20,8 +20,8 @@ export default function MySwiper() {
       </Swiper>
       <style jsx>{`
         .test {
-          weight: 300px;
-          height: 300px;
+          weight: 800px;
+          height: 800px;
         }
       `}</style>
     </>

@@ -51,6 +51,7 @@ export default function Detail() {
     1: 0,
   })
   const [imgMain, setImgMain] = useState('')
+  const [quantity, setQuantity] = useState(1)
 
   const getProduct = async (id) => {
     let newData, error
@@ -96,6 +97,16 @@ export default function Detail() {
 
   const handleImgMain = (img) => {
     setImgMain(img)
+  }
+
+  const handleIncrease = () => {
+    setQuantity(quantity + 1)
+  }
+
+  const handleDecrease = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1)
+    }
   }
 
   const handleStarChange = (star) => {
@@ -292,13 +303,15 @@ export default function Detail() {
                     className={`${styles['plusMinus']} d-flex align-items-center`}
                   >
                     <FaMinus
-                      style={{ marginInlineEnd: '30px' }}
+                      style={{ marginInlineEnd: '50px' }}
                       fontSize={16}
+                      onClick={handleDecrease}
                     />
-                    <h5 className={styles['amount']}>1</h5>
+                    <h5 className={styles['quantity']}>{quantity}</h5>
                     <FaPlus
-                      style={{ marginInlineStart: '30px' }}
+                      style={{ marginInlineStart: '50px' }}
                       fontSize={16}
+                      onClick={handleIncrease}
                     />
                   </div>
                 </div>
@@ -387,6 +400,7 @@ export default function Detail() {
                       className={`${styles['btnComment']} ${
                         comment.star === star ? `${styles['active']}` : ''
                       }`}
+                      disabled={count === 0}
                     >
                       {star}星({count})
                     </button>
@@ -443,12 +457,27 @@ export default function Detail() {
             </div>
             <div className={`mb-5`}>
               <Swiper
-                direction="vertical" // 設置為垂直滑動
-                slidesPerView={4} // 每一頁顯示4個滑動項目
-                spaceBetween={10} // 項目之間的間距
+                spaceBetween={10}
+                slidesPerView={2}
+                direction="horizontal"
+                autoHeight={true}
                 loop={false}
+                breakpoints={{
+                  576: {
+                    slidesPerView: 2,
+                    spaceBetween: 20,
+                    direction: 'horizontal',
+                  },
+                  768: {
+                    slidesPerView: 4,
+                    spaceBetween: 20,
+                    direction: 'vertical',
+                    // 禁用觸摸滑動
+                  },
+                }}
+                className={styles.swiper}
               >
-                {data.like.map((product, i) => {
+                {data.like.map((product) => {
                   return (
                     <SwiperSlide key={product.id} className={styles.column1}>
                       <Link href={`/product/${product.id}`}>
