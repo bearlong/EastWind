@@ -4,6 +4,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 export default function ClassList() {
+  const router = useRouter()
+  const {} = router.query
+  const [classes, setClasses] = useState([])
+  const [pages, setPages] = useState()
+  const [filter, setFilter] = useState()
 
 
   return (
