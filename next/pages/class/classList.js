@@ -12,9 +12,22 @@ export default function ClassList() {
 
   const getClasses = async () => {
     let newClasses, error
-    .map((v, i) => {
+    {.map((v, i) => {
+      return 
+    })}
 
-    })
+    newClasses = await fetch(url)
+      .then((res) => res.json())
+      .then((results) => {
+        return results
+      })
+      .catch((err) => {
+        error = err
+        return undefined
+      })
+    if (error) {
+      return
+    }
   }
 
   return (
