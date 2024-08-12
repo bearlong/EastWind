@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Carousel from '@/components/product/carousel'
 import ProductNav from '@/components/product/product-nav'
 import Image from 'next/image'
@@ -13,15 +13,139 @@ import {
   FaMinus,
 } from 'react-icons/fa6'
 import styles from '@/styles/bearlong/productDetail.module.scss'
+import { useRouter } from 'next/router'
+import StarRating from '@/components/product/starRating'
+import { Swiper, SwiperSlide } from 'swiper/react'
 
 export default function Detail() {
+  const router = useRouter()
+  const { pid } = router.query
+  const [data, setData] = useState({
+    product: {
+      id: 0,
+      name: '',
+      content: [],
+      brand_id: 0,
+      category_id: 0,
+      stock: 0,
+      price: 0,
+      on_time: '0000-00-00',
+      off_time: null,
+      create_at: '0000-00-00',
+      update_at: null,
+      img: '',
+      category_name: '',
+      brand_name: '',
+      average_star: null,
+    },
+    specifications: {},
+    img2: [],
+    like: [],
+  })
+  const [comment, setComment] = useState({ star: 0, content: [] })
+  const [starCount, setStarCount] = useState({
+    5: 0,
+    4: 0,
+    3: 0,
+    2: 0,
+    1: 0,
+  })
+  const [imgMain, setImgMain] = useState('')
+  const [quantity, setQuantity] = useState(1)
+
+  const getProduct = async (id) => {
+    let newData, error
+    const url = 'http://localhost:3005/api/products/' + id
+    newData = await fetch(url)
+      .then((res) => res.json())
+      .then((result) => {
+        if (result.status === 'success') {
+          return result.data
+        }
+      })
+      .catch((err) => {
+        error = err
+        return undefined
+      })
+
+    if (error) {
+      return
+    }
+    if (newData) {
+      const product = newData.product[0]
+      const specifications = newData.specifications[0]
+      newData.product = product
+      newData.specifications = specifications
+      const paragraphs = newData.product.content.split('\r\n')
+      newData.product.content = paragraphs
+      setData(newData)
+      setComment(newData.comment)
+      setImgMain(product.img)
+      const updatedStarCount = { ...starCount }
+      newData.starCount.forEach(({ star, count }) => {
+        if (updatedStarCount[star] !== undefined) {
+          updatedStarCount[star] = count
+        }
+      })
+      setStarCount(updatedStarCount)
+    }
+  }
+
+  const sortedStarCount = Object.entries(starCount).sort(
+    ([starA], [starB]) => [starB] - [starA]
+  )
+
+  const handleImgMain = (img) => {
+    setImgMain(img)
+  }
+
+  const handleIncrease = () => {
+    setQuantity(quantity + 1)
+  }
+
+  const handleDecrease = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1)
+    }
+  }
+
+  const handleStarChange = (star) => {
+    const nextContent = data.comment.content.filter(
+      (item) => item.star === Math.round(star)
+    )
+    setComment({ content: nextContent, star })
+    console.log(comment)
+  }
+
+  useEffect(() => {
+    if (router.isReady) {
+      getProduct(pid)
+    }
+  }, [router.isReady, router.query])
+
   return (
     <>
       <ProductNav />
       <main className={styles['main']}>
         <div className={styles['productDetailSection1-bl']}>
-          <p className="my-lg-5 my-3">
-            首頁/麻將牌/馬丘麻將精裝組-金馬59聯名款
+          <p className={`${styles['breadCrumb-bl']} my-3`}>
+            <Link href={'./productList'}>首頁</Link>/
+            <Link href={'./productList?brand_id=' + data.product.brand_id}>
+              {data.product.brand_name}
+            </Link>
+            /
+            <Link
+              href={'./productList?category_id=' + data.product.category_id}
+            >
+              {data.product.category_name}
+            </Link>
+            /
+            <Link
+              href={'./productList?brand=' + data.product.id}
+              className={styles.here}
+            >
+              {data.product.name}
+            </Link>
           </p>
           <div className="d-flex flex-md-row flex-column justify-content-between">
             <div
@@ -30,40 +154,60 @@ export default function Detail() {
               <div
                 className={`${styles['imgSmall-bl']}  mx-lg-5 d-flex flex-lg-column mt-3 mt-lg-0 justify-content-between justify-content-lg-start`}
               >
-                <div
-                  className={`${styles['imgSmallBox-bl']} ${styles['active']}  mb-3`}
+                <button
+                  className={`${styles['imgSmallBox-bl']} mb-3  ${
+                    data.product.img === imgMain ? styles['active'] : ''
+                  } `}
+                  onClick={() => {
+                    handleImgMain(data.product.img)
+                  }}
                 >
-                  <img
-                    src="./images/product/970_65fbaa6c41532.jpg.webp"
+                  <Image
+                    src={`../../images/product/${data.product.img}`}
+                    width={280}
+                    height={280}
                     alt=""
                   />
-                </div>
-                <div className={`${styles['imgSmallBox-bl']} mb-3`}>
-                  <img src="./images/product/H900-1-1.png" alt="" />
-                </div>
-                <div className={`${styles['imgSmallBox-bl']} mb-3`}>
-                  <img
-                    src="./images/product/sg-11134201-22110-1tms94aehojv91.jpg"
-                    alt=""
-                  />
-                </div>
-                <div className={`${styles['imgSmallBox-bl']} mb-3`}>
-                  <img src="./images/product/E1165097506068 (1).jpg" alt="" />
-                </div>
+                </button>
+                {data.img2.map((v) => {
+                  return (
+                    <button
+                      key={v.id}
+                      className={`${styles['imgSmallBox-bl']} mb-3 ${
+                        v.img === imgMain ? styles['active'] : ''
+                      } `}
+                      onClick={() => {
+                        handleImgMain(v.img)
+                      }}
+                    >
+                      <Image
+                        src={`../../images/product/${v.img}`}
+                        width={280}
+                        height={280}
+                        alt=""
+                      />
+                    </button>
+                  )
+                })}
               </div>
               <div
                 className={`${styles['imgMain-bl']} align-self-center align-self-md-stretch`}
               >
-                <img src="./images/product/970_65fbaa6c41532.jpg.webp" alt="" />
+                <Image
+                  src={`../../images/product/${imgMain}`}
+                  width={280}
+                  height={280}
+                  alt=""
+                />
               </div>
             </div>
             <div
               className={`${styles['productDetailContent-bl']} d-flex justify-content-between flex-column`}
             >
               <div className={styles['titleGroup-bl']}>
-                <p>馬丘machill</p>
+                <p>{data.product.brand_name}</p>
                 <div className={`${styles['productName-bl']} m-0`}>
-                  <h5>馬丘麻將精裝組-金馬59聯名款</h5>
+                  <h5>{data.product.name}</h5>
                 </div>
                 <div
                   className={`${styles['score-bl']} d-flex justify-content-between mb-2`}
@@ -71,7 +215,11 @@ export default function Detail() {
                   <div
                     className={`${styles['productStar']} d-flex align-items-center`}
                   >
-                    <p className="me-2">4.7</p>
+                    <p className="me-2">
+                      {data.product.average_star
+                        ? data.product.average_star
+                        : '尚無評價'}
+                    </p>
                     <div className={styles['starBox-bl']}>
                       <FaRegStar fontSize={16} style={{ color: '#b79347' }} />
                       <FaRegStar fontSize={16} style={{ color: '#b79347' }} />
@@ -79,8 +227,12 @@ export default function Detail() {
                       <FaRegStar fontSize={16} style={{ color: '#b79347' }} />
                       <FaRegStar fontSize={16} style={{ color: '#b79347' }} />
                       <div
-                        className={styles['starRating-bl']}
-                        style={{ width: '10%' }}
+                        className={`${styles['starRating-bl']} ${
+                          data.product.average_star ? '' : 'd-none'
+                        }`}
+                        style={{
+                          width: `${(data.product.average_star / 5) * 100}%`,
+                        }}
                       >
                         <FaStar fontSize={16} style={{ color: '#b79347' }} />
                         <FaStar fontSize={16} style={{ color: '#b79347' }} />
@@ -89,7 +241,7 @@ export default function Detail() {
                         <FaStar fontSize={16} style={{ color: '#b79347' }} />
                       </div>
                     </div>
-                    <p className="ms-2">(48)</p>
+                    <p className="ms-2">({data.product.comment_count})</p>
                   </div>
                   <div
                     className={`${styles['like']} d-flex align-items-center`}
@@ -99,23 +251,49 @@ export default function Detail() {
                   </div>
                 </div>
                 <h5>
-                  NT$ <span>5,180</span>
+                  NT$ <span>{data.product.price}</span>
                 </h5>
               </div>
               <div className={styles['category']}>
-                <p className="mb-2">
-                  類別: <span>麻將牌</span>
-                </p>
-                <p className="mb-2">
-                  顏色: <span>白</span>
-                </p>
-                <p className="mb-2">
-                  尺寸: <span>3.3mm</span>
-                </p>
+                {data.specifications.color && (
+                  <p className="mb-2">
+                    顏色: <span>{data.specifications.color}</span>
+                  </p>
+                )}
+                {data.specifications.size && (
+                  <p className="mb-2">
+                    尺寸: <span>{data.specifications.size}</span>
+                  </p>
+                )}
+                {data.specifications.material && (
+                  <p className="mb-2">
+                    材質: <span>{data.specifications.material}</span>
+                  </p>
+                )}
+                {data.specifications.style && (
+                  <p className="mb-2">
+                    樣式: <span>{data.specifications.style}</span>
+                  </p>
+                )}
+                {data.specifications.weight && (
+                  <p className="mb-2">
+                    重量: <span>{data.specifications.weight}</span>
+                  </p>
+                )}
+                {data.specifications.voltage && (
+                  <p className="mb-2">
+                    電壓: <span>{data.specifications.voltage}</span>
+                  </p>
+                )}
+                {data.specifications.power_consumption && (
+                  <p className="mb-2">
+                    耗電量: <span>{data.specifications.power_consumption}</span>
+                  </p>
+                )}
               </div>
               <div className="my-3 my-md-0">
                 <p className="mb-2">
-                  庫存數量: <span>30</span>
+                  庫存數量: <span>{data.product.stock}</span>
                 </p>
                 <div
                   className={`${styles['amount-bl']} d-flex justify-content-between`}
@@ -125,13 +303,15 @@ export default function Detail() {
                     className={`${styles['plusMinus']} d-flex align-items-center`}
                   >
                     <FaMinus
-                      style={{ marginInlineEnd: '30px' }}
+                      style={{ marginInlineEnd: '50px' }}
                       fontSize={16}
+                      onClick={handleDecrease}
                     />
-                    <h5 className={styles['amount']}>1</h5>
+                    <h5 className={styles['quantity']}>{quantity}</h5>
                     <FaPlus
-                      style={{ marginInlineStart: '30px' }}
+                      style={{ marginInlineStart: '50px' }}
                       fontSize={16}
+                      onClick={handleIncrease}
                     />
                   </div>
                 </div>
@@ -161,15 +341,9 @@ export default function Detail() {
               <div className={styles['underLine-bl']}>
                 <h6>產品敘述:</h6>
               </div>
-              <p>
-                ・金馬馬丘麻將 1 副(144張)
-                <br />
-                ・金馬 59 紀念麻將 1 張<br />
-                ・空白麻將 1 張<br />
-                ・玫瑰金方向環 1 個<br />
-                ・骰子 6 顆<br />
-                ・牌尺 4 支(白色x3、透明x1)
-              </p>
+              {data.product.content.map(
+                (v, i) => v.trim() !== '' && <p key={i}>{v}</p>
+              )}
             </div>
             <div className={`${styles['comment-bl']}   mb-5`}>
               <div className={styles['underLine-bl']}>
@@ -179,7 +353,11 @@ export default function Detail() {
                 className={`${styles['star-bl']}   d-flex justify-content-between align-items-center flex-column flex-md-row`}
               >
                 <div className={`${styles['starBox-bl']}   mb-3 mb-md-0`}>
-                  <h5>4.7 / 5</h5>
+                  <h5>
+                    {data.product.average_star
+                      ? `${data.product.average_star} / 5`
+                      : '尚無評價'}
+                  </h5>
                   <div className={styles['starBox-bl']}>
                     <FaRegStar fontSize={24} style={{ color: '#b79347' }} />
                     <FaRegStar fontSize={24} style={{ color: '#b79347' }} />
@@ -187,8 +365,12 @@ export default function Detail() {
                     <FaRegStar fontSize={24} style={{ color: '#b79347' }} />
                     <FaRegStar fontSize={24} style={{ color: '#b79347' }} />
                     <div
-                      className={styles['starRating-bl']}
-                      style={{ width: '50%' }}
+                      className={`${styles['starRating-bl']} ${
+                        data.product.average_star ? '' : 'd-none'
+                      }`}
+                      style={{
+                        width: `${(data.product.average_star / 5) * 100}%`,
+                      }}
                     >
                       <FaStar fontSize={24} style={{ color: '#b79347' }} />
                       <FaStar fontSize={24} style={{ color: '#b79347' }} />
@@ -199,16 +381,30 @@ export default function Detail() {
                   </div>
                 </div>
                 <div className={styles['btnBox-bl']}>
-                  <div
-                    className={`${styles['btnComment']}  ${styles['active']} `}
+                  <button
+                    onClick={() => {
+                      setComment(data.comment)
+                    }}
+                    className={`${styles['btnComment']} ${
+                      comment.star === 0 ? `${styles['active']}` : ''
+                    }`}
                   >
                     全部
-                  </div>
-                  <div className={styles['btnComment']}>5星(40)</div>
-                  <div className={styles['btnComment']}>4星(3)</div>
-                  <div className={styles['btnComment']}>3星(5)</div>
-                  <div className={styles['btnComment']}>2星</div>
-                  <div className={styles['btnComment']}>1星</div>
+                  </button>
+                  {sortedStarCount.map(([star, count]) => (
+                    <button
+                      key={[star]}
+                      onClick={() => {
+                        handleStarChange(star)
+                      }}
+                      className={`${styles['btnComment']} ${
+                        comment.star === star ? `${styles['active']}` : ''
+                      }`}
+                      disabled={count === 0}
+                    >
+                      {star}星({count})
+                    </button>
+                  ))}
                 </div>
               </div>
               <input
@@ -224,27 +420,33 @@ export default function Detail() {
               </label>
               <div className={styles['fold']}>
                 <div className={styles['commentBox-bl']}>
-                  <div
-                    className={`${styles['commentCard-bl']} ${styles['underLine-bl']} d-flex`}
-                  >
-                    <div className={`${styles['pic-bl']} me-3`}>
-                      <img src="./images/web/pic/18.jpg" alt="" />
-                    </div>
-                    <div className={styles['cardBody-bl']}>
-                      <div className={`${styles['userInfo-bl']} mb-4`}>
-                        <p>poxxxxin</p>
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <p>2024-07-11</p>
+                  {comment.content.map((value) => {
+                    return (
+                      <div
+                        key={value.id}
+                        className={`${styles['commentCard-bl']} ${styles['underLine-bl']} d-flex`}
+                      >
+                        <div className={`${styles['pic-bl']} me-3`}>
+                          <Image
+                            src={`../../images/product/${imgMain}`}
+                            width={280}
+                            height={280}
+                            alt=""
+                          />
+                        </div>
+                        <div className={styles['cardBody-bl']}>
+                          <div className={`${styles['userInfo-bl']} mb-4`}>
+                            <p>user_name</p>
+                            <StarRating initRating={value.star} />
+                            <p>{value.date}</p>
+                          </div>
+                          <div className={styles['commentContent-bl']}>
+                            <p>{value.content}</p>
+                          </div>
+                        </div>
                       </div>
-                      <div className={styles['commentContent-bl']}>
-                        <p>讚讚攢五星好評，老鐵六六六</p>
-                      </div>
-                    </div>
-                  </div>
+                    )
+                  })}
                 </div>
               </div>
             </div>
@@ -253,41 +455,74 @@ export default function Detail() {
             <div className={styles['underLine-bl']}>
               <h6>你可能也會喜歡:</h6>
             </div>
-            <div className={`${styles['products-bl']} ${styles['swiper']} `}>
-              <div
-                className={`${styles['swiper-wrapper']} ${styles['column1']} `}
+            <div className={`mb-5`}>
+              <Swiper
+                spaceBetween={10}
+                slidesPerView={2}
+                direction="horizontal"
+                autoHeight={true}
+                loop={false}
+                breakpoints={{
+                  576: {
+                    slidesPerView: 2,
+                    spaceBetween: 20,
+                    direction: 'horizontal',
+                  },
+                  768: {
+                    slidesPerView: 4,
+                    spaceBetween: 20,
+                    direction: 'vertical',
+                    // 禁用觸摸滑動
+                  },
+                }}
+                className={styles.swiper}
               >
-                <div
-                  className={`${styles['productCard']} ${styles['swiper-slide']} `}
-                >
-                  <div className={styles['swiperImg']}>
-                    <div className={styles['imgBox']}>
-                      <img src="./images/product/015.jpg" alt="" />
-                    </div>
-                    <div
-                      className={`${styles['imgBox']} ${styles['secondImg']} `}
-                    >
-                      <img src="./images/product/019.jpg" alt="" />
-                    </div>
-                  </div>
-                  <div className={styles['cardBody']}>
-                    <div className={styles['productName-bl']}>
-                      <p>馬丘machill</p>
-                      <p className={styles['productDescription']}>
-                        馬丘麻將【電動麻將桌用版】
-                      </p>
-                    </div>
-                    <div
-                      className={`${styles['star']} d-flex justify-content-center gap-1`}
-                    >
-                      <p>
-                        4.7 <i className="fa-solid fa-star" />
-                      </p>
-                    </div>
-                    <p>NT. 2,500</p>
-                  </div>
-                </div>
-              </div>
+                {data.like.map((product) => {
+                  return (
+                    <SwiperSlide key={product.id} className={styles.column1}>
+                      <Link href={`/product/${product.id}`}>
+                        <div
+                          className={`${styles['productCard']} swiper-slide`}
+                        >
+                          <div className={styles['swiperImg']}>
+                            <div className={styles['imgBox']}>
+                              <Image
+                                src={`../../images/product/${product.img}`}
+                                width={280}
+                                height={280}
+                                alt=""
+                              />
+                            </div>
+                            <div
+                              className={`${styles['imgBox']} ${styles['secondImg']}`}
+                            >
+                              <Image
+                                src={
+                                  product.img2
+                                    ? `../../images/product/${product.img2}`
+                                    : '../../images/boyu/logo.svg'
+                                }
+                                width={280}
+                                height={280}
+                                alt=""
+                              />
+                            </div>
+                          </div>
+                          <div className={styles['cardBody']}>
+                            <div className={styles['productName-bl']}>
+                              <p>{product.brand_name}</p>
+                              <p className={` ${styles['productDescription']}`}>
+                                {product.name}
+                              </p>
+                            </div>
+                            <p>NT. {product.price}</p>
+                          </div>
+                        </div>
+                      </Link>
+                    </SwiperSlide>
+                  )
+                })}
+              </Swiper>
             </div>
           </div>
         </div>
