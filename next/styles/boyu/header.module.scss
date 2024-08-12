@@ -4,6 +4,14 @@
   background-color: var(--background);
 }
 
+.header-box-bo {
+  padding: 0 4.8rem;
+
+  @media screen and (max-width: 768px) {
+    padding: 0 2.4rem;
+  }
+}
+
 .logo-bo {
   width: 3.6rem;
 

@@ -1,0 +1,119 @@
+.user-sidebar-bo {
+  width: 26rem;
+  gap: 3.6rem;
+  height: auto; /* 高度設為100%視窗高度 */
+  background: var(--background);
+  color: var(--bg-text-color);
+  padding: 3.6rem 0;
+
+  @media (max-width: 992px) {
+    width: 22rem;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%; /* 寬度設為100% */
+    height: auto; /* 高度自適應 */
+    padding: 0;
+    gap: 0;
+  }
+}
+
+.user-sidebar-head-bo {
+  gap: 3.6rem;
+}
+
+.user-img-bo {
+  width: 14rem;
+  border-radius: 50%;
+}
+
+.user-welcome-box-bo {
+  background: var(--primary);
+  border-radius: 5px;
+  padding: 0.8rem 2rem;
+}
+
+.user-sidebar-body-bo,
+.user-sidebar-menu-bo {
+  width: 100%;
+}
+
+.user-sidebar-menu-bo {
+  @media (max-width: 768px) {
+    display: none; /* 隱藏菜單 */
+  }
+}
+
+.user-sidebar-link-bo {
+  background: var(--background);
+  color: var(--bg-text-color);
+  width: 100%; /* 確保項目寬度填滿父元素 */
+  padding: 1.6rem 0 1.6rem 6rem;
+  display: block; /* 設為塊級元素，確保背景顏色填滿 */
+  @media (max-width: 992px) {
+    padding: 1.6rem 0 1.6rem 4.8rem;
+  }
+}
+
+.user-sidebar-link-bo:hover,
+.user-sidebar-link-bo:active {
+  background: var(--bg-text-color);
+  color: var(--background); /* 確保文字顏色在hover和active時可見 */
+}
+
+.user-sidebar-menu-bo .user-sidebar-link-bo {
+  @media (max-width: 768px) {
+    padding: 1.6rem 6rem;
+    background: var(--background-dark); /* 確保背景顏色正確 */
+  }
+  @media (max-width: 576px) {
+    padding: 1.6rem 2.4rem;
+  }
+}
+
+.user-sidebar-menu-bo .user-sidebar-link-bo:hover,
+.user-sidebar-menu-bo .user-sidebar-link-bo:active {
+  background: var(--bg-text-color);
+  color: var(--background); /* 確保文字顏色在hover和active時可見 */
+}
+
+@media (max-width: 768px) {
+  .show {
+    display: block !important; /* 展開子菜單 */
+  }
+
+  .user-sidebar-submenu-bo {
+    display: none; /* 初始隱藏子菜單 */
+  }
+}
+
+/* 設定 first-link-bo 的背景顏色 */
+.user-sidebar-menu-bo .first-link-bo {
+  background: var(--background);
+  color: var(--bg-text-color);
+  padding: 1.6rem 0 1.6rem 6rem;
+  display: block; /* 設為塊級元素，確保背景顏色填滿 */
+  width: 100%; /* 確保項目寬度填滿父元素 */
+
+  @media (max-width: 992px) {
+    padding: 1.6rem 0 1.6rem 4.8rem;
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.6rem 6rem;
+    background: var(--background);
+  }
+  @media (max-width: 576px) {
+    padding: 1.6rem 2.4rem;
+  }
+}
+
+.show-detail-bo {
+  display: none;
+}
+.user-sidebar-submenu-bo {
+  display: none;
+}
+.show-detail-bo:checked ~ .user-sidebar-submenu-bo {
+  display: block;
+}

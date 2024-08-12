@@ -45,6 +45,15 @@
     li {
       padding: 1.2rem;
       width: 180px;
+      a {
+        color: var(--white);
+        &:hover {
+          color: var(--primary);
+        }
+        &.active {
+          color: var(--primary);
+        }
+      }
       color: var(--white);
 
       &:hover {
@@ -243,6 +252,7 @@
     width: 150px;
     padding: 1rem 0 1rem 2rem;
     border: 2px solid var(--primary);
+    background: transparent;
     border-radius: 4rem;
     display: flex;
     align-items: center;
@@ -252,7 +262,7 @@
 
     .edit-icon {
       text-align: start;
-      background-image: url('../public/images/web/btnMore.svg');
+      background-image: url('../../public/images/web/btnMore.svg');
       background-repeat: no-repeat;
       background-size: cover;
       width: 50px;
@@ -266,7 +276,7 @@
         color: var(--primary-dark);
       }
       .edit-icon {
-        background-image: url('../public/images/web/btnMoreHover.svg');
+        background-image: url('../../public/images/web/btnMoreHover.svg');
         transform: translateX(3px);
       }
     }
@@ -325,7 +335,7 @@
       left: 0;
     }
   }
-  .searchBar {
-    display: none;
-  }
+  // .searchBar {
+  //   display: none;
+  // }
 }
