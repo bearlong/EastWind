@@ -63,7 +63,7 @@
     padding: 1.6em 2.4rem;
   }
   @media (max-width: 576px) {
-    padding: 1.2em;
+    padding: 1.2rem;
   }
 }
 
@@ -78,10 +78,10 @@
 
 .booking-list-th-bo ul {
   display: grid;
-  grid-template-columns: 3.5fr 3.5fr 4fr 5.2fr; /* 調整這些值以匹配你的設計需求 */
+  grid-template-columns: 3.5fr 3.5fr 4.2fr 5fr;
 
-  @media (max-width: 992px) {
-    grid-template-columns: 3fr 3fr 3fr 3.7fr; /* 調整這些值以匹配你的設計需求 */
+  @media (max-width: 1200px) {
+    grid-template-columns: 4fr 4fr 4fr 5fr; /* 調整這些值以匹配你的設計需求 */
   }
 
   @media (max-width: 768px) {
@@ -160,7 +160,7 @@
 }
 
 .list-col-head-mobile-bo {
-  padding: 0 0.8rem;
+  padding: 1rem 0;
 }
 
 .list-col-body-bo,
@@ -187,7 +187,7 @@
 }
 
 .col-icon-bo {
-  width: 2rem;
+  font-size: 2rem;
   color: var(--primary-dark);
 }
 
@@ -232,10 +232,10 @@
     left: 40%;
     transform: translateX(-50%);
   }
-}
 
-.show {
-  display: flex !important; /* 展開子菜單 */
+  & li:hover {
+    color: var(--primary-dark);
+  }
 }
 
 .btn-cancel-bo {

@@ -1,13 +1,16 @@
 .imgArea
-  display: flex
-  justify-content: space-between
+  display: grid
+  grid-template-columns: 2fr 1fr 1fr
+  gap: 4px
+  img
+    border-radius: 10px
   .bgImg
     img
-      max-height: 30em
+      width: 100%
+      // max-height: 30em
       object-fit: contain
-.smArea
   .smImg
     margin-bottom: 4px
     img
-      max-height: 10em
+      width: 100%
       object-fit: contain

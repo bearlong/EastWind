@@ -1,334 +1,302 @@
-import Head from 'next/head'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import '@fortawesome/fontawesome-free/css/all.min.css'
-import styles from '../styles/UserInfoEdit.module.css' // 確保你有這個 CSS 模組文件
+;<div className={`${styles['party-list-col-bo']} d-flex flex-column`}>
+  <div className="d-none d-md-block">
+    <input
+      type="checkbox"
+      id="showDetailDesktop"
+      className={styles['show-detail-desktop-bo']}
+    />
+    <label
+      className={`${styles['list-col-head-desktop-bo']} d-none d-md-flex justify-content-around align-items-center text-center`}
+      htmlFor="showDetailDesktop"
+    >
+      <h6>17465544</h6>
+      <h6>麻將大師 板橋店</h6>
+      <div className={`${styles['list-time-bo']} d-flex flex-column`}>
+        <h6>2023 / 12 / 12</h6>
+        <h6>10 : 00 - 13 : 00</h6>
+      </div>
+      <h6>已流團</h6>
+      <h6>
+        <FaChevronDown className={` ${styles['btn-detail-bo']}`} />
+      </h6>
+    </label>
+    <div
+      className={`${styles['list-col-body-bo']} justify-content-between align-items-center gap-2`}
+    >
+      <div
+        className={`${styles['shop-box-bo']} d-flex justify-content-between align-items-center`}
+      >
+        <ul className="d-flex flex-column justify-content-between align-items-start gap-1">
+          <li
+            className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
+          >
+            <FaMapMarkerAlt className={` ${styles['col-icon-bo']} `} />
+            新北市板橋區松江街28號
+          </li>
+          <li
+            className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
+          >
+            <FaShop className={` ${styles['col-icon-bo']}`} />
+            02-22222222
+          </li>
+          <li
+            className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
+          >
+            <FaShop className={` ${styles['col-icon-bo']}`} />
+            大廳 / 1桌
+          </li>
+          <li
+            className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
+          >
+            <FaMoneyBill className={`${styles['col-icon-bo']}`} />
+            600
+          </li>
+        </ul>
 
-export default function UserInfoEdit() {
-  return (
-    <>
-      <Head>
-        <title>user-info</title>
-        <meta charSet="utf-8" />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, shrink-to-fit=no"
-        />
-      </Head>
-
-      <section>
-        <div className={styles['user-info-box-bo']}>
-          <div className={`${styles['info-form-box-bo']} flex-column d-flex`}>
+        <div className="d-flex flex-column justify-content-between align-items-center gap-3">
+          <button
+            className={`${styles['btn-shop-detail']} btn p d-flex justify-content-center align-items-center`}
+          >
+            <FaMagnifyingGlass className={`${styles['btn-icon-bo']}`} />
             <div
-              className={`${styles['info-default-box-bo']} row justify-content-center align-items-center`}
+              className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
             >
-              <div
-                className={`${styles['default-information-box-bo']} col-12 col-md-7 col-lg-8 d-flex flex-column justify-content-center align-items-center`}
-              >
-                <div className={`${styles['default-information-title-bo']} h5`}>
-                  基本資訊
-                </div>
-                <div
-                  className={`${styles['default-information-form-bo']} justify-content-center align-items-center d-flex flex-column`}
-                >
-                  <div
-                    className={`${styles['info-col-bo']} d-flex justify-content-center flex-column flex-sm-row`}
-                  >
-                    <h6 className={`${styles['info-name-bo']} h6`}>email</h6>
-                    <input
-                      type="text"
-                      className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
-                      placeholder="z0123455@gmail.com"
-                    />
-                  </div>
-                  <div
-                    className={`${styles['info-col-bo']} d-flex justify-content-center flex-column flex-sm-row`}
-                  >
-                    <h6 className={`${styles['info-name-bo']} h6`}>帳號</h6>
-                    <input
-                      type="text"
-                      className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
-                      placeholder="a385345"
-                    />
-                  </div>
-                  <div
-                    className={`${styles['info-col-bo']} d-flex justify-content-center flex-column flex-sm-row`}
-                  >
-                    <h6 className={`${styles['info-name-bo']} h6`}>密碼</h6>
-                    <input
-                      type="text"
-                      className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
-                      placeholder="asdffs"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div
-                className={`${styles['default-img-box-bo']} ${styles['move-up-bo']} col-12 col-md-5 col-lg-4 d-flex flex-column justify-content-center align-items-center position-relative`}
-              >
-                <div className={styles['user-img-box-bo']}>
-                  <img
-                    className={styles['user-img-bo']}
-                    src="/image/user.jpg"
-                    alt="User"
-                  />
-                  <div className={styles['btn-edit-img']}>
-                    <i className="fa-solid fa-pen-to-square"></i>
-                  </div>
-                </div>
-                <div
-                  className={`${styles['create-date-box-bo']} h6 text-center d-flex justify-content-center align-items-center`}
-                >
-                  <h6>創建日期&nbsp;:&nbsp;</h6>
-                  <h6>2024 / 07 / 30</h6>
-                </div>
-              </div>
+              <p>店家詳情</p>
             </div>
+          </button>
+          <button
+            className={`${styles['btn-shop-Contact']} btn p d-flex justify-content-center align-items-center`}
+          >
+            <FaCommentDots />
+            <div
+              className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center w-100`}
+            >
+              <p>聯絡店家</p>
+            </div>
+          </button>
+          <button
+            className={`${styles['btn-rating']} btn p d-flex justify-content-center align-items-center`}
+          >
+            <FaStar className={` ${styles['icon-star-bo']}`} />
 
             <div
-              className={`${styles['info-detail-box-bo']} row justify-content-center align-items-start`}
+              className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
             >
-              <div
-                className={`${styles['detail-information-box-bo']} col-12 col-md-7 col-lg-8 d-flex flex-column justify-content-center align-items-center`}
-              >
-                <div className={`${styles['detail-information-title-bo']} h5`}>
-                  詳細資訊
-                </div>
-                <div
-                  className={`${styles['detail-information-form-bo']} justify-content-center align-items-center d-flex flex-column`}
-                >
-                  <div
-                    className={`${styles['info-col-bo']} d-flex justify-content-center flex-column flex-sm-row`}
-                  >
-                    <h6 className={`${styles['info-name-bo']} h6`}>姓名</h6>
-                    <input
-                      type="text"
-                      className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
-                      placeholder="蔡宗鈞"
-                    />
-                  </div>
-                  <div
-                    className={`${styles['info-col-bo']} d-flex justify-content-center flex-column flex-sm-row`}
-                  >
-                    <h6 className={`${styles['info-name-bo']} h6`}>性別</h6>
-                    <input
-                      type="text"
-                      className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
-                      placeholder="男"
-                    />
-                  </div>
-                  <div
-                    className={`${styles['info-col-bo']} d-flex justify-content-center flex-column flex-sm-row`}
-                  >
-                    <h6 className={`${styles['info-name-bo']} h6`}>生日</h6>
-                    <input
-                      type="text"
-                      className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
-                      placeholder="1999 / 1 / 1"
-                    />
-                  </div>
-                  <div
-                    className={`${styles['info-col-bo']} d-flex justify-content-center flex-column flex-sm-row`}
-                  >
-                    <h6 className={`${styles['info-name-bo']} h6`}>地址</h6>
-                    <input
-                      type="text"
-                      className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
-                      placeholder="臺北市士林區士商路35號"
-                    />
-                  </div>
-                  <div
-                    className={`${styles['info-col-bo']} d-flex justify-content-center flex-column flex-sm-row`}
-                  >
-                    <h6 className={`${styles['info-name-bo']} h6`}>手機</h6>
-                    <input
-                      type="text"
-                      className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
-                      placeholder="0932-456-234"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                className={`${styles['detail-card-box-bo']} ${styles['move-up-bo']} col-12 col-md-5 col-lg-4 d-flex flex-column justify-content-start align-items-center`}
-              >
-                <div className={`${styles['detail-card-title-bo']} h5`}>
-                  信用卡
-                </div>
-                <div
-                  className={`${styles['detail-card-list-bo']} d-flex flex-column gap-4`}
-                >
-                  <div
-                    className={`${styles['card-col-bo']} d-flex justify-content-center align-items-center`}
-                  >
-                    <div
-                      className={`${styles['card-body-bo']} d-flex justify-content-between align-items-center`}
-                    >
-                      <div className={styles['icon-card-box-bo']}>
-                        <i
-                          className={`${styles['icon-card-bo']} fa-solid fa-credit-card`}
-                        ></i>
-                      </div>
-                      <div className={styles['card-text-box-bo']}>
-                        <div
-                          className={`${styles['card-text-up-bo']} d-flex justify-content-between align-items-center`}
-                        >
-                          <p>台北富邦</p>
-                          <p>***</p>
-                        </div>
-                        <div
-                          className={`${styles['card-text-down-bo']} d-flex justify-content-between align-items-center gap-1 p`}
-                        >
-                          <p>1233</p>
-                          <p>1234</p>
-                          <p>1233</p>
-                          <p>1233</p>
-                        </div>
-                      </div>
-                      <div
-                        className={`${styles['card-date-box-bo']} d-flex flex-column justify-content-center align-items-center`}
-                      >
-                        <i
-                          className={`${styles['icon-visa-bo']} fa-brands fa-cc-visa`}
-                        ></i>
-                        <p className={styles['card-date-bo']}>06/29</p>
-                      </div>
-                      <div className={styles['trash-can-box-bo']}>
-                        <i
-                          className={`${styles['icon-trash-can-bo']} fa-solid fa-trash-can`}
-                        ></i>
-                      </div>
-                    </div>
-
-                    <div
-                      className={`${styles['card-body-bo']} d-flex justify-content-between align-items-center`}
-                    >
-                      <div className={styles['icon-card-box-bo']}>
-                        <i
-                          className={`${styles['icon-card-bo']} fa-solid fa-credit-card`}
-                        ></i>
-                      </div>
-                      <div className={styles['card-text-box-bo']}>
-                        <div
-                          className={`${styles['card-text-up-bo']} d-flex justify-content-between align-items-center`}
-                        >
-                          <p>台北富邦</p>
-                          <p>***</p>
-                        </div>
-                        <div
-                          className={`${styles['card-text-down-bo']} d-flex justify-content-between align-items-center gap-1 p`}
-                        >
-                          <p>1233</p>
-                          <p>1234</p>
-                          <p>1233</p>
-                          <p>1233</p>
-                        </div>
-                      </div>
-                      <div
-                        className={`${styles['card-date-box-bo']} d-flex flex-column justify-content-center align-items-center`}
-                      >
-                        <i
-                          className={`${styles['icon-master-bo']} fa-brands fa-cc-mastercard`}
-                        ></i>
-                        <p className={styles['card-date-bo']}>06/29</p>
-                      </div>
-                      <div className={styles['trash-can-box-bo']}>
-                        <i
-                          className={`${styles['icon-trash-can-bo']} fa-solid fa-trash-can`}
-                        ></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    className={`${styles['card-col-bo']} d-flex justify-content-center align-items-center`}
-                  >
-                    <div
-                      className={`${styles['card-body-bo']} d-flex justify-content-between align-items-center`}
-                    >
-                      <div className={styles['icon-card-box-bo']}>
-                        <i
-                          className={`${styles['icon-card-bo']} fa-solid fa-credit-card`}
-                        ></i>
-                      </div>
-                      <div className={styles['card-text-box-bo']}>
-                        <div
-                          className={`${styles['card-text-up-bo']} d-flex justify-content-between align-items-center`}
-                        >
-                          <input
-                            type="text"
-                            className={`${styles['info-card-bo']} ${styles['input-card-name-bo']} p text-center`}
-                          />
-                          <input
-                            type="text"
-                            className={`${styles['info-card-bo']} ${styles['input-card-saveCode-bo']} p text-center`}
-                            maxLength="3"
-                          />
-                        </div>
-                        <div
-                          className={`${styles['card-text-down-bo']} d-flex justify-content-between align-items-center gap-1 p`}
-                        >
-                          <input
-                            type="text"
-                            className={`${styles['info-card-bo']} ${styles['input-card-number-bo']} p text-center`}
-                            maxLength="4"
-                          />
-                          <input
-                            type="text"
-                            className={`${styles['info-card-bo']} ${styles['input-card-number-bo']} p text-center`}
-                            maxLength="4"
-                          />
-                          <input
-                            type="text"
-                            className={`${styles['info-card-bo']} ${styles['input-card-number-bo']} p text-center`}
-                            maxLength="4"
-                          />
-                          <input
-                            type="text"
-                            className={`${styles['info-card-bo']} ${styles['input-card-number-bo']} p text-center`}
-                            maxLength="4"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        className={`${styles['card-date-box-bo']} d-flex flex-column justify-content-center align-items-center`}
-                      >
-                        <i
-                          className={`${styles['icon-master-bo']} fa-brands fa-cc-mastercard`}
-                        ></i>
-                        <input
-                          type="text"
-                          className={`${styles['info-card-bo']} ${styles['input-card-date-bo']} p text-center`}
-                          maxLength="5"
-                        />
-                      </div>
-                      <div className={styles['trash-can-box-bo']}>
-                        <i
-                          className={`${styles['icon-trash-can-bo']} fa-solid fa-trash-can`}
-                        ></i>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <p>評論店家</p>
             </div>
+          </button>
+        </div>
+      </div>
 
-            <div
-              className={`${styles['info-btn-box-bo']} d-flex justify-content-center align-items-center gap-5`}
-            >
-              <button
-                className={`${styles['btn-edit-info-bo']} btn h6 d-flex justify-content-center align-items-center gap-3 gap-sm-5`}
-              >
-                取消修改<i className="fa-solid fa-xmark"></i>
-              </button>
-              <button
-                className={`${styles['btn-edit-info-bo']} btn h6 d-flex justify-content-center align-items-center gap-3 gap-sm-5`}
-              >
-                修改資訊<i className="fa-solid fa-pen-to-square"></i>
-              </button>
-            </div>
+      <div className={styles['group-box-bo']}>
+        <div
+          className={`${styles['group-member-box-bo']} d-flex justify-content-center align-items-center ${styles['member-self-bo']} gap-3`}
+        >
+          <img
+            className={styles['member-img-bo']}
+            src="/image/user.jpg"
+            alt="User"
+          />
+          <div className={`${styles['member-text-box']} d-flex`}>
+            <p>主揪</p>
+            <p>蔡忠均</p>
           </div>
         </div>
-      </section>
-    </>
-  )
-}
+        <div
+          className={`${styles['group-member-box-bo']} d-flex justify-content-center align-items-center gap-3`}
+        >
+          <img
+            className={styles['member-img-bo']}
+            src="/image/user.jpg"
+            alt="User"
+          />
+          <div className={`${styles['member-text-box']} d-flex`}>
+            <p>參團</p>
+            <p>蔡忠均</p>
+          </div>
+        </div>
+        <div
+          className={`${styles['group-member-box-bo']} d-flex justify-content-center align-items-center gap-3`}
+        >
+          <img
+            className={styles['member-img-bo']}
+            src="/image/user.jpg"
+            alt="User"
+          />
+          <div className={`${styles['member-text-box']} d-flex`}>
+            <p>參團</p>
+            <p>蔡忠均</p>
+          </div>
+        </div>
+        <div
+          className={`${styles['group-member-box-bo']} d-flex justify-content-center align-items-center gap-3`}
+        >
+          <img
+            className={styles['member-img-bo']}
+            src="/image/user.jpg"
+            alt="User"
+          />
+          <div className={`${styles['member-text-box']} d-flex`}>
+            <p>參團</p>
+            <p>蔡忠均</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div className="d-block d-md-none">
+    <input
+      type="checkbox"
+      id="showDetailMobile"
+      className={styles['show-detail-mobile-bo']}
+    />
+    <label
+      className={`${styles['list-col-head-mobile-bo']} d-flex d-md-none justify-content-between align-items-center text-center`}
+      htmlFor="showDetailMobile"
+    >
+      <div className="d-flex flex-column justify-content-center align-items-start gap-2">
+        <div className="d-flex justify-content-between w-100">
+          <h6>17465544</h6>
+        </div>
+        <h6>麻將大師 板橋店</h6>
+        <div
+          className={`${styles['list-time-bo']} d-flex flex-row flex-lg-row`}
+        >
+          <h6>2023 / 12 / 12</h6>
+          <h6>10 : 00 - 13 : 00</h6>
+        </div>
+      </div>
+      <div></div>
+      <div className="d-flex justify-content-center align-items-center gap-4">
+        <h6>已流團</h6>
+        <h6>
+          <FaChevronDown className={` ${styles['btn-detail-bo']}`} />
+        </h6>
+      </div>
+    </label>
+    <div
+      className={`${styles['list-col-body-bo']}  flex-column flex-sm-row justify-content-between align-items-center gap-2`}
+    >
+      <div
+        className={`${styles['shop-box-bo']} d-flex justify-content-between align-items-center`}
+      >
+        <ul className="d-flex flex-column justify-content-between align-items-start gap-1">
+          <li
+            className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
+          >
+            <FaMapMarkerAlt className={` ${styles['col-icon-bo']} `} />
+            新北市板橋區松江街28號
+          </li>
+          <li
+            className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
+          >
+            <FaShop className={` ${styles['col-icon-bo']}`} />
+            02-22222222
+          </li>
+          <li
+            className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
+          >
+            <FaShop className={` ${styles['col-icon-bo']}`} />
+            大廳 / 1桌
+          </li>
+          <li
+            className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
+          >
+            <FaMoneyBill className={`${styles['col-icon-bo']}`} />
+            600
+          </li>
+        </ul>
+
+        <div className="d-flex flex-column justify-content-between align-items-center gap-3">
+          <button
+            className={`${styles['btn-shop-detail']} btn p d-flex justify-content-center align-items-center`}
+          >
+            <FaMagnifyingGlass className={`${styles['btn-icon-bo']}`} />
+            <div
+              className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
+            >
+              <p>店家詳情</p>
+            </div>
+          </button>
+          <button
+            className={`${styles['btn-shop-Contact']} btn p d-flex justify-content-center align-items-center`}
+          >
+            <FaCommentDots />
+            <div
+              className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center w-100`}
+            >
+              <p>聯絡店家</p>
+            </div>
+          </button>
+          <button
+            className={`${styles['btn-rating']} btn p d-flex justify-content-center align-items-center`}
+          >
+            <FaStar className={` ${styles['icon-star-bo']}`} />
+
+            <div
+              className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
+            >
+              <p>評論店家</p>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div className={styles['group-box-bo']}>
+        <div
+          className={`${styles['group-member-box-bo']} d-flex justify-content-center align-items-center ${styles['member-self-bo']} gap-3`}
+        >
+          <img
+            className={styles['member-img-bo']}
+            src="/image/user.jpg"
+            alt="User"
+          />
+          <div className={`${styles['member-text-box']} d-flex`}>
+            <p>主揪</p>
+            <p>蔡忠均</p>
+          </div>
+        </div>
+        <div
+          className={`${styles['group-member-box-bo']} d-flex justify-content-center align-items-center gap-3`}
+        >
+          <img
+            className={styles['member-img-bo']}
+            src="/image/user.jpg"
+            alt="User"
+          />
+          <div className={`${styles['member-text-box']} d-flex`}>
+            <p>參團</p>
+            <p>蔡忠均</p>
+          </div>
+        </div>
+        <div
+          className={`${styles['group-member-box-bo']} d-flex justify-content-center align-items-center gap-3`}
+        >
+          <img
+            className={styles['member-img-bo']}
+            src="/image/user.jpg"
+            alt="User"
+          />
+          <div className={`${styles['member-text-box']} d-flex`}>
+            <p>參團</p>
+            <p>蔡忠均</p>
+          </div>
+        </div>
+        <div
+          className={`${styles['group-member-box-bo']} d-flex justify-content-center align-items-center gap-3`}
+        >
+          <img
+            className={styles['member-img-bo']}
+            src="/image/user.jpg"
+            alt="User"
+          />
+          <div className={`${styles['member-text-box']} d-flex`}>
+            <p>參團</p>
+            <p>蔡忠均</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

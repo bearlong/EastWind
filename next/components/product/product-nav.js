@@ -219,19 +219,13 @@ export default function ProductNav() {
                   <h6 className={styles['title']}>類別</h6>
                   <ul>
                     <li>
-                      <Link href="productList?category_id=3&style=餐桌款">
-                        餐桌款
-                      </Link>
+                      <Link href="productList?style=餐桌款">餐桌款</Link>
                     </li>
                     <li>
-                      <Link href="productList?category_id=3&style=折疊款">
-                        折疊款
-                      </Link>
+                      <Link href="productList?style=折疊款">折疊款</Link>
                     </li>
                     <li>
-                      <Link href="productList?category_id=3&style=套裝款">
-                        套裝款
-                      </Link>
+                      <Link href="productList?style=套裝款">套裝款</Link>
                     </li>
                   </ul>
                 </div>
@@ -313,34 +307,22 @@ export default function ProductNav() {
                   <h6 className={styles['title']}>類別</h6>
                   <ul>
                     <li>
-                      <Link href="productList?category_id=5&style=台灣元素">
-                        台灣元素
-                      </Link>
+                      <Link href="productList?style=台灣元素">台灣元素</Link>
                     </li>
                     <li>
-                      <Link href="productList?category_id=5&style=策略">
-                        策略
-                      </Link>
+                      <Link href="productList?style=策略">策略</Link>
                     </li>
                     <li>
-                      <Link href="productList?category_id=5&style=派對">
-                        派對
-                      </Link>
+                      <Link href="productList?style=派對">派對</Link>
                     </li>
                     <li>
-                      <Link href="productList?category_id=5&style=RPG">
-                        RPG
-                      </Link>
+                      <Link href="productList?style=RPG">RPG</Link>
                     </li>
                     <li>
-                      <Link href="productList?category_id=5&style=家庭">
-                        家庭
-                      </Link>
+                      <Link href="productList?style=家庭">家庭</Link>
                     </li>
                     <li>
-                      <Link href="productList?category_id=5&style=親子">
-                        親子
-                      </Link>
+                      <Link href="productList?style=親子">親子</Link>
                     </li>
                   </ul>
                 </div>
