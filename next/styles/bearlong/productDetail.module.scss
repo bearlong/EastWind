@@ -6,6 +6,18 @@
 .productDetailSection1-bl {
   margin-bottom: 6rem;
   padding-inline: 8rem;
+
+  .breadCrumb-bl {
+    a {
+      color: var(--text-hover-color);
+      &:hover {
+        color: var(--text-color);
+      }
+      &.here {
+        color: var(--text-color);
+      }
+    }
+  }
   .imgSmallBox-bl {
     width: 90px;
     height: 90px;
@@ -19,8 +31,8 @@
   }
 
   .imgMain-bl {
-    height: 500px;
-    width: 500px;
+    height: 520px;
+    width: 520px;
   }
   img {
     width: 100%;
@@ -177,6 +189,7 @@
     grid-template-columns: 1fr;
     justify-items: center;
     gap: 1.6rem;
+    height: 100vh;
   }
   .productCard {
     width: 290px;
@@ -367,7 +380,6 @@
 
   .swiper {
     width: 100%;
-    height: 100%;
   }
   .section2Right-bl {
     padding: 0;

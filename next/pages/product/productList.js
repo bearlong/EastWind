@@ -26,17 +26,18 @@ export default function ProductList() {
   const [brandOptions, setBrandOption] = useState([])
   const [cateOptions, setCateOption] = useState([])
   const { brand_id, category_id, size, style, search, max, min } = router.query
-  const [filters, setFilters] = useState({
-    brand_id: '',
-    category_id: '',
-    size: '',
-    style: '',
-    search: '',
-    max: '',
-    min: '',
+  let initialFilters = {
+    brand_id: router.query.brand_id || '',
+    category_id: router.query.category_id || '',
+    size: router.query.size || '',
+    style: router.query.style || '',
+    search: router.query.search || '',
+    max: router.query.max || '',
+    min: router.query.min || '',
     orderBy: '',
     isFilter: false,
-  })
+  }
+  const [filters, setFilters] = useState(initialFilters)
   const [sizeOptions, setSizeOption] = useState([
     {
       id: 1,
@@ -58,7 +59,6 @@ export default function ProductList() {
   const [minOptions, setMinOption] = useState(0)
   const [maxOptions, setMaxOption] = useState(200000)
   const [searchValue, setSearchValue] = useState('')
-
   const getProducts = async (filtersArr) => {
     let newProducts, error
     const url = `http://localhost:3005/api/products?page=${pages}&${Object.entries(
@@ -78,6 +78,7 @@ export default function ProductList() {
     if (error) {
       return
     }
+    console.log(filters)
 
     if (newProducts) {
       setProducts(newProducts)
@@ -253,27 +254,26 @@ export default function ProductList() {
         search: search || '',
         max: max || '',
         min: min || '',
+        orderBy: '',
         isFilter: false,
       }
-
       setFilters(filter)
-      getProducts(filter)
     }
-  }, [router.isReady])
+  }, [router.isReady, router.query])
 
-  useEffect(() => {
-    const filter = {
-      brand_id: brand_id || '',
-      category_id: category_id || '',
-      size: size || '',
-      style: style || '',
-      search: search || '',
-      max: max || '',
-      min: min || '',
-    }
-    setFilters(filter)
-    setPages(1)
-  }, [router.query])
+  // useEffect(() => {
+  //   const filter = {
+  //     brand_id: brand_id || '',
+  //     category_id: category_id || '',
+  //     size: size || '',
+  //     style: style || '',
+  //     search: search || '',
+  //     max: max || '',
+  //     min: min || '',
+  //   }
+  //   setFilters(filter)
+  //   setPages(1)
+  // }, [])
 
   return (
     <>
@@ -400,7 +400,7 @@ export default function ProductList() {
             {products.list.map((product) => {
               return (
                 <div key={product.id} className={`${styles['productCard']} `}>
-                  <Link href={`/product/${product.id}`}>
+                  <Link href={`/product/${product.product_id}`}>
                     <div className={styles['imgBox']}>
                       <Image
                         src={`../../images/product/${product.img}`}
