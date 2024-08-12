@@ -1,0 +1,38 @@
+.playerCard {
+  display: flex;
+  align-items: center; /* 垂直居中對齊 */
+  padding: 1em;
+  background-color: var(--primary);
+  border-radius: 8px; // 加一個圓角效果
+
+  max-height: 100px;
+
+  .playerImg {
+    width: 90px; /* 圓形的直徑 */
+    height: 90px;
+    border-radius: 50%; /* 使圖片成為圓形 */
+    overflow: hidden; /* 隱藏超出邊界的部分 */
+    margin-right: 2rem; /* 將圖片推到左邊 */
+    margin-left: 1rem;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* 按比例縮放並裁剪圖片 */
+    }
+  }
+
+  .cardBody {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .playerName {
+      margin: 0;
+      font-size: 2.5rem; // 根據需要調整字體大小
+      color: var(--white);
+    }
+    .playerType {
+      font-size: 1.5rem;
+    }
+  }
+}
