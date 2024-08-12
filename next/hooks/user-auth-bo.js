@@ -61,43 +61,68 @@ const useAuth = () => {
 
   // 登出功能
   const logout = async () => {
-    let newToken, error // 定義變數，用於存儲新的token和錯誤信息
-    const url = 'http://localhost:3005/api/user/logout' // 定義登入API的URL
+    const url = 'http://localhost:3005/api/user/logout'
 
-    // 發送GET請求以進行登入
-    newToken = await fetch(url, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`, // 在請求頭部中添加Authorization字段，攜帶當前的token
-      },
-    })
-      .then((res) => res.json())
-      .then((result) => {
-        if (result.status === 'success') {
-          // 如果登出成功
-          return result.token // 返回新的token（應該是已過期的token）
-        } else {
-          throw new Error(result.message) // 否則拋出錯誤
-        }
-      })
-      .catch((err) => {
-        error = err // 捕獲錯誤並存儲在error變數中
-        return undefined // 返回undefined
+    try {
+      await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
 
-    if (error) {
-      // 如果發生錯誤
-      alert(error.message) // 顯示錯誤訊息
+      // 清除 token 和 user 狀態
+      setToken(undefined)
+      setUser(undefined) // 確保將 user 設為 undefined
+
+      // 清除本地存儲中的 token
+      localStorage.removeItem('nextXXXToken')
+    } catch (error) {
       console.error('Logout error:', error)
-      return
-    }
-
-    if (newToken) {
-      // 如果獲取到新的token
-      setToken(newToken) // 更新上下文中的token狀態
-      localStorage.setItem('nextXXXToken', newToken) // 將新的token存入本地存儲
+      alert('登出失敗，請稍後再試')
     }
   }
+
+  // 登出功能
+  // const logout = async () => {
+  //   let newToken, error // 定義變數，用於存儲新的token和錯誤信息
+  //   const url = 'http://localhost:3005/api/user/logout' // 定義登入API的URL
+
+  //   // 發送GET請求以進行登入
+  //   newToken = await fetch(url, {
+  //     method: 'GET',
+  //     headers: {
+  //       Authorization: `Bearer ${token}`, // 在請求頭部中添加Authorization字段，攜帶當前的token
+  //     },
+  //   })
+  //     .then((res) => res.json())
+  //     .then((result) => {
+  //       if (result.status === 'success') {
+  //         // 如果登出成功
+  //         return result.token // 返回新的token（應該是已過期的token）
+  //       } else {
+  //         throw new Error(result.message) // 否則拋出錯誤
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       error = err // 捕獲錯誤並存儲在error變數中
+  //       return undefined // 返回undefined
+  //     })
+
+  //   if (error) {
+  //     // 如果發生錯誤
+  //     alert(error.message) // 顯示錯誤訊息
+  //     console.error('Logout error:', error)
+  //     return
+  //   }
+
+  //   if (newToken) {
+  //     // 如果獲取到新的token
+  //     setToken(newToken) // 更新上下文中的token狀態
+  //     localStorage.setItem('nextXXXToken', newToken) // 將新的token存入本地存儲
+  //   }
+  // }
+
   // 返回login和logout函數，供組件調用
   return { login, logout }
 }

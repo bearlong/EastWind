@@ -15,26 +15,16 @@ export const AuthProvider = ({ children }) => {
   const loginRoute = '/login' // 定義登入路由的URL
   const protectedRoute = ['/']
 
-  // 加入調試輸出來確認狀態變化
-
-  useEffect(() => {
-    console.log('AuthProvider mounted or token changed')
-    console.log('Current Token:', token)
-    console.log('Current User:', user)
-  }, [token, user])
-
   // 當路由變化時，檢查用戶是否已登入，若未登入且在受保護路由，則重定向至登入頁面
   useEffect(() => {
     if (!user) {
       // 如果用戶未登入
       if (protectedRoute.includes(router.pathname)) {
         // 如果當前路由在受保護路由中
-        console.log('User not authenticated, redirecting to login')
         router.push(loginRoute) // 如果已登入，重定向到首頁
       }
     } else {
-      console.log('User authenticated, redirecting to home')
-      router.push('/') // 如果已登入，重定向到首頁
+      router.push('/home') // 如果已登入，重定向到首頁
     }
   }, [router.isReady, router.pathname, user]) // 當路由準備就緒、路徑名或用戶狀態變化時觸發
 
@@ -48,7 +38,6 @@ export const AuthProvider = ({ children }) => {
           // 如果解碼後有用戶帳號
           setUser(result) // 設置用戶狀態
         } else {
-          console.log('Invalid token, setting token to undefined')
           setToken(undefined) // 否則設置用戶狀態為undefined
         }
       }
@@ -58,7 +47,6 @@ export const AuthProvider = ({ children }) => {
   // 在組件掛載時，嘗試從本地存儲中獲取舊的token並檢查其有效性
   useEffect(() => {
     const oldToken = localStorage.getItem('nextXXXToken') // 從本地存儲中獲取舊的token
-    console.log(oldToken)
     // 輸出舊的token到控制台
     ;(async () => {
       if (oldToken) {
@@ -75,7 +63,6 @@ export const AuthProvider = ({ children }) => {
           .then((result) => {
             if (result.status === 'success') {
               // 如果響應狀態為success
-              console.log('Token refreshed:', result.token)
               return result.token // 返回新的token
             } else {
               throw new Error(result.message) // 否則拋出錯誤
@@ -89,7 +76,6 @@ export const AuthProvider = ({ children }) => {
         if (error) {
           // 如果發生錯誤
           console.error('Error refreshing token:', error.message)
-          alert(error.message) // 顯示錯誤訊息
           return // 結束函數執行
         }
         if (newToken) {
@@ -97,31 +83,32 @@ export const AuthProvider = ({ children }) => {
           setToken(newToken) // 更新token狀態
           localStorage.setItem('nextXXXToken', newToken) // 將新的token存入本地存儲
         }
-      } else {
-        console.log('No token found in localStorage')
       }
     })()
   }, []) // 這個useEffect只在組件第一次渲染時執行
 
-  // 確認 JWT token是否有效
+  // 確認 JWT token 是否有效
   const checkToken = async (token) => {
-    const secretKey = 'XXX' // 設置JWT的秘鑰
-    let decoded // 定義解碼後的數據變數
+    const secretKey = 'boyuboyuboyuIamBoyu'
+    let decoded
+
     try {
       decoded = await new Promise((resolve, reject) => {
         jwt.verify(token, secretKey, (error, data) => {
-          // 使用秘鑰驗證token
           if (error) {
-            console.error('Token verification failed:', error.message)
-            return reject(error) // 如果驗證失敗，拒絕Promise
+            console.error('Token verification failed:', error)
+            // 確保拋出的錯誤是一個 Error 物件
+            return reject(new Error('Token verification failed'))
           }
-          resolve(data) // 如果驗證成功，解析數據並解決Promise
+          resolve(data)
         })
       })
     } catch (err) {
       console.error('Token verification error:', err.message)
       decoded = null // 如果驗證失敗，將 decoded 設為 null
     }
+
+    console.log('Decoded token:', decoded)
     return decoded // 返回解碼後的數據
   }
 
