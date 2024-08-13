@@ -3,6 +3,7 @@ import multer from 'multer'
 import jwt from 'jsonwebtoken'
 import cors from 'cors'
 import connection from '##/configs/mysql-promise.js'
+import 'dotenv/config.js'
 
 const router = express.Router()
 const secretKey = 'boyuboyuboyuIamBoyu'
@@ -59,32 +60,55 @@ router.get('/users', (req, res) => {
 router.post('/login', upload.none(), (req, res) => {
   const { account, password } = req.body
 
-  const user = users.find(
-    (u) => u.account === account && u.password === password
-  )
-  if (user) {
-    const token = jwt.sign(
-      {
-        account: user.account,
-        password: user.password,
-        city: user.city,
-        address: user.address,
-        phone: user.phone,
-        email: user.email,
-        birth: user.birth,
-        gender: user.gender,
-        created_at: user.created_at,
-      },
-      secretKey,
-      {
-        expiresIn: '1h',
-      }
-    )
-    console.log(token)
-    res.status(200).json({ status: 'success', message: '使用者登入', token })
-  } else {
-    res.status(401).json({ status: 'fail', message: '使用者帳號密碼錯誤' })
+  // 檢查是否填寫帳號和密碼
+  if (!account) {
+    return res.status(400).json({ status: 'fail', message: '請填寫帳號' })
   }
+
+  if (!password) {
+    return res.status(400).json({ status: 'fail', message: '請填寫密碼' })
+  }
+
+  // 查找使用者
+  const user = users.find((u) => u.account === account)
+
+  if (!user) {
+    return res
+      .status(401)
+      .json({ status: 'fail', message: '請確認帳號是否正確' })
+  }
+
+  if (user.password !== password) {
+    return res
+      .status(401)
+      .json({ status: 'fail', message: '請確認密碼是否正確' })
+  }
+
+  // 登入成功，發送 token
+  const token = jwt.sign(
+    {
+      id: user.id,
+      username: user.username,
+      account: user.account,
+      city: user.city,
+      address: user.address,
+      phone: user.phone,
+      email: user.email,
+      birth: user.birth,
+      gender: user.gender,
+    },
+    secretKey,
+    {
+      expiresIn: '1h',
+    }
+  )
+  console.log(token)
+  res.status(200).json({
+    status: 'success',
+    message: '使用者登入',
+    token,
+    name: user.username,
+  })
 })
 
 // 使用者登出
@@ -93,15 +117,15 @@ router.get('/logout', checkToken, (req, res) => {
   if (account) {
     const token = jwt.sign(
       {
+        id: undefined,
+        username: undefined,
         account: undefined,
-        password: undefined,
         city: undefined,
         address: undefined,
         phone: undefined,
         email: undefined,
         birth: undefined,
         gender: undefined,
-        created_at: undefined,
       },
       secretKey, // 使用秘鑰加密
       { expiresIn: '-1s' } // 立即使令牌過期
@@ -132,10 +156,6 @@ router.get('/status', checkToken, (req, res) => {
   } else {
     res.status(400).json({ status: 'error', message: '驗證錯誤, 請重新登入' }) // 返回錯誤信息
   }
-})
-
-router.post('/register', (req, res) => {
-  res.status(200).json({ message: '註冊一個使用者' })
 })
 
 // 確認 JWT token是否有效

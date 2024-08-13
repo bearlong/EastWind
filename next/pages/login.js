@@ -2,15 +2,64 @@ import { useEffect, useRef, useState } from 'react'
 import styles from '@/styles/boyu/login.module.scss'
 import { FaCheck } from 'react-icons/fa6'
 import useAuth from '@/hooks/user-auth-bo'
+import Swal from 'sweetalert2'
+import Link from 'next/link'
 
 export default function Login() {
   const [account, setAccount] = useState('')
   const [password, setPassword] = useState('')
+
+  const [accountError, setAccountError] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+
   const { login } = useAuth()
 
-  const onLogin = (event) => {
+  // 前端處理登入邏輯
+  const onLogin = async (event) => {
     event.preventDefault()
-    login(account, password)
+
+    // 重置錯誤訊息
+    setAccountError('')
+    setPasswordError('')
+
+    // 檢查是否填寫帳號和密碼
+    if (!account) {
+      setAccountError('請填寫帳號')
+      return
+    }
+
+    if (!password) {
+      setPasswordError('請填寫密碼')
+      return
+    }
+
+    try {
+      const result = await login(account, password) // 等待登入結果
+
+      if (result.success) {
+        Swal.fire({
+          title: '登入成功！',
+          html: `<span class="p">${result.name} 歡迎回來！</span>`,
+          icon: 'success',
+          customClass: {
+            popup: `${styles['swal-popup-bo']}`, // 自訂整個彈出視窗的 class
+            title: 'h6',
+            icon: `${styles['swal-icon-bo']}`, // 添加自定義 class
+            confirmButton: `${styles['swal-btn-bo']}`, // 添加自定義按鈕 class
+          },
+          confirmButtonText: 'OK', // 修改按鈕文字
+        })
+      } else {
+        // 如果登入結果不成功，在表單上顯示錯誤訊息
+        if (result.message === '請確認帳號是否正確') {
+          setAccountError(result.message)
+        } else if (result.message === '請確認密碼是否正確') {
+          setPasswordError(result.message) // 密碼錯誤優先度低於帳號錯誤，只在帳號正確時顯示
+        }
+      }
+    } catch (error) {
+      setAccountError('發生未知錯誤，請稍後再試')
+    }
   }
 
   const userBoxRef = useRef(null)
@@ -65,6 +114,53 @@ export default function Login() {
     }
   }, [])
 
+  useEffect(() => {
+    const companyBox = compBoxRef.current
+    const companyForm = compFormRef.current
+    const companyInputs = companyForm.querySelectorAll('input')
+
+    const toggleFormActive = (event) => {
+      if (!companyForm.contains(event.target)) {
+        companyForm.classList.toggle(styles.active)
+      }
+    }
+
+    const deactivateForm = () => {
+      if (!companyForm.classList.contains(styles['form-focused'])) {
+        companyForm.classList.remove(styles.active)
+      }
+    }
+
+    const focusInput = () => {
+      companyBox.classList.add(styles.hover)
+      companyForm.classList.add(styles['form-focused'])
+    }
+
+    const blurInput = () => {
+      companyForm.classList.remove(styles['form-focused'])
+      if (!companyForm.contains(document.activeElement)) {
+        companyBox.classList.remove(styles.hover)
+      }
+    }
+
+    companyBox.addEventListener('click', toggleFormActive)
+    companyBox.addEventListener('mouseleave', deactivateForm)
+
+    companyInputs.forEach((input) => {
+      input.addEventListener('focus', focusInput)
+      input.addEventListener('blur', blurInput)
+    })
+
+    return () => {
+      companyBox.removeEventListener('click', toggleFormActive)
+      companyBox.removeEventListener('mouseleave', deactivateForm)
+      companyInputs.forEach((input) => {
+        input.removeEventListener('focus', focusInput)
+        input.removeEventListener('blur', blurInput)
+      })
+    }
+  }, [])
+
   return (
     <section
       className={`${styles['login-box-bo']} d-flex flex-column flex-md-row justify-content-center align-items-center`}
@@ -96,6 +192,11 @@ export default function Login() {
                 value={account}
                 onChange={(e) => setAccount(e.target.value)}
               />
+              {accountError && (
+                <div className={`p ${styles['text-error-bo']}`}>
+                  {accountError}
+                </div>
+              )}
             </div>
             <div className={styles['form-group-bo']}>
               <input
@@ -106,6 +207,11 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              {passwordError && (
+                <div className={`p ${styles['text-error-bo']}`}>
+                  {passwordError}
+                </div>
+              )}
             </div>
           </div>
           <div
@@ -117,7 +223,7 @@ export default function Login() {
               </li>
               <li>|</li>
               <li>
-                <a href="">立即註冊</a>
+                <Link href="/user/register">立即註冊</Link>
               </li>
             </ul>
           </div>

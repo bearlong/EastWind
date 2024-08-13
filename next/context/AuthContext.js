@@ -13,20 +13,22 @@ export const AuthProvider = ({ children }) => {
 
   const router = useRouter()
   const loginRoute = '/login' // 定義登入路由的URL
-  const protectedRoute = ['/']
+  const protectedRoutes = ['/']
 
-  // 當路由變化時，檢查用戶是否已登入，若未登入且在受保護路由，則重定向至登入頁面
   useEffect(() => {
     if (!user) {
-      // 如果用戶未登入
-      if (protectedRoute.includes(router.pathname)) {
-        // 如果當前路由在受保護路由中
-        router.push(loginRoute) // 如果已登入，重定向到首頁
+      // 用戶未登入
+      if (protectedRoutes.includes(router.pathname)) {
+        // 當前路由在受保護路由中
+        router.push(loginRoute)
       }
     } else {
-      router.push('/home') // 如果已登入，重定向到首頁
+      // 用戶已登入
+      if (router.pathname === loginRoute) {
+        router.push('/home') // 如果已登入且當前路徑是登入頁面，重定向到首頁
+      }
     }
-  }, [router.isReady, router.pathname, user]) // 當路由準備就緒、路徑名或用戶狀態變化時觸發
+  }, [router.isReady, router.pathname, user])
 
   // 當token變化時，驗證token並更新用戶狀態
   useEffect(() => {

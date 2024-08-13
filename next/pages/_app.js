@@ -35,7 +35,6 @@ export default function MyApp({ Component, pageProps }) {
       <LoaderProvider close={2} CustomLoader={CatLoader}>
         <CartProvider>{getLayout(<Component {...pageProps} />)}</CartProvider>
       </LoaderProvider>
-      //{' '}
     </AuthProvider>
   )
 }

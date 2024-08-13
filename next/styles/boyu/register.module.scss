@@ -77,7 +77,7 @@
 
 /* 使用者登入表單容器 */
 .user-register-box-bo {
-  padding: 2.4rem 0 3.6rem;
+  padding: 3.6rem 0;
   flex-direction: column;
   width: 40rem;
   background: var(--background);
@@ -90,11 +90,6 @@
   @media (max-width: 576px) {
     width: 30rem;
   }
-}
-
-/* 使用者登入表單容器的 active 狀態 */
-.user-register-box-bo.active {
-  display: block;
 }
 
 /* 使用者登入表單 */
@@ -204,7 +199,7 @@
 
 /* 公司登入表單容器 */
 .company-register-box-bo {
-  padding: 2.4rem 0 3.6rem;
+  padding: 3.6rem 0;
   flex-direction: column;
   width: 40rem;
   background: var(--background);
@@ -218,11 +213,6 @@
   @media (max-width: 576px) {
     width: 30rem;
   }
-}
-
-/* 公司登入表單容器的 active 狀態 */
-.company-register-box-bo.active {
-  display: block;
 }
 
 /* 公司登入表單 */
@@ -313,4 +303,39 @@
 .btn-get-CAPTCHA-bo:hover {
   background-color: var(--primary-dark);
   color: var(--bg-text-color);
+}
+
+/* 使用者登入表單容器的 active 狀態 */
+
+.active {
+  display: block;
+}
+
+.form-input-bo:focus {
+  display: block;
+}
+
+.text-error-bo {
+  padding: 0 2rem;
+  color: var(--primary);
+}
+
+.swal-btn-bo {
+  font-size: 1.4rem;
+  font-weight: 900;
+  background-color: var(--primary);
+  color: var(--bg-text-color);
+  padding: 0.4rem 1rem;
+}
+
+.swal-popup-bo {
+  background-color: var(--form-bg);
+}
+
+.swal-icon-bo {
+  font-size: 1.6rem;
+
+  @media (max-width: 576px) {
+    font-size: 1.4rem;
+  }
 }
