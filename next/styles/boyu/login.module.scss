@@ -93,9 +93,6 @@
 }
 
 /* 使用者登入表單容器的 active 狀態 */
-.user-login-box-bo.active {
-  display: block;
-}
 
 /* 使用者登入表單 */
 .user-login-form-bo {
@@ -222,11 +219,6 @@
   }
 }
 
-/* 公司登入表單容器的 active 狀態 */
-.company-login-box-bo.active {
-  display: block;
-}
-
 /* 公司登入表單 */
 .company-login-form-bo {
   cursor: default;
@@ -316,4 +308,13 @@
 .btn-get-CAPTCHA-bo:hover {
   background-color: var(--primary-dark);
   color: var(--bg-text-color);
+}
+
+/* 使用者登入表單容器的 active 狀態 */
+.active {
+  display: block;
+}
+
+.form-input-bo:focus {
+  display: block;
 }

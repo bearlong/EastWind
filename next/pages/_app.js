@@ -8,8 +8,10 @@ import '@/styles/public.scss'
 import '@/styles/Normalize.scss'
 // 載入購物車context
 import { CartProvider } from '@/hooks/use-cart-state'
+
 // 載入認証用context
-import { AuthProvider } from '@/hooks/use-auth'
+import { AuthProvider } from '@/context/AuthContext'
+
 // 載入動畫context
 import { LoaderProvider } from '@/hooks/use-loader'
 
@@ -33,6 +35,7 @@ export default function MyApp({ Component, pageProps }) {
       <LoaderProvider close={2} CustomLoader={CatLoader}>
         <CartProvider>{getLayout(<Component {...pageProps} />)}</CartProvider>
       </LoaderProvider>
+      //{' '}
     </AuthProvider>
   )
 }
