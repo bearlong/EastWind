@@ -10,6 +10,27 @@ export default function ClassList() {
   const [classes, setClasses] = useState([])
   const [pages, setPages] = useState()
   const [filter, setFilter] = useState()
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  // classes狀態 -> 存儲從API獲取的課程數據
+  useEffect(() => {
+    fetchClasses();
+  }, []);
+
+  const fetchClasses = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('實際的API端點');
+      setClasses(response.data);
+      setLoading(false);
+    } catch (err) {
+      setError('無法載入課程資料');
+      setLoading(false);
+    }
+  };
+
+  if (loading) return <div>載入中...</div>;
+  if (error) return <div>{error}</div>;
 
   const getClasses = async () => {
     let newClasses, error
