@@ -93,9 +93,6 @@
 }
 
 /* 使用者登入表單容器的 active 狀態 */
-.active {
-  display: block;
-}
 
 /* 使用者登入表單 */
 .user-login-form-bo {
@@ -315,5 +312,9 @@
 
 /* 使用者登入表單容器的 active 狀態 */
 .active {
+  display: block;
+}
+
+.form-input-bo:focus {
   display: block;
 }

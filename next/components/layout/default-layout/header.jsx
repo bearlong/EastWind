@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import styles from '@/styles/boyu/header.module.scss'
 import { IoHome } from 'react-icons/io5'
-import { FaUser } from 'react-icons/fa6'
+import { FaUser, FaRightFromBracket } from 'react-icons/fa6'
 import { FaShoppingCart } from 'react-icons/fa'
 import { useCart } from '@/hooks/use-cart'
 import Cart from '@/components/cart'
+import useAuth from '@/hooks/user-auth-bo'
+import Link from 'next/link'
+import { AuthContext } from '@/context/AuthContext'
 
 export default function Header() {
   const {
@@ -19,6 +22,14 @@ export default function Header() {
 
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
+  const { logout } = useAuth()
+  const { user } = useContext(AuthContext)
+
+  const onLogout = (event) => {
+    event.preventDefault()
+    logout()
+  }
+
   return (
     <>
       <header
@@ -67,9 +78,9 @@ export default function Header() {
                 </a>
               </li>
               <li>
-                <a href="">
+                <Link href="/login">
                   <FaUser className={` ${styles['icon-bo']}`} />
-                </a>
+                </Link>
               </li>
               <li>
                 <div className="position-relative">
@@ -85,6 +96,14 @@ export default function Header() {
                   </div>
                 </div>
               </li>
+              {user && ( // 只有在 user 存在時才顯示登出按鈕
+                <li>
+                  <a href="" onClick={onLogout}>
+                    <FaRightFromBracket className={` ${styles['icon-bo']}`} />
+                  </a>
+                </li>
+              )}
+
               <li>
                 <div className={styles['navigation-bo']}>
                   <div className={styles['navigation-box-bo']}>
