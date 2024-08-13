@@ -32,13 +32,13 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
     fetchCart()
   }, [])
 
-  const handleAdd = async (object, type, quantity, price) => {
+  const handleAdd = async (object, type, quantity) => {
     const foundIndex = cart.findIndex(
       (v) => v.object_id === object.id && v.object_type === type
     )
     const url = `http://localhost:3005/api/cart/${user_id}/${type}/${object.id}`
     const method = foundIndex > -1 ? 'PUT' : 'POST'
-    const body = JSON.stringify({ quantity, price })
+    const body = JSON.stringify({ quantity, price: object.price })
 
     try {
       const response = await fetch(url, {
@@ -49,6 +49,9 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       const result = await response.json()
       if (result.status === 'success') {
         setCart(result.data.cart)
+        setError(null)
+      } else {
+        setError(result.data.message)
       }
     } catch (error) {
       setError(error.message)
@@ -75,6 +78,9 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       const result = await response.json()
       if (result.status === 'success') {
         setCart(result.data.cart)
+        setError(null)
+      } else {
+        setError(result.data.message)
       }
     } catch (error) {
       setError(error.message)
@@ -102,6 +108,9 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       const result = await response.json()
       if (result.status === 'success') {
         setCart(result.data.cart)
+        setError(null)
+      } else {
+        setError(result.data.message)
       }
     } catch (error) {
       setError(error.message)

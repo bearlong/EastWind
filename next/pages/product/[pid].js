@@ -16,8 +16,10 @@ import styles from '@/styles/bearlong/productDetail.module.scss'
 import { useRouter } from 'next/router'
 import StarRating from '@/components/product/starRating'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { useCart } from '@/hooks/use-cart'
 
 export default function Detail() {
+  const { handleAdd = () => {}, error = '' } = useCart()
   const router = useRouter()
   const { pid } = router.query
   const [data, setData] = useState({
@@ -122,6 +124,8 @@ export default function Detail() {
       getProduct(pid)
     }
   }, [router.isReady, router.query])
+
+  useEffect(() => {}, [error])
 
   return (
     <>
@@ -317,9 +321,18 @@ export default function Detail() {
                 >
                   立即購買
                 </div>
-                <div type="button" className={`${styles['btnRectangle']}`}>
+                <button
+                  type="button"
+                  className={`${styles['btnRectangle']}`}
+                  onClick={() => {
+                    handleAdd(data.product, 'product', quantity)
+                    if (error) {
+                      alert(error)
+                    }
+                  }}
+                >
                   加入購物車
-                </div>
+                </button>
               </div>
             </div>
           </div>

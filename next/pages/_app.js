@@ -16,6 +16,7 @@ import { LoaderProvider } from '@/hooks/use-loader'
 import DefaultLayout from '@/components/layout/default-layout'
 // 自訂用載入動畫元件
 import { CatLoader, NoLoader } from '@/hooks/use-loader/components'
+import Cart from '@/components/cart'
 
 export default function MyApp({ Component, pageProps }) {
   // 導入bootstrap的JS函式庫

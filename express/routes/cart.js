@@ -226,7 +226,7 @@ router.delete('/:id/product/:oid', upload.none(), async (req, res) => {
         [id]
       )
       res
-        .status(204)
+        .status(200)
         .json({ status: 'success', data: { message: '刪除成功', cart } })
     } else {
       res.status(400).json({
@@ -269,7 +269,7 @@ router.delete('/:id/course/:oid', upload.none(), async (req, res) => {
         [id]
       )
       res
-        .status(204)
+        .status(200)
         .json({ status: 'success', data: { message: '刪除成功', cart } })
     } else {
       res.status(400).json({

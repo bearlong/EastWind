@@ -3,6 +3,10 @@
   position: relative;
 }
 
+.mySwal {
+  font-size: 1.6rem;
+}
+
 .cart-box-bo {
   --bs-offcanvas-width: 33%;
   --bs-offcanvas-transition: 0.8s;
@@ -20,6 +24,7 @@
   z-index: 9999;
   background: var(--bg-text-color);
   height: 100vh;
+  user-select: none;
 }
 .recommend-section-bo {
   background: var(--bg-text-light-color);
@@ -47,7 +52,7 @@
   .topList-bl {
     overflow: hidden;
     .swiper {
-      height: calc(320px * 2);
+      height: calc(320px * 3);
     }
   }
 
@@ -59,6 +64,8 @@
     justify-content: center;
     align-items: center;
     transition: 0.5s;
+    user-select: none;
+
     .swiperImg {
       position: relative;
     }
@@ -193,6 +200,8 @@
 
     textarea {
       --bs-border-color: var(--primary);
+      resize: none;
+      font-size: 1.6rem;
     }
   }
   .pay-button-bo {
