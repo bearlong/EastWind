@@ -149,7 +149,7 @@ export default function Detail() {
           </p>
           <div className="d-flex flex-md-row flex-column justify-content-between">
             <div
-              className={`${styles['imgGroup-bl']} d-flex flex-column-reverse flex-lg-row me-0 me-lg-3`}
+              className={`d-flex flex-column-reverse flex-lg-row me-0 me-lg-3`}
             >
               <div
                 className={`${styles['imgSmall-bl']}  mx-lg-5 d-flex flex-lg-column mt-3 mt-lg-0 justify-content-between justify-content-lg-start`}
@@ -204,17 +204,13 @@ export default function Detail() {
             <div
               className={`${styles['productDetailContent-bl']} d-flex justify-content-between flex-column`}
             >
-              <div className={styles['titleGroup-bl']}>
+              <div>
                 <p>{data.product.brand_name}</p>
                 <div className={`${styles['productName-bl']} m-0`}>
                   <h5>{data.product.name}</h5>
                 </div>
-                <div
-                  className={`${styles['score-bl']} d-flex justify-content-between mb-2`}
-                >
-                  <div
-                    className={`${styles['productStar']} d-flex align-items-center`}
-                  >
+                <div className={`d-flex justify-content-between mb-2`}>
+                  <div className={`d-flex align-items-center`}>
                     <p className="me-2">
                       {data.product.average_star
                         ? data.product.average_star
@@ -243,9 +239,7 @@ export default function Detail() {
                     </div>
                     <p className="ms-2">({data.product.comment_count})</p>
                   </div>
-                  <div
-                    className={`${styles['like']} d-flex align-items-center`}
-                  >
+                  <div className={`d-flex align-items-center`}>
                     <FaHeart fontSize={16} />
                     <p className="ms-2">已收藏</p>
                   </div>
@@ -254,7 +248,7 @@ export default function Detail() {
                   NT$ <span>{data.product.price}</span>
                 </h5>
               </div>
-              <div className={styles['category']}>
+              <div>
                 {data.specifications.color && (
                   <p className="mb-2">
                     顏色: <span>{data.specifications.color}</span>
@@ -295,9 +289,7 @@ export default function Detail() {
                 <p className="mb-2">
                   庫存數量: <span>{data.product.stock}</span>
                 </p>
-                <div
-                  className={`${styles['amount-bl']} d-flex justify-content-between`}
-                >
+                <div className={`d-flex justify-content-between`}>
                   <h5>數量</h5>
                   <div
                     className={`${styles['plusMinus']} d-flex align-items-center`}
@@ -325,10 +317,7 @@ export default function Detail() {
                 >
                   立即購買
                 </div>
-                <div
-                  type="button"
-                  className={`${styles['btnRectangle']} ${styles['cartPlus']}`}
-                >
+                <div type="button" className={`${styles['btnRectangle']}`}>
                   加入購物車
                 </div>
               </div>
@@ -336,8 +325,8 @@ export default function Detail() {
           </div>
         </div>
         <div className={`${styles['productDetailSection2-bl']}  row`}>
-          <div className={`${styles['section2Left-bl']}  col-12 col-md-8`}>
-            <div className={`${styles['detailContent-bl']}   mb-5`}>
+          <div className={` col-12 col-md-8`}>
+            <div className={`  mb-5`}>
               <div className={styles['underLine-bl']}>
                 <h6>產品敘述:</h6>
               </div>
@@ -345,7 +334,7 @@ export default function Detail() {
                 (v, i) => v.trim() !== '' && <p key={i}>{v}</p>
               )}
             </div>
-            <div className={`${styles['comment-bl']}   mb-5`}>
+            <div className={` mb-5`}>
               <div className={styles['underLine-bl']}>
                 <h6>商品評論:</h6>
               </div>
@@ -434,13 +423,13 @@ export default function Detail() {
                             alt=""
                           />
                         </div>
-                        <div className={styles['cardBody-bl']}>
+                        <div className="cardBody-bl">
                           <div className={`${styles['userInfo-bl']} mb-4`}>
                             <p>user_name</p>
                             <StarRating initRating={value.star} />
                             <p>{value.date}</p>
                           </div>
-                          <div className={styles['commentContent-bl']}>
+                          <div>
                             <p>{value.content}</p>
                           </div>
                         </div>
@@ -472,7 +461,6 @@ export default function Detail() {
                     slidesPerView: 4,
                     spaceBetween: 20,
                     direction: 'vertical',
-                    // 禁用觸摸滑動
                   },
                 }}
                 className={styles.swiper}

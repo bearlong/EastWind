@@ -7,7 +7,7 @@ import '@/styles/loader.scss'
 import '@/styles/public.scss'
 import '@/styles/Normalize.scss'
 // 載入購物車context
-import { CartProvider } from '@/hooks/use-cart-state'
+import { CartProvider } from '@/hooks/use-cart'
 // 載入認証用context
 import { AuthProvider } from '@/hooks/use-auth'
 // 載入動畫context

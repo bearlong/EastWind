@@ -1,184 +1,303 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import styles from '@/styles/bearlong/cart.module.scss'
+import { FaShoppingCart } from 'react-icons/fa'
+import { FaXmark, FaTrashCan, FaPlus, FaMinus } from 'react-icons/fa6'
+import Offcanvas from 'react-bootstrap/Offcanvas'
+import { useCart } from '@/hooks/use-cart'
+import Image from 'next/image'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import Link from 'next/link'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
 export default function CartIndex() {
+  const {
+    cart,
+    top,
+    error,
+    handleIncrease = () => {},
+    handleDecrease = () => {},
+    handleRemove = () => {},
+  } = useCart()
+  let total
+  const [showRecommend, setShowRecommend] = useState(false)
+  const [show, setShow] = useState(false)
+
+  const handleClose = () => setShow(false)
+  const handleShow = () => setShow(true)
+
+  const handleCartShow = () => {
+    setTimeout(() => {
+      setShowRecommend(true)
+    }, 800)
+  }
+
+  const MySwal = withReactContent(Swal)
+
+  const notifyAndRemove = (object) => {
+    MySwal.fire({
+      title: '你確定嗎',
+      text: '這個操作無法復原',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d71515',
+      cancelButtonColor: '#747474',
+      cancelButtonText: '取消',
+      confirmButtonText: '確定刪除它',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: '已刪除!',
+          text: object.item_name + ' 已成功刪除',
+          icon: 'success',
+        })
+        handleRemove(object)
+      }
+    })
+  }
+  const handleCartHide = () => setShowRecommend(false)
+  useEffect(() => {
+    // 根據 isCartVisible 狀態來處理 recommendSectionBo 的類名
+    const recommendSectionBo = document.querySelector('.recommend-section-bo')
+    if (recommendSectionBo) {
+      if (showRecommend) {
+        recommendSectionBo.classList.add(`active`)
+      } else {
+        recommendSectionBo.classList.remove(`active`)
+      }
+    }
+  }, [showRecommend])
+
   return (
     <>
-      <div className="row mt-5 mx-5">
-        <div className="col-sm-8 cart-area">
-          <h4 className="mb-3">購物車</h4>
-          <div className="card mb-3 border-0 cart-card">
-            <div className="row g-0">
-              <div className="col-md-3">
-                <img
-                  src="/images/product/thumb/t1.jpg"
-                  className="img-fluid rounded-start"
-                  alt="..."
-                />
-              </div>
-              <div className="col-md-9">
-                <div className="card-body">
-                  <h5 className="card-title card-text d-flex justify-content-between align-items-center">
-                    Nike Air Force 1 PLT.AF.ORM <span>$4,000.00</span>
-                  </h5>
-                  <p className="card-text">
-                    Pale Ivory/Light Orewood Brown/白/Summit White
-                  </p>
-
-                  <div className="row g-3 align-items-center">
-                    <div className="col-auto">
-                      <label
-                        htmlFor="inputPassword6"
-                        className="col-form-label"
+      <main className={styles.main}>
+        <button className="btn btn-primary" onClick={handleShow}>
+          <FaShoppingCart className={` ${styles['icon-bo']}`} />
+        </button>
+        <Offcanvas
+          className={` ${styles['cart-box-bo']} `}
+          show={show}
+          onShow={() => {
+            handleCartShow()
+          }}
+          onExiting={() => {
+            handleCartHide()
+          }}
+          onHide={() => {
+            handleClose()
+          }}
+          placement={'end'}
+        >
+          <div
+            className={`recommend-section-bo ${styles['recommend-section-bo']}`}
+          >
+            <div className={styles['recommend-title-bo']}>
+              <h5>推薦商品</h5>
+            </div>
+            <div
+              className={` ${styles['topList-bl']}  d-flex justify-content-center align-items-center flex-column mt-3`}
+            >
+              <Swiper
+                spaceBetween={10}
+                slidesPerView={2}
+                direction="vertical"
+                autoHeight={true}
+                loop={false}
+                className={styles.swiper}
+              >
+                {top.map((product, i) => {
+                  return (
+                    <SwiperSlide key={product.id} className={styles.column1}>
+                      <Link href={`/product/${product.id}`}>
+                        <div
+                          className={`${styles['productCard']} swiper-slide`}
+                        >
+                          <div className={styles['swiperImg']}>
+                            <div className={styles['imgBox']}>
+                              <div
+                                className={`${styles['top']} ${
+                                  styles[`top${i + 1}`]
+                                }`}
+                              >
+                                {i + 1}
+                              </div>
+                              <Image
+                                src={`../../images/product/${product.img}`}
+                                width={280}
+                                height={280}
+                                alt=""
+                              />
+                            </div>
+                            <div
+                              className={`${styles['imgBox']} ${styles['secondImg']}`}
+                            >
+                              <Image
+                                src={
+                                  product.img2
+                                    ? `../../images/product/${product.img2}`
+                                    : '../../images/boyu/logo.svg'
+                                }
+                                width={280}
+                                height={280}
+                                alt=""
+                              />
+                            </div>
+                          </div>
+                          <div className={styles['cardBody']}>
+                            <div className={styles['productName-bl']}>
+                              <p>{product.brand_name}</p>
+                              <p className={` ${styles['productDescription']}`}>
+                                {product.name}
+                              </p>
+                            </div>
+                            <p>NT. {product.price}</p>
+                          </div>
+                        </div>
+                      </Link>
+                    </SwiperSlide>
+                  )
+                })}
+              </Swiper>
+            </div>
+          </div>
+          <div className={styles['cart-section-bo']}>
+            <Offcanvas.Header>
+              <Offcanvas.Title>
+                <h5 className={`${styles['cart-title-bo']}  offcanvas-title`}>
+                  購物車（2 件）
+                </h5>
+              </Offcanvas.Title>
+              <button
+                type="button"
+                className={`${styles['btn-close-bl']}  btn-close d-flex justify-content-between align-items-center`}
+                onClick={() => {
+                  handleCartHide()
+                  handleClose()
+                  console.log('click')
+                }}
+              >
+                <FaXmark width={25} />
+              </button>
+            </Offcanvas.Header>
+            <div className="offcanvas-header"></div>
+            <div className={`${styles['filterBox']}  offcanvas-body`}>
+              <div
+                className={`${styles['cart-bo']}  d-flex flex-column justify-content-between`}
+              >
+                <div className={styles['cart-body-bo']}>
+                  {cart.map((v) => {
+                    total += v.quantity * v.price
+                    return (
+                      <div
+                        className={`${styles['cart-product-bo']} d-flex mb-5`}
+                        key={v.id}
                       >
-                        數量:
-                      </label>
-                    </div>
-                    <div className="col-auto">
-                      <select
-                        className="form-select form-select-sm"
-                        aria-label=".form-select-sm example"
-                      >
-                        <option selected>0</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                      </select>
-                    </div>
-                  </div>
+                        <div
+                          className={`${styles['cart-product-img-bo']} me-4`}
+                        >
+                          <Image
+                            src={`../../images/${v.object_type}/${v.img}`}
+                            width={200}
+                            height={200}
+                            alt=""
+                          />
+                        </div>
+                        <div
+                          className={`${styles['cart-product-text-box-bo']} flex-grow-1 d-flex flex-column justify-content-between`}
+                        >
+                          <div
+                            className={`${styles['cart-product-text-bo']} d-flex justify-content-between`}
+                          >
+                            <div className={styles['cart-product-title-bo']}>
+                              <h6>{v.item_name}</h6>
+                              <p>{v.brand_name}</p>
+                            </div>
+                            <FaTrashCan
+                              className="h6"
+                              onClick={() => {
+                                notifyAndRemove(v)
+                              }}
+                            />
+                          </div>
+                          <div
+                            className={`${styles['cart-product-text-bo']}  d-flex justify-content-between`}
+                          >
+                            <div
+                              className={`${styles['cart-product-number-bo']}  d-flex justify-content-between align-items-center`}
+                            >
+                              <FaMinus
+                                className="me-5 p"
+                                onClick={() => {
+                                  handleDecrease(v)
+                                }}
+                              />
 
-                  <div className="iconbar">
-                    <i className="bi bi-suit-heart"></i>
-                    <i className="bi bi-trash3"></i>
+                              <h6 className={styles['quantity']}>
+                                {v.quantity}
+                              </h6>
+                              <FaPlus
+                                className="ms-5 p"
+                                onClick={() => {
+                                  handleIncrease(v)
+                                }}
+                              />
+                            </div>
+                            <div className={styles['product-price-bo']}>
+                              <h6>NT$ {v.price}</h6>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+                <div className={styles['cart-text-box-bo']}>
+                  <div className={`${styles['remark-box-bo ']} mb-3`}>
+                    <h6>新增訂單備註</h6>
+                    <textarea
+                      className="form-control mt-3"
+                      rows={3}
+                      id=""
+                      defaultValue={''}
+                    />
                   </div>
+                  <div
+                    className={`${styles['total-price-box-bo']} d-flex justify-content-between align-items-center mb-3`}
+                  >
+                    <h6>總計</h6>
+                    <h6>NT$ 2,380</h6>
+                  </div>
+                  <button
+                    className={`${styles['pay-button-bo']} d-flex justify-content-center align-items-center`}
+                  >
+                    <h5>現在付款</h5>
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-          <hr />
-          <div className="card mb-3 border-0 cart-card">
-            <div className="row g-0">
-              <div className="col-md-3">
-                <img
-                  src="/images/product/thumb/t1.jpg"
-                  className="img-fluid rounded-start"
-                  alt="..."
-                />
-              </div>
-              <div className="col-md-9">
-                <div className="card-body">
-                  <h5 className="card-title card-text d-flex justify-content-between align-items-center">
-                    Nike Air Force 1 PLT.AF.ORM <span>$4,000.00</span>
-                  </h5>
-                  <p className="card-text">
-                    Pale Ivory/Light Orewood Brown/白/Summit White
-                  </p>
+        </Offcanvas>
+      </main>
+      <style jsx>
+        {`
+          .active {
+            animation-name: rightActive;
+            animation-duration: 0.5s;
+            animation-iteration-count: 1;
+            animation-direction: normal;
+            animation-fill-mode: forwards;
+          }
 
-                  <div className="row g-3 align-items-center">
-                    <div className="col-auto">
-                      <label
-                        htmlFor="inputPassword6"
-                        className="col-form-label"
-                      >
-                        數量:
-                      </label>
-                    </div>
-                    <div className="col-auto">
-                      <select
-                        className="form-select form-select-sm"
-                        aria-label=".form-select-sm example"
-                      >
-                        <option selected>0</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="iconbar">
-                    <i className="bi bi-suit-heart"></i>
-                    <i className="bi bi-trash3"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <hr />
-          <div className="card mb-3 border-0 cart-card">
-            <div className="row g-0">
-              <div className="col-md-3">
-                <img
-                  src="/images/product/thumb/t1.jpg"
-                  className="img-fluid rounded-start"
-                  alt="..."
-                />
-              </div>
-              <div className="col-md-9">
-                <div className="card-body">
-                  <h5 className="card-title card-text d-flex justify-content-between align-items-center">
-                    Nike Air Force 1 PLT.AF.ORM <span>$4,000.00</span>
-                  </h5>
-                  <p className="card-text">
-                    Pale Ivory/Light Orewood Brown/白/Summit White
-                  </p>
-
-                  <div className="row g-3 align-items-center">
-                    <div className="col-auto">
-                      <label
-                        htmlFor="inputPassword6"
-                        className="col-form-label"
-                      >
-                        數量:
-                      </label>
-                    </div>
-                    <div className="col-auto">
-                      <select
-                        className="form-select form-select-sm"
-                        aria-label=".form-select-sm example"
-                      >
-                        <option selected>0</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="iconbar">
-                    <i className="bi bi-suit-heart"></i>
-                    <i className="bi bi-trash3"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <hr />
-        </div>
-        <div className="col-sm-4">
-          <h4 className="mb-3">摘要</h4>
-
-          <p className="card-text d-flex justify-content-between align-items-center">
-            小計 <span>$4,000.00</span>
-          </p>
-          <hr />
-          <p className="card-text d-flex justify-content-between align-items-center">
-            預估運費與手續費 <span>$300.00</span>
-          </p>
-          <hr />
-          <p className="card-text d-flex justify-content-between align-items-center">
-            總計 <span>$4,300.00</span>
-          </p>
-          <hr />
-          <button className="btn btn-primary w-100 mb-3">會員結帳</button>
-          <button className="btn btn-primary w-100 mb-3">訪客結帳</button>
-        </div>
-      </div>
-      <div className="row mt-5 mx-5">
-        <div className="col-sm-12 cart-area">
-          <h4 className="mb-3">最愛</h4>
-          <p>想要檢視你的最愛嗎？ 加入我們 或 登入</p>
-        </div>
-      </div>
+          @keyframes rightActive {
+            0% {
+              left: -50%;
+            }
+            100% {
+              left: -100%;
+            }
+          }
+        `}
+      </style>
     </>
   )
 }

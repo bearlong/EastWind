@@ -118,6 +118,14 @@ export default function Header() {
           </ul>
         </div>
       </div>
+      <style jsx>
+        {`
+          header {
+            padding-right: 0 !important;
+            margin-right: 0 !important;
+          }
+        `}
+      </style>
     </header>
   )
 }
