@@ -13,8 +13,8 @@ export default function ClassList() {
 
   return (
 <>
-  {/* container */}
-  <div className="container desktop-list2-aa">
+<div className="container">
+  <div className="desktop-list2-aa">
     <div className="class-header-aa">
       <ul className="d-flex subBar-aa">
         <li>
@@ -150,15 +150,29 @@ export default function ClassList() {
       </ul>
     </div>
     <div className="sec1-aa">
-      <div className="text2-aa">
-        <div className="phohe-H1">麻將 課程排行</div>
+      <div className="text12-aa">
+        <h2>麻將 課程排行</h2>
       </div>
-      <div className="cardgroup2-aa">
+      <div className="classCards-aa">
         <div className="classCard-aa">
-          {/* <rank1-aa>
-      1
-    </rank1-aa> */}
           <div className="imgBox-aa">
+            <div className="rank1">1</div>
+            <img
+              src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
+              alt=""
+            />
+          </div>
+          <div className="cardBody-aa">
+            <div className="className-aa">
+              <p>西洋棋國手教你下西洋棋</p>
+              <p className="classDescription-aa">劉業揚＆楊元翰</p>
+            </div>
+            <p>NT. 450</p>
+          </div>
+        </div>
+        <div className="classCard-aa">
+          <div className="imgBox-aa">
+            <div className="rank2">2</div>
             <img src="" alt="" />
           </div>
           <div className="cardBody-aa">
@@ -171,6 +185,7 @@ export default function ClassList() {
         </div>
         <div className="classCard-aa">
           <div className="imgBox-aa">
+            <div className="rank3">3</div>
             <img src="" alt="" />
           </div>
           <div className="cardBody-aa">
@@ -183,18 +198,7 @@ export default function ClassList() {
         </div>
         <div className="classCard-aa">
           <div className="imgBox-aa">
-            <img src="" alt="" />
-          </div>
-          <div className="cardBody-aa">
-            <div className="className-aa">
-              <p>西洋棋國手教你下西洋棋</p>
-              <p className="classDescription-aa">劉業揚＆楊元翰</p>
-            </div>
-            <p>NT. 450</p>
-          </div>
-        </div>
-        <div className="classCard-aa">
-          <div className="imgBox-aa">
+            <div className="rank4">4</div>
             <img src="" alt="" />
           </div>
           <div className="cardBody-aa">
@@ -234,7 +238,9 @@ export default function ClassList() {
         </svg>
       </div>
     </div>
-    <div className="texth22-aa list22-aa">麻將課程 列表</div>
+    <div className="texth22-aa">
+      <h2>麻將課程 列表</h2>
+    </div>
     <div className="sec2">
       <div className="text2-aa">
         <div className="navBarContent-aa">
@@ -290,7 +296,7 @@ export default function ClassList() {
         </div>
       </div>
       <div className="cardgroup22-aa">
-        <div className="cardgroup2-aa">
+        <div className="classCards-aa">
           <div className="classCard-aa">
             <div className="imgBox-aa">
               <img src="" alt="" />
@@ -340,7 +346,7 @@ export default function ClassList() {
             </div>
           </div>
         </div>
-        <div className="cardgroup2-aa">
+        <div className="classCards-aa">
           <div className="classCard-aa">
             <div className="imgBox-aa">
               <img src="" alt="" />
@@ -390,7 +396,7 @@ export default function ClassList() {
             </div>
           </div>
         </div>
-        <div className="cardgroup2-aa">
+        <div className="classCards-aa">
           <div className="classCard-aa">
             <div className="imgBox-aa">
               <img src="" alt="" />
@@ -440,7 +446,7 @@ export default function ClassList() {
             </div>
           </div>
         </div>
-        <div className="cardgroup2-aa">
+        <div className="classCards-aa">
           <div className="classCard-aa">
             <div className="imgBox-aa">
               <img src="" alt="" />
@@ -494,7 +500,9 @@ export default function ClassList() {
     </div>
     <div className="sec23-aa">
       <div className="loadMore-aa">
-        <h6 className="text23-aa">16/36</h6>
+        <div className="text23-aa">
+          <h6>16/36</h6>
+        </div>
         <div className="progressBar-aa">
           <div className="Line-9">
             <svg
@@ -534,6 +542,7 @@ export default function ClassList() {
       </div>
     </div>
   </div>
+</div>
 </>
 
   )
