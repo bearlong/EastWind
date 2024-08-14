@@ -17,23 +17,14 @@ const useAuth = () => {
 
   // 登入功能
   const login = async (account, password) => {
-    if (!account) {
-      return { success: false, message: '請填寫帳號' }
-    }
-
-    if (!password) {
-      return { success: false, message: '請填寫密碼' }
-    }
-
     const url = 'http://localhost:3005/api/user/login'
-    const formData = new FormData()
-    formData.append('account', account)
-    formData.append('password', password)
+    const data = { account, password }
 
     try {
       const response = await fetch(url, {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
       })
 
       const result = await response.json()
@@ -42,7 +33,7 @@ const useAuth = () => {
         const newToken = result.token
         setToken(newToken)
         localStorage.setItem('nextXXXToken', newToken)
-        return { success: true, token: newToken, name: result.name } // 确保返回name
+        return { success: true, token: newToken, name: result.name }
       } else {
         return { success: false, message: result.message }
       }

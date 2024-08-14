@@ -11,8 +11,27 @@ export default function Login() {
 
   const [accountError, setAccountError] = useState('')
   const [passwordError, setPasswordError] = useState('')
+  const [generalError, setGeneralError] = useState('')
 
   const { login } = useAuth()
+
+  // 在頁面加載時從 sessionStorage 中讀取賬號和密碼
+  useEffect(() => {
+    const storedAccount = sessionStorage.getItem('registeredAccount') || ''
+    const storedPassword = sessionStorage.getItem('registeredPassword') || ''
+    setAccount(storedAccount)
+    setPassword(storedPassword)
+
+    // 清理 sessionStorage 中的帳號和密碼
+    sessionStorage.removeItem('registeredAccount')
+    sessionStorage.removeItem('registeredPassword')
+  }, [])
+
+  // 在頁面加載時從 sessionStorage 中讀取賬號和密碼
+  useEffect(() => {
+    const storedAccount = sessionStorage.getItem('savedAccount') || ''
+    setAccount(storedAccount)
+  }, [])
 
   // 前端處理登入邏輯
   const onLogin = async (event) => {
@@ -35,8 +54,10 @@ export default function Login() {
 
     try {
       const result = await login(account, password) // 等待登入結果
+      console.log(result) // 可以打印出 result 來檢查它的結構是否正確
 
       if (result.success) {
+        sessionStorage.removeItem('savedAccount') // 清除儲存的帳號
         Swal.fire({
           title: '登入成功！',
           html: `<span class="p">${result.name} 歡迎回來！</span>`,
@@ -47,14 +68,15 @@ export default function Login() {
             icon: `${styles['swal-icon-bo']}`, // 添加自定義 class
             confirmButton: `${styles['swal-btn-bo']}`, // 添加自定義按鈕 class
           },
-          confirmButtonText: 'OK', // 修改按鈕文字
+          confirmButtonText: '確認', // 修改按鈕文字
         })
       } else {
-        // 如果登入結果不成功，在表單上顯示錯誤訊息
-        if (result.message === '請確認帳號是否正確') {
+        // 根據返回的錯誤訊息設置相應的錯誤狀態
+        if (result.message.includes('帳號')) {
           setAccountError(result.message)
-        } else if (result.message === '請確認密碼是否正確') {
-          setPasswordError(result.message) // 密碼錯誤優先度低於帳號錯誤，只在帳號正確時顯示
+        }
+        if (result.message.includes('密碼')) {
+          setPasswordError(result.message)
         }
       }
     } catch (error) {
@@ -219,7 +241,7 @@ export default function Login() {
           >
             <ul className="d-flex gap-3">
               <li>
-                <a href="">忘記密碼</a>
+                <Link href="/user/forgot-password">忘記密碼</Link>
               </li>
               <li>|</li>
               <li>

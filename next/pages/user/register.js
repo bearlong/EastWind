@@ -11,12 +11,14 @@ export default function Register() {
   const [emailError, setEmailError] = useState('') // 存放電子信箱的錯誤訊息
   const [accountError, setAccountError] = useState('') // 存放帳號的錯誤訊息
   const [passwordError, setPasswordError] = useState('') // 存放密碼的錯誤訊息
+  const [checkPasswordError, setCheckPasswordError] = useState('') // 新增狀態
   const [generalError, setGeneralError] = useState('') // 存放一般錯誤訊息
 
   const [formData, setFormData] = useState({
     email: '',
     account: '',
     password: '',
+    checkPassword: '', // 使用 checkPassword 替代確認密碼欄位
   }) // 表單數據狀態
 
   // 處理表單輸入變更
@@ -33,7 +35,7 @@ export default function Register() {
     event.preventDefault()
 
     if (!emailVerified) {
-      setEmailError('電子信箱未驗證')
+      setEmailError('請先驗證電子信箱')
       return
     }
 
@@ -41,7 +43,14 @@ export default function Register() {
     setEmailError('')
     setAccountError('')
     setPasswordError('')
+    setCheckPasswordError('') // 重置 checkPassword 錯誤訊息
     setGeneralError('')
+
+    // 驗證確認密碼
+    if (formData.password !== formData.checkPassword) {
+      setCheckPasswordError('密碼和確認密碼不一致')
+      return
+    }
 
     try {
       const response = await fetch(
@@ -58,22 +67,25 @@ export default function Register() {
       if (result.status === 'success') {
         Swal.fire({
           title: '註冊成功！',
+          html: `<span class="p">歡迎加入！</span>`,
           icon: 'success',
-          confirmButtonText: 'OK',
+          customClass: {
+            popup: `${styles['swal-popup-bo']}`, // 自訂整個彈出視窗的 class
+            title: 'h6',
+            icon: `${styles['swal-icon-bo']}`, // 添加自定義 class
+            confirmButton: `${styles['swal-btn-bo']}`, // 添加自定義按鈕 class
+          },
+          confirmButtonText: '確認', // 修改按鈕文字
         }).then(() => {
+          sessionStorage.setItem('registeredAccount', formData.account)
+          sessionStorage.setItem('registeredPassword', formData.password)
           window.location.href = '/login' // 跳轉到登入頁面
         })
       } else {
         // 顯示後端返回的錯誤訊息在表單中
         setEmailError(result.errors?.email || '')
-        console.log('Email Error:', emailError)
-
         setAccountError(result.errors?.account || '')
-        console.log('Account Error:', accountError)
-
         setPasswordError(result.errors?.password || '')
-        console.log('Password Error:', passwordError)
-
         setGeneralError(result.message || '發生錯誤，請稍後再試')
       }
     } catch (error) {
@@ -111,9 +123,15 @@ export default function Register() {
       if (result.status === 'success') {
         Swal.fire({
           title: '驗證信已發送',
-          text: '請檢查您的電子信箱以完成驗證',
+          html: `<span class="p">請檢查您的電子信箱以完成驗證！</span>`,
           icon: 'success',
-          confirmButtonText: 'OK',
+          customClass: {
+            popup: `${styles['swal-popup-bo']}`, // 自訂整個彈出視窗的 class
+            title: 'h6',
+            icon: `${styles['swal-icon-bo']}`, // 添加自定義 class
+            confirmButton: `${styles['swal-btn-bo']}`, // 添加自定義按鈕 class
+          },
+          confirmButtonText: '確認', // 修改按鈕文字
         })
       } else {
         setEmailError(result.message)
@@ -123,68 +141,39 @@ export default function Register() {
     }
   }
 
-  // 驗證電子信箱的邏輯
-  const verifyEmail = async () => {
-    const token = router.query.token // 從 URL 中獲取 token
-
-    if (token) {
-      try {
-        const response = await fetch(
-          `http://localhost:3005/api/register/verify-email?token=${token}`
-        )
-        const result = await response.json()
-
-        if (result.status === 'success') {
-          setFormData((prevData) => ({
-            ...prevData,
-            email: result.email, // 保留驗證成功的 email
-          }))
-          setEmailVerified(true) // 設置為已驗證
-          Swal.fire({
-            title: '驗證成功！',
-            text: '您的電子信箱已驗證成功，可以進行後續操作。',
-            icon: 'success',
-            confirmButtonText: 'OK',
-          })
-        } else {
-          Swal.fire({
-            title: '驗證失敗',
-            text: result.message,
-            icon: 'error',
-            confirmButtonText: 'OK',
-          })
-        }
-      } catch (error) {
-        Swal.fire({
-          title: '驗證失敗',
-          text: '無法連接伺服器，請稍後再試',
-          icon: 'error',
-          confirmButtonText: 'OK',
-        })
-      }
-    }
-  }
-
-  // 初始化時檢查是否有驗證 token
+  // 初始化時檢查 sessionStorage 是否有已驗證的 email
   useEffect(() => {
-    const { status, email, error } = router.query
+    const { email, status, error } = router.query
 
     if (status === 'success' && email) {
-      setFormData((prevData) => ({
-        ...prevData,
-        email: email, // 保留從查詢參數中獲取的已驗證 email
-      }))
-      setEmailVerified(true)
-      Swal.fire({
-        title: '驗證成功！',
-        text: '您的電子信箱已驗證成功，請繼續完成註冊。',
-        icon: 'success',
-        confirmButtonText: 'OK',
-      })
-    } else if (status === 'error' && error) {
-      setGeneralError(decodeURIComponent(error)) // 顯示來自 URL 的錯誤訊息
+      sessionStorage.setItem('emailVerified', 'true')
+      sessionStorage.setItem('verifiedEmail', email)
+
+      // 清理 URL 中的參數
+      router.replace('/user/register', undefined, { shallow: true })
+    } else if (error) {
+      // 顯示錯誤訊息
+      console.error('Verification Error:', error)
     }
   }, [router.query])
+
+  useEffect(() => {
+    if (router.isReady) {
+      const verifiedEmail = sessionStorage.getItem('verifiedEmail')
+      const emailVerifiedStorage = sessionStorage.getItem('emailVerified')
+
+      console.log('Verified Email:', verifiedEmail)
+      console.log('Email Verified From Storage:', emailVerifiedStorage)
+
+      if (emailVerifiedStorage === 'true' && verifiedEmail) {
+        setFormData((prevData) => ({
+          ...prevData,
+          email: verifiedEmail, // 從 sessionStorage 中獲取已驗證 email
+        }))
+        setEmailVerified(true)
+      }
+    }
+  }, [router.isReady])
 
   // 處理使用者註冊表單的交互效果
   const userBoxRef = useRef(null)
@@ -331,7 +320,6 @@ export default function Register() {
                 placeholder="電子信箱"
                 value={formData.email}
                 onChange={onInputChange}
-                disabled={emailVerified} // 如果已經驗證，禁用 email 輸入框
               />
               {emailError && (
                 <div className={`p ${styles['text-error-bo']}`}>
@@ -366,6 +354,21 @@ export default function Register() {
               {passwordError && (
                 <div className={`p ${styles['text-error-bo']}`}>
                   {passwordError}
+                </div>
+              )}
+            </div>
+            <div className={styles['form-group-bo']}>
+              <input
+                name="checkPassword"
+                type="password"
+                className={`h6 ${styles['form-input-bo']}`}
+                placeholder="確認密碼"
+                value={formData.checkPassword}
+                onChange={onInputChange}
+              />
+              {checkPasswordError && (
+                <div className={`p ${styles['text-error-bo']}`}>
+                  {checkPasswordError}
                 </div>
               )}
             </div>

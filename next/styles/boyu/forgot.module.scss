@@ -1,11 +1,11 @@
 /* 整個登入框的容器 */
-.register-box-bo {
+.forgot-box-bo {
   width: 100%;
   height: 100vh;
 }
 
 /* 使用者登入區域 */
-.user-register-section-bo {
+.user-forgot-section-bo {
   position: relative;
   flex-grow: 1;
   gap: 3rem;
@@ -31,8 +31,8 @@
       flex-grow: 1;
     }
 
-    /* 當滑鼠懸停在 user-register-section-bo 上，且 hover 狀態時，user-register-title-bo 的樣式 */
-    &:hover .user-register-title-bo {
+    /* 當滑鼠懸停在 user-forgot-section-bo 上，且 hover 狀態時，user-forgot-title-bo 的樣式 */
+    &:hover .user-forgot-title-bo {
       flex-direction: row;
     }
   }
@@ -51,7 +51,7 @@
 }
 
 /* 使用者登入區域的 hover 狀態 */
-.user-register-section-bo.hover {
+.user-forgot-section-bo.hover {
   flex-grow: 4;
   @media (max-width: 768px) {
     flex-grow: 1;
@@ -59,12 +59,12 @@
 }
 
 /* 使用者登入區域標題的 hover 狀態 */
-.user-register-section-bo.hover .user-register-title-bo {
+.user-forgot-section-bo.hover .user-forgot-title-bo {
   flex-direction: row;
 }
 
 /* 使用者登入標題 */
-.user-register-title-bo {
+.user-forgot-title-bo {
   flex-direction: column;
   z-index: 2;
   color: var(--bg-text-color);
@@ -76,7 +76,7 @@
 }
 
 /* 使用者登入表單容器 */
-.user-register-box-bo {
+.user-forgot-box-bo {
   padding: 3.6rem 0;
   flex-direction: column;
   width: 40rem;
@@ -93,7 +93,7 @@
 }
 
 /* 使用者登入表單 */
-.user-register-form-bo {
+.user-forgot-form-bo {
   cursor: default;
   position: relative;
   padding: 0 2.4rem 1.2rem 2.4rem;
@@ -105,7 +105,7 @@
   }
 }
 
-.user-register-btn-box-bo {
+.user-forgot-btn-box-bo {
   gap: 3rem;
 
   @media (max-width: 576px) {
@@ -114,20 +114,20 @@
 }
 
 /* 使用者登入按鈕 */
-.btn-user-register-bo {
+.btn-user-forgot-bo {
   width: 40%;
   background-color: var(--primary);
   color: var(--bg-text-color);
   padding: 0.2rem 1.2rem;
 }
 
-.btn-user-register-bo:hover {
+.btn-user-forgot-bo:hover {
   background-color: var(--primary-dark);
   color: var(--bg-text-color);
 }
 
 /* 公司登入區域 */
-.company-register-section-bo {
+.company-forgot-section-bo {
   position: relative;
   flex-grow: 1;
   height: 100%;
@@ -153,8 +153,8 @@
       flex-grow: 1;
     }
 
-    /* 當滑鼠懸停在 company-register-section-bo 上，且 hover 狀態時，company-register-title-bo 的樣式 */
-    &:hover .company-register-title-bo {
+    /* 當滑鼠懸停在 company-forgot-section-bo 上，且 hover 狀態時，company-forgot-title-bo 的樣式 */
+    &:hover .company-forgot-title-bo {
       flex-direction: row;
     }
   }
@@ -173,7 +173,7 @@
 }
 
 /* 公司登入區域的 hover 狀態 */
-.company-register-section-bo.hover {
+.company-forgot-section-bo.hover {
   flex-grow: 4;
   @media (max-width: 768px) {
     flex-grow: 1;
@@ -181,12 +181,12 @@
 }
 
 /* 公司登入區域標題的 hover 狀態 */
-.company-register-section-bo.hover .company-register-title-bo {
+.company-forgot-section-bo.hover .company-forgot-title-bo {
   flex-direction: row;
 }
 
 /* 公司登入標題 */
-.company-register-title-bo {
+.company-forgot-title-bo {
   flex-direction: column;
   z-index: 2;
   color: var(--bg-text-color);
@@ -198,7 +198,7 @@
 }
 
 /* 公司登入表單容器 */
-.company-register-box-bo {
+.company-forgot-box-bo {
   padding: 3.6rem 0;
   flex-direction: column;
   width: 40rem;
@@ -216,7 +216,7 @@
 }
 
 /* 公司登入表單 */
-.company-register-form-bo {
+.company-forgot-form-bo {
   cursor: default;
   position: relative;
   padding: 0 2.4rem 1.2rem 2.4rem;
@@ -228,7 +228,7 @@
   }
 }
 
-.company-register-btn-box-bo {
+.company-forgot-btn-box-bo {
   gap: 3rem;
 
   @media (max-width: 576px) {
@@ -237,14 +237,14 @@
 }
 
 /* 公司登入按鈕 */
-.btn-company-register-bo {
+.btn-company-forgot-bo {
   width: 40%;
   background-color: var(--primary);
   color: var(--bg-text-color);
   padding: 0.2rem 1.2rem;
 }
 
-.btn-company-register-bo:hover {
+.btn-company-forgot-bo:hover {
   background-color: var(--primary-dark);
   color: var(--bg-text-color);
 }

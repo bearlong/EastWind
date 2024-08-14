@@ -22,38 +22,43 @@ const corsOptions = {
 
 const app = express()
 app.use(cors(corsOptions)) // 使用CORS中間件，應用CORS設置
-app.use(express.json())
+app.use(express.json()) // 使用JSON中間件來解析請求體中的JSON資料
 
 // 註冊 API
 router.post('/register', async (req, res) => {
   const { email, account, password } = req.body
 
-  if (!email || !account || !password) {
-    return res.status(400).json({ status: 'fail', message: '請填入完整的資料' })
+  let errors = {}
+
+  if (!email) {
+    errors.email = '請填入電子信箱'
+  } else {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      errors.email = '請提供有效的電子信箱'
+    }
   }
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailRegex.test(email)) {
-    return res.status(400).json({
-      status: 'fail',
-      message: '請提供有效的電子信箱',
-    })
+  if (!account) {
+    errors.account = '請填入帳號'
+  } else {
+    const accountRegex = /^(?=.*[a-zA-Z]).{6,}$/
+    if (!accountRegex.test(account)) {
+      errors.account = '帳號應至少6碼，需包含英文字'
+    }
   }
 
-  const accountRegex = /^(?=.*[a-zA-Z]).{6,}$/
-  if (!accountRegex.test(account)) {
-    return res.status(400).json({
-      status: 'fail',
-      message: '帳號必須至少包含6個字符且包含至少一個英文字符',
-    })
+  if (!password) {
+    errors.password = '請填入密碼'
+  } else {
+    const passwordRegex = /^(?=.*[a-zA-Z]).{6,}$/
+    if (!passwordRegex.test(password)) {
+      errors.password = '帳號應至少6碼，需包含英文字'
+    }
   }
 
-  const passwordRegex = /^(?=.*[a-zA-Z]).{6,}$/
-  if (!passwordRegex.test(password)) {
-    return res.status(400).json({
-      status: 'fail',
-      message: '密碼必須至少包含6個字符且包含至少一個英文字符',
-    })
+  if (Object.keys(errors).length > 0) {
+    return res.status(400).json({ status: 'fail', errors })
   }
 
   try {
@@ -65,7 +70,7 @@ router.post('/register', async (req, res) => {
     if (existingUserByEmail.length > 0) {
       return res.status(400).json({
         status: 'fail',
-        message: '電子信箱已被註冊',
+        errors: { email: '電子信箱已被註冊' },
       })
     }
 
@@ -93,24 +98,20 @@ router.get('/verify-email', async (req, res) => {
   const { token } = req.query
 
   if (!token) {
-    return res.redirect(
-      `http://localhost:3000/user/register?status=error&error=${encodeURIComponent('無效的驗證連結')}`
-    )
+    return res.redirect('http://localhost:3000/user/register') // 無效 token 的情況
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY)
     const email = decoded.email
 
-    // 驗證成功後，重定向到註冊頁面並附帶成功訊息和 email
+    // 將驗證成功的 email 和狀態作為 query 參數重定向到前端
     return res.redirect(
-      `http://localhost:3000/user/register?status=success&email=${encodeURIComponent(email)}`
+      `http://localhost:3000/user/register?email=${encodeURIComponent(email)}&status=success`
     )
   } catch (err) {
     console.error('Error during email verification:', err)
-    return res.redirect(
-      `http://localhost:3000/user/register?status=error&error=${encodeURIComponent('驗證連結已失效或無效')}`
-    )
+    return res.redirect('http://localhost:3000/user/register?error=驗證失敗') // 驗證失敗也重定向到註冊頁面
   }
 })
 
