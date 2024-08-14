@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import axios from 'axios';
 import Image from 'next/image'
 import Link from 'next/link'
+import styles from '@/styles/aa/classList.scss'
 
 export default function ClassList() {
   const router = useRouter()
