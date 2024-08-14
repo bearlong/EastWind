@@ -142,6 +142,229 @@ Once you are creating a resource on the server, you should return the 201 status
 The response payload is optional and it typically describes and links to the resource created.
 ```
 
+#### 購物車 RESTful API 文件
+
+基本資訊
+  - 基礎 URL: /cart
+  - 內容類型: application/json
+1. 取得購物車內容
+  - 路徑: GET /cart/:id
+  - 描述: 取得指定用戶的購物車內容以及熱門商品資訊。
+  - 路徑參數:
+  id (string): 用戶 ID
+     - 回應:
+    - 狀態碼 200 OK
+````json
+{
+  "status": "success",
+  "data": {
+    "message": "已取得購物車",
+    "cart": [ /* 購物車項目數據 */ ],
+    "top": [ /* 熱門商品數據 */ ]
+  }
+}
+````
+    - 狀態碼 400 Bad Request
+````json
+{
+  "status": "error",
+  "data": {
+    "message": "錯誤訊息"
+  }
+}
+````
+
+2. 新增商品至購物車
+  - 路徑: POST /cart/:id/product/:oid
+  - 描述: 將指定 ID 的產品新增至指定用戶的購物車。
+  - 路徑參數:
+    - id (string): 用戶 ID
+    - oid (string): 產品 ID
+  - 需要數據
+````
+{
+  "quantity": (integer),  // 商品數量
+  "price": (number)       // 商品價格
+}
+````
+  - 回應:
+    - 狀態碼 201 Created
+````json
+{
+  "status": "success",
+  "data": {
+    "message": "新增成功",
+    "cart": [ /* 更新後的購物車項目數據 */ ]
+  }
+}
+````
+    狀態碼 400 Bad Request
+````json
+{
+  "status": "error",
+  "data": {
+    "message": "錯誤訊息"
+  }
+}
+````
+
+3. 新增課程至購物車
+  - 路徑: POST /cart/:id/course/:oid
+  - 描述: 將指定 ID 的課程新增至指定用戶的購物車。
+  - 路徑參數:
+    - id (string): 用戶 ID
+    - oid (string): 課程 ID
+  - 需要數據
+````
+{
+  "quantity": (integer),  // 課程數量
+  "price": (number)       // 課程價格
+}
+````
+  - 回應:
+    - 狀態碼 201 Created
+````json
+{
+  "status": "success",
+  "data": {
+    "message": "新增成功",
+    "cart": [ /* 更新後的購物車項目數據 */ ]
+  }
+}
+````
+    狀態碼 400 Bad Request
+````json
+{
+  "status": "error",
+  "data": {
+    "message": "錯誤訊息"
+  }
+}
+````
+
+5. 更新購物車中的商品數量
+  - 路徑: PUT /cart/:id/product/:oid
+  - 描述: 更新指定用戶購物車中指定產品的數量。
+  - 路徑參數:
+    - id (string): 用戶 ID
+    - oid (string): 產品 ID
+  - 需要數據
+````json
+{
+  "quantity": (integer)  // 新的商品數量
+}
+````
+  - 回應:
+    - 狀態碼 200 OK
+````json
+{
+  "status": "success",
+  "data": {
+    "message": "更新成功",
+    "cart": [ /* 更新後的購物車項目數據 */ ]
+  }
+}
+````
+    狀態碼 400 Bad Request
+````json
+{
+  "status": "error",
+  "data": {
+    "message": "錯誤訊息"
+  }
+}
+````
+
+6. 更新購物車中的課程數量
+  - 路徑: PUT /cart/:id/course/:oid
+  - 描述: 更新指定用戶購物車中指定課程的數量。
+  - 路徑參數:
+    - id (string): 用戶 ID
+    - oid (string): 課程 ID
+  - 需要數據
+````json
+{
+  "quantity": (integer)  // 新的課程數量
+}
+````
+  - 回應:
+    - 狀態碼 200 OK
+````json
+{
+  "status": "success",
+  "data": {
+    "message": "更新成功",
+    "cart": [ /* 更新後的購物車項目數據 */ ]
+  }
+}
+````
+    狀態碼 400 Bad Request
+````json
+{
+  "status": "error",
+  "data": {
+    "message": "錯誤訊息"
+  }
+}
+````
+
+7. 刪除購物車中的產品
+  - 路徑: DELETE /cart/:id/product/:oid
+  - 描述: 從指定用戶的購物車中刪除指定產品。
+  - 路徑參數:
+    - id (string): 用戶 ID
+    - oid (string): 產品 ID
+  - 回應:
+    - 狀態碼 200 OK
+````json
+{
+  "status": "success",
+  "data": {
+    "message": "刪除成功",
+    "cart": [ /* 更新後的購物車項目數據 */ ]
+  }
+}
+````
+    狀態碼 400 Bad Request
+````json
+{
+  "status": "error",
+  "data": {
+    "message": "錯誤訊息"
+  }
+}
+````
+
+8. 刪除購物車中的產品
+  - 路徑: DELETE /cart/:id/course/:oid
+  - 描述: 從指定用戶的購物車中刪除指定課程。
+  - 路徑參數:
+    - id (string): 用戶 ID
+    - oid (string): 課程 ID
+  - 回應:
+    - 狀態碼 200 OK
+````json
+{
+  "status": "success",
+  "data": {
+    "message": "刪除成功",
+    "cart": [ /* 更新後的購物車項目數據 */ ]
+  }
+}
+````
+    狀態碼 400 Bad Request
+````json
+{
+  "status": "error",
+  "data": {
+    "message": "錯誤訊息"
+  }
+}
+````
+
+
+
+
 #### pagnation
 
 ```text

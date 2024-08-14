@@ -18,7 +18,6 @@ export default function DefaultLayout({ title = 'Next-BS5', children }) {
         <meta name="viewport" content="width=device-width" />
       </Head>
       <Header />
-      <MyNavbarBS5 />
       <main className="flex-shrink-0">
         {/* <NextBreadCrumb isHomeIcon isChevron bgClass="" /> */}
         {children}
@@ -26,7 +25,6 @@ export default function DefaultLayout({ title = 'Next-BS5', children }) {
         {loader()}
       </main>
       <Footer />
-      <MyFooter />
     </>
   )
 }

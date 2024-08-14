@@ -6,7 +6,7 @@ export default function ProductIndex() {
 
   // 確認window(瀏覽器)開始運作
   if (typeof window !== 'undefined') {
-    router.push('/product/list')
+    router.push('/product/productList')
   }
 
   return <></>
