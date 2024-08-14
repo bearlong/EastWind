@@ -3,7 +3,7 @@ import PartyLeftArea from '@/components/partypages/PartyLeftArea'
 import PartyRightArea from '@/components/partypages/PartyRightArea'
 import styles from '@/styles/gw/_partypage.module.scss'
 
-function Partypage() {
+function Party() {
   return (
     <>
       <div className="container">
@@ -17,4 +17,4 @@ function Partypage() {
   )
 }
 
-export default Partypage
+export default Party
