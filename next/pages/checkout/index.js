@@ -4,6 +4,40 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 export default function Checkout() {
+  const [delivery, setDelivery] = useState('homeDelivery')
+  const [sendForm, setSendForm] = useState({
+    country: '',
+    firstname: '',
+    lastname: '',
+    postCode: '',
+    city: '',
+    address: '',
+  })
+  const [payMethod, setPayMethod] = useState('credit')
+  const [payInfo, setPayInfo] = useState({
+    creditNum1: '',
+    creditNum2: '',
+    creditNum3: '',
+    creditNum4: '',
+    expDate: '',
+    csc: '',
+    cardholder: '',
+    country: '',
+    postCode: '',
+    city: '',
+    address: '',
+    useDeliveryAddress: true,
+  })
+  const [coupon, setCoupon] = useState({
+    id: '',
+    discount: 0,
+    name: '',
+  })
+  const [formError, setFormError] = useState({
+    sendFormErrors: {},
+    payInfoErrors: {},
+  })
+
   return (
     <>
       <div className={`${styles['payment-bl']} row`}>
@@ -14,26 +48,21 @@ export default function Checkout() {
           <div className={`${styles['payment-delivery-box-bo']}  mb-3`}>
             <input
               type="radio"
-              id="delivery1"
+              id="homeDelivery"
               defaultValue={1}
               name="delivery"
-              defaultChecked=""
+              defaultChecked={true}
             />
             <label
-              htmlFor="delivery1"
+              htmlFor="homeDelivery"
               className={`${styles['payment-delivery-radio-bo']} ${styles['payment-radio-bo']} ${styles['topBorder']}  p`}
             >
               <div className={styles.circle} />
-              郵寄
+              宅配
             </label>
-            <input
-              type="radio"
-              id="delivery2"
-              defaultValue={2}
-              name="delivery"
-            />
+            <input type="radio" id="pickup" defaultValue={2} name="delivery" />
             <label
-              htmlFor="delivery2"
+              htmlFor="pickup"
               className={`${styles['payment-delivery-radio-bo']} ${styles['payment-radio-bo']} ${styles['bottomBorder']}  p`}
             >
               <div className={styles.circle} />
@@ -142,7 +171,7 @@ export default function Checkout() {
                 id="credit"
                 defaultValue={1}
                 name="pay-method"
-                defaultChecked=""
+                defaultChecked={true}
                 className={`${styles['credit']}`}
               />
               <label
@@ -212,8 +241,9 @@ export default function Checkout() {
                       id="expDate"
                       placeholder="expDate"
                       name="expDate"
+                      maxLength={5}
                     />
-                    <label htmlFor="expDate">有效期(mm/yyyy)</label>
+                    <label htmlFor="expDate">有效期(mm/yy)</label>
                     <div className={`${styles['errorBox']}`} />
                   </div>
                   <div
@@ -249,7 +279,7 @@ export default function Checkout() {
                   type="checkbox"
                   id="checkBillingAddress"
                   name="Billing Address"
-                  defaultChecked=""
+                  defaultChecked={true}
                 />
                 <label
                   className="form-check-label p"
