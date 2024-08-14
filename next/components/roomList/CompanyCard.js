@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-
 import styles from '@/styles/gw/_companyCard.module.scss'
+
 export default function CompanyCard({ company }) {
   const [imageError, setImageError] = useState(false);
 

@@ -4,7 +4,7 @@ import styles from '@/styles/gw/_partypage.module.scss'
 
 
 
-function BookingPage() {
+function Company() {
   return (
     <>
       <div className={styles.main}>
@@ -15,4 +15,4 @@ function BookingPage() {
   )
 }
 
-export default BookingPage
+export default Company
