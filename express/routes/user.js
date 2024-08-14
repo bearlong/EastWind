@@ -33,7 +33,7 @@ let users = []
 ;(async () => {
   try {
     const [result] = await connection.query(
-      'SELECT * FROM `user` WHERE valid = 1'
+      'SELECT * FROM `users` WHERE valid = 1'
     )
 
     users = result // 確保 users 變數得到資料

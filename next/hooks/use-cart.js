@@ -13,7 +13,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
     const fetchCart = async () => {
       if (!items.length) {
         try {
-          if (typeof window !== 'undefined') {
+          if (typeof window !== 'undefined' && user_id !== undefined) {
             const url = `http://localhost:3005/api/cart/${user_id}`
             const response = await fetch(url)
             const result = await response.json()
@@ -23,6 +23,8 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
             } else {
               setError(result.data.message)
             }
+          } else {
+            setCart([])
           }
         } catch (error) {
           setError(error)
@@ -38,8 +40,14 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
     )
     const url = `http://localhost:3005/api/cart/${user_id}/${type}/${object.id}`
     const method = foundIndex > -1 ? 'PUT' : 'POST'
-    const body = JSON.stringify({ quantity, price: object.price })
-
+    const updatedQuantity =
+      method === 'PUT'
+        ? parseInt(cart[foundIndex].quantity, 10) + parseInt(quantity, 10)
+        : parseInt(quantity, 10)
+    const body = JSON.stringify({
+      quantity: updatedQuantity,
+      price: object.price,
+    })
     try {
       const response = await fetch(url, {
         method,
@@ -49,9 +57,6 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       const result = await response.json()
       if (result.status === 'success') {
         setCart(result.data.cart)
-        setError(null)
-      } else {
-        setError(result.data.message)
       }
     } catch (error) {
       setError(error.message)
@@ -78,9 +83,6 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       const result = await response.json()
       if (result.status === 'success') {
         setCart(result.data.cart)
-        setError(null)
-      } else {
-        setError(result.data.message)
       }
     } catch (error) {
       setError(error.message)
@@ -108,9 +110,6 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       const result = await response.json()
       if (result.status === 'success') {
         setCart(result.data.cart)
-        setError(null)
-      } else {
-        setError(result.data.message)
       }
     } catch (error) {
       setError(error.message)

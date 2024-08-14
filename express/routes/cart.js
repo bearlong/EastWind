@@ -149,6 +149,7 @@ router.put('/:id/product/:oid', upload.none(), async (req, res) => {
       })
     }
   } catch (err) {
+    console.log(err)
     res.status(400).json({ status: 'error', data: { message: err.message } })
   }
 })

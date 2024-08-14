@@ -216,6 +216,10 @@
     }
   }
 }
+.transitionSlow {
+  transition: 0.5s;
+}
+
 @media (max-width: 768px) {
   .cart-box-bo {
     --bs-offcanvas-width: 100%;
