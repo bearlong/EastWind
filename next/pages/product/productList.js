@@ -904,9 +904,9 @@ export default function ProductList() {
                   <input
                     type="range"
                     className="form-range max"
-                    max={20000}
+                    max={200000}
                     min={0}
-                    defaultValue={20000}
+                    defaultValue={200000}
                     onChange={(v) => {
                       setMaxOption(v.target.value)
                     }}

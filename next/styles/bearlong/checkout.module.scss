@@ -119,6 +119,14 @@
     overflow: hidden;
   }
 
+  .remark-box-bl {
+    textarea {
+      --bs-border-color: var(--primary);
+      resize: none;
+      font-size: 1.6rem;
+    }
+  }
+
   .paypent-button-bo {
     width: 100%;
     background: var(--primary);
@@ -222,7 +230,7 @@
     height: auto;
   }
   .payment-section-bo {
-    padding-top: 16rem;
+    padding-top: 12rem;
     height: auto;
   }
   .cart-section-bo {

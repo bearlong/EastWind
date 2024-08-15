@@ -2,17 +2,26 @@ import React, { useEffect, useState } from 'react'
 import styles from '@/styles/bearlong/checkout.module.scss'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useCart } from '@/hooks/use-cart'
+import { useRouter } from 'next/router'
 
 export default function Checkout() {
-  const [delivery, setDelivery] = useState('homeDelivery')
-  const [sendForm, setSendForm] = useState({
+  let subTotal = 0
+  let totalPrice
+  const initSendForm = {
     country: '',
     firstname: '',
     lastname: '',
     postCode: '',
     city: '',
     address: '',
-  })
+  }
+  const user_id = 1
+  const { cart = [], remark = '', setRemark = () => {} } = useCart()
+  const router = useRouter()
+  const [delivery, setDelivery] = useState('homeDelivery')
+  const [deliveryPrice, setDeliveryPrice] = useState(60)
+  const [sendForm, setSendForm] = useState(initSendForm)
   const [payMethod, setPayMethod] = useState('credit')
   const [payInfo, setPayInfo] = useState({
     creditNum1: '',
@@ -28,15 +37,109 @@ export default function Checkout() {
     address: '',
     useDeliveryAddress: true,
   })
-  const [coupon, setCoupon] = useState({
-    id: '',
-    discount: 0,
-    name: '',
-  })
+  const [coupons, setCoupon] = useState([
+    {
+      id: '',
+      discount: 0,
+      name: '',
+    },
+  ])
   const [formError, setFormError] = useState({
     sendFormErrors: {},
     payInfoErrors: {},
   })
+  const citySelect = [
+    '台北市',
+    '新北市',
+    '桃園市',
+    '台中市',
+    '台南市',
+    '高雄市',
+    '新竹縣',
+    '苗栗縣',
+    '彰化縣',
+    '南投縣',
+    '雲林縣',
+    '嘉義縣',
+    '屏東縣',
+    '宜蘭縣',
+    '花蓮縣',
+    '台東縣',
+    '澎湖縣',
+    '金門縣',
+    '連江縣',
+    '基隆市',
+    '新竹市',
+    '嘉義市',
+  ]
+  const [cardSelect, setCardSelect] = useState('')
+  const [card, setCard] = useState([])
+  const [couponSelect, setCouponSelect] = useState(undefined)
+  const [total, setTotal] = useState(0)
+
+  const handleSubmit = () => {}
+
+  useEffect(() => {
+    if (router.isReady) {
+      const fetchUserInfo = async () => {
+        try {
+          if (user_id) {
+            const url = `http://localhost:3005/api/checkout/${user_id}`
+            const response = await fetch(url)
+            const result = await response.json()
+            if (result.status === 'success') {
+              const { userInfo, coupons, card } = result.data
+              setSendForm({
+                ...sendForm,
+                firstname: userInfo[0].username.substring(0, 1),
+                lastname: userInfo[0].username.substring(1),
+                city: userInfo[0].city,
+                address: userInfo[0].address,
+              })
+              setCoupon(coupons)
+              setCard(card)
+            } else {
+              console.log(result.data.message)
+            }
+          } else {
+            alert('請先登入會員')
+          }
+        } catch (error) {
+          console.log(error)
+        }
+      }
+      fetchUserInfo()
+    }
+  }, [router.isReady])
+
+  useEffect(() => {
+    if (cart.length > 0) {
+      const coupon = coupons.find(
+        (c) => Number(c.coupon_id) === Number(couponSelect)
+      )
+      if (coupon) {
+        const discount = coupon.discount_value
+        if (discount >= 100) {
+          totalPrice = subTotal - discount + deliveryPrice
+        } else {
+          totalPrice =
+            Math.round(subTotal * ((100 - discount) / 100)) + deliveryPrice
+        }
+        setTotal(totalPrice)
+      } else {
+        setTotal(subTotal + deliveryPrice)
+      }
+    }
+  }, [couponSelect, deliveryPrice])
+
+  useEffect(() => {
+    if (delivery === 'pickup') {
+      setSendForm(initSendForm)
+      setDeliveryPrice(0)
+      return
+    }
+    setDeliveryPrice(60)
+  }, [delivery])
 
   return (
     <>
@@ -49,23 +152,35 @@ export default function Checkout() {
             <input
               type="radio"
               id="homeDelivery"
-              defaultValue={1}
+              defaultValue={'homeDelivery'}
               name="delivery"
-              defaultChecked={true}
+              checked={delivery === 'homeDelivery'}
+              onChange={() => {
+                setDelivery('homeDelivery')
+              }}
             />
             <label
               htmlFor="homeDelivery"
               className={`${styles['payment-delivery-radio-bo']} ${styles['payment-radio-bo']} ${styles['topBorder']}  p`}
             >
-              <div className={styles.circle} />
+              <div className={`${styles.circle} me-2`} />
               宅配
             </label>
-            <input type="radio" id="pickup" defaultValue={2} name="delivery" />
+            <input
+              type="radio"
+              id="pickup"
+              defaultValue={'pickup'}
+              name="delivery"
+              checked={delivery === 'pickup'}
+              onChange={(e) => {
+                setDelivery('pickup')
+              }}
+            />
             <label
               htmlFor="pickup"
               className={`${styles['payment-delivery-radio-bo']} ${styles['payment-radio-bo']} ${styles['bottomBorder']}  p`}
             >
-              <div className={styles.circle} />
+              <div className={`${styles.circle} me-2`} />
               自取
             </label>
           </div>
@@ -80,11 +195,15 @@ export default function Checkout() {
                 id="countrySelect"
                 aria-label="Floating label select example"
                 name="countrySelect"
+                value={sendForm.country}
+                onChange={(e) => {
+                  setSendForm({ ...sendForm, country: e.target.value })
+                  console.log(e.target.value)
+                }}
+                disabled={delivery === 'pickup'}
               >
-                <option value="" selected="">
-                  請選擇
-                </option>
-                <option value={1}>台灣</option>
+                <option value="">請選擇</option>
+                <option value={'台灣'}>台灣</option>
               </select>
               <label htmlFor="countrySelect">國家 / 地區</label>
               <div className={`${styles['errorBox']}`} />
@@ -99,6 +218,11 @@ export default function Checkout() {
                   id="firstname"
                   placeholder="firstname"
                   name="firstname"
+                  value={sendForm.firstname}
+                  onChange={(e) => {
+                    setSendForm({ ...sendForm, firstname: e.target.value })
+                  }}
+                  disabled={delivery === 'pickup'}
                 />
                 <label htmlFor="Firstname">姓</label>
                 <div className={`${styles['errorBox']}`} />
@@ -112,6 +236,11 @@ export default function Checkout() {
                   id="lastname"
                   placeholder="Lastname"
                   name="lastname"
+                  value={sendForm.lastname}
+                  onChange={(e) => {
+                    setSendForm({ ...sendForm, lastname: e.target.value })
+                  }}
+                  disabled={delivery === 'pickup'}
                 />
                 <label htmlFor="lastname">名</label>
                 <div className={`${styles['errorBox']}`} />
@@ -125,6 +254,14 @@ export default function Checkout() {
                   id="postCode"
                   placeholder="post code"
                   name="postCode"
+                  value={sendForm.postCode}
+                  onChange={(e) => {
+                    setSendForm({
+                      ...sendForm,
+                      postCode: Number(e.target.value),
+                    })
+                  }}
+                  disabled={delivery === 'pickup'}
                 />
                 <label htmlFor="postCode">郵遞區號</label>
                 <div className={`${styles['errorBox']}`} />
@@ -137,12 +274,20 @@ export default function Checkout() {
                   id="citySelect"
                   aria-label="Floating label select example"
                   name="citySelect"
+                  value={sendForm.city}
+                  onChange={(e) => {
+                    setSendForm({ ...sendForm, city: e.target.value })
+                  }}
+                  disabled={delivery === 'pickup'}
                 >
-                  <option value="" selected="">
-                    請選擇
-                  </option>
-                  <option value={1}>台北市</option>
-                  <option value={2}>新北市</option>
+                  <option value="">請選擇</option>
+                  {citySelect.map((v, i) => {
+                    return (
+                      <option key={i} value={v}>
+                        {v}
+                      </option>
+                    )
+                  })}
                 </select>
                 <label htmlFor="citySelect">縣市</label>
                 <div className={`${styles['errorBox']}`} />
@@ -155,6 +300,11 @@ export default function Checkout() {
                 id="address"
                 placeholder="Address"
                 name="address"
+                value={sendForm.address}
+                onChange={(e) => {
+                  setSendForm({ ...sendForm, address: e.target.value })
+                }}
+                disabled={delivery === 'pickup'}
               />
               <label htmlFor="address">地址</label>
               <div className={`${styles['errorBox']}`} />
@@ -169,27 +319,37 @@ export default function Checkout() {
               <input
                 type="radio"
                 id="credit"
-                defaultValue={1}
+                value={'credit'}
                 name="pay-method"
-                defaultChecked={true}
+                checked={payMethod === 'credit'}
                 className={`${styles['credit']}`}
+                onChange={(e) => {
+                  setPayMethod(e.target.value)
+                }}
               />
               <label
                 htmlFor="credit"
                 className={` ${styles['payment-pay-radio-bo']} ${styles['payment-radio-bo']} ${styles['topBorder']} p`}
               >
-                <div className={`${styles['circle']}`} />
+                <div className={`${styles.circle} me-2`} />
                 信用卡
               </label>
               <div className={`${styles['payment-card-form-bo']} px-3`}>
                 <div className="row my-3">
-                  <p>卡號</p>
+                  <p className="mb-3">卡號</p>
                   <div className="col-2">
                     <input
                       type="text"
                       className={`${styles['cdNum']} ${styles['form-control-bl']} form-control`}
                       name="creditNum1"
                       maxLength={4}
+                      value={payInfo.creditNum1}
+                      onChange={(e) => {
+                        setPayInfo({
+                          ...payInfo,
+                          creditNum1: e.target.value,
+                        })
+                      }}
                     />
                   </div>
                   <div className="col-2">
@@ -198,6 +358,13 @@ export default function Checkout() {
                       className={`${styles['cdNum']} ${styles['form-control-bl']} form-control`}
                       name="creditNum2"
                       maxLength={4}
+                      value={payInfo.creditNum2}
+                      onChange={(e) => {
+                        setPayInfo({
+                          ...payInfo,
+                          creditNum2: e.target.value,
+                        })
+                      }}
                     />
                   </div>
                   <div className="col-2">
@@ -206,6 +373,13 @@ export default function Checkout() {
                       className={`${styles['cdNum']} ${styles['form-control-bl']} form-control`}
                       name="creditNum3"
                       maxLength={4}
+                      value={payInfo.creditNum3}
+                      onChange={(e) => {
+                        setPayInfo({
+                          ...payInfo,
+                          creditNum3: e.target.value,
+                        })
+                      }}
                     />
                   </div>
                   <div className="col-2">
@@ -214,17 +388,22 @@ export default function Checkout() {
                       className={`${styles['cdNum']} ${styles['form-control-bl']} form-control`}
                       name="creditNum4"
                       maxLength={4}
+                      value={payInfo.creditNum4}
+                      onChange={(e) => {
+                        setPayInfo({
+                          ...payInfo,
+                          creditNum4: e.target.value,
+                        })
+                      }}
                     />
                   </div>
                   <div className={`${styles['city-select-bo']}  mb-3 col-4`}>
                     <select
                       className={`${styles['form-select-bl']} form-select`}
-                      id="citySelect"
-                      name="citySelect"
+                      id="cardSelect"
+                      name="cardSelect"
                     >
-                      <option value="" selected="">
-                        快速選卡
-                      </option>
+                      <option value="">快速選卡</option>
                       <option value={1}>末四碼4456</option>
                       <option value={2}>末四碼1968</option>
                     </select>
@@ -242,6 +421,13 @@ export default function Checkout() {
                       placeholder="expDate"
                       name="expDate"
                       maxLength={5}
+                      value={payInfo.expDate}
+                      onChange={(e) => {
+                        setPayInfo({
+                          ...payInfo,
+                          expDate: e.target.value,
+                        })
+                      }}
                     />
                     <label htmlFor="expDate">有效期(mm/yy)</label>
                     <div className={`${styles['errorBox']}`} />
@@ -256,6 +442,13 @@ export default function Checkout() {
                       placeholder="csc"
                       name="csc"
                       maxLength={3}
+                      value={payInfo.csc}
+                      onChange={() => {
+                        setPayInfo({
+                          ...payInfo,
+                          csc: '',
+                        })
+                      }}
                     />
                     <label htmlFor="csc">安全碼</label>
                     <div className={`${styles['errorBox']}`} />
@@ -270,6 +463,13 @@ export default function Checkout() {
                     id="cardholder"
                     placeholder="cardholder"
                     name="cardholder"
+                    value={payInfo.cardholder}
+                    onChange={(e) => {
+                      setPayInfo({
+                        ...payInfo,
+                        cardholder: e.target.value,
+                      })
+                    }}
                   />
                   <label htmlFor="cardholder">持卡人</label>
                   <div className={`${styles['errorBox']}`} />
@@ -279,13 +479,19 @@ export default function Checkout() {
                   type="checkbox"
                   id="checkBillingAddress"
                   name="Billing Address"
-                  defaultChecked={true}
+                  checked={payInfo.useDeliveryAddress}
+                  onChange={() => {
+                    setPayInfo({
+                      ...payInfo,
+                      useDeliveryAddress: !payInfo.useDeliveryAddress,
+                    })
+                  }}
                 />
                 <label
                   className="form-check-label p"
                   htmlFor="checkBillingAddress"
                 >
-                  <div className={`${styles['circle']}`} />
+                  <div className={`${styles.circle} me-2`} />
                   使用送貨地址作為帳單地址
                 </label>
                 <div className={`${styles['billing-address-form-bo']} mb-3`}>
@@ -300,11 +506,16 @@ export default function Checkout() {
                       id="billingAddressCountry"
                       aria-label="Floating label select example"
                       name="billingAddressCountry"
+                      value={payInfo.country}
+                      onChange={(e) => {
+                        setPayInfo({
+                          ...payInfo,
+                          country: e.target.value,
+                        })
+                      }}
                     >
-                      <option value="" selected="">
-                        請選擇
-                      </option>
-                      <option value={1}>台灣</option>
+                      <option value="">請選擇</option>
+                      <option value={'台灣'}>台灣</option>
                     </select>
                     <label htmlFor="billingAddressCountry">國家 / 地區</label>
                     <div className={`${styles['errorBox']}`} />
@@ -319,6 +530,13 @@ export default function Checkout() {
                         id="billingAddressPostCode"
                         placeholder="post code"
                         name="billingAddressPostCode"
+                        value={payInfo.postCode}
+                        onChange={(e) => {
+                          setPayInfo({
+                            ...payInfo,
+                            postCode: e.target.value,
+                          })
+                        }}
                       />
                       <label htmlFor="billingAddressPostCode">郵遞區號</label>
                       <div className={`${styles['errorBox']}`} />
@@ -331,12 +549,22 @@ export default function Checkout() {
                         id="billingAddressCity"
                         aria-label="Floating label select example"
                         name="billingAddressCity"
+                        value={payInfo.city}
+                        onChange={(e) => {
+                          setPayInfo({
+                            ...payInfo,
+                            city: e.target.value,
+                          })
+                        }}
                       >
-                        <option value="" selected="">
-                          請選擇
-                        </option>
-                        <option value={1}>台北市</option>
-                        <option value={2}>新北市</option>
+                        <option value="">請選擇</option>
+                        {citySelect.map((v, i) => {
+                          return (
+                            <option key={i} value={v}>
+                              {v}
+                            </option>
+                          )
+                        })}
                       </select>
                       <label htmlFor="billingAddressCity">縣市</label>
                       <div className={`${styles['errorBox']}`} />
@@ -351,6 +579,13 @@ export default function Checkout() {
                       id="billingAddressAddress"
                       placeholder="Address"
                       name="billingAddressAddress"
+                      value={payInfo.address}
+                      onChange={(e) => {
+                        setPayInfo({
+                          ...payInfo,
+                          address: e.target.value,
+                        })
+                      }}
                     />
                     <label htmlFor="billingAddressAddress">地址</label>
                     <div className={`${styles['errorBox']}`} />
@@ -360,27 +595,35 @@ export default function Checkout() {
               <input
                 type="radio"
                 id="ECpay"
-                defaultValue={1}
+                value={'ECpay'}
                 name="pay-method"
+                checked={payMethod === 'ECpay'}
+                onChange={(e) => {
+                  setPayMethod(e.target.value)
+                }}
               />
               <label
                 htmlFor="ECpay"
                 className={`${styles['payment-pay-radio-bo']} ${styles['payment-radio-bo']} p`}
               >
-                <div className={`${styles['circle']}`} />
+                <div className={`${styles.circle} me-2`} />
                 ECpay(綠界金流)
               </label>
               <input
                 type="radio"
                 id="line"
-                defaultValue={1}
+                value={'Linepay'}
                 name="pay-method"
+                checked={payMethod === 'Linepay'}
+                onChange={(e) => {
+                  setPayMethod(e.target.value)
+                }}
               />
               <label
                 htmlFor="line"
                 className={`${styles['payment-pay-radio-bo']} ${styles['bottomBorder']} ${styles['payment-radio-bo']} mb-3 p`}
               >
-                <div className={`${styles['circle']}`} />
+                <div className={`${styles.circle} me-2`} />
                 Line pay
               </label>
             </div>
@@ -397,50 +640,74 @@ export default function Checkout() {
                 id="couponSelect"
                 aria-label="Floating label select example"
                 name="couponSelect"
+                value={couponSelect}
+                onChange={(e) => {
+                  setCouponSelect(e.target.value)
+                }}
               >
-                <option value="" selected="">
-                  請選擇
-                </option>
-                <option value={1}>夏日優惠</option>
+                <option value={undefined}>請選擇</option>
+                <option value={0}>不使用優惠券</option>
+                {coupons.map((v, i) => {
+                  return (
+                    <option key={i} value={v.coupon_id}>
+                      {v.name} -{' '}
+                      {v.discount_value >= 100
+                        ? `折價 ${v.discount_value}`
+                        : `${v.discount_value} %OFF`}
+                    </option>
+                  )
+                })}
               </select>
               <label htmlFor="couponSelect">選擇優惠券</label>
               <div className={`${styles['errorBox']}`} />
             </div>
+          </div>
+          <div className={`${styles['remark-box-bl']} mb-4`}>
+            <h6>訂單備註</h6>
+            <textarea
+              className={`${styles['no-resize']} form-control mt-3`}
+              rows={3}
+              id=""
+              value={remark}
+              onChange={(e) => {
+                setRemark(e.target.value)
+              }}
+            />
           </div>
           <div className={`${styles['cart-text-box-bo']} d-block d-md-none`}>
             <div
               className={`${styles['subtotal-price-box-bo']} d-flex justify-content-between align-items-center my-3`}
             >
               <p>小計</p>
-              <p>NT$ 2,380</p>
+              <p>NT$ {subTotal}</p>
             </div>
             <div
               className={`${styles['delivery-price-box-bo']} d-flex justify-content-between align-items-center mb-3`}
             >
               <p>運費</p>
-              <p>NT$ 60</p>
+              <p>NT$ {deliveryPrice}</p>
             </div>
             <div
               className={`${styles['total-price-box-bo']} d-flex justify-content-between align-items-center mb-3`}
             >
               <h6>總計</h6>
-              <h6>NT$ 2,380</h6>
+              <h6>NT$ {subTotal + deliveryPrice}</h6>
             </div>
             <div
               className={`${styles['discount-price-box-bo']}  d-flex justify-content-between align-items-center mb-3`}
             >
               <h6>折價後</h6>
-              <h6>NT$ 2,380</h6>
+              <h6>NT$ {total}</h6>
             </div>
           </div>
           <button
-            className={`${styles['paypent-button-bo']}  h5 d-flex justify-content-center align-items-center mb-3`}
+            className={`${styles['paypent-button-bo']}  h5 d-flex justify-content-center align-items-center mb-5`}
           >
             現在付款
           </button>
         </div>
         <div className={`${styles['cart-section-bo']}  col-12 col-md-6`}>
-          <h5 className={`${styles['cart-title-bo']}  my-5`}>
+          <h5 className={`${styles['cart-title-bo']}  my-4`}>
             訂單商品（2 件）
           </h5>
           <div
@@ -457,199 +724,76 @@ export default function Checkout() {
               <i className="fa-solid fa-chevron-down p" />
             </label>
             <div className={`${styles['cart-body-bo']} mb-5`}>
-              <div className={`${styles['cart-product-bo']} d-flex mb-5`}>
-                <div className={`${styles['cart-product-img-bo']} me-4`}>
-                  <img src="./images/product/015.jpg" alt="" />
-                </div>
-                <div
-                  className={`${styles['cart-product-text-box-bo']} flex-grow-1 d-flex flex-column justify-content-between`}
-                >
-                  <div className={`${styles['cart-product-text-bo']}`}>
-                    <div className={`${styles['cart-product-title-bo']} `}>
-                      <h6>634精選系4精選系4精選系4精選系4精選系列-34mm</h6>
-                    </div>
-                  </div>
+              {cart.map((v) => {
+                subTotal += Number(v.price) * Number(v.quantity)
+                return (
                   <div
-                    className={`${styles['cart-product-text-bo']} d-flex justify-content-between`}
+                    key={v.id}
+                    className={`${styles['cart-product-bo']} d-flex mb-5`}
                   >
+                    <div className={`${styles['cart-product-img-bo']} me-4`}>
+                      <Image
+                        src={`../../images/${v.object_type}/${v.img}`}
+                        width={200}
+                        height={200}
+                        alt=""
+                      />
+                    </div>
                     <div
-                      className={`${styles['cart-product-number-bo']} d-flex justify-content-between align-items-center`}
+                      className={`${styles['cart-product-text-box-bo']} flex-grow-1 d-flex flex-column justify-content-between`}
                     >
-                      <h6 className={`${styles['quantity']}`}>
-                        x <span>1</span>
-                      </h6>
-                    </div>
-                    <div className={`${styles['product-price-bo']}`}>
-                      <h6>NT$ 2,380</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className={`${styles['cart-product-bo']} d-flex mb-5`}>
-                <div className={`${styles['cart-product-img-bo']} me-4`}>
-                  <img src="./images/product/015.jpg" alt="" />
-                </div>
-                <div
-                  className={`${styles['cart-product-text-box-bo']} flex-grow-1 d-flex flex-column justify-content-between`}
-                >
-                  <div className={`${styles['cart-product-text-bo']}`}>
-                    <div className={`${styles['cart-product-title-bo']} `}>
-                      <h6>634精選系4精選系4精選系4精選系4精選系列-34mm</h6>
-                    </div>
-                  </div>
-                  <div
-                    className={`${styles['cart-product-text-bo']} d-flex justify-content-between`}
-                  >
-                    <div
-                      className={`${styles['cart-product-number-bo']} d-flex justify-content-between align-items-center`}
-                    >
-                      <h6 className={`${styles['quantity']}`}>
-                        x <span>1</span>
-                      </h6>
-                    </div>
-                    <div className={`${styles['product-price-bo']}`}>
-                      <h6>NT$ 2,380</h6>
+                      <div className={`${styles['cart-product-text-bo']}`}>
+                        <div className={`${styles['cart-product-title-bo']} `}>
+                          <h6>{v.item_name}</h6>
+                        </div>
+                      </div>
+                      <div
+                        className={`${styles['cart-product-text-bo']} d-flex justify-content-between`}
+                      >
+                        <div
+                          className={`${styles['cart-product-number-bo']} d-flex justify-content-between align-items-center`}
+                        >
+                          <h6 className={`${styles['quantity']}`}>
+                            x <span>{v.quantity}</span>
+                          </h6>
+                        </div>
+                        <div className={`${styles['product-price-bo']}`}>
+                          <h6>NT$ {v.price}</h6>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className={`${styles['cart-product-bo']} d-flex mb-5`}>
-                <div className={`${styles['cart-product-img-bo']} me-4`}>
-                  <img src="./images/product/015.jpg" alt="" />
-                </div>
-                <div
-                  className={`${styles['cart-product-text-box-bo']} flex-grow-1 d-flex flex-column justify-content-between`}
-                >
-                  <div className={`${styles['cart-product-text-bo']}`}>
-                    <div className={`${styles['cart-product-title-bo']} `}>
-                      <h6>634精選系4精選系4精選系4精選系4精選系列-34mm</h6>
-                    </div>
-                  </div>
-                  <div
-                    className={`${styles['cart-product-text-bo']} d-flex justify-content-between`}
-                  >
-                    <div
-                      className={`${styles['cart-product-number-bo']} d-flex justify-content-between align-items-center`}
-                    >
-                      <h6 className={`${styles['quantity']}`}>
-                        x <span>1</span>
-                      </h6>
-                    </div>
-                    <div className={`${styles['product-price-bo']}`}>
-                      <h6>NT$ 2,380</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className={`${styles['cart-product-bo']} d-flex mb-5`}>
-                <div className={`${styles['cart-product-img-bo']} me-4`}>
-                  <img src="./images/product/015.jpg" alt="" />
-                </div>
-                <div
-                  className={`${styles['cart-product-text-box-bo']} flex-grow-1 d-flex flex-column justify-content-between`}
-                >
-                  <div className={`${styles['cart-product-text-bo']}`}>
-                    <div className={`${styles['cart-product-title-bo']} `}>
-                      <h6>634精選系4精選系4精選系4精選系4精選系列-34mm</h6>
-                    </div>
-                  </div>
-                  <div
-                    className={`${styles['cart-product-text-bo']} d-flex justify-content-between`}
-                  >
-                    <div
-                      className={`${styles['cart-product-number-bo']} d-flex justify-content-between align-items-center`}
-                    >
-                      <h6 className={`${styles['quantity']}`}>
-                        x <span>1</span>
-                      </h6>
-                    </div>
-                    <div className={`${styles['product-price-bo']}`}>
-                      <h6>NT$ 2,380</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className={`${styles['cart-product-bo']} d-flex mb-5`}>
-                <div className={`${styles['cart-product-img-bo']} me-4`}>
-                  <img src="./images/product/015.jpg" alt="" />
-                </div>
-                <div
-                  className={`${styles['cart-product-text-box-bo']} flex-grow-1 d-flex flex-column justify-content-between`}
-                >
-                  <div className={`${styles['cart-product-text-bo']}`}>
-                    <div className={`${styles['cart-product-title-bo']} `}>
-                      <h6>634精選系4精選系4精選系4精選系4精選系列-34mm</h6>
-                    </div>
-                  </div>
-                  <div
-                    className={`${styles['cart-product-text-bo']} d-flex justify-content-between`}
-                  >
-                    <div
-                      className={`${styles['cart-product-number-bo']} d-flex justify-content-between align-items-center`}
-                    >
-                      <h6 className={`${styles['quantity']}`}>
-                        x <span>1</span>
-                      </h6>
-                    </div>
-                    <div className={`${styles['product-price-bo']}`}>
-                      <h6>NT$ 2,380</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className={`${styles['cart-product-bo']} d-flex mb-5`}>
-                <div className={`${styles['cart-product-img-bo']} me-4`}>
-                  <img src="./images/product/015.jpg" alt="" />
-                </div>
-                <div
-                  className={`${styles['cart-product-text-box-bo']} flex-grow-1 d-flex flex-column justify-content-between`}
-                >
-                  <div className={`${styles['cart-product-text-bo']}`}>
-                    <div className={`${styles['cart-product-title-bo']} `}>
-                      <h6>634精選系4精選系4精選系4精選系4精選系列-34mm</h6>
-                    </div>
-                  </div>
-                  <div
-                    className={`${styles['cart-product-text-bo']} d-flex justify-content-between`}
-                  >
-                    <div
-                      className={`${styles['cart-product-number-bo']} d-flex justify-content-between align-items-center`}
-                    >
-                      <h6 className={`${styles['quantity']}`}>
-                        x <span>1</span>
-                      </h6>
-                    </div>
-                    <div className={`${styles['product-price-bo']}`}>
-                      <h6>NT$ 2,380</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                )
+              })}
             </div>
             <div className={`${styles['cart-text-box-bo']}`}>
               <div
                 className={`${styles['subtotal-price-box-bo']} d-flex justify-content-between align-items-center mb-3`}
               >
                 <p>小計</p>
-                <p>NT$ 2,380</p>
+                <p>NT$ {subTotal}</p>
               </div>
               <div
                 className={`${styles['delivery-price-box-bo']} d-flex justify-content-between align-items-center mb-3`}
               >
                 <p>運費</p>
-                <p>NT$ 60</p>
+                <p>NT$ {deliveryPrice}</p>
               </div>
               <div
                 className={`${styles['total-price-box-bo']} d-flex justify-content-between align-items-center mb-3`}
               >
                 <h6>總計</h6>
-                <h6>NT$ 2,380</h6>
+                <h6>NT$ {subTotal + deliveryPrice}</h6>
               </div>
               <div
-                className={`${styles['discount-price-box-bo']} d-flex justify-content-between align-items-center mb-3`}
+                className={`${
+                  styles['discount-price-box-bo']
+                } d-flex justify-content-between align-items-center mb-3 ${
+                  couponSelect > 0 ? '' : 'd-none'
+                }`}
               >
                 <h6>折價後</h6>
-                <h6>NT$ 2,380</h6>
+                <h6>NT$ {total}</h6>
               </div>
             </div>
           </div>

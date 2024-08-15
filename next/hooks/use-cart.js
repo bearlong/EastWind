@@ -8,6 +8,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
   const [cart, setCart] = useState(initialCartItems)
   const [top, setTop] = useState([])
   const [error, setError] = useState(null)
+  const [remark, setRemark] = useState('')
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -20,11 +21,13 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
             if (result.status === 'success') {
               setCart(result.data.cart)
               setTop(result.data.top)
+              setRemark('')
             } else {
               setError(result.data.message)
             }
           } else {
             setCart([])
+            setRemark('')
           }
         } catch (error) {
           setError(error)
@@ -166,6 +169,8 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
         cart,
         top,
         error,
+        remark,
+        setRemark,
         handleAdd,
         handleIncrease,
         handleDecrease,
