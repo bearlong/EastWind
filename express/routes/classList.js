@@ -1,10 +1,10 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const app = express();
-const port = 3005;
+import express from 'express'
 const router = express.Router()
+import dbPromise from '##/configs/mysql-promise.js'
+import multer from 'multer'
+import moment from 'moment'
 
-app.use(bodyParser.json());
+const upload = multer()
 
 // 模擬數據
 let classData = [
@@ -53,10 +53,10 @@ let classData = [
 ];
 
 // 設置 API 端點
-app.get('/api/classes', (req, res) => {
+router.get('/api/classes', (req, res) => {
     res.json(classData);
 });
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-});
+app.listen(3005, ()=>{
+    console.log("服務以啟動於 http://localhost:3005");
+  });
