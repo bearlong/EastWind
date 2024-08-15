@@ -5,7 +5,7 @@
 }
 
 .info-form-box-bo {
-  padding: 2.4rem;
+  padding: 3.6rem 2.4rem;
   background-color: var(--form-bg);
   border: 2px solid var(--primary);
   gap: 3rem;
@@ -68,6 +68,9 @@
 .default-information-box-bo {
   padding-right: 2.4rem;
   gap: 3rem;
+  @media (max-width: 1200px) {
+    padding-right: 1.6rem;
+  }
 
   @media (max-width: 992px) {
     padding-right: 0;
@@ -81,7 +84,11 @@
 
 .default-img-box-bo {
   padding-left: 2.4rem;
-  gap: 4rem;
+  gap: 2.4rem;
+
+  @media (max-width: 1200px) {
+    padding-left: 1.6rem;
+  }
 
   @media (max-width: 768px) {
     padding-left: 0;
@@ -119,7 +126,7 @@
   background: var(--primary);
   color: var(--bg-text-color);
 
-  @media (max-width: 1160px) {
+  @media (max-width: 1260px) {
     flex-direction: column;
   }
   @media (max-width: 768px) {
@@ -132,6 +139,9 @@
 .detail-information-box-bo {
   padding-right: 2.4rem;
   gap: 3rem;
+  @media (max-width: 1200px) {
+    padding-right: 1.6rem;
+  }
 
   @media (max-width: 992px) {
     padding-right: 0;
@@ -147,8 +157,11 @@
   gap: 3rem;
   height: 100%;
   padding-left: 2.4rem;
-
+  @media (max-width: 1200px) {
+    padding-left: 1.6rem;
+  }
   @media (max-width: 768px) {
+    order: 1;
     gap: 1.6rem;
     padding-left: 0rem;
     margin-bottom: 3.2rem;
@@ -158,13 +171,6 @@
 .card-col-bo {
   gap: 1.5rem;
   flex-direction: column;
-
-  @media (max-width: 768px) {
-    flex-direction: row;
-  }
-  @media (max-width: 680px) {
-    flex-direction: column;
-  }
 }
 
 .card-body-bo {
@@ -178,25 +184,13 @@
   }
 }
 
-.card-text-box-bo {
-  @media (max-width: 768px) {
-    width: 14.2rem;
-  }
-}
-
-.card-date-box-bo {
-  @media (max-width: 768px) {
-    width: 4.3rem;
-  }
-}
-
 .info-card-bo {
   height: 1.6rem;
   color: var(--primary);
   background-color: var(--white);
   margin: 3px 0;
   border-radius: 1px;
-  padding: 1rem 0;
+  padding: 1rem 0.2rem;
   width: 100%;
   outline: 2px solid var(--primary);
   border: none;
@@ -212,18 +206,11 @@
 }
 
 .input-card-name-bo {
-  width: 7rem;
-}
-
-.input-card-saveCode-bo {
-  width: 3.6rem;
+  width: 10rem;
 }
 
 .input-card-date-bo {
-  width: 4.6rem;
-  @media (max-width: 768px) {
-    width: 4.3rem;
-  }
+  width: 100%;
 }
 .input-card-number-bo {
   width: 100%;
@@ -282,8 +269,32 @@
 
 .card-date-box-bo {
   width: 5rem;
+}
 
-  @media (max-width: 768px) {
-    width: 4.3rem;
+.swal-btn-bo {
+  font-size: 1.4rem;
+  font-weight: 500;
+  background-color: #b79347;
+  color: var(--bg-text-color);
+  padding: 0.4rem 1rem;
+}
+
+.swal-popup-bo {
+  background-color: var(--form-bg);
+}
+
+.swal-icon-bo {
+  font-size: 1.6rem;
+
+  @media (max-width: 576px) {
+    font-size: 1.4rem;
   }
+}
+
+.swal-btn-cancel-bo {
+  font-size: 1.4rem;
+  font-weight: 500;
+  background-color: var(--primary-dark);
+  color: var(--bg-text-color);
+  padding: 0.4rem 1rem;
 }

@@ -107,7 +107,7 @@ router.get('/user/:id/cards', async (req, res) => {
 
   try {
     const [cards] = await connection.query(
-      'SELECT card_name, card_number, card_type, exp_date, status FROM credit_card WHERE user_id = ? AND status = "Active"',
+      'SELECT id, card_name, card_number, card_type, exp_date, status FROM credit_card WHERE user_id = ? AND status = "Active"',
       [userId]
     )
 
