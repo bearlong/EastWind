@@ -19,6 +19,8 @@ export default function Cart({
   handleIncrease = () => {},
   handleDecrease = () => {},
   handleRemove = () => {},
+  remark = '',
+  setRemark = () => {},
 }) {
   let total = 0
   const [showRecommend, setShowRecommend] = useState(false)
@@ -262,7 +264,10 @@ export default function Cart({
                     className={`${styles['no-resize']} form-control mt-3`}
                     rows={3}
                     id=""
-                    defaultValue={''}
+                    defaultValue={remark}
+                    onChange={(e) => {
+                      setRemark(e.target.value)
+                    }}
                   />
                 </div>
                 <div

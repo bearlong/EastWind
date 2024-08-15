@@ -15,6 +15,8 @@ export default function Header() {
     cart,
     top,
     error,
+    remark,
+    setRemark,
     handleIncrease = () => {},
     handleDecrease = () => {},
     handleRemove = () => {},
@@ -128,7 +130,9 @@ export default function Header() {
                   />
 
                   <div
-                    className={`d-flex justify-content-center align-items-center p ${styles['cart-number-bo']}`}
+                    className={`d-flex justify-content-center align-items-center p ${
+                      styles['cart-number-bo']
+                    } ${cart.length ? '' : 'd-none'}`}
                   >
                     {cart.length}
                   </div>
@@ -213,6 +217,8 @@ export default function Header() {
         handleIncrease={handleIncrease}
         handleDecrease={handleDecrease}
         handleRemove={handleRemove}
+        remark={remark}
+        setRemark={setRemark}
       />
     </>
   )
