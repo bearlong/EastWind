@@ -8,15 +8,32 @@ import { useRouter } from 'next/router'
 export default function ForgotPassword() {
   const router = useRouter()
   const [email, setEmail] = useState('')
+  const [account, setAccount] = useState('')
   const [emailError, setEmailError] = useState('')
+  const [accountError, setAccountError] = useState('')
 
   const sendResetEmail = async (event) => {
     event.preventDefault()
 
+    // 清除之前的錯誤訊息
+    setAccountError('')
     setEmailError('')
 
+    let hasError = false
+
+    // 檢查帳號
+    if (!account) {
+      setAccountError('請輸入帳號')
+      hasError = true
+    }
+
+    // 檢查電子信箱
     if (!email) {
-      setEmailError('請輸入有效的電子信箱')
+      setEmailError('請輸入電子信箱')
+      hasError = true
+    }
+
+    if (hasError) {
       return
     }
 
@@ -26,23 +43,40 @@ export default function ForgotPassword() {
         {
           method: 'POST',
           headers: { 'Content-type': 'application/json' },
-          body: JSON.stringify({ email }),
+          body: JSON.stringify({ email, account }),
         }
       )
 
       const result = await response.json()
 
       if (result.status === 'success') {
+        localStorage.setItem('resetAccount', account)
+        localStorage.setItem('resetPasswordToken', result.token)
         Swal.fire({
           title: '重設密碼郵件已發送！',
-          text: '請檢查您的電子信箱以完成密碼重設。',
+          html: `<span class="p">請檢查您的電子信箱以完成密碼重設。</span>`,
           icon: 'success',
-          confirmButtonText: 'OK',
+          customClass: {
+            popup: `${styles['swal-popup-bo']}`, // 自訂整個彈出視窗的 class
+            title: 'h6',
+            icon: `${styles['swal-icon-bo']}`, // 添加自定義 class
+            confirmButton: `${styles['swal-btn-bo']}`, // 添加自定義按鈕 class
+          },
+          confirmButtonText: '確認', // 修改按鈕文字
+        }).then(() => {
+          router.push('/login')
         })
       } else {
-        setEmailError(result.message)
+        if (result.message.includes('帳號')) {
+          setAccountError(result.message)
+        }
+
+        if (result.message.includes('電子信箱')) {
+          setEmailError(result.message)
+        }
       }
     } catch (error) {
+      setAccountError('發生未知錯誤，請稍後再試')
       setEmailError('發生未知錯誤，請稍後再試')
     }
   }
@@ -190,29 +224,46 @@ export default function ForgotPassword() {
                 </div>
               )}
             </div>
-            <div
-              className={`${styles['user-forgot-btn-box-bo']} d-flex justify-content-center align-items-center`}
-            >
-              <Link
-                href="/login"
-                className={`${styles['btn-user-forgot-bo']} btn h6 d-flex justify-content-between align-items-center`}
-              >
-                取消重設
-                <FaXmark />
-              </Link>
-
-              <button
-                type="submit"
-                className={`${styles['btn-user-forgot-bo']} btn h6 d-flex justify-content-between align-items-center`}
-              >
-                驗證信箱 <FaCheck />
-              </button>
+            <div className={styles['form-group-bo']}>
+              <input
+                name="account"
+                type="text"
+                className={`h6 ${styles['form-input-bo']}`}
+                placeholder="帳號"
+                value={account}
+                onChange={(e) => setAccount(e.target.value)}
+              />
+              {accountError && (
+                <div className={`p ${styles['text-error-bo']}`}>
+                  {accountError}
+                </div>
+              )}
             </div>
           </form>
+
+          <div
+            className={`${styles['user-forgot-btn-box-bo']} d-flex justify-content-center align-items-center`}
+          >
+            <Link
+              href="/login"
+              className={`${styles['btn-user-forgot-bo']} btn h6 d-flex justify-content-between align-items-center`}
+            >
+              取消重設
+              <FaXmark />
+            </Link>
+
+            <button
+              onClick={sendResetEmail}
+              type="submit"
+              className={`${styles['btn-user-forgot-bo']} btn h6 d-flex justify-content-between align-items-center`}
+            >
+              驗證信箱 <FaCheck />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* 公司重設密碼區域 */}
+      {/* 公司註冊區域 */}
       <div
         className={`${styles['company-forgot-section-bo']} d-flex flex-column gap-5 justify-content-center align-items-center`}
         ref={compBoxRef}
@@ -260,25 +311,24 @@ export default function ForgotPassword() {
                 placeholder="密碼"
               />
             </div>
-            <div
-              className={`${styles['company-forgot-btn-box-bo']} d-flex justify-content-center align-items-center`}
-            >
-              <Link
-                href="/login"
-                className={`${styles['btn-company-forgot-bo']} btn h6 d-flex justify-content-between align-items-center`}
-              >
-                取消重設
-                <FaXmark />
-              </Link>
-              <button
-                type="submit"
-                className={`${styles['btn-company-forgot-bo']} btn h6 d-flex justify-content-between align-items=center`}
-              >
-                確定重設
-                <FaCheck />
-              </button>
-            </div>
           </form>
+
+          <div
+            className={`${styles['company-forgot-btn-box-bo']} d-flex justify-content-center align-items-center`}
+          >
+            <button
+              className={`${styles['btn-company-forgot-bo']} btn h6 d-flex justify-content-between align-items-center`}
+            >
+              取消註冊
+              <FaXmark />
+            </button>
+            <button
+              className={`${styles['btn-company-forgot-bo']} btn h6 d-flex justify-content-between align-items=center`}
+            >
+              確定註冊
+              <FaCheck />
+            </button>
+          </div>
         </div>
       </div>
     </section>

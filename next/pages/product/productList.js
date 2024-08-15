@@ -7,6 +7,7 @@ import {
   FaXmark,
   FaCheck,
   FaHeart,
+  FaRegHeart,
   FaStar,
   FaPlus,
   FaMinus,
@@ -20,23 +21,25 @@ import { useRouter } from 'next/router'
 import ProductNav from '@/components/product/product-nav'
 
 export default function ProductList() {
+  const user_id = 1
   const router = useRouter()
   const [products, setProducts] = useState({ top: [], list: [] })
   const [pages, setPages] = useState(1)
   const [brandOptions, setBrandOption] = useState([])
   const [cateOptions, setCateOption] = useState([])
   const { brand_id, category_id, size, style, search, max, min } = router.query
-  const [filters, setFilters] = useState({
-    brand_id: '',
-    category_id: '',
-    size: '',
-    style: '',
-    search: '',
-    max: '',
-    min: '',
+  let initialFilters = {
+    brand_id: router.query.brand_id || '',
+    category_id: router.query.category_id || '',
+    size: router.query.size || '',
+    style: router.query.style || '',
+    search: router.query.search || '',
+    max: router.query.max || '',
+    min: router.query.min || '',
     orderBy: '',
     isFilter: false,
-  })
+  }
+  const [filters, setFilters] = useState(initialFilters)
   const [sizeOptions, setSizeOption] = useState([
     {
       id: 1,
@@ -58,7 +61,7 @@ export default function ProductList() {
   const [minOptions, setMinOption] = useState(0)
   const [maxOptions, setMaxOption] = useState(200000)
   const [searchValue, setSearchValue] = useState('')
-
+  const [favorite, setFavorite] = useState([])
   const getProducts = async (filtersArr) => {
     let newProducts, error
     const url = `http://localhost:3005/api/products?page=${pages}&${Object.entries(
@@ -80,6 +83,19 @@ export default function ProductList() {
     }
 
     if (newProducts) {
+      const newList = newProducts.list.map((v) => {
+        if (
+          favorite.some(
+            (fav) =>
+              fav.object_id === v.product_id && fav.object_type === 'product'
+          )
+        ) {
+          return { ...v, fav: true }
+        } else {
+          return { ...v, fav: false }
+        }
+      })
+      newProducts = { ...newProducts, list: newList }
       setProducts(newProducts)
       const initBrandOptions = newProducts.brand.map((v) => {
         return {
@@ -113,6 +129,25 @@ export default function ProductList() {
       setBrandOption(initBrandOptions)
       setCateOption(initCateOptions)
       setStyleOption(initStyleOptions)
+    }
+  }
+
+  const getFavorite = async () => {
+    try {
+      if (user_id) {
+        const url = `http://localhost:3005/api/favorites?id=${user_id}`
+        const response = await fetch(url)
+        const result = await response.json()
+        if (result.status === 'success') {
+          setFavorite(result.data.fav)
+        } else {
+          console.log(result.data.message)
+        }
+      } else {
+        setFavorite([])
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -239,9 +274,46 @@ export default function ProductList() {
     setMinOption(0)
   }
 
+  const handleFavToggle = async (object_id, type) => {
+    const foundIndex = products.list.findIndex(
+      (v) => v.product_id === object_id
+    )
+    const fav = products.list[foundIndex].fav
+
+    const url = `http://localhost:3005/api/favorites/${object_id}`
+    const method = fav ? 'DELETE' : 'POST'
+    const body = JSON.stringify({
+      uid: user_id,
+      type: type,
+    })
+    try {
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      })
+      const result = await response.json()
+      if (result.status === 'success') {
+        const nextList = products.list.map((v) => {
+          if (v.product_id === object_id) {
+            return { ...v, fav: !v.fav }
+          }
+          return v
+        })
+        setProducts({ ...products, list: nextList })
+      } else {
+        console.log(result.data.message)
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   useEffect(() => {
     getProducts(filters)
-  }, [filters, pages])
+  }, [filters, pages, favorite])
 
   useEffect(() => {
     if (router.isReady) {
@@ -253,27 +325,21 @@ export default function ProductList() {
         search: search || '',
         max: max || '',
         min: min || '',
+        orderBy: '',
         isFilter: false,
       }
-
+      getFavorite()
       setFilters(filter)
-      getProducts(filter)
     }
-  }, [router.isReady])
+  }, [router.isReady, router.query])
 
   useEffect(() => {
-    const filter = {
-      brand_id: brand_id || '',
-      category_id: category_id || '',
-      size: size || '',
-      style: style || '',
-      search: search || '',
-      max: max || '',
-      min: min || '',
+    if (user_id) {
+      getFavorite()
+    } else {
+      setFavorite([])
     }
-    setFilters(filter)
-    setPages(1)
-  }, [router.query])
+  }, [user_id])
 
   return (
     <>
@@ -294,8 +360,6 @@ export default function ProductList() {
                 992: { slidesPerView: 3, spaceBetween: 30 },
                 1200: { slidesPerView: 4, spaceBetween: 40 },
               }}
-              onSlideChange={() => console.log('slide change')}
-              onSwiper={(swiper) => console.log(swiper)}
             >
               {products.top.map((product, i) => {
                 return (
@@ -400,7 +464,7 @@ export default function ProductList() {
             {products.list.map((product) => {
               return (
                 <div key={product.id} className={`${styles['productCard']} `}>
-                  <Link href={`/product/${product.id}`}>
+                  <Link href={`/product/${product.product_id}`}>
                     <div className={styles['imgBox']}>
                       <Image
                         src={`../../images/product/${product.img}`}
@@ -423,8 +487,30 @@ export default function ProductList() {
                         alt=""
                       />
                     </div>
-                    <div className={styles['heart']}>
-                      <FaHeart width={24} />
+                    <div
+                      className={`${styles['heart']} ${
+                        user_id ? '' : 'd-none'
+                      }`}
+                    >
+                      {product.fav ? (
+                        <FaHeart
+                          width={30}
+                          className="h4"
+                          onClick={(e) => {
+                            e.preventDefault()
+                            handleFavToggle(product.product_id, 'product')
+                          }}
+                        />
+                      ) : (
+                        <FaRegHeart
+                          width={30}
+                          className="h4"
+                          onClick={(e) => {
+                            e.preventDefault()
+                            handleFavToggle(product.product_id, 'product')
+                          }}
+                        />
+                      )}
                     </div>
                     <div className={styles['cardBody']}>
                       <div className={styles['productName-bl']}>
