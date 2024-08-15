@@ -7,7 +7,7 @@ import { useRouter } from 'next/router'
 import { AuthContext } from '@/context/AuthContext'
 
 export default function Checkout() {
-  const { user } = useContext(AuthContext)
+  const { user, loading } = useContext(AuthContext)
   let subTotal = 0
   let totalPrice
   let username
@@ -82,10 +82,11 @@ export default function Checkout() {
   const handleSubmit = (e) => {
     e.preventDefault()
     const formData = new FormData()
-    const { firstname, lastname, ...newSendData } = sendForm
+    let { firstname, lastname, ...newSendData } = sendForm
     let name = firstname + lastname
-    if (name.length <= 0) {
+    if (delivery === 'pickup') {
       name = username
+      newSendData = {}
     }
     formData.append('delivery', delivery)
     formData.append('delivery_address', JSON.stringify(newSendData))
@@ -104,56 +105,61 @@ export default function Checkout() {
       }
       formData.append('payInfo', JSON.stringify(newPayInfo))
     } else {
-      const { useDeliveryAddress, ...newPayInfo } = payInfo
+      const newPayInfo = {}
       formData.append('payInfo', JSON.stringify(newPayInfo))
     }
+    formData.append('total', total)
     formData.append('coupon_id', couponSelect)
-    if(couponSelect > 0) {
+    if (couponSelect > 0) {
       const coupon = coupons.find(
         (c) => Number(c.coupon_id) === Number(couponSelect)
       )
       formData.append('discount_info', coupon.discount_value)
     } else {
-      formData.append('discount_info', "")
+      formData.append('discount_info', '')
     }
 
     formData.append('remark', remark)
+    formData.append('cart', JSON.stringify(cart))
 
     formData.forEach((value, key) => {
       console.log(key, value)
     })
   }
-
   useEffect(() => {
-    if (router.isReady) {
-      const fetchUserInfo = async () => {
-        try {
-          if (user) {
-            const url = `http://localhost:3005/api/checkout/${user.id}`
-            const response = await fetch(url)
-            const result = await response.json()
-            if (result.status === 'success') {
-              const { userInfo, coupons, card } = result.data
-              setSendForm({
-                ...sendForm,
-                firstname: userInfo[0].username.substring(0, 1),
-                lastname: userInfo[0].username.substring(1),
-                city: userInfo[0].city,
-                address: userInfo[0].address,
-              })
-              setCoupon(coupons)
-              setCard(card)
-              username = userInfo[0].username
-            } else {
-              console.log(result.data.message)
-            }
+    const fetchUserInfo = async () => {
+      try {
+        if (user) {
+          const url = `http://localhost:3005/api/checkout/${user.id}`
+          const response = await fetch(url)
+          const result = await response.json()
+          if (result.status === 'success') {
+            const { userInfo, coupons, card } = result.data
+            setSendForm({
+              ...sendForm,
+              firstname: userInfo[0].username.substring(0, 1),
+              lastname: userInfo[0].username.substring(1),
+              city: userInfo[0].city,
+              address: userInfo[0].address,
+            })
+            setCoupon(coupons)
+            setCard(card)
+            username = userInfo[0].username
+          } else {
+            console.log(result.data.message)
           }
-        } catch (error) {
-          console.log(error)
         }
+      } catch (error) {
+        console.log(error)
       }
-
-      fetchUserInfo()
+    }
+    if (router.isReady && !loading) {
+      if (user) {
+        fetchUserInfo()
+      } else if (!user && loading === false) {
+        alert('請先登入會員')
+        router.push('/login')
+      }
     }
   }, [router.isReady, user])
 
@@ -203,9 +209,8 @@ export default function Checkout() {
         useDeliveryAddress: false,
       })
       return
-    } 
+    }
   }, [payMethod])
-
 
   useEffect(() => {
     if (cardSelect) {

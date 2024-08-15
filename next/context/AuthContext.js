@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import jwt from 'jsonwebtoken'
+import { isLatLong } from 'validator'
 
 // 創建 AuthContext，用於在應用中提供全局的身份驗證狀態
 export const AuthContext = createContext(null)
@@ -9,6 +10,7 @@ export const AuthProvider = ({ children }) => {
   // 狀態管理：token 和 user 信息
   const [token, setToken] = useState(undefined)
   const [user, setUser] = useState(undefined)
+  const [loading, setLoading] = useState(true)
 
   const router = useRouter()
   const loginRoute = '/login' // 登入頁面的路徑
@@ -26,6 +28,8 @@ export const AuthProvider = ({ children }) => {
   // 初始化身份驗證狀態，檢查舊的 accessToken 和 refreshToken
   useEffect(() => {
     const initializeAuth = async () => {
+      setLoading(true)
+
       const oldToken = localStorage.getItem('accessToken') // 從 localStorage 中獲取舊的 accessToken
       const refreshToken = localStorage.getItem('refreshToken') // 從 localStorage 中獲取 refreshToken
 
@@ -46,9 +50,11 @@ export const AuthProvider = ({ children }) => {
           }
         } else {
           localStorage.removeItem('accessToken') // 如果沒有 refreshToken，刪除舊的 accessToken
+
           router.push(loginRoute) // 重定向到登入頁面
         }
       }
+      setLoading(false)
     }
 
     initializeAuth() // 初始化身份驗證狀態
@@ -63,9 +69,11 @@ export const AuthProvider = ({ children }) => {
           setUser(result) // 設置用戶狀態
         } else {
           setToken(undefined) // 如果 token 無效，清除 token 狀態
+
           localStorage.removeItem('accessToken') // 刪除無效的 accessToken
           router.push(loginRoute) // 重定向到登入頁面
         }
+        setLoading(false)
       }
 
       verifyAndSetUser() // 驗證並設置用戶狀態
@@ -119,7 +127,7 @@ export const AuthProvider = ({ children }) => {
 
   // 返回 AuthContext.Provider，提供 user、setUser、token 和 setToken 的上下文
   return (
-    <AuthContext.Provider value={{ user, setUser, token, setToken }}>
+    <AuthContext.Provider value={{ user, setUser, token, setToken, loading }}>
       {children} {/* 將子組件包裝在 Provider 中 */}
     </AuthContext.Provider>
   )
