@@ -5,14 +5,10 @@
 }
 
 .info-form-box-bo {
-  padding: 4.8rem 3.6rem;
+  padding: 2.4rem;
   background-color: var(--form-bg);
   border: 2px solid var(--primary);
   gap: 3rem;
-
-  @media (max-width: 992px) {
-    padding: 4.8rem 2.4rem;
-  }
 
   @media (max-width: 768px) {
     gap: 2.2rem;
