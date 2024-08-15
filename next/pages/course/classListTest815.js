@@ -81,7 +81,6 @@ export default function ClassList() {
   return (
     <div className="container">
       <div className="desktop-list-aa">
-        {/* 導航欄 */}
         <div className="class-header-aa">
           <ul className="d-flex subBar-aa">
             {categories.map((category) => (
@@ -96,7 +95,6 @@ export default function ClassList() {
         </div>
 
         <div className="sec1-aa">
-          {/* 課程排行 */}
           <div className="text2-aa">
             <h2>課程排行</h2>
           </div>
@@ -113,7 +111,33 @@ export default function ClassList() {
               ))}
           </div>
 
-          <div className="line-aa">{/* 分隔線 SVG */}</div>
+          <div className="line-aa">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width={1298}
+              height={4}
+              viewBox="0 0 1298 4"
+              fill="none"
+            >
+              <path
+                d="M2 0H0V4H2V0ZM1296 4C1297.1 4 1298 3.10457 1298 2C1298 0.895431 1297.1 0 1296 0V4ZM2 4H1296V0H2V4Z"
+                fill="url(#paint0_linear_2284_1232)"
+              />
+              <defs>
+                <linearGradient
+                  id="paint0_linear_2284_1232"
+                  x1={649}
+                  y1={2}
+                  x2={649}
+                  y2={3}
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stopColor="#DAA520" />
+                  <stop offset={1} stopColor="#745811" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
 
           {/* 所有課程列表 */}
           <div className="texth2-aa">
@@ -140,8 +164,9 @@ export default function ClassList() {
                   onClick={handleShowMore(category)}
                   role="button"
                   tabIndex={0}
-                  onKeyPress={(event) => {
+                  onKeyDown={(event) => {
                     if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
                       handleShowMore(category)(event)
                     }
                   }}
