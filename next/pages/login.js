@@ -27,9 +27,9 @@ export default function Login() {
     sessionStorage.removeItem('registeredPassword')
   }, [])
 
-  // 在頁面加載時從 sessionStorage 中讀取賬號和密碼
+  // 在頁面加載時從 localStorage 中讀取賬號和密碼
   useEffect(() => {
-    const storedAccount = sessionStorage.getItem('savedAccount') || ''
+    const storedAccount = localStorage.getItem('savedAccount') || ''
     setAccount(storedAccount)
   }, [])
 
@@ -57,7 +57,7 @@ export default function Login() {
       console.log(result) // 可以打印出 result 來檢查它的結構是否正確
 
       if (result.success) {
-        sessionStorage.removeItem('savedAccount') // 清除儲存的帳號
+        localStorage.removeItem('savedAccount') // 清除儲存的帳號
         Swal.fire({
           title: '登入成功！',
           html: `<span class="p">${result.name} 歡迎回來！</span>`,

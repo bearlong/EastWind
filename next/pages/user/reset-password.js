@@ -16,6 +16,7 @@ export default function ResetPassword() {
   useEffect(() => {
     // 在 component mount 時檢查 localStorage 中的 token
     const token = localStorage.getItem('resetPasswordToken')
+
     if (!token) {
       Swal.fire({
         title: '錯誤',
@@ -41,6 +42,7 @@ export default function ResetPassword() {
     setConfirmPasswordError('')
 
     const token = localStorage.getItem('resetPasswordToken')
+    const account = localStorage.getItem('resetAccount') // 讀取 account
 
     if (!password) {
       setPasswordError('請輸入新密碼')
@@ -91,8 +93,7 @@ export default function ResetPassword() {
           confirmButtonText: '確認', // 修改按鈕文字
         }).then(() => {
           // 清理 localStorage 中的 token
-          const account = 'yourAccount' // 假設你有 account 的值
-          sessionStorage.setItem('savedAccount', account) // 存儲 account 到 localStorage
+          localStorage.setItem('savedAccount', account) // 存儲 account 到 localStorage
           localStorage.removeItem('resetPasswordToken')
           router.push('/login')
         })

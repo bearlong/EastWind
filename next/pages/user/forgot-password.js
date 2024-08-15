@@ -50,6 +50,7 @@ export default function ForgotPassword() {
       const result = await response.json()
 
       if (result.status === 'success') {
+        localStorage.setItem('resetAccount', account)
         localStorage.setItem('resetPasswordToken', result.token)
         Swal.fire({
           title: '重設密碼郵件已發送！',
