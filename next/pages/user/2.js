@@ -1,208 +1,286 @@
-;<div className={`${styles['party-list-col-bo']} d-flex flex-column`}>
-  <div className="d-none d-md-block">
-    <input
-      type="checkbox"
-      id="showDetailDesktop"
-      className={styles['show-detail-desktop-bo']}
-    />
-    <label
-      className={`${styles['list-col-head-desktop-bo']} d-none d-md-flex justify-content-around align-items-center text-center`}
-      htmlFor="showDetailDesktop"
+import React, { useState, useEffect, useRef } from 'react'
+import styles from '@/styles/boyu/forgot.module.scss'
+import { FaXmark, FaCheck } from 'react-icons/fa6'
+import Link from 'next/link'
+import Swal from 'sweetalert2'
+import { useRouter } from 'next/router'
+
+export default function ForgotPassword() {
+  const router = useRouter()
+  const [email, setEmail] = useState('')
+  const [emailError, setEmailError] = useState('')
+
+  const sendResetEmail = async (event) => {
+    event.preventDefault()
+
+    setEmailError('')
+
+    if (!email) {
+      setEmailError('請輸入有效的電子信箱')
+      return
+    }
+
+    try {
+      const response = await fetch(
+        'http://localhost:3005/api/forgot-password/forgot-password',
+        {
+          method: 'POST',
+          headers: { 'Content-type': 'application/json' },
+          body: JSON.stringify({ email }),
+        }
+      )
+
+      const result = await response.json()
+
+      if (result.status === 'success') {
+        Swal.fire({
+          title: '重設密碼郵件已發送！',
+          text: '請檢查您的電子信箱以完成密碼重設。',
+          icon: 'success',
+          confirmButtonText: 'OK',
+        })
+      } else {
+        setEmailError(result.message)
+      }
+    } catch (error) {
+      setEmailError('發生未知錯誤，請稍後再試')
+    }
+  }
+
+  // 處理使用者註冊表單的交互效果
+  const userBoxRef = useRef(null)
+  const userFormRef = useRef(null)
+
+  useEffect(() => {
+    const userBox = userBoxRef.current
+    const userForm = userFormRef.current
+    const userInputs = userForm.querySelectorAll('input')
+
+    const toggleFormActive = (event) => {
+      if (!userForm.contains(event.target)) {
+        userForm.classList.toggle(styles.active)
+      }
+    }
+
+    const deactivateForm = () => {
+      if (!userForm.classList.contains(styles['form-focused'])) {
+        userForm.classList.remove(styles.active)
+      }
+    }
+
+    const focusInput = () => {
+      userBox.classList.add(styles.hover)
+      userForm.classList.add(styles['form-focused'])
+    }
+
+    const blurInput = () => {
+      userForm.classList.remove(styles['form-focused'])
+      if (!userForm.contains(document.activeElement)) {
+        userBox.classList.remove(styles.hover)
+      }
+    }
+
+    userBox.addEventListener('click', toggleFormActive)
+    userBox.addEventListener('mouseleave', deactivateForm)
+
+    userInputs.forEach((input) => {
+      input.addEventListener('focus', focusInput)
+      input.addEventListener('blur', blurInput)
+    })
+
+    return () => {
+      userBox.removeEventListener('click', toggleFormActive)
+      userBox.removeEventListener('mouseleave', deactivateForm)
+      userInputs.forEach((input) => {
+        input.removeEventListener('focus', focusInput)
+        input.removeEventListener('blur', blurInput)
+      })
+    }
+  }, [])
+
+  // 處理公司註冊表單的交互效果
+  const compBoxRef = useRef(null)
+  const compFormRef = useRef(null)
+
+  useEffect(() => {
+    const companyBox = compBoxRef.current
+    const companyForm = compFormRef.current
+    const companyInputs = companyForm.querySelectorAll('input')
+
+    const toggleFormActive = (event) => {
+      if (!companyForm.contains(event.target)) {
+        companyForm.classList.toggle(styles.active)
+      }
+    }
+
+    const deactivateForm = () => {
+      if (!companyForm.classList.contains(styles['form-focused'])) {
+        companyForm.classList.remove(styles.active)
+      }
+    }
+
+    const focusInput = () => {
+      companyBox.classList.add(styles.hover)
+      companyForm.classList.add(styles['form-focused'])
+    }
+
+    const blurInput = () => {
+      companyForm.classList.remove(styles['form-focused'])
+      if (!companyForm.contains(document.activeElement)) {
+        companyBox.classList.remove(styles.hover)
+      }
+    }
+
+    companyBox.addEventListener('click', toggleFormActive)
+    companyBox.addEventListener('mouseleave', deactivateForm)
+
+    companyInputs.forEach((input) => {
+      input.addEventListener('focus', focusInput)
+      input.addEventListener('blur', blurInput)
+    })
+
+    return () => {
+      companyBox.removeEventListener('click', toggleFormActive)
+      companyBox.removeEventListener('mouseleave', deactivateForm)
+      companyInputs.forEach((input) => {
+        input.removeEventListener('focus', focusInput)
+        input.removeEventListener('blur', blurInput)
+      })
+    }
+  }, [])
+
+  // 渲染表單頁面
+  return (
+    <section
+      className={`${styles['forgot-box-bo']} d-flex flex-column flex-md-row justify-content-center align-items-center`}
     >
-      <h6>17465544</h6>
-      <h6>麻將大師 板橋店</h6>
-      <div className={`${styles['list-time-bo']} d-flex flex-column flex-row`}>
-        <h6>2023 / 12 / 12</h6>
-        <h6>10 : 00 - 13 : 00</h6>
-      </div>
+      {/* 使用者忘記密碼區域 */}
       <div
-        className={`${styles['btn-cancel-bo']} btn h6 d-flex justify-content-center align-items-center gap-2`}
+        className={`${styles['user-forgot-section-bo']} d-flex flex-column justify-content-center align-items-center`}
+        ref={userBoxRef}
       >
-        <FaBan />
+        <div className={`${styles['user-forgot-title-bo']} d-flex`}>
+          <h3>會</h3>
+          <h3>員</h3>
+          <h3>信</h3>
+          <h3>箱</h3>
+          <h3>驗</h3>
+          <h3>證</h3>
+        </div>
         <div
-          className={`${styles['btn-cancel-text-bo']} d-flex justify-content-center align-items-center text-center`}
+          className={`${styles['user-forgot-box-bo']} justify-content-center align-items-center`}
+          ref={userFormRef}
         >
-          <p>取消</p>
-          <p>預訂</p>
+          <form
+            onSubmit={sendResetEmail}
+            className={`${styles['user-forgot-form-bo']} d-flex flex-column justify-content-center align-items-center`}
+          >
+            <div className={styles['form-group-bo']}>
+              <input
+                name="email"
+                type="email"
+                className={`h6 ${styles['form-input-bo']} ${styles['input-email-bo']}`}
+                placeholder="電子信箱"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              {emailError && (
+                <div className={`p ${styles['text-error-bo']}`}>
+                  {emailError}
+                </div>
+              )}
+            </div>
+            <div
+              className={`${styles['user-forgot-btn-box-bo']} d-flex justify-content-center align-items-center`}
+            >
+              <Link
+                href="/login"
+                className={`${styles['btn-user-forgot-bo']} btn h6 d-flex justify-content-between align-items-center`}
+              >
+                取消重設
+                <FaXmark />
+              </Link>
+
+              <button
+                type="submit"
+                className={`${styles['btn-user-forgot-bo']} btn h6 d-flex justify-content-between align-items-center`}
+              >
+                驗證信箱 <FaCheck />
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-      <h6>
-        <FaChevronDown className={` ${styles['btn-detail-bo']}`} />
-      </h6>
-    </label>
-    <div
-      className={`${styles['list-col-desktop-body-bo']} flex-column flex-sm-row justify-content-between align-items-center gap-2`}
-    >
-      <ul className="d-flex flex-column justify-content-between align-items-start gap-1">
-        <li
-          className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
-        >
-          <FaMapMarkerAlt className={`${styles['col-icon-bo']}`} />
-          新北市板橋區松江街28號
-        </li>
-        <li
-          className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center`}
-        >
-          <FaPhone className={`${styles['col-icon-bo']}`} />
-          02-22222222
-        </li>
-        <li
-          className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center`}
-        >
-          <FaShop className={`${styles['col-icon-bo']}`} />
-          大廳 / 1桌
-        </li>
-        <li
-          className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center`}
-        >
-          <FaMoneyBill className={`${styles['col-icon-bo']}`} />
-          600
-        </li>
-      </ul>
 
-      <div className="d-flex flex-row flex-sm-column justify-content-between align-items-center gap-3">
-        <button
-          className={`${styles['btn-shop-detail']} btn p d-flex justify-content-center align-items-center`}
-        >
-          <FaMagnifyingGlass className={` ${styles['btn-icon-bo']}`} />
-          <div
-            className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
-          >
-            <p>店家</p>
-            <p>詳情</p>
-          </div>
-        </button>
-        <button
-          className={`${styles['btn-shop-Contact']} btn p d-flex justify-content-center align-items-center`}
-        >
-          <FaCommentDots />
-          <div
-            className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
-          >
-            <p>聯絡</p>
-            <p>店家</p>
-          </div>
-        </button>
-        <button
-          className={`${styles['btn-QR-code']} btn p d-flex justify-content-center align-items-center`}
-        >
-          <FaStar />
-          <div
-            className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
-          >
-            <p>評價</p>
-            <p>店家</p>
-          </div>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div className="d-block d-md-none">
-    <input
-      type="checkbox"
-      id="showDetailMobile"
-      className={styles['show-detail-mobile-bo']}
-    />
-    <label
-      className={`${styles['list-col-head-mobile-bo']} d-flex d-md-none justify-content-between align-items-center text-center`}
-      htmlFor="showDetailMobile"
-    >
-      <div className="d-flex flex-column justify-content-center align-items-start gap-2">
-        <div className="d-flex justify-content-between w-100">
-          <h6>17465544</h6>
+      {/* 公司重設密碼區域 */}
+      <div
+        className={`${styles['company-forgot-section-bo']} d-flex flex-column gap-5 justify-content-center align-items-center`}
+        ref={compBoxRef}
+      >
+        <div className={`${styles['company-forgot-title-bo']} d-flex`}>
+          <h3>企</h3>
+          <h3>業</h3>
+          <h3>重</h3>
+          <h3>設</h3>
+          <h3>密</h3>
+          <h3>碼</h3>
         </div>
-        <h6>麻將大師 板橋店</h6>
         <div
-          className={`${styles['list-time-bo']} d-flex flex-row flex-lg-row`}
+          className={`${styles['company-forgot-box-bo']} justify-content-center align-items-center`}
+          ref={compFormRef}
         >
-          <h6>2023 / 12 / 12</h6>
-          <h6>10 : 00 - 13 : 00</h6>
+          <form
+            className={`${styles['company-forgot-form-bo']} d-flex flex-column gap-3 justify-content-center align-items-center`}
+          >
+            <div className={styles['form-group-bo']}>
+              <div
+                className={`${styles['email-box-bo']} d-flex justify-content-end align-items-start`}
+              >
+                <button className={`${styles['btn-get-CAPTCHA-bo']} btn`}>
+                  點擊驗證
+                </button>
+              </div>
+              <input
+                type="text"
+                className={`h6 ${styles['form-input-bo']} ${styles['input-taxID-bo']}`}
+                placeholder="統編"
+              />
+            </div>
+            <div className={styles['form-group-bo']}>
+              <input
+                type="text"
+                className={`h6 ${styles['form-input-bo']}`}
+                placeholder="帳號"
+              />
+            </div>
+            <div className={styles['form-group-bo']}>
+              <input
+                type="password"
+                className={`h6 ${styles['form-input-bo']}`}
+                placeholder="密碼"
+              />
+            </div>
+            <div
+              className={`${styles['company-forgot-btn-box-bo']} d-flex justify-content-center align-items-center`}
+            >
+              <Link
+                href="/login"
+                className={`${styles['btn-company-forgot-bo']} btn h6 d-flex justify-content-between align-items-center`}
+              >
+                取消重設
+                <FaXmark />
+              </Link>
+              <button
+                type="submit"
+                className={`${styles['btn-company-forgot-bo']} btn h6 d-flex justify-content-between align-items=center`}
+              >
+                確定重設
+                <FaCheck />
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-      <div></div>
-      <div className="d-flex justify-content-center align-items-center gap-4">
-        <div
-          className={`${styles['btn-cancel-bo']} btn h6 d-flex justify-content-center align-items-center gap-2`}
-        >
-          <FaBan />
-          <div
-            className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
-          >
-            <p>取消</p>
-            <p>預訂</p>
-          </div>
-        </div>
-        <h6>
-          <FaChevronDown className={` ${styles['btn-detail-bo']}`} />
-        </h6>
-      </div>
-    </label>
-    <div
-      className={`${styles['list-col-body-bo']} flex-column flex-sm-row justify-content-between align-items-center gap-2`}
-    >
-      <ul className="d-flex flex-column justify-content-between align-items-start gap-1">
-        <li
-          className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
-        >
-          <FaMapMarkerAlt className={`${styles['col-icon-bo']}`} />
-          新北市板橋區松江街28號
-        </li>
-        <li
-          className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center`}
-        >
-          <FaPhone className={`${styles['col-icon-bo']}`} />
-          02-22222222
-        </li>
-        <li
-          className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center`}
-        >
-          <FaShop className={`${styles['col-icon-bo']}`} />
-          大廳 / 1桌
-        </li>
-        <li
-          className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center`}
-        >
-          <FaMoneyBill className={`${styles['col-icon-bo']}`} />
-          600
-        </li>
-      </ul>
-
-      <div className="d-flex flex-row flex-sm-column justify-content-between align-items-center gap-3">
-        <button
-          className={`${styles['btn-shop-detail']} btn p d-flex justify-content-center align-items-center`}
-        >
-          <FaMagnifyingGlass className={` ${styles['btn-icon-bo']}`} />
-          <div
-            className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
-          >
-            <p>店家</p>
-            <p>詳情</p>
-          </div>
-        </button>
-        <button
-          className={`${styles['btn-shop-Contact']} btn p d-flex justify-content-center align-items-center`}
-        >
-          <FaCommentDots />
-          <div
-            className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
-          >
-            <p>聯絡</p>
-            <p>店家</p>
-          </div>
-        </button>
-        <button
-          className={`${styles['btn-QR-code']} btn p d-flex justify-content-center align-items-center`}
-        >
-          <FaStar />
-          <div
-            className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
-          >
-            <p>評價</p>
-            <p>店家</p>
-          </div>
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+    </section>
+  )
+}

@@ -93,9 +93,6 @@
 }
 
 /* 使用者登入表單容器的 active 狀態 */
-.user-login-box-bo.active {
-  display: block;
-}
 
 /* 使用者登入表單 */
 .user-login-form-bo {
@@ -103,7 +100,6 @@
   position: relative;
   padding: 0 2.4rem 1.2rem 2.4rem;
   z-index: 10;
-  gap: 1.2rem;
 
   @media (max-width: 576px) {
     padding: 0.8rem 0 1.2rem 0;
@@ -222,11 +218,6 @@
   }
 }
 
-/* 公司登入表單容器的 active 狀態 */
-.company-login-box-bo.active {
-  display: block;
-}
-
 /* 公司登入表單 */
 .company-login-form-bo {
   cursor: default;
@@ -280,6 +271,7 @@
   background-color: var(--white);
   border: none;
   width: 100%;
+  margin-bottom: 0.8rem;
 }
 
 .input-email-bo {
@@ -316,4 +308,38 @@
 .btn-get-CAPTCHA-bo:hover {
   background-color: var(--primary-dark);
   color: var(--bg-text-color);
+}
+
+/* 使用者登入表單容器的 active 狀態 */
+.active {
+  display: block;
+}
+
+.form-input-bo:focus {
+  display: block;
+}
+
+.text-error-bo {
+  padding: 0 2rem;
+  color: var(--primary);
+}
+
+.swal-btn-bo {
+  font-size: 1.4rem;
+  font-weight: 900;
+  background-color: var(--primary);
+  color: var(--bg-text-color);
+  padding: 0.4rem 1rem;
+}
+
+.swal-popup-bo {
+  background-color: var(--form-bg);
+}
+
+.swal-icon-bo {
+  font-size: 1.6rem;
+
+  @media (max-width: 576px) {
+    font-size: 1.4rem;
+  }
 }

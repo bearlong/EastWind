@@ -40,6 +40,14 @@ router.get('/', async (req, res) => {
     size,
     style,
   }
+
+  if (max && min) {
+    if (!filter) {
+      filter = ` WHERE \`product\`.\`price\` BETWEEN ${min} AND ${max}`
+    } else {
+      filter += ` AND \`product\`.\`price\` BETWEEN ${min} AND ${max}`
+    }
+  }
   for (const key in filterArr) {
     if (filterArr[key]) {
       if (filterArr[key].includes(',')) {
@@ -69,14 +77,6 @@ router.get('/', async (req, res) => {
       filter = ` WHERE (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
     } else {
       filter += ` ${isFilter ? 'OR' : 'AND'} (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
-    }
-  }
-
-  if (max && min) {
-    if (!filter) {
-      filter = ` WHERE \`product\`.\`price\` BETWEEN ${min} AND ${max}`
-    } else {
-      filter += ` AND \`product\`.\`price\` BETWEEN ${min} AND ${max}`
     }
   }
 
@@ -412,14 +412,52 @@ router.get('/', async (req, res) => {
 // })
 
 // 獲得單筆資料
+router.get('/:id/comment/:star', async (req, res, next) => {
+  // 轉為數字
+  const id = getIdParam(req)
+  const { star } = req.params
+
+  const [comment] = await dbPromise
+    .execute(
+      "SELECT * from comment WHERE `object_type` = 'product' AND `object_id` = " +
+        id +
+        ' AND `star` = ' +
+        star
+    )
+    .catch((err) => {
+      if (err) {
+        console.error(err)
+        return []
+      }
+    })
+  if (!comment) {
+    return res.json({
+      status: 'error',
+      message: '資料不存在',
+    })
+  }
+  return res.json({
+    status: 'success',
+    data: {
+      star,
+      content: comment,
+    },
+  })
+})
+
 router.get('/:id', async (req, res, next) => {
   // 轉為數字
   const id = getIdParam(req)
+  const { uid } = req.query
   let cateId = 0
-
+  // , COUNT(`comment`.`id`) AS `comment_count`
   const [product] = await dbPromise
     .execute(
-      'SELECT `product`.* , `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` FROM `product` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product" WHERE `product`.`id` = ' +
+      'SELECT `product`.* , `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` , COUNT(`comment`.`id`) AS `comment_count` ' +
+        `${uid ? ',CASE WHEN `favorite`.`object_id` IS NOT NULL THEN TRUE ELSE FALSE END AS `fav`' : ''}` +
+        'FROM `product` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product" ' +
+        `${uid ? 'LEFT JOIN `favorite` ON `favorite`.`object_id` = `product`.`id` AND `favorite`.`object_type` = "product" AND `favorite`.`user_id` = ' + uid : ''}` +
+        ' WHERE `product`.`id` = ' +
         id
     )
     .catch((err) => {
@@ -429,10 +467,19 @@ router.get('/:id', async (req, res, next) => {
       }
     })
 
-  cateId = product.category_id
+  cateId = product[0].category_id
 
   const [specifications] = await dbPromise
     .execute('SELECT * from product_specifications WHERE `product_id` = ' + id)
+    .catch((err) => {
+      if (err) {
+        console.error(err)
+        return []
+      }
+    })
+
+  const [img2] = await dbPromise
+    .execute('SELECT * from product_images WHERE `product_id` = ' + id)
     .catch((err) => {
       if (err) {
         console.error(err)
@@ -451,10 +498,24 @@ router.get('/:id', async (req, res, next) => {
         return []
       }
     })
+
+  const [starCount] = await dbPromise
+    .execute(
+      'SELECT `star` , COUNT(*) AS `count` FROM `comment` WHERE `object_type` = "product" AND `object_id` = ' +
+        id +
+        ' GROUP BY `star` ORDER BY  `star` DESC'
+    )
+    .catch((err) => {
+      if (err) {
+        console.error(err)
+        return []
+      }
+    })
+
   const [like] = await dbPromise.execute(
     'SELECT `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`,  MAX(`product_images`.`img`) AS `img2`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` FROM `product` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `product_images` ON `product_images`.`product_id` = `product`.`id` LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product" WHERE `category_id` = ' +
-      product.cateId +
-      '  GROUP BY `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name`, `brand`.`name` ORDER BY `average_star` DESC LIMIT 4'
+      cateId +
+      ' GROUP BY `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name`, `brand`.`name` ORDER BY `average_star` DESC LIMIT 4'
   )
 
   // 只會回傳單筆資料
@@ -463,13 +524,22 @@ router.get('/:id', async (req, res, next) => {
   // })
   const specificationsNotNull = specifications.map((v) => {
     return Object.fromEntries(
-      Object.entries(v).filter(([key, value]) => value !== null)
+      Object.entries(v).filter(
+        ([key, value]) => value !== null && key !== 'id' && key !== 'product_id'
+      )
     )
   })
 
   return res.json({
     status: 'success',
-    data: { product, specifications: specificationsNotNull, comment, like },
+    data: {
+      product,
+      specifications: specificationsNotNull,
+      img2,
+      like,
+      comment: { star: 0, content: comment },
+      starCount,
+    },
   })
 })
 
