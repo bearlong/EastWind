@@ -7,19 +7,22 @@ import { useRouter } from 'next/router'
 
 export default function Register() {
   const router = useRouter()
+
+  // 狀態管理：電子信箱是否已驗證、各種錯誤訊息、表單數據
   const [emailVerified, setEmailVerified] = useState(false) // 判斷電子信箱是否已驗證
   const [emailError, setEmailError] = useState('') // 存放電子信箱的錯誤訊息
   const [accountError, setAccountError] = useState('') // 存放帳號的錯誤訊息
   const [passwordError, setPasswordError] = useState('') // 存放密碼的錯誤訊息
-  const [checkPasswordError, setCheckPasswordError] = useState('') // 新增狀態
+  const [checkPasswordError, setCheckPasswordError] = useState('') // 新增確認密碼的錯誤訊息
   const [generalError, setGeneralError] = useState('') // 存放一般錯誤訊息
 
+  // 表單數據狀態
   const [formData, setFormData] = useState({
     email: '',
     account: '',
     password: '',
     checkPassword: '', // 使用 checkPassword 替代確認密碼欄位
-  }) // 表單數據狀態
+  })
 
   // 處理表單輸入變更
   const onInputChange = (event) => {
@@ -43,10 +46,10 @@ export default function Register() {
     setEmailError('')
     setAccountError('')
     setPasswordError('')
-    setCheckPasswordError('') // 重置 checkPassword 錯誤訊息
+    setCheckPasswordError('') // 重置確認密碼錯誤訊息
     setGeneralError('')
 
-    // 驗證確認密碼
+    // 驗證確認密碼是否一致
     if (formData.password !== formData.checkPassword) {
       setCheckPasswordError('密碼和確認密碼不一致')
       return
@@ -65,6 +68,7 @@ export default function Register() {
       const result = await response.json()
 
       if (result.status === 'success') {
+        // 顯示註冊成功的 SweetAlert
         Swal.fire({
           title: '註冊成功！',
           html: `<span class="p">歡迎加入！</span>`,
@@ -121,6 +125,7 @@ export default function Register() {
       const result = await response.json()
 
       if (result.status === 'success') {
+        // 顯示驗證信發送成功的 SweetAlert
         Swal.fire({
           title: '驗證信已發送',
           html: `<span class="p">請檢查您的電子信箱以完成驗證！</span>`,
@@ -157,6 +162,7 @@ export default function Register() {
     }
   }, [router.query])
 
+  // 當路由準備好時，從 sessionStorage 中檢查是否有已驗證的電子信箱
   useEffect(() => {
     if (router.isReady) {
       const verifiedEmail = sessionStorage.getItem('verifiedEmail')
@@ -184,23 +190,27 @@ export default function Register() {
     const userForm = userFormRef.current
     const userInputs = userForm.querySelectorAll('input')
 
+    // 點擊表單外部時，切換表單的 active 狀態
     const toggleFormActive = (event) => {
       if (!userForm.contains(event.target)) {
         userForm.classList.toggle(styles.active)
       }
     }
 
+    // 當滑鼠離開表單區域時，取消 active 狀態
     const deactivateForm = () => {
       if (!userForm.classList.contains(styles['form-focused'])) {
         userForm.classList.remove(styles.active)
       }
     }
 
+    // 當表單獲得焦點時，激活表單
     const focusInput = () => {
       userBox.classList.add(styles.hover)
       userForm.classList.add(styles['form-focused'])
     }
 
+    // 當表單失去焦點時，取消激活狀態
     const blurInput = () => {
       userForm.classList.remove(styles['form-focused'])
       if (!userForm.contains(document.activeElement)) {
@@ -235,23 +245,27 @@ export default function Register() {
     const companyForm = compFormRef.current
     const companyInputs = companyForm.querySelectorAll('input')
 
+    // 點擊表單外部時，切換表單的 active 狀態
     const toggleFormActive = (event) => {
       if (!companyForm.contains(event.target)) {
         companyForm.classList.toggle(styles.active)
       }
     }
 
+    // 當滑鼠離開表單區域時，取消 active 狀態
     const deactivateForm = () => {
       if (!companyForm.classList.contains(styles['form-focused'])) {
         companyForm.classList.remove(styles.active)
       }
     }
 
+    // 當表單獲得焦點時，激活表單
     const focusInput = () => {
       companyBox.classList.add(styles.hover)
       companyForm.classList.add(styles['form-focused'])
     }
 
+    // 當表單失去焦點時，取消激活狀態
     const blurInput = () => {
       companyForm.classList.remove(styles['form-focused'])
       if (!companyForm.contains(document.activeElement)) {

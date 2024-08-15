@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import UserSidebar from '../../components/user/user-sidebar'
+import UserSidebar from '../../../components/user/user-sidebar'
 
 import styles from '@/styles/boyu/user-party.module.scss'
 import {

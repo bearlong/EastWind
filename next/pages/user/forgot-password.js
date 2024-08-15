@@ -12,6 +12,7 @@ export default function ForgotPassword() {
   const [emailError, setEmailError] = useState('')
   const [accountError, setAccountError] = useState('')
 
+  // 發送重設密碼的驗證信函數
   const sendResetEmail = async (event) => {
     event.preventDefault()
 
@@ -81,7 +82,7 @@ export default function ForgotPassword() {
     }
   }
 
-  // 處理使用者註冊表單的交互效果
+  // 處理使用者重設密碼表單的交互效果
   const userBoxRef = useRef(null)
   const userFormRef = useRef(null)
 
@@ -90,23 +91,27 @@ export default function ForgotPassword() {
     const userForm = userFormRef.current
     const userInputs = userForm.querySelectorAll('input')
 
+    // 點擊表單外部時切換表單的 active 狀態
     const toggleFormActive = (event) => {
       if (!userForm.contains(event.target)) {
         userForm.classList.toggle(styles.active)
       }
     }
 
+    // 當表單失去焦點時，移除 active 狀態
     const deactivateForm = () => {
       if (!userForm.classList.contains(styles['form-focused'])) {
         userForm.classList.remove(styles.active)
       }
     }
 
+    // 當表單中的 input 獲得焦點時，設置表單為 focused 狀態
     const focusInput = () => {
       userBox.classList.add(styles.hover)
       userForm.classList.add(styles['form-focused'])
     }
 
+    // 當表單中的 input 失去焦點時，移除 focused 狀態
     const blurInput = () => {
       userForm.classList.remove(styles['form-focused'])
       if (!userForm.contains(document.activeElement)) {
@@ -141,23 +146,27 @@ export default function ForgotPassword() {
     const companyForm = compFormRef.current
     const companyInputs = companyForm.querySelectorAll('input')
 
+    // 點擊表單外部時切換表單的 active 狀態
     const toggleFormActive = (event) => {
       if (!companyForm.contains(event.target)) {
         companyForm.classList.toggle(styles.active)
       }
     }
 
+    // 當表單失去焦點時，移除 active 狀態
     const deactivateForm = () => {
       if (!companyForm.classList.contains(styles['form-focused'])) {
         companyForm.classList.remove(styles.active)
       }
     }
 
+    // 當表單中的 input 獲得焦點時，設置表單為 focused 狀態
     const focusInput = () => {
       companyBox.classList.add(styles.hover)
       companyForm.classList.add(styles['form-focused'])
     }
 
+    // 當表單中的 input 失去焦點時，移除 focused 狀態
     const blurInput = () => {
       companyForm.classList.remove(styles['form-focused'])
       if (!companyForm.contains(document.activeElement)) {
@@ -263,7 +272,7 @@ export default function ForgotPassword() {
         </div>
       </div>
 
-      {/* 公司註冊區域 */}
+      {/* 公司重設密碼區域 */}
       <div
         className={`${styles['company-forgot-section-bo']} d-flex flex-column gap-5 justify-content-center align-items-center`}
         ref={compBoxRef}

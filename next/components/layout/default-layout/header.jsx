@@ -113,7 +113,7 @@ export default function Header() {
               </li>
               <li>
                 {user ? (
-                  <Link href="/user/user-info">
+                  <Link href="/user/user-center/info">
                     <FaUser className={` ${styles['icon-bo']}`} />
                   </Link>
                 ) : (
@@ -123,7 +123,7 @@ export default function Header() {
                 )}
               </li>
               <li>
-                <div href="" className="position-relative">
+                <div className="position-relative">
                   <FaShoppingCart
                     className={` ${styles['icon-bo']}`}
                     onClick={handleShow}
@@ -140,9 +140,9 @@ export default function Header() {
               </li>
               {user && ( // 只有在 user 存在時才顯示登出按鈕
                 <li>
-                  <a href="" onClick={onLogout}>
+                  <Link href="" type="button" onClick={onLogout}>
                     <FaRightFromBracket className={` ${styles['icon-bo']}`} />
-                  </a>
+                  </Link>
                 </li>
               )}
 

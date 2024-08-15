@@ -1,5 +1,5 @@
 import styles from '@/styles/boyu/user-coupon.module.scss'
-import UserSidebar from '../../components/user/user-sidebar'
+import UserSidebar from '../../../components/user/user-sidebar'
 import {
   FaPlus,
   FaMagnifyingGlass,
