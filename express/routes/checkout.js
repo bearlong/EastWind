@@ -13,7 +13,7 @@ router.get('/:id', async (req, res) => {
   const id = getIdParam(req)
   try {
     const [userInfo] = await dbPromise.execute(
-      'SELECT `username`, `city`, `address` FROM `users` WHERE `id` = ?',
+      'SELECT `username`, `city`, `address` FROM `user` WHERE `id` = ?',
       [id]
     )
     const [coupons] = await dbPromise.execute(

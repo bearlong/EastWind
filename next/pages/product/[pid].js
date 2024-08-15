@@ -19,7 +19,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { useCart } from '@/hooks/use-cart'
 
 export default function Detail() {
-  const user_id = 1
+  let user_id
   const { handleAdd = () => {}, error = '' } = useCart()
   const router = useRouter()
   const { pid } = router.query

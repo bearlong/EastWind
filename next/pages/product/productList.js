@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import Image from 'next/image'
 import {
   FaFilter,
@@ -19,9 +19,12 @@ import 'swiper/css'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import ProductNav from '@/components/product/product-nav'
+import { AuthContext } from '@/context/AuthContext'
 
 export default function ProductList() {
-  const user_id = 1
+  const { user } = useContext(AuthContext)
+  console.log(user)
+  let user_id
   const router = useRouter()
   const [products, setProducts] = useState({ top: [], list: [] })
   const [pages, setPages] = useState(1)
