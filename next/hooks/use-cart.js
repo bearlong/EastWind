@@ -3,12 +3,12 @@ import React, { useState, useContext, createContext, useEffect } from 'react'
 const CartContext = createContext(null)
 
 export const CartProvider = ({ initialCartItems = [], children }) => {
-  const user_id = 1
   let items = initialCartItems
   const [cart, setCart] = useState(initialCartItems)
   const [top, setTop] = useState([])
   const [error, setError] = useState(null)
   const [remark, setRemark] = useState('')
+  let user_id
 
   useEffect(() => {
     const fetchCart = async () => {

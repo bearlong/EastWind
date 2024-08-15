@@ -65,66 +65,69 @@ export default function Header() {
   }
 
   return (
-    <header
-      className={`${styles['header-bo']} fixed-top container-fluid sticky-top py-3`}
-    >
-      <div
-        className={`${styles['header-box-bo']}  container-fluid d-flex justify-content-between align-items-center ${styles['nav-bar-bo']}`}
+    <>
+      <header
+        className={`${styles['header-bo']} fixed-top container-fluid sticky-top py-3`}
       >
-        <div className={styles['logo-box-bo']}>
-        <Link href="/home">
-            <img
-              src="/images/boyu/logo.svg"
-              alt=""
-              className={styles['logo-bo']}
-            />
-    </Link>
-        </div>
-        <nav className={styles['nav-bar-bo']}>
-          <ul
-            className={`d-flex justify-content-center align-items-center ${styles['nav-list-bo']}`}
-          >
-            <li>
-              <a className={`h6 ${styles['nav-link-bo']}`} href="">
-                棋牌室
-              </a>
-            </li>
-            <li>
-              <a className={`h6 ${styles['nav-link-bo']}`} href="">
-                商城
-              </a>
-            </li>
-            <li>
-              <a className={`h6 ${styles['nav-link-bo']}`} href="">
-                線上課程
-              </a>
-            </li>
-          </ul>
-        </nav>
-        <div className={styles['icon-box-bo']}>
-          <ul
-            className={`d-flex justify-content-center align-items-center ${styles['icon-list-bo']}`}
-          >
-            <li>
+        <div
+          className={`${styles['header-box-bo']}  container-fluid d-flex justify-content-between align-items-center ${styles['nav-bar-bo']}`}
+        >
+          <div className={styles['logo-box-bo']}>
             <Link href="/home">
-            <IoHome className={` ${styles['icon-bo']}`} />
-              </Link>
-            </li>
-            <li>
-            {user ? (
-              <Link href="/user/user-info">
-                <FaUser className={` ${styles['icon-bo']}`} />
-              </Link>
-            ) : (
-              <Link href="/login">
-                <FaUser className={` ${styles['icon-bo']}`} />
-              </Link>
-            )}
-            </li>
-            <li>
-              <div href="" className="position-relative">
-                <FaShoppingCart className={` ${styles['icon-bo']}`}                    onClick={handleShow}
- />
+              <img
+                src="/images/boyu/logo.svg"
+                alt=""
+                className={styles['logo-bo']}
+              />
+            </Link>
+          </div>
+          <nav className={styles['nav-bar-bo']}>
+            <ul
+              className={`d-flex justify-content-center align-items-center ${styles['nav-list-bo']}`}
+            >
+              <li>
+                <a className={`h6 ${styles['nav-link-bo']}`} href="">
+                  棋牌室
+                </a>
+              </li>
+              <li>
+                <a className={`h6 ${styles['nav-link-bo']}`} href="">
+                  商城
+                </a>
+              </li>
+              <li>
+                <a className={`h6 ${styles['nav-link-bo']}`} href="">
+                  線上課程
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <div className={styles['icon-box-bo']}>
+            <ul
+              className={`d-flex justify-content-center align-items-center ${styles['icon-list-bo']}`}
+            >
+              <li>
+                <Link href="/home">
+                  <IoHome className={` ${styles['icon-bo']}`} />
+                </Link>
+              </li>
+              <li>
+                {user ? (
+                  <Link href="/user/user-info">
+                    <FaUser className={` ${styles['icon-bo']}`} />
+                  </Link>
+                ) : (
+                  <Link href="/login">
+                    <FaUser className={` ${styles['icon-bo']}`} />
+                  </Link>
+                )}
+              </li>
+              <li>
+                <div href="" className="position-relative">
+                  <FaShoppingCart
+                    className={` ${styles['icon-bo']}`}
+                    onClick={handleShow}
+                  />
 
                   <div
                     className={`d-flex justify-content-center align-items-center p ${
