@@ -35,7 +35,7 @@ let users = []
 ;(async () => {
   try {
     const [result] = await connection.query(
-      'SELECT * FROM `users` WHERE valid = 1'
+      'SELECT * FROM `user` WHERE valid = 1'
     )
 
     users = result // 確保 users 變數得到資料
@@ -54,6 +54,45 @@ router.get('/users', (req, res) => {
     res.status(200).json(users) // 回傳會員資料給前端
   } else {
     res.status(500).json({ error: '無法撈取會員資料' })
+  }
+})
+
+// 撈取個別會員資料
+router.get('/user/:id', async (req, res) => {
+  const userId = req.params.id // 獲取路徑參數中的用戶ID
+
+  try {
+    // 從資料庫中查找使用者
+    const [user] = await connection.query(
+      'SELECT * FROM `user` WHERE `id` = ? AND `valid` = 1 LIMIT 1',
+      [userId]
+    )
+
+    if (user.length === 0) {
+      // 如果找不到該用戶
+      return res.status(404).json({ status: 'fail', message: '用戶不存在' })
+    }
+
+    // 返回找到的用戶資料
+    res.status(200).json({
+      status: 'success',
+      data: {
+        id: user[0].id,
+        username: user[0].username,
+        account: user[0].account,
+        city: user[0].city,
+        address: user[0].address,
+        phone: user[0].phone,
+        email: user[0].email,
+        birth: user[0].birth,
+        gender: user[0].gender,
+        user_img: user[0].user_img,
+        // 你可以選擇返回其他字段或只返回特定字段
+      },
+    })
+  } catch (error) {
+    console.error('資料庫查詢失敗:', error)
+    res.status(500).json({ status: 'fail', message: '伺服器內部錯誤' })
   }
 })
 
@@ -92,14 +131,7 @@ router.post('/login', upload.none(), async (req, res) => {
     const token = jwt.sign(
       {
         id: user[0].id,
-        username: user[0].username,
         account: user[0].account,
-        city: user[0].city,
-        address: user[0].address,
-        phone: user[0].phone,
-        email: user[0].email,
-        birth: user[0].birth,
-        gender: user[0].gender,
       },
       secretKey,
       {
@@ -121,19 +153,12 @@ router.post('/login', upload.none(), async (req, res) => {
 
 // 使用者登出
 router.get('/logout', checkToken, (req, res) => {
-  const { account, password } = req.decoded // 從解碼的令牌中獲取用戶信息
+  const { account } = req.decoded // 從解碼的令牌中獲取用戶信息
   if (account) {
     const token = jwt.sign(
       {
         id: undefined,
-        username: undefined,
         account: undefined,
-        city: undefined,
-        address: undefined,
-        phone: undefined,
-        email: undefined,
-        birth: undefined,
-        gender: undefined,
       },
       secretKey, // 使用秘鑰加密
       { expiresIn: '-1s' } // 立即使令牌過期

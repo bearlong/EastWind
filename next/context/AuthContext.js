@@ -36,10 +36,12 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         // 如果存在token
         let result = await checkToken(token) // 驗證token並獲取解碼後的用戶信息
+
         if (result && result.account) {
           // 如果解碼後有用戶帳號
           setUser(result) // 設置用戶狀態
         } else {
+          setToken(undefined) // 否則設置token為undefined
           setToken(undefined) // 否則設置用戶狀態為undefined
         }
       }
@@ -105,6 +107,29 @@ export const AuthProvider = ({ children }) => {
           resolve(data)
         })
       })
+
+      // 如果 token 驗證成功，使用 decoded 中的 user ID 撈取用戶資料
+      if (decoded && decoded.id) {
+        const response = await fetch(
+          `http://localhost:3005/api/user/user/${decoded.id}`,
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+
+        const result = await response.json()
+
+        if (result.status === 'success') {
+          // 返回撈取到的用戶資料
+          return result.data
+        } else {
+          console.error('Failed to fetch user data:', result.message)
+          return null
+        }
+      }
     } catch (err) {
       console.error('Token verification error:', err.message)
       decoded = null // 如果驗證失敗，將 decoded 設為 null

@@ -1,5 +1,5 @@
 import styles from '@/styles/boyu/user-favorite.module.scss'
-import UserSidebar from '../../components/user/user-sidebar'
+import UserSidebar from '../../../components/user/user-sidebar'
 
 import { FaMagnifyingGlass, FaPhone } from 'react-icons/fa6'
 import { PiDeskFill } from 'react-icons/pi'

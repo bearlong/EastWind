@@ -1,6 +1,6 @@
 import styles from '@/styles/boyu/user-info.module.scss'
 
-import UserSidebar from '../../components/user/user-sidebar'
+import UserSidebar from '../../../components/user/user-sidebar'
 import UserBasicInfo from '@/components/user/user-basic-info'
 import UserDetailInfo from '@/components/user/user-detail-info'
 import UserInfoButton from '@/components/user/user-info-button'

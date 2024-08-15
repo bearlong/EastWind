@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import UserSidebar from '../../components/user/user-sidebar'
+import UserSidebar from '../../../components/user/user-sidebar'
 import styles from '@/styles/boyu/user-booking.module.scss'
 import {
   FaSort,
