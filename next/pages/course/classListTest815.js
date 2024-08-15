@@ -7,7 +7,7 @@ import styles from '@/styles/aa/classList.scss'
 
 export default function ClassList() {
   const router = useRouter()
-  // 設置狀態來存儲課程數據、加載狀態、錯誤信息和每個類別顯示的課程數量
+  // 設置狀態來存儲課程數據、加載狀態、錯誤和每個類別顯示的課程數量
   const [classes, setClasses] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
