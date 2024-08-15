@@ -8,13 +8,14 @@ import { useRouter } from 'next/router'
 export default function ResetPassword() {
   const router = useRouter()
 
+  // 定義狀態以管理表單輸入和錯誤訊息
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [confirmPasswordError, setConfirmPasswordError] = useState('')
 
   useEffect(() => {
-    // 在 component mount 時檢查 localStorage 中的 token
+    // 在 component mount 時檢查 localStorage 中的 token，確保存在重設密碼的驗證資料
     const token = localStorage.getItem('resetPasswordToken')
 
     if (!token) {
@@ -35,6 +36,7 @@ export default function ResetPassword() {
     }
   }, [])
 
+  // 重設密碼的函數
   const resetPassword = async (event) => {
     event.preventDefault()
 
@@ -44,12 +46,12 @@ export default function ResetPassword() {
     const token = localStorage.getItem('resetPasswordToken')
     const account = localStorage.getItem('resetAccount') // 讀取 account
 
+    // 驗證輸入的新密碼是否符合要求
     if (!password) {
       setPasswordError('請輸入新密碼')
       return
     }
 
-    // 密碼需至少6碼，且包含一個英文字母
     const passwordPattern = /^(?=.*[A-Za-z]).{6,}$/
 
     if (!passwordPattern.test(password)) {
@@ -67,6 +69,7 @@ export default function ResetPassword() {
       return
     }
 
+    // 發送重設密碼請求
     try {
       const response = await fetch(
         'http://localhost:3005/api/forgot-password/reset-password',
@@ -207,6 +210,7 @@ export default function ResetPassword() {
     }
   }, [])
 
+  // 渲染重設密碼頁面
   return (
     <section
       className={`${styles['forgot-box-bo']} d-flex flex-column flex-md-row justify-content-center align-items-center`}

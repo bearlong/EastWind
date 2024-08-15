@@ -8,9 +8,10 @@ import 'dotenv/config.js'
 const router = express.Router()
 
 // 設定CORS白名單和選項
-const whitelist = ['http://localhost:5500', 'http://localhost:3000'] // 設置允許的CORS來源
+// 設置允許的CORS來源，並配置CORS選項以允許攜帶憑證（如Cookie）
+const whitelist = ['http://localhost:5500', 'http://localhost:3000']
 const corsOptions = {
-  credentials: true, // 允許攜帶憑證（例如Cookie）
+  credentials: true,
   origin(origin, callback) {
     if (!origin || whitelist.includes(origin)) {
       callback(null, true) // 允許請求
@@ -25,11 +26,13 @@ app.use(cors(corsOptions)) // 使用CORS中間件，應用CORS設置
 app.use(express.json()) // 使用JSON中間件來解析請求體中的JSON資料
 
 // 註冊 API
+// 處理用戶註冊請求，驗證輸入，檢查電子郵件是否已註冊，並將新用戶資料存入數據庫
 router.post('/register', async (req, res) => {
   const { email, account, password } = req.body
 
   let errors = {}
 
+  // 檢查電子郵件是否有效
   if (!email) {
     errors.email = '請填入電子信箱'
   } else {
@@ -39,6 +42,7 @@ router.post('/register', async (req, res) => {
     }
   }
 
+  // 檢查帳號是否有效
   if (!account) {
     errors.account = '請填入帳號'
   } else {
@@ -48,6 +52,7 @@ router.post('/register', async (req, res) => {
     }
   }
 
+  // 檢查密碼是否有效
   if (!password) {
     errors.password = '請填入密碼'
   } else {
@@ -57,11 +62,13 @@ router.post('/register', async (req, res) => {
     }
   }
 
+  // 如果有任何驗證錯誤，返回錯誤響應
   if (Object.keys(errors).length > 0) {
     return res.status(400).json({ status: 'fail', errors })
   }
 
   try {
+    // 檢查電子郵件是否已經被註冊
     const [existingUserByEmail] = await connection.execute(
       'SELECT * FROM user WHERE email = ?',
       [email]
@@ -74,6 +81,7 @@ router.post('/register', async (req, res) => {
       })
     }
 
+    // 將新用戶的電子郵件、帳號和密碼存入數據庫
     const [result] = await connection.execute(
       'INSERT INTO user (email, account, password) VALUES (?, ?, ?)',
       [email, account, password]
@@ -94,6 +102,7 @@ router.post('/register', async (req, res) => {
 })
 
 // 驗證電子信箱 API
+// 處理用戶通過電子郵件驗證註冊請求，驗證 token，並根據結果重定向
 router.get('/verify-email', async (req, res) => {
   const { token } = req.query
 
@@ -116,6 +125,7 @@ router.get('/verify-email', async (req, res) => {
 })
 
 // 發送驗證信 API
+// 處理用戶請求發送驗證信件，生成 token，並通過電子郵件發送驗證連結
 router.post('/send-verification', async (req, res) => {
   const { email } = req.body
 
@@ -126,6 +136,7 @@ router.post('/send-verification', async (req, res) => {
   }
 
   try {
+    // 檢查電子郵件是否已經被註冊
     const [existingUser] = await connection.execute(
       'SELECT * FROM user WHERE email = ?',
       [email]
@@ -138,12 +149,15 @@ router.post('/send-verification', async (req, res) => {
       })
     }
 
+    // 生成驗證 token
     const verifyToken = jwt.sign({ email }, process.env.JWT_SECRET_KEY, {
       expiresIn: '1h',
     })
 
+    // 構建驗證鏈接
     const verifyUrl = `http://localhost:3005/api/register/verify-email?token=${verifyToken}`
 
+    // 配置電子郵件內容
     const mailOptions = {
       from: `"support"<${process.env.SMTP_TO_EMAIL}>`,
       to: email,
@@ -151,6 +165,7 @@ router.post('/send-verification', async (req, res) => {
       text: `你好，請點擊下方連結以驗證您的電子信箱：\r\n\r\n${verifyUrl}\r\n\r\n如果您沒有註冊過此帳號，請忽略此郵件。\r\n\r\n敬上\r\n東風開發團隊`,
     }
 
+    // 發送驗證郵件
     transporter.sendMail(mailOptions, (err, response) => {
       if (err) {
         console.error('Error sending verification email:', err)

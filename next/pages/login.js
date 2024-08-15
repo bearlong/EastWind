@@ -6,16 +6,21 @@ import Swal from 'sweetalert2'
 import Link from 'next/link'
 
 export default function Login() {
+  // 定義狀態來管理表單輸入值和錯誤訊息
   const [account, setAccount] = useState('')
   const [password, setPassword] = useState('')
-
   const [accountError, setAccountError] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [generalError, setGeneralError] = useState('')
 
-  const { login } = useAuth()
+  const { login } = useAuth() // 使用自定義的 useAuth 鉤子來處理登入邏輯
 
-  // 在頁面加載時從 sessionStorage 中讀取賬號和密碼
+  // 在組件加載時清除任何存在的 token
+  useEffect(() => {
+    localStorage.removeItem('nextXXXToken')
+  }, [])
+
+  // 從 sessionStorage 中讀取賬號和密碼並設置到狀態中
   useEffect(() => {
     const storedAccount = sessionStorage.getItem('registeredAccount') || ''
     const storedPassword = sessionStorage.getItem('registeredPassword') || ''
@@ -27,13 +32,13 @@ export default function Login() {
     sessionStorage.removeItem('registeredPassword')
   }, [])
 
-  // 在頁面加載時從 localStorage 中讀取賬號和密碼
+  // 從 localStorage 中讀取賬號並設置到狀態中
   useEffect(() => {
     const storedAccount = localStorage.getItem('savedAccount') || ''
     setAccount(storedAccount)
   }, [])
 
-  // 前端處理登入邏輯
+  // 處理登入邏輯
   const onLogin = async (event) => {
     event.preventDefault()
 
@@ -54,7 +59,6 @@ export default function Login() {
 
     try {
       const result = await login(account, password) // 等待登入結果
-      console.log(result) // 可以打印出 result 來檢查它的結構是否正確
 
       if (result.success) {
         localStorage.removeItem('savedAccount') // 清除儲存的帳號
@@ -84,6 +88,7 @@ export default function Login() {
     }
   }
 
+  // 處理使用者登入表單的交互效果
   const userBoxRef = useRef(null)
   const userFormRef = useRef(null)
   const compBoxRef = useRef(null)
@@ -136,6 +141,7 @@ export default function Login() {
     }
   }, [])
 
+  // 處理公司登入表單的交互效果
   useEffect(() => {
     const companyBox = compBoxRef.current
     const companyForm = compFormRef.current
@@ -183,6 +189,7 @@ export default function Login() {
     }
   }, [])
 
+  // 渲染登入頁面
   return (
     <section
       className={`${styles['login-box-bo']} d-flex flex-column flex-md-row justify-content-center align-items-center`}

@@ -16,24 +16,26 @@ import { AuthContext } from '@/context/AuthContext'
 
 export default function UserSidebar() {
   const router = useRouter()
-  const [activeLink, setActiveLink] = useState('info')
+  const [activeLink, setActiveLink] = useState('info') // 狀態：追蹤當前活躍的鏈接
   const [firstLink, setFirstLink] = useState('info') // 初始化 firstLink 為 info
 
   // 從 AuthContext 中獲取 user 狀態
   const { user } = useContext(AuthContext)
 
+  // 當路徑發生變化時，更新 activeLink 和 firstLink 的狀態
   useEffect(() => {
-    const path = router.pathname.split('/').pop()
+    const path = router.pathname.split('/').pop() // 獲取當前路徑的最後部分
     setActiveLink(path)
     setFirstLink(path) // 確保 firstLink 也會更新為當前路徑
   }, [router.pathname])
 
+  // 更新 activeLink 和 firstLink 的函數
   const updateActiveLink = (link) => {
     setFirstLink(link)
     setActiveLink(link)
   }
 
-  // 這裡將 getIcon 和 getLabel 函式定義在 UserSidebar 組件內，但不嵌套在其他函式內
+  // 根據鏈接名稱返回對應的圖標
   function getIcon(link) {
     switch (link) {
       case 'info':
@@ -55,6 +57,7 @@ export default function UserSidebar() {
     }
   }
 
+  // 根據鏈接名稱返回對應的標籤
   function getLabel(link) {
     switch (link) {
       case 'info':
@@ -78,6 +81,7 @@ export default function UserSidebar() {
 
   return (
     <section>
+      {/* 桌面版側邊欄 */}
       <aside
         className={`${styles['user-desktop-sidebar-bo']}  flex-column align-items-center h-100 d-none d-md-flex gap-5`}
       >
@@ -91,7 +95,7 @@ export default function UserSidebar() {
             會員中心
           </div>
           <div className={styles['user-img-box-bo']}>
-            {/* 使用來自 Context 的 user.photo 來顯示用戶照片 */}
+            {/* 使用來自 Context 的 user.user_img 來顯示用戶照片 */}
             <img
               className={`${styles['user-img-bo']} d-none d-md-block`}
               src={
@@ -107,7 +111,7 @@ export default function UserSidebar() {
           <div
             className={`${styles['user-welcome-box-bo']} h6 d-none d-md-block`}
           >
-            {/* 使用來自 Context 的 user.name 來顯示用戶名稱 */}
+            {/* 使用來自 Context 的 user.username 來顯示用戶名稱 */}
             歡迎，{user?.username || '用戶'}。
           </div>
         </div>
@@ -117,6 +121,7 @@ export default function UserSidebar() {
           <ul
             className={`${styles['user-sidebar-menu-bo']} d-flex flex-column`}
           >
+            {/* 選單項目：個人資料 */}
             <li>
               <Link
                 href="/user/user-center/info"
@@ -130,6 +135,7 @@ export default function UserSidebar() {
               </Link>
             </li>
 
+            {/* 選單項目：訂桌紀錄 */}
             <li>
               <Link
                 href="/user/user-center/booking"
@@ -143,6 +149,8 @@ export default function UserSidebar() {
                 訂桌紀錄
               </Link>
             </li>
+
+            {/* 選單項目：揪團紀錄 */}
             <li>
               <Link
                 href="/user/user-center/party"
@@ -156,6 +164,8 @@ export default function UserSidebar() {
                 揪團紀錄
               </Link>
             </li>
+
+            {/* 選單項目：歷史訂單 */}
             <li>
               <Link
                 href="/user/user-center/order"
@@ -169,6 +179,8 @@ export default function UserSidebar() {
                 歷史訂單
               </Link>
             </li>
+
+            {/* 選單項目：課程 */}
             <li>
               <Link
                 href="/user/user-center/course"
@@ -182,6 +194,8 @@ export default function UserSidebar() {
                 課程
               </Link>
             </li>
+
+            {/* 選單項目：我的最愛 */}
             <li>
               <Link
                 href="/user/user-center/favorite"
@@ -195,6 +209,8 @@ export default function UserSidebar() {
                 我的最愛
               </Link>
             </li>
+
+            {/* 選單項目：優惠卷 */}
             <li>
               <Link
                 href="/user/user-center/coupon"
@@ -212,6 +228,7 @@ export default function UserSidebar() {
         </div>
       </aside>
 
+      {/* 行動版側邊欄 */}
       <aside
         className={`${styles['user-mobile-sidebar-bo']} d-flex flex-column align-items-center h-100 d-md-none`}
       >
@@ -221,6 +238,7 @@ export default function UserSidebar() {
           <ul
             className={`${styles['user-sidebar-menu-bo']} d-flex flex-column`}
           >
+            {/* 下拉選單的第一個鏈接，顯示當前選中的選項 */}
             <li>
               <input
                 type="checkbox"
@@ -250,6 +268,7 @@ export default function UserSidebar() {
                 />
               </label>
 
+              {/* 下拉選單的其餘選項 */}
               <ul
                 id="linkList"
                 className={`d-md-block ${styles['user-mobile-sidebar-submenu-bo']}`}
