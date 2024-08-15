@@ -5,28 +5,75 @@ import Link from 'next/link'
 import Swal from 'sweetalert2'
 import { useRouter } from 'next/router'
 
-export default function ForgotPassword() {
+export default function ResetPassword() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [emailError, setEmailError] = useState('')
 
-  const sendResetEmail = async (event) => {
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const [confirmPasswordError, setConfirmPasswordError] = useState('')
+
+  useEffect(() => {
+    // 在 component mount 時檢查 localStorage 中的 token
+    const token = localStorage.getItem('resetPasswordToken')
+
+    if (!token) {
+      Swal.fire({
+        title: '錯誤',
+        html: `<span class="p">無法找到重設密碼的驗證資料，請重新驗證。</span>`,
+        icon: 'error',
+        customClass: {
+          popup: `${styles['swal-popup-bo']}`, // 自訂整個彈出視窗的 class
+          title: 'h6',
+          icon: `${styles['swal-icon-bo']}`, // 添加自定義 class
+          confirmButton: `${styles['swal-btn-bo']}`, // 添加自定義按鈕 class
+        },
+        confirmButtonText: '確認', // 修改按鈕文字
+      }).then(() => {
+        router.push('/user/forgot-password')
+      })
+    }
+  }, [])
+
+  const resetPassword = async (event) => {
     event.preventDefault()
 
-    setEmailError('')
+    setPasswordError('')
+    setConfirmPasswordError('')
 
-    if (!email) {
-      setEmailError('請輸入有效的電子信箱')
+    const token = localStorage.getItem('resetPasswordToken')
+    const account = localStorage.getItem('resetAccount') // 讀取 account
+
+    if (!password) {
+      setPasswordError('請輸入新密碼')
+      return
+    }
+
+    // 密碼需至少6碼，且包含一個英文字母
+    const passwordPattern = /^(?=.*[A-Za-z]).{6,}$/
+
+    if (!passwordPattern.test(password)) {
+      setPasswordError('密碼需至少6碼，且包含一個英文字母')
+      return
+    }
+
+    if (!confirmPassword) {
+      setConfirmPasswordError('請確認新密碼')
+      return
+    }
+
+    if (password !== confirmPassword) {
+      setConfirmPasswordError('兩次輸入的密碼不一致')
       return
     }
 
     try {
       const response = await fetch(
-        'http://localhost:3005/api/forgot-password/forgot-password',
+        'http://localhost:3005/api/forgot-password/reset-password',
         {
           method: 'POST',
           headers: { 'Content-type': 'application/json' },
-          body: JSON.stringify({ email }),
+          body: JSON.stringify({ token, password }),
         }
       )
 
@@ -34,20 +81,31 @@ export default function ForgotPassword() {
 
       if (result.status === 'success') {
         Swal.fire({
-          title: '重設密碼郵件已發送！',
-          text: '請檢查您的電子信箱以完成密碼重設。',
+          title: '密碼已重設成功！',
+          html: `<span class="p">請使用新密碼登入。</span>`,
           icon: 'success',
-          confirmButtonText: 'OK',
+          customClass: {
+            popup: `${styles['swal-popup-bo']}`, // 自訂整個彈出視窗的 class
+            title: 'h6',
+            icon: `${styles['swal-icon-bo']}`, // 添加自定義 class
+            confirmButton: `${styles['swal-btn-bo']}`, // 添加自定義按鈕 class
+          },
+          confirmButtonText: '確認', // 修改按鈕文字
+        }).then(() => {
+          // 清理 localStorage 中的 token
+          localStorage.setItem('savedAccount', account) // 存儲 account 到 localStorage
+          localStorage.removeItem('resetPasswordToken')
+          router.push('/login')
         })
       } else {
-        setEmailError(result.message)
+        setPasswordError(result.message)
       }
     } catch (error) {
-      setEmailError('發生未知錯誤，請稍後再試')
+      setPasswordError('發生未知錯誤，請稍後再試')
     }
   }
 
-  // 處理使用者註冊表單的交互效果
+  // 處理使用者重設密碼表單的交互效果
   const userBoxRef = useRef(null)
   const userFormRef = useRef(null)
 
@@ -98,7 +156,7 @@ export default function ForgotPassword() {
     }
   }, [])
 
-  // 處理公司註冊表單的交互效果
+  // 處理公司重設密碼表單的交互效果
   const compBoxRef = useRef(null)
   const compFormRef = useRef(null)
 
@@ -149,12 +207,11 @@ export default function ForgotPassword() {
     }
   }, [])
 
-  // 渲染表單頁面
   return (
     <section
       className={`${styles['forgot-box-bo']} d-flex flex-column flex-md-row justify-content-center align-items-center`}
     >
-      {/* 使用者忘記密碼區域 */}
+      {/* 使用者重設密碼區域 */}
       <div
         className={`${styles['user-forgot-section-bo']} d-flex flex-column justify-content-center align-items-center`}
         ref={userBoxRef}
@@ -162,53 +219,68 @@ export default function ForgotPassword() {
         <div className={`${styles['user-forgot-title-bo']} d-flex`}>
           <h3>會</h3>
           <h3>員</h3>
-          <h3>信</h3>
-          <h3>箱</h3>
-          <h3>驗</h3>
-          <h3>證</h3>
+          <h3>重</h3>
+          <h3>設</h3>
+          <h3>密</h3>
+          <h3>碼</h3>
         </div>
         <div
           className={`${styles['user-forgot-box-bo']} justify-content-center align-items-center`}
           ref={userFormRef}
         >
           <form
-            onSubmit={sendResetEmail}
+            onSubmit={resetPassword}
             className={`${styles['user-forgot-form-bo']} d-flex flex-column justify-content-center align-items-center`}
           >
             <div className={styles['form-group-bo']}>
               <input
-                name="email"
-                type="email"
-                className={`h6 ${styles['form-input-bo']} ${styles['input-email-bo']}`}
-                placeholder="電子信箱"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="password"
+                className={`h6 ${styles['form-input-bo']} `}
+                placeholder="新密碼"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
-              {emailError && (
+              {passwordError && (
                 <div className={`p ${styles['text-error-bo']}`}>
-                  {emailError}
+                  {passwordError}
                 </div>
               )}
             </div>
-            <div
-              className={`${styles['user-forgot-btn-box-bo']} d-flex justify-content-center align-items-center`}
-            >
-              <Link
-                href="/login"
-                className={`${styles['btn-user-forgot-bo']} btn h6 d-flex justify-content-between align-items-center`}
-              >
-                取消重設
-                <FaXmark />
-              </Link>
-
-              <button
-                type="submit"
-                className={`${styles['btn-user-forgot-bo']} btn h6 d-flex justify-content-between align-items-center`}
-              >
-                驗證信箱 <FaCheck />
-              </button>
+            <div className={styles['form-group-bo']}>
+              <input
+                type="password"
+                className={`h6 ${styles['form-input-bo']} }`}
+                placeholder="確認密碼"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+              {confirmPasswordError && (
+                <div className={`p ${styles['text-error-bo']}`}>
+                  {confirmPasswordError}
+                </div>
+              )}
             </div>
           </form>
+
+          <div
+            className={`${styles['user-forgot-btn-box-bo']} d-flex justify-content-center align-items-center`}
+          >
+            <Link
+              href="/login"
+              className={`${styles['btn-user-forgot-bo']} btn h6 d-flex justify-content-between align-items-center`}
+            >
+              取消重設
+              <FaXmark />
+            </Link>
+
+            <button
+              onClick={resetPassword}
+              type="submit"
+              className={`${styles['btn-user-forgot-bo']} btn h6 d-flex justify-content-between align-items-center`}
+            >
+              重設密碼 <FaCheck />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -230,6 +302,7 @@ export default function ForgotPassword() {
           ref={compFormRef}
         >
           <form
+            onSubmit={resetPassword}
             className={`${styles['company-forgot-form-bo']} d-flex flex-column gap-3 justify-content-center align-items-center`}
           >
             <div className={styles['form-group-bo']}>
@@ -257,7 +330,7 @@ export default function ForgotPassword() {
               <input
                 type="password"
                 className={`h6 ${styles['form-input-bo']}`}
-                placeholder="密碼"
+                placeholder="新密碼"
               />
             </div>
             <div
@@ -270,11 +343,12 @@ export default function ForgotPassword() {
                 取消重設
                 <FaXmark />
               </Link>
+
               <button
                 type="submit"
                 className={`${styles['btn-company-forgot-bo']} btn h6 d-flex justify-content-between align-items=center`}
               >
-                確定重設
+                重設密碼
                 <FaCheck />
               </button>
             </div>

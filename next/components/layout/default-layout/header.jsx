@@ -8,6 +8,7 @@ import Cart from '@/components/cart'
 import useAuth from '@/hooks/user-auth-bo'
 import Link from 'next/link'
 import { AuthContext } from '@/context/AuthContext'
+import Swal from 'sweetalert2'
 
 export default function Header() {
   const {
@@ -29,67 +30,101 @@ export default function Header() {
 
   const onLogout = (event) => {
     event.preventDefault()
-    logout()
+
+    // 顯示登出確認提示
+
+    Swal.fire({
+      title: '您確定要登出嗎？',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '確認登出',
+      cancelButtonText: '取消登出',
+      customClass: {
+        popup: `${styles['swal-popup-bo']}`, // 自訂整個彈出視窗的 class
+        title: 'h6',
+        icon: `${styles['swal-icon-bo']}`, // 添加自定義 class
+        confirmButton: `${styles['swal-btn-bo']}`, // 添加自定義按鈕 class
+        cancelButton: `${styles['swal-btn-cancel-bo']}`, // 你可以自定義取消按鈕的樣式
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout() // 如果用戶確認登出，執行登出操作
+        Swal.fire({
+          title: '登出成功！',
+          icon: 'success',
+          confirmButtonText: 'OK', // 修改按鈕文字
+
+          customClass: {
+            title: 'h6',
+            icon: `${styles['swal-icon-bo']}`, // 添加自定義 class
+            confirmButton: `${styles['swal-btn-bo']}`, // 添加自定義按鈕 class
+          },
+        })
+      }
+    })
   }
 
   return (
-    <>
-      <header
-        className={`${styles['header-bo']} fixed-top container-fluid sticky-top py-3`}
+    <header
+      className={`${styles['header-bo']} fixed-top container-fluid sticky-top py-3`}
+    >
+      <div
+        className={`${styles['header-box-bo']}  container-fluid d-flex justify-content-between align-items-center ${styles['nav-bar-bo']}`}
       >
-        <div
-          className={`${styles['header-box-bo']}  container-fluid d-flex justify-content-between align-items-center ${styles['nav-bar-bo']}`}
-        >
-          <div className={styles['logo-box-bo']}>
-            <a href="">
-              <img
-                src="/images/boyu/logo.svg"
-                alt=""
-                className={styles['logo-bo']}
-              />
-            </a>
-          </div>
-          <nav className={styles['nav-bar-bo']}>
-            <ul
-              className={`d-flex justify-content-center align-items-center ${styles['nav-list-bo']}`}
-            >
-              <li>
-                <a className={`h6 ${styles['nav-link-bo']}`} href="">
-                  棋牌室
-                </a>
-              </li>
-              <li>
-                <a className={`h6 ${styles['nav-link-bo']}`} href="">
-                  商城
-                </a>
-              </li>
-              <li>
-                <a className={`h6 ${styles['nav-link-bo']}`} href="">
-                  線上課程
-                </a>
-              </li>
-            </ul>
-          </nav>
-          <div className={styles['icon-box-bo']}>
-            <ul
-              className={`d-flex justify-content-center align-items-center ${styles['icon-list-bo']}`}
-            >
-              <li>
-                <a href="">
-                  <IoHome className={` ${styles['icon-bo']}`} />
-                </a>
-              </li>
-              <li>
-                <Link href="/login">
-                  <FaUser className={` ${styles['icon-bo']}`} />
-                </Link>
-              </li>
-              <li>
-                <div className="position-relative">
-                  <FaShoppingCart
-                    className={` ${styles['icon-bo']}`}
-                    onClick={handleShow}
-                  />
+        <div className={styles['logo-box-bo']}>
+        <Link href="/home">
+            <img
+              src="/images/boyu/logo.svg"
+              alt=""
+              className={styles['logo-bo']}
+            />
+    </Link>
+        </div>
+        <nav className={styles['nav-bar-bo']}>
+          <ul
+            className={`d-flex justify-content-center align-items-center ${styles['nav-list-bo']}`}
+          >
+            <li>
+              <a className={`h6 ${styles['nav-link-bo']}`} href="">
+                棋牌室
+              </a>
+            </li>
+            <li>
+              <a className={`h6 ${styles['nav-link-bo']}`} href="">
+                商城
+              </a>
+            </li>
+            <li>
+              <a className={`h6 ${styles['nav-link-bo']}`} href="">
+                線上課程
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <div className={styles['icon-box-bo']}>
+          <ul
+            className={`d-flex justify-content-center align-items-center ${styles['icon-list-bo']}`}
+          >
+            <li>
+            <Link href="/home">
+            <IoHome className={` ${styles['icon-bo']}`} />
+              </Link>
+            </li>
+            <li>
+            {user ? (
+              <Link href="/user/user-info">
+                <FaUser className={` ${styles['icon-bo']}`} />
+              </Link>
+            ) : (
+              <Link href="/login">
+                <FaUser className={` ${styles['icon-bo']}`} />
+              </Link>
+            )}
+            </li>
+            <li>
+              <div href="" className="position-relative">
+                <FaShoppingCart className={` ${styles['icon-bo']}`}                    onClick={handleShow}
+ />
 
                   <div
                     className={`d-flex justify-content-center align-items-center p ${
