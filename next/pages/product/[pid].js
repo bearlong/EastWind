@@ -16,8 +16,11 @@ import styles from '@/styles/bearlong/productDetail.module.scss'
 import { useRouter } from 'next/router'
 import StarRating from '@/components/product/starRating'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { useCart } from '@/hooks/use-cart'
 
 export default function Detail() {
+  const user_id = 1
+  const { handleAdd = () => {}, error = '' } = useCart()
   const router = useRouter()
   const { pid } = router.query
   const [data, setData] = useState({
@@ -55,7 +58,10 @@ export default function Detail() {
 
   const getProduct = async (id) => {
     let newData, error
-    const url = 'http://localhost:3005/api/products/' + id
+    const url =
+      'http://localhost:3005/api/products/' +
+      id +
+      `${user_id ? `?uid=${user_id}` : ''}`
     newData = await fetch(url)
       .then((res) => res.json())
       .then((result) => {
@@ -81,12 +87,20 @@ export default function Detail() {
       setData(newData)
       setComment(newData.comment)
       setImgMain(product.img)
-      const updatedStarCount = { ...starCount }
+
+      const updatedStarCount = {
+        5: 0,
+        4: 0,
+        3: 0,
+        2: 0,
+        1: 0,
+      }
       newData.starCount.forEach(({ star, count }) => {
         if (updatedStarCount[star] !== undefined) {
           updatedStarCount[star] = count
         }
       })
+
       setStarCount(updatedStarCount)
     }
   }
@@ -94,7 +108,6 @@ export default function Detail() {
   const sortedStarCount = Object.entries(starCount).sort(
     ([starA], [starB]) => [starB] - [starA]
   )
-
   const handleImgMain = (img) => {
     setImgMain(img)
   }
@@ -114,7 +127,34 @@ export default function Detail() {
       (item) => item.star === Math.round(star)
     )
     setComment({ content: nextContent, star })
-    console.log(comment)
+  }
+
+  const handleFavToggle = async (object_id, type) => {
+    const fav = data.product.fav
+    const url = `http://localhost:3005/api/favorites/${object_id}`
+    const method = fav ? 'DELETE' : 'POST'
+    const body = JSON.stringify({
+      uid: user_id,
+      type: type,
+    })
+    try {
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      })
+      const result = await response.json()
+      if (result.status === 'success') {
+        const nextProduct = { ...data.product, fav: !data.product.fav }
+        setData({ ...data, product: nextProduct })
+      } else {
+        console.log(result.data.message)
+      }
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   useEffect(() => {
@@ -122,7 +162,6 @@ export default function Detail() {
       getProduct(pid)
     }
   }, [router.isReady, router.query])
-
   return (
     <>
       <ProductNav />
@@ -149,7 +188,7 @@ export default function Detail() {
           </p>
           <div className="d-flex flex-md-row flex-column justify-content-between">
             <div
-              className={`${styles['imgGroup-bl']} d-flex flex-column-reverse flex-lg-row me-0 me-lg-3`}
+              className={`d-flex flex-column-reverse flex-lg-row me-0 me-lg-3`}
             >
               <div
                 className={`${styles['imgSmall-bl']}  mx-lg-5 d-flex flex-lg-column mt-3 mt-lg-0 justify-content-between justify-content-lg-start`}
@@ -204,17 +243,13 @@ export default function Detail() {
             <div
               className={`${styles['productDetailContent-bl']} d-flex justify-content-between flex-column`}
             >
-              <div className={styles['titleGroup-bl']}>
+              <div>
                 <p>{data.product.brand_name}</p>
                 <div className={`${styles['productName-bl']} m-0`}>
                   <h5>{data.product.name}</h5>
                 </div>
-                <div
-                  className={`${styles['score-bl']} d-flex justify-content-between mb-2`}
-                >
-                  <div
-                    className={`${styles['productStar']} d-flex align-items-center`}
-                  >
+                <div className={`d-flex justify-content-between mb-2`}>
+                  <div className={`d-flex align-items-center`}>
                     <p className="me-2">
                       {data.product.average_star
                         ? data.product.average_star
@@ -243,18 +278,29 @@ export default function Detail() {
                     </div>
                     <p className="ms-2">({data.product.comment_count})</p>
                   </div>
-                  <div
-                    className={`${styles['like']} d-flex align-items-center`}
+                  <button
+                    className={`d-flex align-items-center btn btn-outline-primary ${
+                      styles.like
+                    }  ${user_id ? '' : 'd-none'}`}
+                    onClick={() => {
+                      handleFavToggle(data.product.id, 'product')
+                    }}
                   >
-                    <FaHeart fontSize={16} />
-                    <p className="ms-2">已收藏</p>
-                  </div>
+                    {data.product.fav ? (
+                      <FaHeart fontSize={16} />
+                    ) : (
+                      <FaPlus fontSize={16} />
+                    )}
+                    <p className="ms-2 ">
+                      {data.product.fav ? '已收藏' : '未收藏'}
+                    </p>
+                  </button>
                 </div>
                 <h5>
                   NT$ <span>{data.product.price}</span>
                 </h5>
               </div>
-              <div className={styles['category']}>
+              <div>
                 {data.specifications.color && (
                   <p className="mb-2">
                     顏色: <span>{data.specifications.color}</span>
@@ -295,9 +341,7 @@ export default function Detail() {
                 <p className="mb-2">
                   庫存數量: <span>{data.product.stock}</span>
                 </p>
-                <div
-                  className={`${styles['amount-bl']} d-flex justify-content-between`}
-                >
+                <div className={`d-flex justify-content-between`}>
                   <h5>數量</h5>
                   <div
                     className={`${styles['plusMinus']} d-flex align-items-center`}
@@ -325,19 +369,22 @@ export default function Detail() {
                 >
                   立即購買
                 </div>
-                <div
+                <button
                   type="button"
-                  className={`${styles['btnRectangle']} ${styles['cartPlus']}`}
+                  className={`${styles['btnRectangle']}`}
+                  onClick={() => {
+                    handleAdd(data.product, 'product', quantity)
+                  }}
                 >
                   加入購物車
-                </div>
+                </button>
               </div>
             </div>
           </div>
         </div>
         <div className={`${styles['productDetailSection2-bl']}  row`}>
-          <div className={`${styles['section2Left-bl']}  col-12 col-md-8`}>
-            <div className={`${styles['detailContent-bl']}   mb-5`}>
+          <div className={` col-12 col-md-8`}>
+            <div className={`  mb-5`}>
               <div className={styles['underLine-bl']}>
                 <h6>產品敘述:</h6>
               </div>
@@ -345,7 +392,7 @@ export default function Detail() {
                 (v, i) => v.trim() !== '' && <p key={i}>{v}</p>
               )}
             </div>
-            <div className={`${styles['comment-bl']}   mb-5`}>
+            <div className={` mb-5`}>
               <div className={styles['underLine-bl']}>
                 <h6>商品評論:</h6>
               </div>
@@ -434,13 +481,13 @@ export default function Detail() {
                             alt=""
                           />
                         </div>
-                        <div className={styles['cardBody-bl']}>
+                        <div className="cardBody-bl">
                           <div className={`${styles['userInfo-bl']} mb-4`}>
                             <p>user_name</p>
                             <StarRating initRating={value.star} />
                             <p>{value.date}</p>
                           </div>
-                          <div className={styles['commentContent-bl']}>
+                          <div>
                             <p>{value.content}</p>
                           </div>
                         </div>
@@ -472,7 +519,6 @@ export default function Detail() {
                     slidesPerView: 4,
                     spaceBetween: 20,
                     direction: 'vertical',
-                    // 禁用觸摸滑動
                   },
                 }}
                 className={styles.swiper}

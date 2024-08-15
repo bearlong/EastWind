@@ -26,7 +26,6 @@ export default function DefaultLayout({ title = 'Next-BS5', children }) {
         {loader()}
       </main>
       <Footer />
-      <MyFooter />
     </>
   )
 }

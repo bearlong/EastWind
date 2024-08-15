@@ -25,7 +25,6 @@ export default function RoomCard({ party }) {
 
   const startTime = formatDate(party.start_time);
   const duration = calculateDuration(party.start_time, party.end_time);
-  const isJoinable = party.player_count < 4;
 
   return (
     <div className={styles.card}>
@@ -44,29 +43,9 @@ export default function RoomCard({ party }) {
         <div className={styles['flex-container']}>
           <button 
             className={styles.btn}
-            disabled={!isJoinable}
           >
-            {isJoinable ? '馬上加入' : '已滿員'}
+            馬上加入
           </button>
-          <span className={`${styles.badge} ${party.player_count === 4 ? styles['bg-success'] : styles['bg-warning']}`}>
-            {party.player_count === 4 ? '已確認' : '等待中'}
-          </span>
-        </div>
-        <a
-          href="#"
-          className={styles['card-link']}
-          data-bs-toggle="collapse"
-          data-bs-target={`#collapse-${party.id}`}
-          aria-expanded="false"
-          aria-controls={`collapse-${party.id}`}
-        >
-          查看更多
-        </a>
-        <div className={`collapse ${styles['collapse-content']}`} id={`collapse-${party.id}`}>
-          <div className={styles['collapse-content']}>
-            <p>結束時間：{formatDate(party.end_time)}</p>
-            <p>創建時間：{formatDate(party.created_at)}</p>
-          </div>
         </div>
       </div>
     </div>

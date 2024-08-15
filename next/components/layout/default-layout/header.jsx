@@ -1,14 +1,28 @@
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import styles from '@/styles/boyu/header.module.scss'
 import { IoHome } from 'react-icons/io5'
 import { FaUser, FaRightFromBracket } from 'react-icons/fa6'
 import { FaShoppingCart } from 'react-icons/fa'
+import { useCart } from '@/hooks/use-cart'
+import Cart from '@/components/cart'
 import useAuth from '@/hooks/user-auth-bo'
 import Link from 'next/link'
 import { AuthContext } from '@/context/AuthContext'
 import Swal from 'sweetalert2'
 
 export default function Header() {
+  const {
+    cart,
+    top,
+    error,
+    handleIncrease = () => {},
+    handleDecrease = () => {},
+    handleRemove = () => {},
+  } = useCart()
+  const [show, setShow] = useState(false)
+
+  const handleClose = () => setShow(false)
+  const handleShow = () => setShow(true)
   const { logout } = useAuth()
   const { user } = useContext(AuthContext)
 
@@ -56,13 +70,13 @@ export default function Header() {
         className={`${styles['header-box-bo']}  container-fluid d-flex justify-content-between align-items-center ${styles['nav-bar-bo']}`}
       >
         <div className={styles['logo-box-bo']}>
-          <Link href="/home">
+        <Link href="/home">
             <img
               src="/images/boyu/logo.svg"
               alt=""
               className={styles['logo-bo']}
             />
-          </Link>
+    </Link>
         </div>
         <nav className={styles['nav-bar-bo']}>
           <ul
@@ -90,10 +104,11 @@ export default function Header() {
             className={`d-flex justify-content-center align-items-center ${styles['icon-list-bo']}`}
           >
             <li>
-              <Link href="/home">
-                <IoHome className={` ${styles['icon-bo']}`} />
+            <Link href="/home">
+            <IoHome className={` ${styles['icon-bo']}`} />
               </Link>
             </li>
+            <li>
             {user ? (
               <Link href="/user/user-info">
                 <FaUser className={` ${styles['icon-bo']}`} />
@@ -103,76 +118,99 @@ export default function Header() {
                 <FaUser className={` ${styles['icon-bo']}`} />
               </Link>
             )}
-            <li>
-              <a href="" className="position-relative">
-                <FaShoppingCart className={` ${styles['icon-bo']}`} />
-
-                <div
-                  className={`d-flex justify-content-center align-items-center p ${styles['cart-number-bo']}`}
-                >
-                  1
-                </div>
-              </a>
             </li>
-            {user && ( // 只有在 user 存在時才顯示登出按鈕
-              <li>
-                <a href="" onClick={onLogout}>
-                  <FaRightFromBracket className={` ${styles['icon-bo']}`} />
-                </a>
-              </li>
-            )}
-
             <li>
-              <div className={styles['navigation-bo']}>
-                <div className={styles['navigation-box-bo']}>
-                  <input
-                    type="checkbox"
-                    className={styles['navigation-checkbox-bo']}
-                    id="navi-toggle"
-                  />
-                  <label
-                    htmlFor="navi-toggle"
-                    className={styles['navigation-button-bo']}
+              <div href="" className="position-relative">
+                <FaShoppingCart className={` ${styles['icon-bo']}`}                    onClick={handleShow}
+ />
+
+                  <div
+                    className={`d-flex justify-content-center align-items-center p ${styles['cart-number-bo']}`}
                   >
-                    <span className={styles['navigation-icon-bo']}>&nbsp;</span>
-                  </label>
-                  <div className={styles['navigation-background-bo']}>
-                    &nbsp;
+                    {cart.length}
                   </div>
-                  <nav className={styles['navigation-nav-bo']}>
-                    <ul className={styles['navigation-list-bo']}>
-                      <li className={styles['navigation-item-bo']}>
-                        <a
-                          href="#"
-                          className={`h6 ${styles['navigation-link-bo']}`}
-                        >
-                          棋牌室
-                        </a>
-                      </li>
-                      <li className={styles['navigation-item-bo']}>
-                        <a
-                          href="#"
-                          className={`h6 ${styles['navigation-link-bo']}`}
-                        >
-                          商城
-                        </a>
-                      </li>
-                      <li className={styles['navigation-item-bo']}>
-                        <a
-                          href="#"
-                          className={`h6 ${styles['navigation-link-bo']}`}
-                        >
-                          線上課程
-                        </a>
-                      </li>
-                    </ul>
-                  </nav>
                 </div>
-              </div>
-            </li>
-          </ul>
+              </li>
+              {user && ( // 只有在 user 存在時才顯示登出按鈕
+                <li>
+                  <a href="" onClick={onLogout}>
+                    <FaRightFromBracket className={` ${styles['icon-bo']}`} />
+                  </a>
+                </li>
+              )}
+
+              <li>
+                <div className={styles['navigation-bo']}>
+                  <div className={styles['navigation-box-bo']}>
+                    <input
+                      type="checkbox"
+                      className={styles['navigation-checkbox-bo']}
+                      id="navi-toggle"
+                    />
+                    <label
+                      htmlFor="navi-toggle"
+                      className={styles['navigation-button-bo']}
+                    >
+                      <span className={styles['navigation-icon-bo']}>
+                        &nbsp;
+                      </span>
+                    </label>
+                    <div className={styles['navigation-background-bo']}>
+                      &nbsp;
+                    </div>
+                    <nav className={styles['navigation-nav-bo']}>
+                      <ul className={styles['navigation-list-bo']}>
+                        <li className={styles['navigation-item-bo']}>
+                          <a
+                            href="#"
+                            className={`h6 ${styles['navigation-link-bo']}`}
+                          >
+                            棋牌室
+                          </a>
+                        </li>
+                        <li className={styles['navigation-item-bo']}>
+                          <a
+                            href="#"
+                            className={`h6 ${styles['navigation-link-bo']}`}
+                          >
+                            商城
+                          </a>
+                        </li>
+                        <li className={styles['navigation-item-bo']}>
+                          <a
+                            href="#"
+                            className={`h6 ${styles['navigation-link-bo']}`}
+                          >
+                            線上課程
+                          </a>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
-    </header>
+        <style jsx>
+          {`
+            header {
+              padding-right: 0 !important;
+              margin-right: 0 !important;
+            }
+          `}
+        </style>
+      </header>
+      <Cart
+        show={show}
+        handleClose={handleClose}
+        handleShow={handleShow}
+        cart={cart}
+        top={top}
+        handleIncrease={handleIncrease}
+        handleDecrease={handleDecrease}
+        handleRemove={handleRemove}
+      />
+    </>
   )
 }

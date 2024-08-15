@@ -1,0 +1,61 @@
+// 變量
+$primary-color: #007bff;
+$primary-hover-color: #0056b3;
+$join-highlight-color: #28a745;
+$white: #ffffff;
+$transition-time: 0.3s;
+
+// Mixins
+@mixin button-base {
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all $transition-time ease;
+}
+
+@mixin button-active {
+  background-color: $primary-color;
+  color: $white;
+}
+
+.joinGw {
+  display: flex;
+  gap: 10px;
+}
+
+.partyBtn {
+  @include button-base;
+
+  a {
+    text-decoration: none;
+    color: #333;
+    transition: color $transition-time ease;
+  }
+
+  &:hover {
+    background-color: $primary-hover-color;
+
+    a {
+      color: $white;
+    }
+  }
+
+  &.activeGw {
+    @include button-active;
+  }
+
+  &.highlightedJoin {
+    background-color: $join-highlight-color;
+    box-shadow: 0 0 10px rgba($join-highlight-color, 0.5);
+    transform: scale(1.05);
+
+    a {
+      color: $white;
+      font-weight: bold;
+    }
+
+    &:hover {
+      background-color: darken($join-highlight-color, 10%);
+    }
+  }
+}

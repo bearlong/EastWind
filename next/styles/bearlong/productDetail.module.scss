@@ -58,11 +58,13 @@
         white-space: nowrap;
       }
     }
+
+    .like {
+      --bs-btn-hover-color: var(--white);
+      --bs-btn-active-color: var(--white);
+    }
   }
-  i {
-    color: var(--primary);
-    font-size: 1.6rem;
-  }
+
   .plusMinus {
     cursor: pointer;
     user-select: none;
@@ -79,6 +81,7 @@
     .btnRectangle {
       user-select: none;
       color: var(--primary);
+      background: transparent;
       width: 100%;
       height: 50px;
       display: grid;
