@@ -34,9 +34,7 @@ export default function ClassList() {
       const newClasses = {}
       for (const category of categories) {
         // 對每個類別發送API請求
-        const response = await axios.get(
-          `https://your-api-endpoint.com/classes?category=${category}`
-        )
+        const response = await axios.get(`http://localhost:3005/api/classes`)
         newClasses[category] = response.data
       }
       setClasses(newClasses)
