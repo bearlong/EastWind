@@ -8,16 +8,16 @@ import styles from '@/styles/aa/classList.scss'
 export default function ClassList() {
   const router = useRouter()
   // 設置狀態來存儲課程數據、加載狀態、錯誤和每個類別顯示的課程數量
-  const [classes, setClasses] = useState({})
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [classes, setClasses] = useState({}) // 用於存儲各類別的課程數據
+  const [loading, setLoading] = useState(true) // 控制加載狀態
+  const [error, setError] = useState(null) // 存儲錯誤信息
   const [visibleCounts, setVisibleCounts] = useState({
     西洋棋: 4,
     麻將: 4,
     圍棋: 4,
     撲克: 4,
     象棋: 4,
-  })
+  }) // 控制每個類別顯示的課程數量，初始值為4
 
   // 定義課程類別
   const categories = ['西洋棋', '麻將', '圍棋', '撲克', '象棋']
@@ -33,6 +33,7 @@ export default function ClassList() {
       setLoading(true)
       const newClasses = {}
       for (const category of categories) {
+        // 對每個類別發送API請求
         const response = await axios.get(
           `https://your-api-endpoint.com/classes?category=${category}`
         )
@@ -51,7 +52,7 @@ export default function ClassList() {
     event.preventDefault()
     setVisibleCounts((prev) => ({
       ...prev,
-      [category]: prev[category] + 4,
+      [category]: prev[category] + 4, // 每次點擊增加4個課程
     }))
   }
 
