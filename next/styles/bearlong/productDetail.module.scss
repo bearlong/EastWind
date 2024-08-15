@@ -3,6 +3,19 @@
   margin: auto;
   padding: 0 4rem;
 }
+.confirmButton {
+  background: var(--primary);
+}
+
+.confirmFooter {
+  a {
+    color: var(--text-hover-color);
+    &:hover {
+      color: var(--text-color);
+    }
+  }
+}
+
 .productDetailSection1-bl {
   margin-bottom: 6rem;
   padding-inline: 8rem;

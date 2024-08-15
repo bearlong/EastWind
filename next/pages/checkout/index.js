@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import styles from '@/styles/bearlong/checkout.module.scss'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useCart } from '@/hooks/use-cart'
 import { useRouter } from 'next/router'
+import { AuthContext } from '@/context/AuthContext'
 
 export default function Checkout() {
+  const { user } = useContext(AuthContext)
   let subTotal = 0
   let totalPrice
+  let username
   const initSendForm = {
     country: '',
     firstname: '',
@@ -16,7 +19,6 @@ export default function Checkout() {
     city: '',
     address: '',
   }
-  const user_id = 1
   const { cart = [], remark = '', setRemark = () => {} } = useCart()
   const router = useRouter()
   const [delivery, setDelivery] = useState('homeDelivery')
@@ -77,14 +79,57 @@ export default function Checkout() {
   const [couponSelect, setCouponSelect] = useState(undefined)
   const [total, setTotal] = useState(0)
 
-  const handleSubmit = () => {}
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const formData = new FormData()
+    const { firstname, lastname, ...newSendData } = sendForm
+    let name = firstname + lastname
+    if (name.length <= 0) {
+      name = username
+    }
+    formData.append('delivery', delivery)
+    formData.append('delivery_address', JSON.stringify(newSendData))
+    formData.append('recipient', name)
+    formData.append('payMethod', payMethod)
+    if (payInfo.useDeliveryAddress) {
+      const newPayInfo = {
+        ...newSendData,
+        creditNum1: payInfo.creditNum1,
+        creditNum2: payInfo.creditNum2,
+        creditNum3: payInfo.creditNum3,
+        creditNum4: payInfo.creditNum4,
+        expDate: payInfo.expDate,
+        csc: payInfo.csc,
+        cardholder: payInfo.cardholder,
+      }
+      formData.append('payInfo', JSON.stringify(newPayInfo))
+    } else {
+      const { useDeliveryAddress, ...newPayInfo } = payInfo
+      formData.append('payInfo', JSON.stringify(newPayInfo))
+    }
+    formData.append('coupon_id', couponSelect)
+    if(couponSelect > 0) {
+      const coupon = coupons.find(
+        (c) => Number(c.coupon_id) === Number(couponSelect)
+      )
+      formData.append('discount_info', coupon.discount_value)
+    } else {
+      formData.append('discount_info', "")
+    }
+
+    formData.append('remark', remark)
+
+    formData.forEach((value, key) => {
+      console.log(key, value)
+    })
+  }
 
   useEffect(() => {
     if (router.isReady) {
       const fetchUserInfo = async () => {
         try {
-          if (user_id) {
-            const url = `http://localhost:3005/api/checkout/${user_id}`
+          if (user) {
+            const url = `http://localhost:3005/api/checkout/${user.id}`
             const response = await fetch(url)
             const result = await response.json()
             if (result.status === 'success') {
@@ -98,19 +143,19 @@ export default function Checkout() {
               })
               setCoupon(coupons)
               setCard(card)
+              username = userInfo[0].username
             } else {
               console.log(result.data.message)
             }
-          } else {
-            alert('請先登入會員')
           }
         } catch (error) {
           console.log(error)
         }
       }
+
       fetchUserInfo()
     }
-  }, [router.isReady])
+  }, [router.isReady, user])
 
   useEffect(() => {
     if (cart.length > 0) {
@@ -140,6 +185,45 @@ export default function Checkout() {
     }
     setDeliveryPrice(60)
   }, [delivery])
+
+  useEffect(() => {
+    if (payMethod !== 'credit') {
+      setPayInfo({
+        creditNum1: '',
+        creditNum2: '',
+        creditNum3: '',
+        creditNum4: '',
+        expDate: '',
+        csc: '',
+        cardholder: '',
+        country: '',
+        postCode: '',
+        city: '',
+        address: '',
+        useDeliveryAddress: false,
+      })
+      return
+    } 
+  }, [payMethod])
+
+
+  useEffect(() => {
+    if (cardSelect) {
+      const part1 = card[cardSelect].card_number.substring(0, 4)
+      const part2 = card[cardSelect].card_number.substring(4, 8)
+      const part3 = card[cardSelect].card_number.substring(8, 12)
+      const part4 = card[cardSelect].card_number.substring(12, 16)
+      const expDate = card[cardSelect].exp_date
+      setPayInfo({
+        ...payInfo,
+        creditNum1: part1,
+        creditNum2: part2,
+        creditNum3: part3,
+        creditNum4: part4,
+        expDate: expDate,
+      })
+    }
+  }, [cardSelect])
 
   return (
     <>
@@ -258,7 +342,7 @@ export default function Checkout() {
                   onChange={(e) => {
                     setSendForm({
                       ...sendForm,
-                      postCode: Number(e.target.value),
+                      postCode: e.target.value,
                     })
                   }}
                   disabled={delivery === 'pickup'}
@@ -402,10 +486,19 @@ export default function Checkout() {
                       className={`${styles['form-select-bl']} form-select`}
                       id="cardSelect"
                       name="cardSelect"
+                      value={cardSelect}
+                      onChange={(e) => {
+                        setCardSelect(e.target.value)
+                      }}
                     >
                       <option value="">快速選卡</option>
-                      <option value={1}>末四碼4456</option>
-                      <option value={2}>末四碼1968</option>
+                      {card.map((v, i) => {
+                        return (
+                          <option key={i} value={i}>
+                            {v.card_name} {v.card_number.substring(12, 16)}
+                          </option>
+                        )
+                      })}
                     </select>
                   </div>
                   <div className={`${styles['errorBox']}`} />
@@ -443,10 +536,10 @@ export default function Checkout() {
                       name="csc"
                       maxLength={3}
                       value={payInfo.csc}
-                      onChange={() => {
+                      onChange={(e) => {
                         setPayInfo({
                           ...payInfo,
-                          csc: '',
+                          csc: e.target.value,
                         })
                       }}
                     />
@@ -702,6 +795,9 @@ export default function Checkout() {
           </div>
           <button
             className={`${styles['paypent-button-bo']}  h5 d-flex justify-content-center align-items-center mb-5`}
+            onClick={(e) => {
+              handleSubmit(e)
+            }}
           >
             現在付款
           </button>

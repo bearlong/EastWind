@@ -22,7 +22,7 @@ router.get('/:id', async (req, res) => {
     )
 
     const [card] = await dbPromise.execute(
-      'SELECT `card_number`,`exp_date`  FROM `credit_card`  WHERE `user_id` = ? AND status = "Active"',
+      'SELECT `card_number`,`card_name`, `exp_date`  FROM `credit_card`  WHERE `user_id` = ? AND status = "Active"',
       [id]
     )
 

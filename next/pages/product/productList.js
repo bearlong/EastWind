@@ -23,8 +23,6 @@ import { AuthContext } from '@/context/AuthContext'
 
 export default function ProductList() {
   const { user } = useContext(AuthContext)
-  console.log(user)
-  let user_id
   const router = useRouter()
   const [products, setProducts] = useState({ top: [], list: [] })
   const [pages, setPages] = useState(1)
@@ -137,8 +135,8 @@ export default function ProductList() {
 
   const getFavorite = async () => {
     try {
-      if (user_id) {
-        const url = `http://localhost:3005/api/favorites?id=${user_id}`
+      if (user) {
+        const url = `http://localhost:3005/api/favorites?id=${user.id}`
         const response = await fetch(url)
         const result = await response.json()
         if (result.status === 'success') {
@@ -286,7 +284,7 @@ export default function ProductList() {
     const url = `http://localhost:3005/api/favorites/${object_id}`
     const method = fav ? 'DELETE' : 'POST'
     const body = JSON.stringify({
-      uid: user_id,
+      uid: user.id,
       type: type,
     })
     try {
@@ -337,12 +335,12 @@ export default function ProductList() {
   }, [router.isReady, router.query])
 
   useEffect(() => {
-    if (user_id) {
+    if (user) {
       getFavorite()
     } else {
       setFavorite([])
     }
-  }, [user_id])
+  }, [user])
 
   return (
     <>
@@ -491,9 +489,7 @@ export default function ProductList() {
                       />
                     </div>
                     <div
-                      className={`${styles['heart']} ${
-                        user_id ? '' : 'd-none'
-                      }`}
+                      className={`${styles['heart']} ${user ? '' : 'd-none'}`}
                     >
                       {product.fav ? (
                         <FaHeart

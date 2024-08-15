@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import styles from '@/styles/bearlong/cart.module.scss'
 import { FaShoppingCart } from 'react-icons/fa'
 import { FaXmark, FaTrashCan, FaPlus, FaMinus } from 'react-icons/fa6'
@@ -9,6 +9,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import Link from 'next/link'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import { AuthContext } from '@/context/AuthContext'
 
 export default function Cart({
   show = () => {},
@@ -22,6 +23,7 @@ export default function Cart({
   remark = '',
   setRemark = () => {},
 }) {
+  const { user } = useContext(AuthContext)
   let total = 0
   const [showRecommend, setShowRecommend] = useState(false)
 
@@ -276,11 +278,16 @@ export default function Cart({
                   <h6>總計</h6>
                   <h6>NT$ {total}</h6>
                 </div>
-                <button
-                  className={`${styles['pay-button-bo']} d-flex justify-content-center align-items-center`}
+                <Link
+                  className={`${
+                    styles['pay-button-bo']
+                  } d-flex justify-content-center align-items-center ${
+                    user ? '' : 'd-none'
+                  }`}
+                  href={'/checkout'}
                 >
                   <h5>現在付款</h5>
-                </button>
+                </Link>
               </div>
             </div>
           </div>
