@@ -101,6 +101,27 @@ router.get('/user/:id', async (req, res) => {
   }
 })
 
+// 撈取用戶的信用卡資訊
+router.get('/user/:id/cards', async (req, res) => {
+  const userId = req.params.id
+
+  try {
+    const [cards] = await connection.query(
+      'SELECT id, card_name, card_number, card_type, exp_date, status FROM credit_card WHERE user_id = ? AND status = "Active"',
+      [userId]
+    )
+
+    if (cards.length === 0) {
+      return res.status(404).json({ status: 'fail', message: '無信用卡資料' })
+    }
+
+    res.status(200).json({ status: 'success', data: cards })
+  } catch (error) {
+    console.error('資料庫查詢失敗:', error)
+    res.status(500).json({ status: 'fail', message: '伺服器內部錯誤' })
+  }
+})
+
 // 使用者登入
 // 根據帳號和密碼進行登入，生成並返回JWT token
 router.post('/login', upload.none(), async (req, res) => {

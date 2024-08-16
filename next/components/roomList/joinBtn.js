@@ -4,18 +4,20 @@ import styles from '@/styles/gw/_joinBtn.module.scss'
 export default function JoinBTN({ activeView, onViewChange }) {
   return (
     <div className={styles.joinGw}>
-      <div 
+      <button 
         className={`${styles.partyBtn} ${activeView === 'host' ? styles.activeGw : ''}`}
         onClick={() => onViewChange('host')}
+        type="button"
       >
-        <a href="#">主揪/揪團</a>
-      </div>
-      <div 
+        主揪/揪團
+      </button>
+      <button 
         className={`${styles.partyBtn} ${activeView === 'join' ? styles.activeGw : ''} ${activeView === 'join' ? styles.highlightedJoin : ''}`}
         onClick={() => onViewChange('join')}
+        type="button"
       >
-        <a href="#">參團</a>
-      </div>
+        參團
+      </button>
     </div>
   )
 }
