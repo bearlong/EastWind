@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
 import styles from '@/styles/boyu/user-info.module.scss'
 import { FaEdit } from 'react-icons/fa'
 import { HiCreditCard } from 'react-icons/hi2'
@@ -9,30 +8,31 @@ import UserSidebar from '@/components/user/user-sidebar'
 import { AuthContext } from '@/context/AuthContext'
 
 export default function UserInfo() {
-  const router = useRouter()
-
   // 從 AuthContext 中獲取 user 狀態
   const { user } = useContext(AuthContext)
+  const [cards, setCards] = useState([])
 
-  const [isLoaded, setIsLoaded] = useState(false) // 新增一個狀態來追踪數據是否加載完成
-
-  // 檢查是否已經登入，如果沒有登入則跳轉到登入頁面
   useEffect(() => {
-    if (!user) {
-      router.push('/login') // 跳轉到登入頁面
-    } else {
-      setIsLoaded(true) // 當user數據加載完成後設置isLoaded為true
+    if (user) {
+      fetch(`http://localhost:3005/api/user/user/${user.id}/cards`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status === 'success') {
+            setCards(data.data)
+          } else {
+            console.error('Failed to fetch credit cards:', data.message)
+          }
+        })
+        .catch((error) => console.error('Error fetching credit cards:', error))
     }
-  }, [user, router])
+  }, [user])
 
-  // 如果用戶未登入或者數據尚未加載，暫時不渲染頁面內容
-  if (!user || !isLoaded) {
+  if (!user) {
     return null
   }
 
-  // 確保 created_at 欄位存在
+  //  格式化日期
   const createdAt = user.created_at.split(' ')[0].replace(/-/g, ' / ')
-
   const birthDate = user.birth.replace(/-/g, ' / ')
 
   return (
@@ -92,7 +92,7 @@ export default function UserInfo() {
             >
               <div className={styles['user-img-box-bo']}>
                 <img
-                  className={`${styles['user-img-bo']} d-none d-md-block`}
+                  className={`${styles['user-img-bo']}`}
                   src={
                     user && user.user_img
                       ? `/images/boyu/users/${user.user_img}.jpg`
@@ -102,9 +102,6 @@ export default function UserInfo() {
                   }
                   alt={user?.username || 'User'}
                 />
-                <div className={styles['btn-edit-img']}>
-                  <FaEdit />
-                </div>
               </div>
               <div
                 className={`${styles['create-date-box-bo']} h6 text-center d-flex justify-content-center align-items-center`}
@@ -117,7 +114,7 @@ export default function UserInfo() {
 
           {/* 用戶詳細資訊區塊 */}
           <div
-            className={`${styles['info-detail-box-bo']} row justify-content-center align-items-start gap-md-5 gap-lg-0`}
+            className={`${styles['info-detail-box-bo']} row justify-content-center align-items-start  gap-5 gap-lg-0`}
           >
             <div
               className={`${styles['detail-information-box-bo']} col-12 col-lg-8 d-flex flex-column justify-content-center align-items-center `}
@@ -176,7 +173,7 @@ export default function UserInfo() {
                   <div
                     className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
                   >
-                    {user.address}
+                    {user.phone}
                   </div>
                 </div>
               </div>
@@ -184,51 +181,80 @@ export default function UserInfo() {
 
             {/* 用戶信用卡資訊區塊 */}
             <div
-              className={`${styles['detail-card-box-bo']} ${styles['move-up-bo']} col-12 col-lg-4 d-flex flex-column justify-content-start align-items-center`}
+              className={`${styles['detail-card-box-bo']}  col-12 col-lg-4 d-flex flex-column justify-content-start align-items-center`}
             >
               <div className={`${styles['detail-card-title-bo']} h5`}>
                 信用卡
               </div>
               <div
-                className={`${styles['detail-card-list-bo']} d-flex flex-column gap-4`}
+                className={`${styles['detail-card-list-bo']} d-flex flex-column flex-md-row flex-lg-column gap-4 gap-md-5 gap-lg-4`}
               >
                 {/* 信用卡項目 */}
-                <div
-                  className={`${styles['card-col-bo']} d-flex justify-content-center align-items-center`}
-                >
-                  <div
-                    className={`${styles['card-body-bo']} d-flex justify-content-between align-items-center`}
-                  >
-                    <div className={styles['icon-card-box-bo']}>
-                      <HiCreditCard className={`${styles['icon-card-bo']}`} />
-                    </div>
-                    <div className={styles['card-text-box-bo']}>
-                      <div
-                        className={`${styles['card-text-up-bo']} d-flex justify-content-between align-items-center`}
-                      >
-                        <p>台北富邦</p>
-                        <p>***</p>
-                      </div>
-                      <div
-                        className={`${styles['card-text-down-bo']} d-flex justify-content-between align-items-center gap-1 p`}
-                      >
-                        <p>1233</p>
-                        <p>1234</p>
-                        <p>1233</p>
-                        <p>1233</p>
-                      </div>
-                    </div>
+                {cards.length > 0 ? (
+                  cards.map((card, index) => (
                     <div
-                      className={`${styles['icon-card-date-bo']} d-flex flex-column justify-content-center align-items-center`}
+                      key={index}
+                      className={`${styles['card-col-bo']} d-flex justify-content-center align-items-center`}
                     >
-                      <FaCcMastercard
-                        className={`${styles['icon-master-bo']} `}
-                      />
-
-                      <p className={styles['card-date-bo']}>06/29</p>
+                      <div
+                        className={`${styles['card-body-bo']} d-flex justify-content-between align-items-center`}
+                      >
+                        <div className={styles['icon-card-box-bo']}>
+                          <HiCreditCard
+                            className={`${styles['icon-card-bo']}`}
+                          />
+                        </div>
+                        <div className={styles['card-text-box-bo']}>
+                          <div
+                            className={`${styles['card-text-up-bo']} d-flex align-items-center`}
+                          >
+                            <p>{card.card_name}</p>
+                          </div>
+                          <div
+                            className={`${styles['card-text-down-bo']} d-flex justify-content-center align-items-center gap-1`}
+                          >
+                            <div
+                              className={` d-flex justify-content-center align-items-center gap-1`}
+                            >
+                              <p className={`text-center`}>**** ****</p>
+                              <p className={`text-center`}>
+                                **** {card.card_number.slice(-4)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          className={`${styles['icon-card-date-bo']} d-flex flex-column justify-content-center align-items-center`}
+                        >
+                          <p className={styles['card-type-bo']}>
+                            {/* 根據卡片類型顯示相應圖標 */}
+                            {card.card_type === 'Visa' && (
+                              <FaCcVisa
+                                className={`${styles['icon-card-bo']}`}
+                              />
+                            )}
+                            {card.card_type === 'MasterCard' && (
+                              <FaCcMastercard
+                                className={`${styles['icon-card-bo']}`}
+                              />
+                            )}
+                            {/* 如果不是 Visa 或 MasterCard，顯示默認圖標 */}
+                            {!['Visa', 'MasterCard'].includes(
+                              card.card_type
+                            ) && (
+                              <HiCreditCard
+                                className={`${styles['icon-card-bo']}`}
+                              />
+                            )}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  ))
+                ) : (
+                  <p>尚未新增信用卡</p>
+                )}
+
                 {/* 可新增更多的信用卡資訊項目 */}
               </div>
             </div>
@@ -241,7 +267,7 @@ export default function UserInfo() {
             <button className={`${styles['btn-edit-info-bo']} btn h6 `}>
               <Link
                 className={`${styles['link']} d-flex justify-content-center align-items-center  gap-5`}
-                href="http://localhost:3000/user/user-info-edit"
+                href="/user/user-center/info-edit"
               >
                 修改資訊
                 <FaEdit />

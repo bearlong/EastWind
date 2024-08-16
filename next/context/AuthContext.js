@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
   // 狀態管理：token 和 user 信息
   const [token, setToken] = useState(undefined)
   const [user, setUser] = useState(undefined)
+  const [isInitialized, setIsInitialized] = useState(false) // 新增初始化狀態
 
   const router = useRouter()
   const loginRoute = '/login' // 登入頁面的路徑
