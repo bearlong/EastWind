@@ -7,7 +7,7 @@ import moment from 'moment'
 const upload = multer()
 
 // 模擬數據
-let classData = [
+let courseData = [
   {
     id: 1,
     course_name: '西洋棋基礎課程',
@@ -53,8 +53,19 @@ let classData = [
 ]
 
 // 設置 API 端點
-router.get('/api/classes', (req, res) => {
-  res.json(classData)
+router.get('/', async (req, res) => {
+  let page = 1
+	let{
+		course_category_id,
+		price,
+	} = req.query
+
+  res.json(courseData)
 })
+
+
+router.all("*", (req, res) => {
+  res.send("<h1>404 - 找不到</h1>");
+});
 
 export default router
