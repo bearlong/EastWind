@@ -5,6 +5,9 @@ import Image from 'next/image'
 import { useCart } from '@/hooks/use-cart'
 import { useRouter } from 'next/router'
 import { AuthContext } from '@/context/AuthContext'
+import validator from 'validator'
+import toast from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 
 export default function Checkout() {
   const { user, loading } = useContext(AuthContext)
@@ -19,9 +22,14 @@ export default function Checkout() {
     city: '',
     address: '',
   }
-  const { cart = [], remark = '', setRemark = () => {} } = useCart()
+  const {
+    cart = [],
+    remark = '',
+    setRemark = () => {},
+    handleRemoveAll = () => {},
+  } = useCart()
   const router = useRouter()
-  const [delivery, setDelivery] = useState('homeDelivery')
+  const [delivery, setDelivery] = useState('宅配')
   const [deliveryPrice, setDeliveryPrice] = useState(60)
   const [sendForm, setSendForm] = useState(initSendForm)
   const [payMethod, setPayMethod] = useState('credit')
@@ -47,8 +55,16 @@ export default function Checkout() {
     },
   ])
   const [formError, setFormError] = useState({
-    sendFormErrors: {},
-    payInfoErrors: {},
+    ...initSendForm,
+    couponSelect: '',
+    creditCard: '',
+    expDate: '',
+    csc: '',
+    cardholder: '',
+    billingAddressCountry: '',
+    billingAddressPostCode: '',
+    billingAddressCity: '',
+    billingAddressAddress: '',
   })
   const citySelect = [
     '台北市',
@@ -76,15 +92,137 @@ export default function Checkout() {
   ]
   const [cardSelect, setCardSelect] = useState('')
   const [card, setCard] = useState([])
-  const [couponSelect, setCouponSelect] = useState(undefined)
+  const [couponSelect, setCouponSelect] = useState('')
   const [total, setTotal] = useState(0)
 
-  const handleSubmit = (e) => {
+  const goLinePay = (orderId) => {
+    if (window.confirm('確認要導向至LINE Pay進行付款?')) {
+      // 先連到node伺服器後，導向至LINE Pay付款頁面
+      window.location.href = `http://localhost:3005/api/checkout/LinepayReserve?orderId=${orderId}`
+    }
+  }
+
+  const validateFields = (errors, fieldname = '') => {
+    // 先建立空白的錯誤訊息，代表每次檢查均需重置所有錯誤訊息開始檢查起
+    const newErrors = {}
+    Object.keys(errors).forEach((prop) => (newErrors[prop] = ''))
+
+    // 以下使用`||=`語法是同時間只有一個錯誤訊息，而且會寫在愈上面檢查的為主
+    if (delivery === '宅配') {
+      if (validator.isEmpty(sendForm.country, { ignore_whitespace: true })) {
+        newErrors.country ||= '請選擇國家'
+      }
+      if (validator.isEmpty(sendForm.firstname, { ignore_whitespace: true })) {
+        newErrors.firstname ||= '請輸入姓氏'
+      }
+      if (validator.isEmpty(sendForm.lastname, { ignore_whitespace: true })) {
+        newErrors.lastname ||= '請輸入名字'
+      }
+      if (validator.isEmpty(sendForm.postCode, { ignore_whitespace: true })) {
+        newErrors.postCode ||= '請輸入郵遞區號'
+      }
+      if (validator.isEmpty(sendForm.city, { ignore_whitespace: true })) {
+        newErrors.city ||= '請選擇縣市'
+      }
+      if (validator.isEmpty(sendForm.address, { ignore_whitespace: true })) {
+        newErrors.address ||= '請輸入地址'
+      }
+    }
+
+    if (payMethod === 'credit') {
+      if (
+        validator.isEmpty(payInfo.creditNum1, { ignore_whitespace: true }) ||
+        validator.isEmpty(payInfo.creditNum2, { ignore_whitespace: true }) ||
+        validator.isEmpty(payInfo.creditNum3, { ignore_whitespace: true }) ||
+        validator.isEmpty(payInfo.creditNum4, { ignore_whitespace: true })
+      ) {
+        newErrors.creditCard ||= '請輸入信用卡號碼'
+      }
+
+      if (
+        validator.isEmpty(payInfo.expDate, { ignore_whitespace: true }) ||
+        !validator.matches(payInfo.expDate, /^(0[1-9]|1[0-2])\/\d{2}$/)
+      ) {
+        newErrors.expDate ||= '請輸入正確的有效期格式 (mm/yy)'
+      }
+
+      if (
+        validator.isEmpty(payInfo.csc, { ignore_whitespace: true }) ||
+        !validator.matches(payInfo.csc, /^\d{3}$/)
+      ) {
+        newErrors.csc ||= '請輸入正確的安全碼格式(數字三碼)'
+      }
+      if (validator.isEmpty(payInfo.cardholder, { ignore_whitespace: true })) {
+        newErrors.cardholder ||= '請輸入持卡人姓名'
+      }
+      if (!payInfo.useDeliveryAddress) {
+        if (validator.isEmpty(payInfo.country, { ignore_whitespace: true })) {
+          newErrors.billingAddressCountry ||= '請選擇國家'
+        }
+        if (validator.isEmpty(payInfo.postCode, { ignore_whitespace: true })) {
+          newErrors.billingAddressPostCode ||= '請輸入郵遞區號'
+        }
+        if (validator.isEmpty(payInfo.city, { ignore_whitespace: true })) {
+          newErrors.billingAddressCity ||= '請選擇縣市'
+        }
+        if (validator.isEmpty(payInfo.address, { ignore_whitespace: true })) {
+          newErrors.billingAddressAddress ||= '請輸入地址'
+        }
+      }
+    }
+    if (validator.isEmpty(couponSelect, { ignore_whitespace: true })) {
+      newErrors.couponSelect ||= '請選擇優惠券'
+    }
+    return fieldname
+      ? { ...formError, [fieldname]: newErrors[fieldname] }
+      : newErrors
+  }
+  const handleBlur = (e) => {
+    const { name } = e.target
+    let newErrors
+    if (
+      ['creditNum1', 'creditNum2', 'creditNum3', 'creditNum4'].includes(name)
+    ) {
+      newErrors = validateFields(formError, 'creditCard')
+    } else {
+      newErrors = validateFields(formError, name)
+    }
+    setFormError(newErrors)
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
+
+    // 驗證是否有錯誤
+    const errors = validateFields(formError)
+    const hasErrors = Object.values(errors).some((error) => error !== '')
+
+    if (hasErrors) {
+      setFormError(errors)
+      Object.entries(errors).forEach(([field, message]) => {
+        if (message) {
+          toast.error(`${message}`, {
+            style: {
+              border: '1px solid #d71515',
+              padding: '16px',
+              fontSize: '16px',
+              color: '#d71515',
+            },
+            iconTheme: {
+              primary: '#d71515',
+              secondary: '#ffffff',
+              fontSize: '16px',
+            },
+          })
+        }
+      })
+      return
+    }
+
     const formData = new FormData()
     let { firstname, lastname, ...newSendData } = sendForm
     let name = firstname + lastname
-    if (delivery === 'pickup') {
+    if (delivery === '自取') {
       name = username
       newSendData = {}
     }
@@ -122,10 +260,44 @@ export default function Checkout() {
     formData.append('remark', remark)
     formData.append('cart', JSON.stringify(cart))
 
-    formData.forEach((value, key) => {
-      console.log(key, value)
-    })
+    const url = `http://localhost:3005/api/checkout/${user.id}`
+    const method = 'POST'
+    try {
+      const response = await fetch(url, {
+        method: method,
+        body: formData,
+      })
+      const result = await response.json()
+      if (result.status === 'success') {
+        if (payMethod === 'credit') {
+          handleRemoveAll()
+          console.log(result.data.numerical_order)
+          // router.push('/product')
+        } else if (payMethod === 'Linepay') {
+          goLinePay(result.data.orderId)
+        }
+      } else {
+        result.data.message.forEach((message) => {
+          toast.error(`${message}`, {
+            style: {
+              border: '1px solid #d71515',
+              padding: '16px',
+              fontSize: '16px',
+              color: '#d71515',
+            },
+            iconTheme: {
+              primary: '#d71515',
+              secondary: '#ffffff',
+              fontSize: '16px',
+            },
+          })
+        })
+      }
+    } catch (err) {
+      console.log(err)
+    }
   }
+
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -184,8 +356,10 @@ export default function Checkout() {
   }, [couponSelect, deliveryPrice])
 
   useEffect(() => {
-    if (delivery === 'pickup') {
+    if (delivery === '自取') {
       setSendForm(initSendForm)
+      const newformError = { ...formError, ...initSendForm }
+      setFormError(newformError)
       setDeliveryPrice(0)
       return
     }
@@ -208,6 +382,18 @@ export default function Checkout() {
         address: '',
         useDeliveryAddress: false,
       })
+      const newformError = {
+        ...formError,
+        creditCard: '',
+        expDate: '',
+        csc: '',
+        cardholder: '',
+        billingAddressCountry: '',
+        billingAddressPostCode: '',
+        billingAddressCity: '',
+        billingAddressAddress: '',
+      }
+      setFormError(newformError)
       return
     }
   }, [payMethod])
@@ -241,11 +427,11 @@ export default function Checkout() {
             <input
               type="radio"
               id="homeDelivery"
-              defaultValue={'homeDelivery'}
+              defaultValue={'宅配'}
               name="delivery"
-              checked={delivery === 'homeDelivery'}
+              checked={delivery === '宅配'}
               onChange={() => {
-                setDelivery('homeDelivery')
+                setDelivery('宅配')
               }}
             />
             <label
@@ -258,11 +444,11 @@ export default function Checkout() {
             <input
               type="radio"
               id="pickup"
-              defaultValue={'pickup'}
+              defaultValue={'自取'}
               name="delivery"
-              checked={delivery === 'pickup'}
+              checked={delivery === '自取'}
               onChange={(e) => {
-                setDelivery('pickup')
+                setDelivery('自取')
               }}
             />
             <label
@@ -273,7 +459,6 @@ export default function Checkout() {
               自取
             </label>
           </div>
-          <div className={`${styles['errorBox']}`} />
           <div className={`${styles['payment-send-form-bo']} mb-3`}>
             <div className={`${styles['payment-title-bo']} h5 mb-4`}>寄送</div>
             <div
@@ -281,21 +466,23 @@ export default function Checkout() {
             >
               <select
                 className={`${styles['form-select-bl']} form-select`}
-                id="countrySelect"
+                id="country"
                 aria-label="Floating label select example"
-                name="countrySelect"
+                name="country"
                 value={sendForm.country}
                 onChange={(e) => {
                   setSendForm({ ...sendForm, country: e.target.value })
-                  console.log(e.target.value)
                 }}
-                disabled={delivery === 'pickup'}
+                onBlur={(e) => {
+                  handleBlur(e)
+                }}
+                disabled={delivery === '自取'}
               >
                 <option value="">請選擇</option>
                 <option value={'台灣'}>台灣</option>
               </select>
               <label htmlFor="countrySelect">國家 / 地區</label>
-              <div className={`${styles['errorBox']}`} />
+              <div className={`${styles['errorBox']}`}>{formError.country}</div>
             </div>
             <div className="row">
               <div
@@ -311,10 +498,15 @@ export default function Checkout() {
                   onChange={(e) => {
                     setSendForm({ ...sendForm, firstname: e.target.value })
                   }}
-                  disabled={delivery === 'pickup'}
+                  onBlur={(e) => {
+                    handleBlur(e)
+                  }}
+                  disabled={delivery === '自取'}
                 />
                 <label htmlFor="Firstname">姓</label>
-                <div className={`${styles['errorBox']}`} />
+                <div className={`${styles['errorBox']}`}>
+                  {formError.firstname}
+                </div>
               </div>
               <div
                 className={`${styles['form-floating-bl']} ${styles['col-6-bl']} form-floating mb-3 col-6`}
@@ -329,10 +521,15 @@ export default function Checkout() {
                   onChange={(e) => {
                     setSendForm({ ...sendForm, lastname: e.target.value })
                   }}
-                  disabled={delivery === 'pickup'}
+                  onBlur={(e) => {
+                    handleBlur(e)
+                  }}
+                  disabled={delivery === '自取'}
                 />
                 <label htmlFor="lastname">名</label>
-                <div className={`${styles['errorBox']}`} />
+                <div className={`${styles['errorBox']}`}>
+                  {formError.lastname}
+                </div>
               </div>
               <div
                 className={`${styles['form-floating-bl']} ${styles['col-6-bl']} form-floating mb-3 pe-3 col-6`}
@@ -350,24 +547,32 @@ export default function Checkout() {
                       postCode: e.target.value,
                     })
                   }}
-                  disabled={delivery === 'pickup'}
+                  onBlur={(e) => {
+                    handleBlur(e)
+                  }}
+                  disabled={delivery === '自取'}
                 />
                 <label htmlFor="postCode">郵遞區號</label>
-                <div className={`${styles['errorBox']}`} />
+                <div className={`${styles['errorBox']}`}>
+                  {formError.postCode}
+                </div>
               </div>
               <div
                 className={`${styles['city-select-bo']} ${styles['form-floating-bl']} ${styles['col-6-bl']} form-floating  mb-3 col-6`}
               >
                 <select
                   className={`${styles['form-select-bl']} form-select`}
-                  id="citySelect"
+                  id="city"
                   aria-label="Floating label select example"
-                  name="citySelect"
+                  name="city"
                   value={sendForm.city}
                   onChange={(e) => {
                     setSendForm({ ...sendForm, city: e.target.value })
                   }}
-                  disabled={delivery === 'pickup'}
+                  onBlur={(e) => {
+                    handleBlur(e)
+                  }}
+                  disabled={delivery === '自取'}
                 >
                   <option value="">請選擇</option>
                   {citySelect.map((v, i) => {
@@ -379,7 +584,7 @@ export default function Checkout() {
                   })}
                 </select>
                 <label htmlFor="citySelect">縣市</label>
-                <div className={`${styles['errorBox']}`} />
+                <div className={`${styles['errorBox']}`}>{formError.city}</div>
               </div>
             </div>
             <div className={`${styles['form-floating-bl']} form-floating mb-3`}>
@@ -393,10 +598,13 @@ export default function Checkout() {
                 onChange={(e) => {
                   setSendForm({ ...sendForm, address: e.target.value })
                 }}
-                disabled={delivery === 'pickup'}
+                onBlur={(e) => {
+                  handleBlur(e)
+                }}
+                disabled={delivery === '自取'}
               />
               <label htmlFor="address">地址</label>
-              <div className={`${styles['errorBox']}`} />
+              <div className={`${styles['errorBox']}`}>{formError.address}</div>
             </div>
           </div>
           <div className={`${styles['payment-pay-box-bo']} mb-3`}>
@@ -439,6 +647,9 @@ export default function Checkout() {
                           creditNum1: e.target.value,
                         })
                       }}
+                      onBlur={(e) => {
+                        handleBlur(e)
+                      }}
                     />
                   </div>
                   <div className="col-2">
@@ -453,6 +664,9 @@ export default function Checkout() {
                           ...payInfo,
                           creditNum2: e.target.value,
                         })
+                      }}
+                      onBlur={(e) => {
+                        handleBlur(e)
                       }}
                     />
                   </div>
@@ -469,6 +683,9 @@ export default function Checkout() {
                           creditNum3: e.target.value,
                         })
                       }}
+                      onBlur={(e) => {
+                        handleBlur(e)
+                      }}
                     />
                   </div>
                   <div className="col-2">
@@ -483,6 +700,9 @@ export default function Checkout() {
                           ...payInfo,
                           creditNum4: e.target.value,
                         })
+                      }}
+                      onBlur={(e) => {
+                        handleBlur(e)
                       }}
                     />
                   </div>
@@ -506,7 +726,9 @@ export default function Checkout() {
                       })}
                     </select>
                   </div>
-                  <div className={`${styles['errorBox']}`} />
+                  <div className={`${styles['errorBox']}`}>
+                    {formError.creditCard}
+                  </div>
                 </div>
                 <div className="row">
                   <div
@@ -526,9 +748,14 @@ export default function Checkout() {
                           expDate: e.target.value,
                         })
                       }}
+                      onBlur={(e) => {
+                        handleBlur(e)
+                      }}
                     />
                     <label htmlFor="expDate">有效期(mm/yy)</label>
-                    <div className={`${styles['errorBox']}`} />
+                    <div className={`${styles['errorBox']}`}>
+                      {formError.expDate}
+                    </div>
                   </div>
                   <div
                     className={`${styles['form-floating-bl']} ${styles['col-6-bl']} form-floating mb-3 col-6`}
@@ -547,9 +774,14 @@ export default function Checkout() {
                           csc: e.target.value,
                         })
                       }}
+                      onBlur={(e) => {
+                        handleBlur(e)
+                      }}
                     />
                     <label htmlFor="csc">安全碼</label>
-                    <div className={`${styles['errorBox']}`} />
+                    <div className={`${styles['errorBox']}`}>
+                      {formError.csc}
+                    </div>
                   </div>
                 </div>
                 <div
@@ -568,9 +800,14 @@ export default function Checkout() {
                         cardholder: e.target.value,
                       })
                     }}
+                    onBlur={(e) => {
+                      handleBlur(e)
+                    }}
                   />
                   <label htmlFor="cardholder">持卡人</label>
-                  <div className={`${styles['errorBox']}`} />
+                  <div className={`${styles['errorBox']}`}>
+                    {formError.cardholder}
+                  </div>
                 </div>
                 <input
                   className={`${styles['checkBillingAddress']} `}
@@ -611,12 +848,17 @@ export default function Checkout() {
                           country: e.target.value,
                         })
                       }}
+                      onBlur={(e) => {
+                        handleBlur(e)
+                      }}
                     >
                       <option value="">請選擇</option>
                       <option value={'台灣'}>台灣</option>
                     </select>
                     <label htmlFor="billingAddressCountry">國家 / 地區</label>
-                    <div className={`${styles['errorBox']}`} />
+                    <div className={`${styles['errorBox']}`}>
+                      {formError.billingAddressCountry}
+                    </div>
                   </div>
                   <div className="row">
                     <div
@@ -635,9 +877,14 @@ export default function Checkout() {
                             postCode: e.target.value,
                           })
                         }}
+                        onBlur={(e) => {
+                          handleBlur(e)
+                        }}
                       />
                       <label htmlFor="billingAddressPostCode">郵遞區號</label>
-                      <div className={`${styles['errorBox']}`} />
+                      <div className={`${styles['errorBox']}`}>
+                        {formError.billingAddressPostCode}
+                      </div>
                     </div>
                     <div
                       className={`${styles['city-select-bo']} ${styles['form-floating-bl']} ${styles['col-6-bl']} form-floating  mb-3 col-6`}
@@ -654,6 +901,9 @@ export default function Checkout() {
                             city: e.target.value,
                           })
                         }}
+                        onBlur={(e) => {
+                          handleBlur(e)
+                        }}
                       >
                         <option value="">請選擇</option>
                         {citySelect.map((v, i) => {
@@ -665,7 +915,9 @@ export default function Checkout() {
                         })}
                       </select>
                       <label htmlFor="billingAddressCity">縣市</label>
-                      <div className={`${styles['errorBox']}`} />
+                      <div className={`${styles['errorBox']}`}>
+                        {formError.billingAddressCity}
+                      </div>
                     </div>
                   </div>
                   <div
@@ -684,9 +936,14 @@ export default function Checkout() {
                           address: e.target.value,
                         })
                       }}
+                      onBlur={(e) => {
+                        handleBlur(e)
+                      }}
                     />
                     <label htmlFor="billingAddressAddress">地址</label>
-                    <div className={`${styles['errorBox']}`} />
+                    <div className={`${styles['errorBox']}`}>
+                      {formError.billingAddressAddress}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -742,8 +999,11 @@ export default function Checkout() {
                 onChange={(e) => {
                   setCouponSelect(e.target.value)
                 }}
+                onBlur={(e) => {
+                  handleBlur(e)
+                }}
               >
-                <option value={undefined}>請選擇</option>
+                <option value={''}>請選擇</option>
                 <option value={0}>不使用優惠券</option>
                 {coupons.map((v, i) => {
                   return (
@@ -757,7 +1017,9 @@ export default function Checkout() {
                 })}
               </select>
               <label htmlFor="couponSelect">選擇優惠券</label>
-              <div className={`${styles['errorBox']}`} />
+              <div className={`${styles['errorBox']}`}>
+                {formError.couponSelect}
+              </div>
             </div>
           </div>
           <div className={`${styles['remark-box-bl']} mb-4`}>
@@ -806,10 +1068,11 @@ export default function Checkout() {
           >
             現在付款
           </button>
+          <Toaster position="bottom-center" reverseOrder={false} />
         </div>
         <div className={`${styles['cart-section-bo']}  col-12 col-md-6`}>
           <h5 className={`${styles['cart-title-bo']}  my-4`}>
-            訂單商品（2 件）
+            訂單商品（{cart.length} 件）
           </h5>
           <div
             className={`${styles['cart-bo']}  d-flex flex-column justify-content-between`}

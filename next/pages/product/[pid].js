@@ -20,6 +20,8 @@ import { useCart } from '@/hooks/use-cart'
 import { AuthContext } from '@/context/AuthContext'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import toast from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 
 export default function Detail() {
   const { user } = useContext(AuthContext)
@@ -151,6 +153,22 @@ export default function Detail() {
       })
       const result = await response.json()
       if (result.status === 'success') {
+        toast.success(
+          `${method === 'POST' ? '商品已加入收藏!' : '商品已移除收藏!'}`,
+          {
+            style: {
+              border: `1px solid ${method === 'POST' ? '#55c57a' : '#d71515'}`,
+              padding: '16px',
+              fontSize: '16px',
+              color: '#0e0e0e',
+            },
+            iconTheme: {
+              primary: `${method === 'POST' ? '#55c57a' : '#d71515'}`,
+              secondary: '#ffffff',
+              fontSize: '16px',
+            },
+          }
+        )
         const nextProduct = { ...data.product, fav: !data.product.fav }
         setData({ ...data, product: nextProduct })
       } else {
@@ -383,12 +401,20 @@ export default function Detail() {
               <div
                 className={`${styles['buttonGroup-bl']} d-flex justify-content-between flex-column`}
               >
-                <div
+                <button
                   type="button"
                   className={`${styles['btnRectangle']} ${styles['buy']}  mb-3`}
+                  onClick={() => {
+                    if (!user) {
+                      notifyAndRemove()
+                    } else {
+                      handleAdd(data.product, 'product', quantity)
+                      router.push('/checkout')
+                    }
+                  }}
                 >
                   立即購買
-                </div>
+                </button>
                 <button
                   type="button"
                   className={`${styles['btnRectangle']}`}
@@ -406,6 +432,7 @@ export default function Detail() {
             </div>
           </div>
         </div>
+        <Toaster position="bottom-right" reverseOrder={false} />
         <div className={`${styles['productDetailSection2-bl']}  row`}>
           <div className={` col-12 col-md-8`}>
             <div className={`  mb-5`}>
