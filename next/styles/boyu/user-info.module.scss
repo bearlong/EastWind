@@ -128,7 +128,7 @@
   @media (max-width: 1260px) {
     flex-direction: column;
   }
-  @media (max-width: 768px) {
+  @media (max-width: 992px) {
     flex-direction: row;
   }
 }
@@ -203,12 +203,6 @@
   @media (max-width: 992px) {
     justify-content: start;
   }
-  @media (max-width: 820px) {
-    justify-content: center;
-  }
-  @media (max-width: 768px) {
-    justify-content: start;
-  }
 }
 
 /* 編輯資訊按鈕 */
@@ -226,7 +220,7 @@
 }
 
 .move-up-bo {
-  @media (max-width: 768px) {
+  @media (max-width: 992px) {
     order: -1; /* 確保這些元素會移動到最上面 */
   }
 }

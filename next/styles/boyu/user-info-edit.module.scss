@@ -129,7 +129,7 @@
   @media (max-width: 1260px) {
     flex-direction: column;
   }
-  @media (max-width: 768px) {
+  @media (max-width: 992px) {
     flex-direction: row;
   }
 }
@@ -175,13 +175,17 @@
 
 .card-body-bo {
   gap: 2rem;
-  @media (max-width: 1200px) {
-    gap: 0.6rem;
+  @media (max-width: 1400px) {
+    gap: 1rem;
   }
 
   @media (max-width: 768px) {
     gap: 1rem;
   }
+}
+
+.card-text-down-bo {
+  width: 100%;
 }
 
 .info-card-bo {
@@ -254,7 +258,7 @@
 }
 
 .move-up-bo {
-  @media (max-width: 768px) {
+  @media (max-width: 992px) {
     order: -1; /* 確保這些元素會移動到最上面 */
   }
 }
@@ -297,4 +301,9 @@
   background-color: var(--primary-dark);
   color: var(--bg-text-color);
   padding: 0.4rem 1rem;
+}
+
+.text-error-bo {
+  padding: 0 4rem;
+  color: var(--primary);
 }

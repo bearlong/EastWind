@@ -25,8 +25,15 @@ export default function UserSidebar() {
   // 當路徑發生變化時，更新 activeLink 和 firstLink 的狀態
   useEffect(() => {
     const path = router.pathname.split('/').pop() // 獲取當前路徑的最後部分
-    setActiveLink(path)
-    setFirstLink(path) // 確保 firstLink 也會更新為當前路徑
+
+    // 檢查是否為 info 或 info-edit
+    if (path === 'info-edit') {
+      setActiveLink('info')
+      setFirstLink('info')
+    } else {
+      setActiveLink(path)
+      setFirstLink(path) // 確保 firstLink 也會更新為當前路徑
+    }
   }, [router.pathname])
 
   // 更新 activeLink 和 firstLink 的函數
