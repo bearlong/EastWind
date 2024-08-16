@@ -1,0 +1,81 @@
+// 變量定義
+$primary: var(--primary)
+$primary-dark: var(--primary-dark)
+$white: var(--white)
+$warning: #ffc107
+$success: #28a745
+$secondary: #6c757d
+$card-bg: rgba(188, 188, 188, 0.485)
+
+.card
+  max-width: 70rem
+  width: 100%
+  border-radius: 10px
+  padding: 16px
+  margin-bottom: 16px
+  background-color: $card-bg
+
+  .card-body
+    .card-title
+      margin-bottom: 0
+
+    .card-subtitle
+      margin-bottom: 8px
+      color: #6c757d
+
+    .badge
+      font-size: 1.1em
+      min-width: 80px
+      text-align: center
+      padding: 8px
+
+      &.bg-primary
+        background-color: $primary
+
+      &.bg-warning
+        background-color: $warning
+
+      &.bg-success
+        background-color: $success
+
+    .btn
+      background-color: $primary
+      padding: 8px 16px
+      border-radius: 4px
+      color: $white
+      border: none
+      cursor: pointer
+
+      &:hover
+        background-color: $primary-dark
+
+      &:disabled
+        background-color: $secondary
+        cursor: not-allowed
+
+    .flex-container
+      display: flex
+      justify-content: space-between
+      align-items: center
+      margin-bottom: 8px
+
+    .card-link
+      color: $primary
+      text-decoration: none
+      margin-top: 12px
+      display: inline-block
+
+      &:hover
+        text-decoration: underline
+
+    .collapse
+      display: none
+
+    .collapse.show
+      display: block
+
+    .collapse-content
+      margin-top: 8px
+
+      p
+        margin: 4px 0

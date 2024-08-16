@@ -7,9 +7,9 @@ const router = express.Router()
 // email內容
 const mailOptions = {
   from: `"support"<${process.env.SMTP_TO_EMAIL}>`,
-  to: 'hello@test.com',
+  to: 'z82529371@gmail.com',
   subject: '這是一封測試電子郵件',
-  text: `你好， \r\n通知你有關第一封郵件的事。\r\n\r\n敬上\r\n開發團隊`,
+  text: `你好， \r\n晚上吃小七\r\n\r\n敬上\r\n開發團隊`,
 }
 
 /* 寄送email的路由 */

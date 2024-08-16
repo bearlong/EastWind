@@ -5,6 +5,9 @@ import Head from 'next/head'
 import NextBreadCrumb from '@/components/common/next-breadcrumb'
 import { useLoader } from '@/hooks/use-loader'
 
+import Header from './header.jsx'
+import Footer from './footer.jsx'
+
 export default function DefaultLayout({ title = 'Next-BS5', children }) {
   const { loader } = useLoader()
 
@@ -14,14 +17,15 @@ export default function DefaultLayout({ title = 'Next-BS5', children }) {
         <title>{title}</title>
         <meta name="viewport" content="width=device-width" />
       </Head>
-      <MyNavbarBS5 />
-      <main className="flex-shrink-0 mt-3">
-        <NextBreadCrumb isHomeIcon isChevron bgClass="" />
+      <Header />
+      {/* <MyNavbarBS5 /> */}
+      <main className="flex-shrink-0">
+        {/* <NextBreadCrumb isHomeIcon isChevron bgClass="" /> */}
         {children}
         {/* 全域的載入動畫指示器 */}
         {loader()}
       </main>
-      <MyFooter />
+      <Footer />
     </>
   )
 }
