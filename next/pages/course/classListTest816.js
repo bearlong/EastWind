@@ -3,19 +3,19 @@ import axios from 'axios'
 import styles from '@/styles/aa/classList.scss'
 
 export default function ClassList() {
-  const [classes, setClasses] = useState([])
+  const [courses, setCourses] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    fetchClasses()
+    fetchCourses()
   }, [])
 
-  const fetchClasses = async () => {
+  const fetchCourses = async () => {
     try {
       setLoading(true)
-      const response = await axios.get('http://localhost:3005/api/classes')
-      setClasses(response.data)
+      const response = await axios.get('http://localhost:3005/api/classList')
+      setCourses(response.data)
       setLoading(false)
     } catch (err) {
       setError('無法載入課程資料')
@@ -35,7 +35,7 @@ export default function ClassList() {
               <h2>所有課程列表</h2>
             </div>
             <div className="classCards-aa">
-              {classes.map((course) => (
+              {courses.map((course) => (
                 <div key={course.id} className="classCard-aa">
                   <div className="imgBox-aa">
                     <img src={course.images} alt={course.course_name} />

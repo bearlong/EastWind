@@ -1,9 +1,14 @@
 import express from 'express'
-const router = express.Router()
 import dbPromise from '##/configs/mysql-promise.js'
 import multer from 'multer'
 import moment from 'moment'
+// 檢查空物件, 轉換req.params為數字
+import { getIdParam } from '#db-helpers/db-tool.js'
 
+// 資料庫使用
+import sequelize from '#configs/db.js'
+
+const router = express.Router()
 const upload = multer()
 
 // 模擬數據
@@ -63,9 +68,12 @@ router.get('/', async (req, res) => {
   res.json(courseData)
 })
 
-
 router.all("*", (req, res) => {
   res.send("<h1>404 - 找不到</h1>");
+});
+
+router.listen(3005, () => {
+  console.log("伺服器已啟動於 http://localhost:3005");
 });
 
 export default router
