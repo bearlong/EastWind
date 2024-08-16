@@ -2,6 +2,7 @@ import express from 'express'
 import dbPromise from '##/configs/mysql-promise.js'
 import multer from 'multer'
 import moment from 'moment'
+import cors from 'cors'
 // 檢查空物件, 轉換req.params為數字
 import { getIdParam } from '#db-helpers/db-tool.js'
 
@@ -20,7 +21,7 @@ let courseData = [
     content: '學習西洋棋的基本規則和策略',
     price: 4500,
     images: '1chess.jpg',
-    file: 'chess_basic_materials.pdf',
+    file: '1chess.mp4',
     created_at: '2024-08-01 10:00:00',
     updated_at: '2024-08-01 10:00:00',
     on_datetime: '2024-09-01',
@@ -34,7 +35,7 @@ let courseData = [
     content: '學習麻將的基本玩法和技巧',
     price: 3800,
     images: '1mahjong.jpg',
-    file: 'mahjong_intro_guide.pdf',
+    file: '1mj.mp4',
     created_at: '2024-08-02 14:30:00',
     updated_at: '2024-08-02 14:30:00',
     on_datetime: '2024-09-15',
@@ -47,7 +48,7 @@ let courseData = [
     course_category_id: 3,
     content: '深入學習圍棋的進階戰略和戰術',
     price: 5200,
-    images: '1go.jpg',
+    images: '1go.mp4',
     file: 'go1.mp4',
     created_at: '2024-08-03 09:15:00',
     updated_at: '2024-08-03 09:15:00',

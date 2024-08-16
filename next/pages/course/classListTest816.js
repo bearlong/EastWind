@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 import axios from 'axios'
+import Image from 'next/image'
+import Link from 'next/link'
 import styles from '@/styles/aa/classList.scss'
 
 export default function ClassList() {
@@ -20,7 +23,7 @@ export default function ClassList() {
       setCourses(response.data)
       setLoading(false)
     } catch (err) {
-      setError('無法載入課程資料')
+      setError('載入課程資料失敗')
       setLoading(false)
     }
   }

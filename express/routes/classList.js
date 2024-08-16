@@ -2,11 +2,13 @@ import express from 'express'
 import dbPromise from '##/configs/mysql-promise.js'
 import multer from 'multer'
 import moment from 'moment'
+import cors from 'cors'
 // 檢查空物件, 轉換req.params為數字
 import { getIdParam } from '#db-helpers/db-tool.js'
 
 // 資料庫使用
 import sequelize from '#configs/db.js'
+import app from '##/app.js'
 
 const router = express.Router()
 const upload = multer()
@@ -60,20 +62,13 @@ let courseData = [
 // 設置 API 端點
 router.get('/', async (req, res) => {
   let page = 1
-	let{
-		course_category_id,
-		price,
-	} = req.query
+  let { course_category_id, price } = req.query
 
   res.json(courseData)
 })
 
-router.all("*", (req, res) => {
-  res.send("<h1>404 - 找不到</h1>");
-});
-
-router.listen(3005, () => {
-  console.log("伺服器已啟動於 http://localhost:3005");
-});
+router.all('*', (req, res) => {
+  res.send('<h1>404 - 找不到</h1>')
+})
 
 export default router
