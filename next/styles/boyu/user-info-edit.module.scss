@@ -63,6 +63,13 @@
   color: var(--primary);
 }
 
+.info-city-bo {
+  width: 8rem;
+
+  @media (max-width: 768px) {
+    width: 7rem;
+  }
+}
 /* 一般資訊 */
 
 .default-information-box-bo {
@@ -304,6 +311,21 @@
 }
 
 .text-error-bo {
-  padding: 0 4rem;
+  padding-left: 6.4rem;
   color: var(--primary);
+}
+
+.btn-email-bo {
+  width: 8rem;
+  @media (max-width: 768px) {
+    width: 7rem;
+  }
+  border-radius: 5px;
+  color: var(--bg-text-color);
+  background-color: var(--primary);
+
+  &:hover {
+    background-color: var(--primary-dark);
+    color: var(--bg-text-color);
+  }
 }
