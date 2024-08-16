@@ -19,6 +19,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { useCart } from '@/hooks/use-cart'
 
 export default function Detail() {
+  let user_id
   const { handleAdd = () => {}, error = '' } = useCart()
   const router = useRouter()
   const { pid } = router.query
@@ -57,7 +58,10 @@ export default function Detail() {
 
   const getProduct = async (id) => {
     let newData, error
-    const url = 'http://localhost:3005/api/products/' + id
+    const url =
+      'http://localhost:3005/api/products/' +
+      id +
+      `${user_id ? `?uid=${user_id}` : ''}`
     newData = await fetch(url)
       .then((res) => res.json())
       .then((result) => {
@@ -83,12 +87,20 @@ export default function Detail() {
       setData(newData)
       setComment(newData.comment)
       setImgMain(product.img)
-      const updatedStarCount = { ...starCount }
+
+      const updatedStarCount = {
+        5: 0,
+        4: 0,
+        3: 0,
+        2: 0,
+        1: 0,
+      }
       newData.starCount.forEach(({ star, count }) => {
         if (updatedStarCount[star] !== undefined) {
           updatedStarCount[star] = count
         }
       })
+
       setStarCount(updatedStarCount)
     }
   }
@@ -96,7 +108,6 @@ export default function Detail() {
   const sortedStarCount = Object.entries(starCount).sort(
     ([starA], [starB]) => [starB] - [starA]
   )
-
   const handleImgMain = (img) => {
     setImgMain(img)
   }
@@ -116,7 +127,34 @@ export default function Detail() {
       (item) => item.star === Math.round(star)
     )
     setComment({ content: nextContent, star })
-    console.log(comment)
+  }
+
+  const handleFavToggle = async (object_id, type) => {
+    const fav = data.product.fav
+    const url = `http://localhost:3005/api/favorites/${object_id}`
+    const method = fav ? 'DELETE' : 'POST'
+    const body = JSON.stringify({
+      uid: user_id,
+      type: type,
+    })
+    try {
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      })
+      const result = await response.json()
+      if (result.status === 'success') {
+        const nextProduct = { ...data.product, fav: !data.product.fav }
+        setData({ ...data, product: nextProduct })
+      } else {
+        console.log(result.data.message)
+      }
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   useEffect(() => {
@@ -124,9 +162,6 @@ export default function Detail() {
       getProduct(pid)
     }
   }, [router.isReady, router.query])
-
-  useEffect(() => {}, [error])
-
   return (
     <>
       <ProductNav />
@@ -243,10 +278,23 @@ export default function Detail() {
                     </div>
                     <p className="ms-2">({data.product.comment_count})</p>
                   </div>
-                  <div className={`d-flex align-items-center`}>
-                    <FaHeart fontSize={16} />
-                    <p className="ms-2">已收藏</p>
-                  </div>
+                  <button
+                    className={`d-flex align-items-center btn btn-outline-primary ${
+                      styles.like
+                    }  ${user_id ? '' : 'd-none'}`}
+                    onClick={() => {
+                      handleFavToggle(data.product.id, 'product')
+                    }}
+                  >
+                    {data.product.fav ? (
+                      <FaHeart fontSize={16} />
+                    ) : (
+                      <FaPlus fontSize={16} />
+                    )}
+                    <p className="ms-2 ">
+                      {data.product.fav ? '已收藏' : '未收藏'}
+                    </p>
+                  </button>
                 </div>
                 <h5>
                   NT$ <span>{data.product.price}</span>
@@ -326,9 +374,6 @@ export default function Detail() {
                   className={`${styles['btnRectangle']}`}
                   onClick={() => {
                     handleAdd(data.product, 'product', quantity)
-                    if (error) {
-                      alert(error)
-                    }
                   }}
                 >
                   加入購物車

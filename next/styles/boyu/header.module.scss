@@ -28,7 +28,7 @@
 
 .nav-list-bo {
   gap: 4.8rem;
-  @media screen and (max-width: 576px) {
+  @media screen and (max-width: 768px) {
     gap: 1.6rem;
   }
 }
@@ -44,7 +44,7 @@
 
 .icon-list-bo {
   gap: 3rem;
-  @media screen and (max-width: 576px) {
+  @media screen and (max-width: 768px) {
     gap: 2rem;
   }
 }
@@ -52,6 +52,7 @@
 .icon-bo {
   font-size: 2.4rem;
   color: var(--primary);
+  background: transparent;
 
   &:hover {
     color: var(--primary-dark);
@@ -81,4 +82,32 @@
     top: -0.8rem;
     right: -0.8rem;
   }
+}
+
+.swal-btn-bo {
+  font-size: 1.4rem;
+  font-weight: 500;
+  background-color: #b79347;
+  color: var(--bg-text-color);
+  padding: 0.4rem 1rem;
+}
+
+.swal-popup-bo {
+  background-color: var(--form-bg);
+}
+
+.swal-icon-bo {
+  font-size: 1.6rem;
+
+  @media (max-width: 576px) {
+    font-size: 1.4rem;
+  }
+}
+
+.swal-btn-cancel-bo {
+  font-size: 1.4rem;
+  font-weight: 500;
+  background-color: var(--primary-dark);
+  color: var(--bg-text-color);
+  padding: 0.4rem 1rem;
 }

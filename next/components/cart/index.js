@@ -19,6 +19,8 @@ export default function Cart({
   handleIncrease = () => {},
   handleDecrease = () => {},
   handleRemove = () => {},
+  remark = '',
+  setRemark = () => {},
 }) {
   let total = 0
   const [showRecommend, setShowRecommend] = useState(false)
@@ -37,11 +39,11 @@ export default function Cart({
       text: '這個操作無法復原',
       icon: 'warning',
       customClass: {
-        popup: `h5`,
-        title: `h5`,
-        content: `p`,
-        confirmButton: `p me-3`,
-        cancelButton: `p`,
+        popup: `h5 ${styles.transitionSlow}`,
+        title: `h5 ${styles.transitionSlow}`,
+        content: `p ${styles.transitionSlow}`,
+        confirmButton: `p me-3 ${styles.transitionSlow}`,
+        cancelButton: `p ${styles.transitionSlow}`,
       },
       showCancelButton: true,
       confirmButtonColor: '#d71515',
@@ -54,11 +56,11 @@ export default function Cart({
           title: '已刪除!',
           text: object.item_name + ' 已成功刪除',
           customClass: {
-            popup: `h5`,
-            title: `h5`,
-            content: `p`,
-            confirmButton: `p me-3`,
-            cancelButton: `p`,
+            popup: `h5 ${styles.transitionSlow}`,
+            title: `h5 ${styles.transitionSlow}`,
+            content: `p ${styles.transitionSlow}`,
+            confirmButton: `p me-3 ${styles.transitionSlow}`,
+            cancelButton: `p ${styles.transitionSlow}`,
           },
           icon: 'success',
         })
@@ -178,7 +180,6 @@ export default function Cart({
               onClick={() => {
                 handleCartHide()
                 handleClose()
-                console.log('click')
               }}
             >
               <FaXmark width={25} />
@@ -231,7 +232,11 @@ export default function Cart({
                             <FaMinus
                               className="me-5 p"
                               onClick={() => {
-                                handleDecrease(v)
+                                if (v.quantity <= 1) {
+                                  notifyAndRemove(v)
+                                } else {
+                                  handleDecrease(v)
+                                }
                               }}
                             />
 
@@ -259,7 +264,10 @@ export default function Cart({
                     className={`${styles['no-resize']} form-control mt-3`}
                     rows={3}
                     id=""
-                    defaultValue={''}
+                    defaultValue={remark}
+                    onChange={(e) => {
+                      setRemark(e.target.value)
+                    }}
                   />
                 </div>
                 <div

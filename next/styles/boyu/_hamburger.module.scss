@@ -54,10 +54,15 @@
 
 /* 導航菜單樣式 */
 .navigation-nav-bo {
+  display: none;
+
+  @media screen and (max-width: 576px) {
+    display: block;
+  }
   height: 100vh; /* 設置導航高度 */
   position: fixed; /* 設置固定定位 */
   top: 0; /* 設置距頂部0 */
-  left: 0; /* 設置距左邊0 */
+  left: -200px; /* 設置距左邊0 */
   z-index: 1500; /* 設置堆疊順序 */
   opacity: 0; /* 設置透明度 */
   width: 0; /* 設置寬度 */
@@ -68,7 +73,7 @@
 .navigation-list-bo {
   position: absolute; /* 設置絕對定位 */
   top: 50%; /* 設置距頂部50% */
-  left: 50%; /* 設置距左邊50% */
+  left: calc(50% + 200px); /* 設置距左邊50% */
   transform: translate(-50%, -50%); /* 設置位移 */
   list-style: none; /* 設置列表樣式 */
   text-align: center; /* 設置文字對齊方式 */

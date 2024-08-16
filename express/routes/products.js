@@ -40,6 +40,14 @@ router.get('/', async (req, res) => {
     size,
     style,
   }
+
+  if (max && min) {
+    if (!filter) {
+      filter = ` WHERE \`product\`.\`price\` BETWEEN ${min} AND ${max}`
+    } else {
+      filter += ` AND \`product\`.\`price\` BETWEEN ${min} AND ${max}`
+    }
+  }
   for (const key in filterArr) {
     if (filterArr[key]) {
       if (filterArr[key].includes(',')) {
@@ -69,14 +77,6 @@ router.get('/', async (req, res) => {
       filter = ` WHERE (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
     } else {
       filter += ` ${isFilter ? 'OR' : 'AND'} (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
-    }
-  }
-
-  if (max && min) {
-    if (!filter) {
-      filter = ` WHERE \`product\`.\`price\` BETWEEN ${min} AND ${max}`
-    } else {
-      filter += ` AND \`product\`.\`price\` BETWEEN ${min} AND ${max}`
     }
   }
 
@@ -448,11 +448,16 @@ router.get('/:id/comment/:star', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   // 轉為數字
   const id = getIdParam(req)
+  const { uid } = req.query
   let cateId = 0
   // , COUNT(`comment`.`id`) AS `comment_count`
   const [product] = await dbPromise
     .execute(
-      'SELECT `product`.* , `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` , COUNT(`comment`.`id`) AS `comment_count` FROM `product` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product" WHERE `product`.`id` = ' +
+      'SELECT `product`.* , `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` , COUNT(`comment`.`id`) AS `comment_count` ' +
+        `${uid ? ',CASE WHEN `favorite`.`object_id` IS NOT NULL THEN TRUE ELSE FALSE END AS `fav`' : ''}` +
+        'FROM `product` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product" ' +
+        `${uid ? 'LEFT JOIN `favorite` ON `favorite`.`object_id` = `product`.`id` AND `favorite`.`object_type` = "product" AND `favorite`.`user_id` = ' + uid : ''}` +
+        ' WHERE `product`.`id` = ' +
         id
     )
     .catch((err) => {

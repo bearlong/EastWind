@@ -2,6 +2,7 @@ import express from 'express'
 import 'dotenv/config.js'
 import connection from '##/configs/mysql-promise.js'
 
+
 const router = express.Router()
 
 router.get('/', async (req, res) => {
@@ -31,6 +32,7 @@ router.get('/', async (req, res) => {
       return res.status(404).json({ message: '沒有找到可用的店家' })
     }
 
+    res.status(500).json({ error: '獲取店面資料出錯' })
     res.json({
       data: companies,
       currentPage: page,
@@ -42,6 +44,7 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: '獲取店面資料出錯' })
   }
 })
+
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params
