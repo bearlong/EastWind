@@ -2,14 +2,15 @@ import RoomNav from '@/components/partypages/PartyRoomNav'
 import PartyCard from '@/components/partypages/PartyCard'
 import PhotoCard from '@/components/partypages/PhotoCard'
 import ToKnow from '@/components/partypages/ToKnowCard'
-import RoomCard from '../partypages/RoomCard'
+import RoomCard from '../partypages/PageRoomCard'
 import styles from '@/styles/Booking/_bookingLeftArea.module.scss'
 
-export default function BookingLeftArea() {
+export default function BookingLeftArea({ companyData }) {
+  // console.log(companyData);
   return (
     <div className={styles.leftArea}>
       <RoomNav />
-      <RoomCard/>
+      <RoomCard companyData={companyData} />
       <PhotoCard />
       <ToKnow />
     </div>
