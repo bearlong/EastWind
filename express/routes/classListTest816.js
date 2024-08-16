@@ -9,6 +9,16 @@ import { getIdParam } from '#db-helpers/db-tool.js'
 // 資料庫使用
 import sequelize from '#configs/db.js'
 
+// 設置檔案儲存方式
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname)
+  },
+})
+
 const router = express.Router()
 const upload = multer()
 
@@ -109,20 +119,16 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-router.post('/', upload.single('file'), async (req, res) => {
+router.post('/upload', upload.array('files', 10), (req, res) => {
   try {
-    // 這裡應該是新增課程到數據庫的邏輯
-    // 目前只是添加到模擬數據中
-    const newCourse = {
-      id: courseData.length + 1,
-      ...req.body,
-      created_at: moment().format('YYYY-MM-DD HH:mm:ss'),
-      updated_at: moment().format('YYYY-MM-DD HH:mm:ss'),
+    const files = req.files
+    if (!files) {
+      res.status(400).send('沒有檔案被上傳')
+    } else {
+      res.send('檔案上傳成功')
     }
-    courseData.push(newCourse)
-    res.status(201).json(newCourse)
-  } catch (error) {
-    res.status(500).json({ message: '伺服器錯誤' })
+  } catch (err) {
+    res.status(500).send(err.message)
   }
 })
 
