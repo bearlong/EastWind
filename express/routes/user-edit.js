@@ -80,5 +80,85 @@ router.post('/add-card/:userId', async (req, res) => {
   }
 })
 
+// 路由區塊：更新用戶資訊
+router.put('/update-user/:userId', async (req, res) => {
+  const { userId } = req.params
+  const {
+    email,
+    account,
+    password,
+    username,
+    gender,
+    birthDate,
+    address,
+    city,
+    phone,
+  } = req.body
+
+  try {
+    // 執行SQL更新操作，更新用戶資訊
+    const [result] = await connection.execute(
+      `UPDATE user SET 
+        email = ?, 
+        account = ?, 
+        password = ?, 
+        username = ?, 
+        gender = ?, 
+        birth = ?, 
+        city= ?, 
+        address = ?, 
+        phone = ? 
+      WHERE id = ?`,
+      [
+        email,
+        account,
+        password,
+        username,
+        gender,
+        birthDate,
+        city,
+        address,
+        phone,
+        userId,
+      ]
+    )
+
+    // 檢查是否成功更新
+    if (result.affectedRows > 0) {
+      res.status(200).json({ status: 'success', message: '用戶資料已更新' })
+    } else {
+      res.status(404).json({ status: 'fail', message: '找不到此用戶' })
+    }
+  } catch (error) {
+    console.error('Error updating user information:', error)
+    res.status(500).json({ status: 'error', message: '伺服器錯誤' })
+  }
+})
+
+// 檢查帳號唯一性
+router.post('/check-unique', async (req, res) => {
+  const { email, account, userId } = req.body // 添加 userId
+
+  try {
+    const [emailResult] = await connection.execute(
+      'SELECT id FROM users WHERE email = ? AND id != ?',
+      [email, userId]
+    )
+
+    const [accountResult] = await connection.execute(
+      'SELECT id FROM users WHERE account = ? AND id != ?',
+      [account, userId]
+    )
+
+    const emailExists = emailResult.length > 0
+    const accountExists = accountResult.length > 0
+
+    res.status(200).json({ emailExists, accountExists })
+  } catch (error) {
+    console.error('Error checking uniqueness:', error)
+    res.status(500).json({ status: 'error', message: '伺服器錯誤' })
+  }
+})
+
 // 將路由綁定到應用
 export default router

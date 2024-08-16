@@ -6,11 +6,44 @@ import { FaCcVisa, FaCcMastercard } from 'react-icons/fa6'
 import Link from 'next/link'
 import { AuthContext } from '@/context/AuthContext'
 import UserCenterLayout from '@/components/layout/user-center-layout'
+import Swal from 'sweetalert2'
 
 export default function UserInfo() {
   // 從 AuthContext 中獲取 user 狀態
   const { user } = useContext(AuthContext)
+  const [userData, setUserData] = useState(null) // 使用 useState 管理用戶資料
   const [cards, setCards] = useState([])
+
+  useEffect(() => {
+    const updateSuccess = sessionStorage.getItem('updateSuccess')
+    if (updateSuccess) {
+      Swal.fire({
+        title: '修改成功！',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        customClass: {
+          title: 'h6',
+          icon: `${styles['swal-icon-bo']}`,
+          confirmButton: `${styles['swal-btn-bo']}`,
+        },
+      })
+      sessionStorage.removeItem('updateSuccess') // 清除成功訊息
+    }
+
+    // 從伺服器獲取最新的用戶資料
+    if (user) {
+      fetch(`http://localhost:3005/api/user/user/${user.id}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status === 'success') {
+            setUserData(data.data) // 更新 userData 狀態
+          } else {
+            console.error('Failed to fetch user data:', data.message)
+          }
+        })
+        .catch((error) => console.error('Error fetching user data:', error))
+    }
+  }, [user])
 
   useEffect(() => {
     if (user) {
@@ -27,13 +60,13 @@ export default function UserInfo() {
     }
   }, [user])
 
-  if (!user) {
+  if (!user || !userData) {
     return null
   }
 
-  //  格式化日期
-  const createdAt = user.created_at.split(' ')[0].replace(/-/g, ' / ')
-  const birthDate = user.birth.replace(/-/g, ' / ')
+  // 格式化日期
+  const createdAt = userData.created_at.split(' ')[0].replace(/-/g, ' / ')
+  const birthDate = userData.birth.replace(/-/g, ' / ')
 
   return (
     <div className={`${styles['user-info-box-bo']} w-100`}>
@@ -58,7 +91,7 @@ export default function UserInfo() {
                 <div
                   className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
                 >
-                  {user.email}
+                  {userData.email}
                 </div>
               </div>
               <div
@@ -68,7 +101,7 @@ export default function UserInfo() {
                 <div
                   className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
                 >
-                  {user.account}
+                  {userData.account}
                 </div>
               </div>
               <div
@@ -78,7 +111,7 @@ export default function UserInfo() {
                 <div
                   className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
                 >
-                  {'●'.repeat(user.password.length)}
+                  {'●'.repeat(userData.password.length)}
                 </div>
               </div>
             </div>
@@ -92,20 +125,20 @@ export default function UserInfo() {
               <img
                 className={`${styles['user-img-bo']}`}
                 src={
-                  user && user.user_img
-                    ? `/images/boyu/users/${user.user_img}.jpg`
-                    : user && user.gender === '男'
+                  userData && userData.user_img
+                    ? `/images/boyu/users/${userData.user_img}.jpg`
+                    : userData && userData.gender === '男'
                     ? '/images/boyu/users/user-male-default.svg'
                     : '/images/boyu/users/user-female-default.svg'
                 }
-                alt={user?.username || 'User'}
+                alt={userData?.username || 'User'}
               />
             </div>
             <div
               className={`${styles['create-date-box-bo']} h6 text-center d-flex justify-content-center align-items-center`}
             >
               <h6>創建日期&nbsp;:&nbsp;</h6>
-              <h6>{createdAt}</h6> {/* 顯示格式化後的創建日期 */}{' '}
+              <h6>{createdAt}</h6>
             </div>
           </div>
         </div>
@@ -130,7 +163,7 @@ export default function UserInfo() {
                 <div
                   className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
                 >
-                  {user.username}
+                  {userData.username}
                 </div>
               </div>
               <div
@@ -140,7 +173,7 @@ export default function UserInfo() {
                 <div
                   className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
                 >
-                  {user.gender}
+                  {userData.gender}
                 </div>
               </div>
               <div
@@ -160,8 +193,7 @@ export default function UserInfo() {
                 <div
                   className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
                 >
-                  {`${user.city} 
-                    ${user.address}`}
+                  {`${userData.city} ${userData.address}`}
                 </div>
               </div>
               <div
@@ -171,7 +203,7 @@ export default function UserInfo() {
                 <div
                   className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
                 >
-                  {user.phone}
+                  {userData.phone}
                 </div>
               </div>
             </div>
