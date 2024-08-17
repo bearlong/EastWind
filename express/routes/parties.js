@@ -1,6 +1,7 @@
 import express from 'express'
 import 'dotenv/config.js'
 import connection from '##/configs/mysql-promise.js'
+
 const router = express.Router()
 
 router.get('/', async (req, res) => {
@@ -8,8 +9,12 @@ router.get('/', async (req, res) => {
     const page = parseInt(req.query.page) || 1
     const limit = parseInt(req.query.limit) || 9
     const offset = (page - 1) * limit
+
+    const search = req.query.search || '' // 從請求中獲取搜尋字串
+    const searchTerm = `%${search}%` // 使用 `%` 進行部分匹配
+
     const query = `
-    SELECT 
+    SELECT SQL_CALC_FOUND_ROWS 
     p.*,
     DATE_FORMAT(CONCAT(p.date, ' ', p.start_at), '%Y-%m-%dT%H:%i:%s') as start_time,
     DATE_FORMAT(CONCAT(p.date, ' ', p.end_at), '%Y-%m-%dT%H:%i:%s') as end_time,
@@ -19,12 +24,16 @@ router.get('/', async (req, res) => {
       (p.userID_join2 IS NOT NULL) +
       (p.userID_join3 IS NOT NULL)
     ) as player_count,
-    c.name as company_name
+    c.name as company_name,
+    c.city,
+    c.district
   FROM 
     party p
     JOIN mahjong_table mt ON p.table_id = mt.id
     JOIN company c ON mt.company_id = c.id
   WHERE 
+  c.name LIKE ?
+  AND
     p.date >= CURDATE()
     AND (
       (p.userID_main IS NOT NULL) +
@@ -33,11 +42,17 @@ router.get('/', async (req, res) => {
       (p.userID_join3 IS NOT NULL)
     ) < 4
     AND mt.is_deleted = 0
-  ORDER BY 
-    p.date ASC, p.start_at ASC;
+  
+  ORDER BY  
+ 
+    p.date ASC, p.start_at ASC
+    LIMIT ? OFFSET ?
     `
-    const [parties] = await connection.execute(query, [limit, offset])
-    // const [parties] = await connection.execute(query)
+    const [parties] = await connection.execute(query, [
+      searchTerm,
+      limit,
+      offset,
+    ])
 
     // 獲取總數
     const [countResult] = await connection.execute(
@@ -80,8 +95,8 @@ router.get('/:id', async (req, res) => {
     c.address,
     c.rating,
     c.tele,
-c.open_time,
-c.close_time
+    c.open_time,
+    c.close_time
   FROM 
     party p
     JOIN mahjong_table mt ON p.table_id = mt.id

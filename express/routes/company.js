@@ -2,7 +2,6 @@ import express from 'express'
 import 'dotenv/config.js'
 import connection from '##/configs/mysql-promise.js'
 
-
 const router = express.Router()
 
 router.get('/', async (req, res) => {
@@ -10,15 +9,23 @@ router.get('/', async (req, res) => {
     const page = parseInt(req.query.page) || 1
     const limit = parseInt(req.query.limit) || 9
     const offset = (page - 1) * limit
+    const search = req.query.search || '' // 從請求中獲取搜尋字串
+    const searchTerm = `%${search}%` // 使用 `%` 進行部分匹配
 
     // 優化後的查詢，包含過濾條件
     let query = ` SELECT SQL_CALC_FOUND_ROWS *, ROUND(rating, 1) AS rating 
       FROM company 
       WHERE valid = '1'  
+      AND name LIKE ?
+
       LIMIT ? OFFSET ?`
 
     // 執行查詢
-    const [companies] = await connection.execute(query, [limit, offset])
+    const [companies] = await connection.execute(query, [
+      searchTerm,
+      limit,
+      offset,
+    ])
 
     // 獲取總數
     const [countResult] = await connection.execute(
@@ -32,7 +39,6 @@ router.get('/', async (req, res) => {
       return res.status(404).json({ message: '沒有找到可用的店家' })
     }
 
-    res.status(500).json({ error: '獲取店面資料出錯' })
     res.json({
       data: companies,
       currentPage: page,
@@ -44,7 +50,6 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: '獲取店面資料出錯' })
   }
 })
-
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params

@@ -42,7 +42,7 @@ export default function RoomCard({ party }) {
         </div>
         <p className={styles['card-subtitle']}>開始時間：{startTime}</p>
         <div className={styles['flex-container']}>
-          <p>{party.company_name}</p>
+          <p>{party.company_name}{party.district}{party.city}</p>
           <p>玩家數: {party.player_count}/4</p>
         </div>
         <div className={styles['flex-container']}>

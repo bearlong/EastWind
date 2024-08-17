@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import JoinBTN from '@/components/roomList/joinBtn'
 import BTNGroup from '@/components/roomList/BtnGroup'
 import PageNext from '@/components/roomList/PageNext'
@@ -6,90 +6,97 @@ import RoomCard from '@/components/roomList/RoomCard'
 import CompanyCard from '@/components/roomList/CompanyCard'
 import RoomSearch from '@/components/roomList/RoomSearch'
 import styles from '@/styles/gw/_roomList.module.sass'
-import { useRouter } from 'next/router';
-
+import { useRouter } from 'next/router'
 
 export default function Lobby() {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [activeView, setActiveView] = useState('join');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalItems, setTotalItems] = useState(0);
-  const itemsPerPage = 9;
-  const router = useRouter();
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [activeView, setActiveView] = useState('join')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
+  const [totalItems, setTotalItems] = useState(0)
+  const [searchTerm, setSearchTerm] = useState('')
+  const itemsPerPage = 9
+  const router = useRouter()
 
-  const fetchData = async (view, page = 1) => {
-    setLoading(true);
-    setError(null);
+  const fetchData = async (view, page = 1, search = '') => {
+    setLoading(true)
+    setError(null)
     try {
-      const endpoint = view === 'join' ? 'parties' : 'company';
-      const url = `http://localhost:3005/api/${endpoint}?page=${page}`;
-      console.log('Fetching data from:', url);
-  
-      const response = await fetch(url);
+      const endpoint = view === 'join' ? 'parties' : 'company'
+      const url = `http://localhost:3005/api/${endpoint}?page=${page}&search=${encodeURIComponent(
+        search
+      )}`
+      console.log('Fetching data from:', url)
+
+      const response = await fetch(url)
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
-  
-      const result = await response.json();
-      console.log('Received data:', result);
-  
-      if (result && result.data) {
-        setData(result.data);
-        setTotalPages(result.totalPages);
-        setCurrentPage(result.currentPage);
-        setTotalItems(result.totalItems);
-      } else {
-        setData([]);
-        setError('Received invalid data format from server');
+
+      const result = await response.json()
+      console.log('Received data:', result)
+
+      if (!result || !result.data) {
+        throw new Error('Received invalid data format from server')
       }
+
+      setData(result.data)
+      setTotalPages(result.totalPages || 0)
+      setCurrentPage(result.currentPage || 1)
+      setTotalItems(result.totalItems || 0)
     } catch (error) {
-      console.error('Error fetching data:', error);
-      setError(`獲取${view === 'join' ? '派對' : '店家'}數據時出錯: ${error.message}`);
-      setData([]);
+      console.error('Error fetching data:', error)
+      setError(
+        `獲取${view === 'join' ? '派對' : '店家'}數據時出錯: ${error.message}`
+      )
+      setData([])
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
+
 
   useEffect(() => {
-    const { view } = router.query;
-    if (view !== activeView) {
-      setActiveView(view);
-      setCurrentPage(1);
-      fetchData(view, 1);
-    }
-  }, [router.query]);
+    const view = router.query.view || 'join';
+  if (view !== activeView) {
 
-  const handleViewChange = (view) => {
-    router.push(`/lobby/Lobby?view=${view}`, undefined, { shallow: true });
-  };
+    setActiveView(view);
+    fetchData(view, 1, searchTerm);
+  }
+}, [router.query.view, activeView, fetchData, searchTerm]);
 
-  const handlePageChange = useCallback((newPage) => {
-    setCurrentPage(newPage);
-    fetchData(activeView, newPage);
-    // 不再更新 URL
-  }, [fetchData]);
+const handleSearch = useCallback((term) => {
+  setSearchTerm(term);
+  setCurrentPage(1);
+  fetchData(activeView, 1, term);
+}, [activeView, fetchData]);
 
-  const renderedCards = useMemo(() => {
-    console.log('Rendering cards. Active view:', activeView, 'Data:', data);
-    if (!data || data.length === 0) return <div>無可用數據</div>;
-  
-    return data.map(item => 
-      activeView === 'join' 
-        ? <RoomCard key={item.id} party={item} /> 
-        : <CompanyCard key={item.id} company={item} />
-    );
-  }, [data, activeView]);
+const handleViewChange = useCallback((view) => {
+  router.push(`/lobby/Lobby?view=${view}`, undefined, { shallow: true });
+}, [router]);
 
+
+const handlePageChange = useCallback((newPage) => {
+  setCurrentPage(newPage);
+  fetchData(activeView, newPage, searchTerm);
+}, [activeView, searchTerm, fetchData]);
+
+
+
+const renderedCards = data.map(item => 
+  activeView === 'join' 
+    ? <RoomCard key={item.id} party={item} /> 
+    : <CompanyCard key={item.id} company={item} />
+);
 
   return (
     <div className="container">
       <div className={styles.topBar}>
         <JoinBTN activeView={activeView} onViewChange={handleViewChange} />
-        <RoomSearch />
+
+        <RoomSearch onSearch={handleSearch} />
         <BTNGroup />
         <div className={styles.totalCount}>
           共{totalItems}個{activeView === 'join' ? '團' : '店家'}
@@ -97,13 +104,13 @@ export default function Lobby() {
       </div>
 
       <div className={styles.cardArea}>
-      {/* {loading && <div>載入中...</div>}
+        {/* {loading && <div>載入中...</div>}
       {error && <div>{error}</div>}
       {!loading && !error && renderedCards} */}
-      {renderedCards}
+        {renderedCards}
       </div>
-      
-      <PageNext 
+
+      <PageNext
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
@@ -111,5 +118,5 @@ export default function Lobby() {
         itemsPerPage={itemsPerPage}
       />
     </div>
-  );
+  )
 }
