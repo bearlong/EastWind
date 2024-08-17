@@ -40,23 +40,30 @@ router.get('/LinepayReserve', async (req, res) => {
     options: { display: { locale: 'zh_TW' } },
   }
   try {
-    const [total] = await dbPromise.execute(
-      'SELECT `total` FROM `user_order` WHERE `id` = ?',
+    const [orderInfo] = await dbPromise.execute(
+      'SELECT `id`, `total` FROM `user_order` WHERE `id` = ?',
       [orderId]
     )
-    const [orderDetail] = await dbPromise.execute(
-      'SELECT `id`, `name`, `quantity`, `price` FROM `order_detail` WHERE `order_id` = ?',
-      [orderId]
-    )
+    // const [orderDetail] = await dbPromise.execute(
+    //   'SELECT `id`, `name`, `quantity`, `price` FROM `order_detail` WHERE `order_id` = ?',
+    //   [orderId]
+    // )
 
     order = {
       ...order,
-      amount: total[0].total,
+      amount: orderInfo[0].total,
       packages: [
         {
           id: packageId,
-          amount: total[0].total,
-          products: orderDetail,
+          amount: orderInfo[0].total,
+          products: [
+            {
+              id: orderInfo[0].total,
+              name: orderId,
+              quantity: 1,
+              price: orderInfo[0].total,
+            },
+          ],
         },
       ],
     }
@@ -90,6 +97,10 @@ router.get('/LinepayReserve', async (req, res) => {
     console.log(reservation)
 
     // 在db儲存reservation資料
+    const [result] = await dbPromise.execute(
+      'UPDATE `user_order` SET `transaction_id` = ?, `reservation` = ? WHERE `user_order`.`id` = ?',
+      [reservation.transactionId, JSON.stringify(reservation), orderId]
+    )
     // const result = await Purchase_Order.update(
     //   {
     //     reservation: JSON.stringify(reservation),
@@ -103,64 +114,124 @@ router.get('/LinepayReserve', async (req, res) => {
     // )
 
     // console.log(result)
-
-    // 導向到付款頁面， line pay回應後會帶有info.paymentUrl.web為付款網址
-    res.redirect(linePayResponse.body.info.paymentUrl.web)
+    if (result.changedRows >= 1) {
+      // 導向到付款頁面， line pay回應後會帶有info.paymentUrl.web為付款網址
+      res.redirect(linePayResponse.body.info.paymentUrl.web)
+    }
   } catch (e) {
     console.log('error', e)
   }
-  // // 從資料庫取得訂單資料
-  // const orderRecord = await Purchase_Order.findByPk(orderId, {
-  //   raw: true, // 只需要資料表中資料
-  // })
+})
 
-  // // const orderRecord = await findOne('orders', { order_id: orderId })
+router.get('/confirm', async (req, res) => {
+  // 網址上需要有transactionId
+  const transactionId = req.query.transactionId
+  console.log(transactionId)
+  // 從資料庫取得交易資料
+  const [orderInfo] = await dbPromise.execute(
+    'SELECT * FROM `user_order` WHERE `transaction_Id` = ?',
+    [transactionId]
+  )
 
-  // // order_info記錄要向line pay要求的訂單json
-  // const order = JSON.parse(orderRecord.order_info)
+  console.log(11)
 
-  // //const order = cache.get(orderId)
-  // console.log(`獲得訂單資料，內容如下：`)
-  // console.log(order)
+  // 交易資料
+  const transaction = JSON.parse(orderInfo[0].reservation)
 
-  // try {
-  //   // 向line pay傳送的訂單資料
-  //   const linePayResponse = await linePayClient.request.send({
-  //     body: { ...order, redirectUrls },
-  //   })
+  console.log(222)
 
-  //   // 深拷貝一份order資料
-  //   const reservation = JSON.parse(JSON.stringify(order))
+  // 交易金額
+  const amount = transaction.amount
 
-  //   reservation.returnCode = linePayResponse.body.returnCode
-  //   reservation.returnMessage = linePayResponse.body.returnMessage
-  //   reservation.transactionId = linePayResponse.body.info.transactionId
-  //   reservation.paymentAccessToken =
-  //     linePayResponse.body.info.paymentAccessToken
+  try {
+    // 最後確認交易
+    const linePayResponse = await linePayClient.confirm.send({
+      transactionId: transactionId,
+      body: {
+        currency: 'TWD',
+        amount: amount,
+      },
+    })
 
-  //   console.log(`預計付款資料(Reservation)已建立。資料如下:`)
-  //   console.log(reservation)
+    // linePayResponse.body回傳的資料
+    console.log('linePayResponse:', linePayResponse)
 
-  //   // 在db儲存reservation資料
-  //   const result = await Purchase_Order.update(
-  //     {
-  //       reservation: JSON.stringify(reservation),
-  //       transaction_id: reservation.transactionId,
-  //     },
-  //     {
-  //       where: {
-  //         id: orderId,
-  //       },
-  //     }
-  //   )
+    //transaction.confirmBody = linePayResponse.body
 
-  //   // console.log(result)
+    // status: 'pending' | 'paid' | 'cancel' | 'fail' | 'error'
+    let status = '付款完成'
+    const time = moment().format('YYYY-MM-DD HH:mm:ss')
 
-  //   // 導向到付款頁面， line pay回應後會帶有info.paymentUrl.web為付款網址
-  //   res.redirect(linePayResponse.body.info.paymentUrl.web)
-  // } catch (e) {
-  //   console.log('error', e)
-  // }
+    if (linePayResponse.body.returnCode !== '0000') {
+      status = '付款失敗'
+    }
+    console.log(
+      status,
+      JSON.stringify(linePayResponse.body),
+      linePayResponse.body.returnCode,
+      orderInfo[0].id
+    )
+
+    // 更新資料庫的訂單狀態
+    const [result] = await dbPromise.execute(
+      'UPDATE `user_order` SET `status_now` = ?, `confirm` = ?, `return_code` = ? WHERE `user_order`.`id` = ?',
+      [
+        status,
+        JSON.stringify(linePayResponse.body),
+        linePayResponse.body.returnCode,
+        orderInfo[0].id,
+      ]
+    )
+    console.log(result)
+    if (result.changedRows >= 1) {
+      const [resultStatus] = await dbPromise.execute(
+        'INSERT INTO `order_status` (`id`, `order_id`, `status`, `update_at`) VALUES (NULL, ?, ?, ?);',
+        [orderInfo[0].id, status, time]
+      )
+
+      if (resultStatus.insertId) {
+        return res.status(200).json({
+          status: 'success',
+          data: {
+            data: linePayResponse.body,
+            message: '訂單付款成功',
+            orderId: orderInfo[0].id,
+            numerical_order: orderInfo[0].numerical_order,
+          },
+        })
+      } else {
+        res.status(400).json({ status: 'error', data: { message: '付款失敗' } })
+      }
+    } else {
+      res.status(400).json({ status: 'error', data: { message: '付款失敗' } })
+    }
+  } catch (error) {
+    return res.status(404).json({ status: 'fail', data: error.data })
+  }
+})
+
+router.get('/check-transaction', async (req, res) => {
+  const transactionId = req.query.transactionId
+
+  try {
+    const linePayResponse = await linePayClient.checkPaymentStatus.send({
+      transactionId: transactionId,
+      params: {},
+    })
+
+    // 範例:
+    // {
+    //   "body": {
+    //     "returnCode": "0000",
+    //     "returnMessage": "reserved transaction."
+    //   },
+    //   "comments": {}
+    // }
+
+    res.json(linePayResponse.body)
+  } catch (e) {
+    res.json({ error: e })
+  }
 })
 
 // 獲得某會員id的有加入到我的最愛清單中的商品id們
@@ -208,7 +279,10 @@ router.post('/:id', upload.none(), async (req, res, next) => {
     cart,
   } = req.body
 
+  console.log(req.body)
   const cartArray = JSON.parse(cart)
+  const delivery_addressJson = JSON.parse(delivery_address)
+  const payInfoJson = JSON.parse(payInfo)
 
   const errors = []
   if (!delivery) {
@@ -216,9 +290,8 @@ router.post('/:id', upload.none(), async (req, res, next) => {
   }
 
   if (delivery === '宅配') {
-    const { country, firstname, lastname, postCode, city, address } =
-      delivery_address || {}
-    if (!country || !firstname || !lastname || !postCode || !city || !address) {
+    const { country, postCode, city, address } = delivery_addressJson || {}
+    if (!country || !postCode || !city || !address || !recipient) {
       errors.push('宅配信息填寫不完整')
     }
   }
@@ -236,14 +309,19 @@ router.post('/:id', upload.none(), async (req, res, next) => {
       expDate,
       csc,
       cardholder,
-    } = payInfo || {}
-    if (!creditNum1 || !creditNum2 || !creditNum3 || !creditNum4) {
+    } = payInfoJson || {}
+    if (
+      !Number(creditNum1) ||
+      !Number(creditNum2) ||
+      !Number(creditNum3) ||
+      !Number(creditNum4)
+    ) {
       errors.push('請輸入信用卡號碼')
     }
     if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expDate)) {
       errors.push('請輸入正確的有效期格式 (mm/yy)')
     }
-    if (!/^\d{3}$/.test(csc)) {
+    if (!/^\d{3}$/.test(Number(csc))) {
       errors.push('請輸入正確的安全碼格式 (數字三碼)')
     }
     if (!cardholder) {
@@ -298,7 +376,11 @@ router.post('/:id', upload.none(), async (req, res, next) => {
 
       res.status(201).json({
         status: 'success',
-        data: { message: '訂單建立成功', orderId: result.insertId },
+        data: {
+          message: '訂單建立成功',
+          orderId: result.insertId,
+          numerical_order: uuid,
+        },
       })
     } else {
       res
@@ -331,6 +413,44 @@ router.post('/:id', upload.none(), async (req, res, next) => {
   // } catch (err) {
   //   res.status(400).json({ status: 'error', data: { message: err.message } })
   // }
+})
+
+router.put('/:id', upload.none(), async (req, res, next) => {
+  const user_id = getIdParam(req)
+  const { id, numerical_order } = req.body
+  const time = moment().format('YYYY-MM-DD HH:mm:ss')
+  console.log(id, numerical_order)
+
+  try {
+    const [result] = await dbPromise.execute(
+      'UPDATE `user_order` SET `status_now` = ? WHERE `user_order`.`id` = ?',
+      ['付款完成', id]
+    )
+    console.log(result)
+    if (result.changedRows >= 1) {
+      const [resultStatus] = await dbPromise.execute(
+        'INSERT INTO `order_status` (`id`, `order_id`, `status`, `update_at`) VALUES (NULL, ?, ?, ?);',
+        [id, '付款完成', time]
+      )
+
+      if (resultStatus.insertId) {
+        return res.status(200).json({
+          status: 'success',
+          data: {
+            message: '訂單付款成功',
+            orderId: id,
+            numerical_order: numerical_order,
+          },
+        })
+      } else {
+        res.status(400).json({ status: 'error', data: { message: '付款失敗' } })
+      }
+    } else {
+      res.status(400).json({ status: 'error', data: { message: '付款失敗' } })
+    }
+  } catch (error) {
+    return res.status(404).json({ status: 'fail', data: error.data })
+  }
 })
 
 router.delete('/:id', upload.none(), async (req, res, next) => {
