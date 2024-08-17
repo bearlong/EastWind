@@ -3,7 +3,20 @@ import 'dotenv/config.js'
 import connection from '##/configs/mysql-promise.js'
 
 const router = express.Router()
-
+const areaToCity = {
+  北區: ['台北市', '新北市', '桃園市', '基隆市'],
+  中區: [
+    '台中市',
+    '新竹縣',
+    '苗栗縣',
+    '彰化縣',
+    '南投縣',
+    '雲林縣',
+    '嘉義縣',
+    '新竹市',
+  ],
+  南區: ['臺南市', '高雄市', '屏東縣', '嘉義市'],
+}
 router.get('/', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1
@@ -12,20 +25,25 @@ router.get('/', async (req, res) => {
     const search = req.query.search || '' // 從請求中獲取搜尋字串
     const searchTerm = `%${search}%` // 使用 `%` 進行部分匹配
 
-    // 優化後的查詢，包含過濾條件
+    const area = req.query.area || ''
+
     let query = ` SELECT SQL_CALC_FOUND_ROWS *, ROUND(rating, 1) AS rating 
-      FROM company 
-      WHERE valid = '1'  
-      AND name LIKE ?
+    FROM company 
+    WHERE valid = '1'  
+    AND name LIKE ?`
 
-      LIMIT ? OFFSET ?`
+    const queryParams = [searchTerm]
 
-    // 執行查詢
-    const [companies] = await connection.execute(query, [
-      searchTerm,
-      limit,
-      offset,
-    ])
+    if (area && areaToCity[area]) {
+      const cities = areaToCity[area];
+      query += ` AND city IN (${cities.map(() => '?').join(',')})`;
+      queryParams.push(...cities);
+    }
+
+    query += ` LIMIT ? OFFSET ?`
+    queryParams.push(limit, offset)
+
+    const [companies] = await connection.execute(query, queryParams)
 
     // 獲取總數
     const [countResult] = await connection.execute(

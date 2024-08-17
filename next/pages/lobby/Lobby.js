@@ -17,17 +17,19 @@ export default function Lobby() {
   const [totalPages, setTotalPages] = useState(0)
   const [totalItems, setTotalItems] = useState(0)
   const [searchTerm, setSearchTerm] = useState('')
+
+  const [selectedArea, setSelectedArea] = useState(null);
   const itemsPerPage = 9
   const router = useRouter()
 
-  const fetchData = async (view, page = 1, search = '') => {
+  const fetchData = async (view, page = 1, search = '',area = null) => {
     setLoading(true)
     setError(null)
     try {
       const endpoint = view === 'join' ? 'parties' : 'company'
       const url = `http://localhost:3005/api/${endpoint}?page=${page}&search=${encodeURIComponent(
         search
-      )}`
+      )}&area=${encodeURIComponent(area || '')}`
       console.log('Fetching data from:', url)
 
       const response = await fetch(url)
@@ -63,15 +65,15 @@ export default function Lobby() {
   if (view !== activeView) {
 
     setActiveView(view);
-    fetchData(view, 1, searchTerm);
+    fetchData(view, 1, searchTerm,selectedArea);
   }
-}, [router.query.view, activeView, fetchData, searchTerm]);
+}, [router.query.view, activeView, fetchData, searchTerm,selectedArea]);
 
 const handleSearch = useCallback((term) => {
   setSearchTerm(term);
   setCurrentPage(1);
-  fetchData(activeView, 1, term);
-}, [activeView, fetchData]);
+  fetchData(activeView, 1, term,selectedArea);
+}, [activeView, fetchData,selectedArea]);
 
 const handleViewChange = useCallback((view) => {
   router.push(`/lobby/Lobby?view=${view}`, undefined, { shallow: true });
@@ -80,9 +82,14 @@ const handleViewChange = useCallback((view) => {
 
 const handlePageChange = useCallback((newPage) => {
   setCurrentPage(newPage);
-  fetchData(activeView, newPage, searchTerm);
-}, [activeView, searchTerm, fetchData]);
+  fetchData(activeView, newPage, searchTerm,selectedArea);
+}, [activeView, searchTerm, fetchData,selectedArea]);
 
+const handleAreaChange = useCallback((area) => {
+  setSelectedArea(area);
+  setCurrentPage(1);
+  fetchData(activeView, 1, searchTerm, area);
+}, [activeView, fetchData, searchTerm]);
 
 
 const renderedCards = data.map(item => 
@@ -97,7 +104,7 @@ const renderedCards = data.map(item =>
         <JoinBTN activeView={activeView} onViewChange={handleViewChange} />
 
         <RoomSearch onSearch={handleSearch} />
-        <BTNGroup />
+        <BTNGroup onAreaChange={handleAreaChange} selectedArea={selectedArea}/>
         <div className={styles.totalCount}>
           共{totalItems}個{activeView === 'join' ? '團' : '店家'}
         </div>

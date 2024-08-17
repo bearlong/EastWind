@@ -3,6 +3,20 @@ import 'dotenv/config.js'
 import connection from '##/configs/mysql-promise.js'
 
 const router = express.Router()
+const areaToCity = {
+  北區: ['台北市', '新北市', '桃園市', '基隆市'],
+  中區: [
+    '台中市',
+    '新竹縣',
+    '苗栗縣',
+    '彰化縣',
+    '南投縣',
+    '雲林縣',
+    '嘉義縣',
+    '新竹市',
+  ],
+  南區: ['臺南市', '高雄市', '屏東縣', '嘉義市'],
+}
 
 router.get('/', async (req, res) => {
   try {
@@ -13,7 +27,9 @@ router.get('/', async (req, res) => {
     const search = req.query.search || '' // 從請求中獲取搜尋字串
     const searchTerm = `%${search}%` // 使用 `%` 進行部分匹配
 
-    const query = `
+    const area = req.query.area || ''
+
+    let query = `
     SELECT SQL_CALC_FOUND_ROWS 
     p.*,
     DATE_FORMAT(CONCAT(p.date, ' ', p.start_at), '%Y-%m-%dT%H:%i:%s') as start_time,
@@ -42,18 +58,19 @@ router.get('/', async (req, res) => {
       (p.userID_join3 IS NOT NULL)
     ) < 4
     AND mt.is_deleted = 0
-  
-  ORDER BY  
- 
-    p.date ASC, p.start_at ASC
-    LIMIT ? OFFSET ?
     `
-    const [parties] = await connection.execute(query, [
-      searchTerm,
-      limit,
-      offset,
-    ])
+    let queryParams = [searchTerm]
 
+    if (area && areaToCity[area]) {
+      const cities = areaToCity[area]
+      query += ` AND c.city IN (${cities.map(() => '?').join(',')})`
+      queryParams = [...queryParams, ...cities]
+    }
+
+    query += ` ORDER BY p.date ASC, p.start_at ASC LIMIT ? OFFSET ?`
+    queryParams.push(limit, offset)
+
+    const [parties] = await connection.execute(query, queryParams)
     // 獲取總數
     const [countResult] = await connection.execute(
       'SELECT FOUND_ROWS() as total'
@@ -101,7 +118,9 @@ router.get('/:id', async (req, res) => {
     party p
     JOIN mahjong_table mt ON p.table_id = mt.id
     JOIN company c ON mt.company_id = c.id
-  WHERE 
+  WHERE  
+  p.id = ? 
+  AND
     p.date >= CURDATE()
     AND (
       (p.userID_main IS NOT NULL) +
