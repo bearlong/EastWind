@@ -293,9 +293,10 @@ router.delete('/:id', async (req, res) => {
     )
 
     if (cart.affectedRows > 0) {
-      res
-        .status(204)
-        .json({ status: 'success', data: { message: '已清空購物車' } })
+      res.status(200).json({
+        status: 'success',
+        data: { message: '已清空購物車' },
+      })
     } else {
       res
         .status(404) // 如果沒有找到符合條件的記錄，返回 404 Not Found
