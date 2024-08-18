@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import styles from '@/styles/gw/_companyCard.module.scss'
+import Link from 'next/link';
 
 export default function CompanyCard({ company }) {
   const [imageError, setImageError] = useState(false);
@@ -30,14 +31,14 @@ export default function CompanyCard({ company }) {
           </div>
         </div>
         <div className={styles.cardInfo}>
-          <p className={styles.location}>{company.city}</p>
+          <p className={styles.location}>{company.city}{company.district}</p>
         </div>
-        <button 
-          className={styles.bookButton}
-          onClick={() => console.log('Booking for', company.name)}
-        >
-          預訂
+
+        <Link href={`/lobby/Company/${company.id}`}>
+        <button  className={styles.bookButton}>
+          查看詳情
         </button>
+      </Link>
       </div>
     </div>
   )
