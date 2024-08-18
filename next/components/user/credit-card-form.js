@@ -217,12 +217,10 @@ export default function CreditCardForm({ cards, setCards, user }) {
                 },
               })
             } else {
-              console.error('Failed to delete card:', data.message)
               setErrorMessage('刪除失敗，請稍後再試')
             }
           })
           .catch((error) => {
-            console.error('Error deleting card:', error)
             setErrorMessage('伺服器錯誤，請稍後再試')
           })
       }
@@ -283,13 +281,10 @@ export default function CreditCardForm({ cards, setCards, user }) {
         .then((response) => response.json())
         .then((data) => {
           if (data.status === 'success') {
-            console.log(data.data) // 打印出來檢查
             setCards(data.data)
-          } else {
-            console.error('Failed to fetch credit cards:', data.message)
           }
         })
-        .catch((error) => console.error('Error fetching credit cards:', error))
+        .catch()
     }
   }, [user])
 

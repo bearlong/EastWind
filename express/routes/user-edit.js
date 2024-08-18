@@ -141,12 +141,12 @@ router.post('/check-unique', async (req, res) => {
 
   try {
     const [emailResult] = await connection.execute(
-      'SELECT id FROM users WHERE email = ? AND id != ?',
+      'SELECT id FROM user WHERE email = ? AND id != ?',
       [email, userId]
     )
 
     const [accountResult] = await connection.execute(
-      'SELECT id FROM users WHERE account = ? AND id != ?',
+      'SELECT id FROM user WHERE account = ? AND id != ?',
       [account, userId]
     )
 

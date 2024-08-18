@@ -33,32 +33,61 @@ export default function UserInfoEdit() {
   })
 
   const [initialFormValues, setInitialFormValues] = useState({}) // 用於追蹤初始值
-
-  const [isPasswordChanged, setIsPasswordChanged] = useState(false) // 用於追蹤密碼是否更改
-
+  const [isPasswordChanged, setIsPasswordChanged] = useState(false) // 用於追蹤密碼是否修改
   const [emailVerified, setEmailVerified] = useState(false) // 追蹤 email 是否驗證過
+  const [needPwdValidation, setNeedPwdValidation] = useState(true) // 是否需要驗證原密碼
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false)
 
-  useEffect(() => {
-    if (user) {
+  // 從伺服器獲取用戶資料
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3005/api/user/user/${user.id}`
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch user data')
+      }
+
+      const result = await response.json()
+      const updatedUser = result.data // 從 data 屬性中提取用戶信息
+
+      // 設定初始值
       const initialValues = {
-        email: user.email,
-        account: user.account,
-        password: '●'.repeat(user.password.length),
-        username: user.username,
+        email: updatedUser.email || '',
+        account: updatedUser.account || '',
+        password: updatedUser.password || '',
+        username: updatedUser.username || '',
         confirmPassword: '',
-        gender: user.gender,
-        birthDate: user.birth,
-        city: user.city,
-        address: user.address,
-        phone: user.phone,
+        gender: updatedUser.gender || '',
+        birthDate: updatedUser.birth || '',
+        city: updatedUser.city || '',
+        address: updatedUser.address || '',
+        phone: updatedUser.phone || '',
       }
 
       setFormValues(initialValues)
-      setInitialFormValues(initialValues) // 保存初始值
-      setEmailVerified(true) // 初始的 email 預設為已驗證
+      setInitialFormValues(initialValues)
+      setEmailVerified(true)
+      setNeedPwdValidation(true)
+    } catch (error) {
+      console.error('Failed to fetch user data:', error)
+    }
+  }
+
+  // 初始化用戶數據
+  useEffect(() => {
+    console.log(user) // 調試輸出 user
+
+    if (user && user.id) {
+      fetchUserData()
+    } else {
+      console.error('User ID is missing or user is not defined.')
+      // 你可以在這裡做額外處理，例如重導或顯示錯誤訊息給用戶
     }
   }, [user])
 
+  // 處理表單輸入變更
   const onInputChange = (event) => {
     const { name, value } = event.target
 
@@ -70,21 +99,25 @@ export default function UserInfoEdit() {
     // 如果用戶修改了密碼框的內容，更新`isPasswordChanged`
     if (name === 'password') {
       setIsPasswordChanged(true)
+      setNeedPwdValidation(false) // 當用戶修改密碼時，不再需要驗證原密碼
     }
 
+    // 更新表單值
     setFormValues({
       ...formValues,
       [name]: value,
     })
   }
 
+  // 控制是否顯示確認密碼欄位
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   useEffect(() => {
-    // 當用戶實際更改了密碼時，才顯示確認密碼輸入框
+    // 當用戶實際修改了密碼時，才顯示確認密碼輸入框
     setShowConfirmPassword(formValues.password !== initialFormValues.password)
   }, [formValues.password, initialFormValues.password])
 
+  // 表單驗證
   const [errors, setErrors] = useState({})
 
   const validateForm = async () => {
@@ -101,91 +134,123 @@ export default function UserInfoEdit() {
       phone,
     } = formValues
 
-    // 用於驗證的正則表達式
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    const accountPasswordRegex = /^(?=.*[A-Za-z])[A-Za-z\d]{6,}$/ // 至少6碼且包含英文字
+    const accountPasswordRegex = /^(?=.*[A-Za-z])[A-Za-z\d]{6,}$/
     const phoneRegex = /^09\d{8}$/
 
     const newErrors = {}
 
-    // 檢查帳號和電子信箱的唯一性
-    const { accountExists, emailExists } = await checkUniqueValues(
-      email,
-      account
+    // 檢查是否有任何值被修改
+    const isFormChanged = Object.keys(formValues).some(
+      (key) => formValues[key] !== initialFormValues[key]
     )
 
-    if (emailExists) {
-      newErrors.email = '電子信箱已被使用'
+    if (!isFormChanged) {
+      Swal.fire({
+        title: '未進行任何修改',
+        text: '您尚未對資料進行任何修改。',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+      })
+      return false // 返回 false，表示驗證未通過
     }
 
-    if (accountExists) {
-      newErrors.account = '帳號已存在'
+    // 檢查並驗證 email
+    if (email !== initialFormValues.email) {
+      if (!email || !emailRegex.test(email)) {
+        newErrors.email = '請輸入有效的電子信箱'
+      }
     }
+    toggleCorrectClass('email', !newErrors.email) // 無論有無錯誤，都要調用
 
-    // 如果電子信箱已存在，直接返回錯誤，無需驗證
-    if (newErrors.email) {
-      setErrors(newErrors)
-      return false
+    // 檢查並驗證帳號
+    if (account !== initialFormValues.account) {
+      if (!account || !accountPasswordRegex.test(account)) {
+        newErrors.account = '帳號應至少6碼，且包含英文字'
+      }
     }
+    toggleCorrectClass('account', !newErrors.account) // 無論有無錯誤，都要調用
 
-    // 驗證電子信箱
-    if (!email || !emailRegex.test(email)) {
-      newErrors.email = '請輸入有效的電子信箱'
+    // 檢查並驗證密碼
+    if (isPasswordChanged) {
+      if (!password || !accountPasswordRegex.test(password)) {
+        newErrors.password = '密碼應至少6碼，且包含英文字'
+      } else if (password === initialFormValues.password) {
+        newErrors.password = '原密碼不需修改'
+      } else if (password !== confirmPassword) {
+        newErrors.confirmPassword = '兩次密碼輸入不一致'
+      }
     }
+    toggleCorrectClass(
+      'password',
+      !newErrors.password && !newErrors.confirmPassword
+    ) // 無論有無錯誤，都要調用
 
-    // 驗證帳號和密碼是否相同
-    if (account && password && account === password) {
-      newErrors.password = '帳號與密碼不能相同'
+    // 其他欄位驗證
+    if (username !== initialFormValues.username) {
+      if (!username) {
+        newErrors.username = '姓名不能為空'
+      }
     }
+    toggleCorrectClass('username', !newErrors.username)
 
-    // 驗證帳號（至少6碼且包含英文字）
-    if (!account || !accountPasswordRegex.test(account)) {
-      newErrors.account = '帳號應至少6碼，且包含英文字'
+    if (gender !== initialFormValues.gender) {
+      if (!gender) {
+        newErrors.gender = '請選擇性別'
+      }
     }
+    toggleCorrectClass('gender', !newErrors.gender)
 
-    // 驗證密碼（至少6碼且包含英文字）
-    if (!password || !accountPasswordRegex.test(password)) {
-      newErrors.password = '密碼應至少6碼，且包含英文字'
+    if (birthDate !== initialFormValues.birthDate) {
+      if (!birthDate) {
+        newErrors.birthDate = '請選擇生日'
+      }
     }
+    toggleCorrectClass('birthDate', !newErrors.birthDate)
 
-    // 驗證確認密碼（僅當密碼已更改時）
-    if (showConfirmPassword && password !== confirmPassword) {
-      newErrors.confirmPassword = '兩次密碼輸入不一致'
+    if (city !== initialFormValues.city) {
+      if (!city) {
+        newErrors.city = '請選擇縣市'
+      }
     }
+    toggleCorrectClass('city', !newErrors.city)
 
-    // 驗證其他欄位
-    if (!username) {
-      newErrors.username = '姓名不能為空'
+    if (address !== initialFormValues.address) {
+      if (!address) {
+        newErrors.address = '地址不能為空'
+      }
     }
+    toggleCorrectClass('address', !newErrors.address)
 
-    if (!gender) {
-      newErrors.gender = '請選擇性別'
+    if (phone !== initialFormValues.phone) {
+      if (!phoneRegex.test(phone)) {
+        newErrors.phone = '請輸入有效的手機號碼'
+      }
     }
+    toggleCorrectClass('phone', !newErrors.phone)
 
-    if (!birthDate) {
-      newErrors.birthDate = '請選擇生日'
-    }
-
-    if (!city) {
-      newErrors.city = '請選擇縣市'
-    }
-
-    if (!address) {
-      newErrors.address = '地址不能為空'
-    }
-
-    if (!phone || !phoneRegex.test(phone)) {
-      newErrors.phone = '請輸入有效的手機號碼'
-    }
-
-    if (!emailVerified) {
-      newErrors.emailVerified = '請點擊驗證按鈕以驗證電子信箱'
-    }
-
+    // 更新錯誤訊息狀態
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
+  // 動態添加或移除 info-correct-bo 類的輔助函數
+  const toggleCorrectClass = (fieldName, isValid) => {
+    const element = document.querySelector(`[name="${fieldName}"]`)
+    console.log(`Element for fieldName "${fieldName}":`, element)
+    if (element) {
+      // 檢查並強制應用背景色
+      if (isValid) {
+        element.style.backgroundColor = 'rgba(183, 148, 71, 0.2)'
+      } else {
+        element.style.backgroundColor = '' // 清除內聯樣式
+      }
+    } else {
+      console.log(`Element with name "${fieldName}" not found.`)
+    }
+  }
+
+  // 發送驗證郵件
   const sendVerificationEmail = () => {
     // 如果 email 已經存在，禁用驗證按鈕
     if (errors.email) {
@@ -235,6 +300,7 @@ export default function UserInfoEdit() {
       })
   }
 
+  // 檢查 email 和 account 是否唯一
   const checkUniqueValues = async (email, account) => {
     try {
       const response = await fetch(
@@ -256,6 +322,7 @@ export default function UserInfoEdit() {
     }
   }
 
+  // 取消編輯
   const cancelEdit = () => {
     const isFormChanged = Object.keys(formValues).some(
       (key) => formValues[key] !== initialFormValues[key]
@@ -286,14 +353,8 @@ export default function UserInfoEdit() {
     }
   }
 
+  // 更新用戶信息
   const updateUserInfo = async () => {
-    const isValid = await validateForm() // 驗證表單
-
-    if (!isValid) {
-      // 若表單有錯誤，直接返回，不進行後續的資料提交
-      return
-    }
-
     Swal.fire({
       title: '確認修改？',
       html: `<span class="p">您確定要修改這些資料嗎？</span>`,
@@ -308,23 +369,43 @@ export default function UserInfoEdit() {
         confirmButton: `${styles['swal-btn-bo']}`,
         cancelButton: `${styles['swal-btn-cancel-bo']}`,
       },
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        fetch(`http://localhost:3005/api/user-edit/update-user/${user.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formValues),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.status === 'success') {
-              sessionStorage.setItem('updateSuccess', 'true')
-              router.push('/user/user-center/info')
-            } else {
+        const formIsValid = await validateForm()
+
+        if (formIsValid) {
+          setIsFormSubmitted(true) // 表單驗證通過後設置為已提交
+
+          // 表單驗證通過，執行更新操作
+          fetch(`http://localhost:3005/api/user-edit/update-user/${user.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formValues),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.status === 'success') {
+                sessionStorage.setItem('updateSuccess', 'true')
+                router.push('/user/user-center/info')
+              } else {
+                Swal.fire({
+                  title: '修改失敗',
+                  text: '請稍後再試',
+                  icon: 'error',
+                  confirmButtonText: 'OK',
+                  customClass: {
+                    title: 'h6',
+                    icon: `${styles['swal-icon-bo']}`,
+                    confirmButton: `${styles['swal-btn-bo']}`,
+                  },
+                })
+              }
+            })
+            .catch((error) => {
               Swal.fire({
-                title: '修改失敗',
+                title: '伺服器錯誤',
                 text: '請稍後再試',
                 icon: 'error',
                 confirmButtonText: 'OK',
@@ -334,21 +415,8 @@ export default function UserInfoEdit() {
                   confirmButton: `${styles['swal-btn-bo']}`,
                 },
               })
-            }
-          })
-          .catch((error) => {
-            Swal.fire({
-              title: '伺服器錯誤',
-              text: '請稍後再試',
-              icon: 'error',
-              confirmButtonText: 'OK',
-              customClass: {
-                title: 'h6',
-                icon: `${styles['swal-icon-bo']}`,
-                confirmButton: `${styles['swal-btn-bo']}`,
-              },
             })
-          })
+        }
       }
     })
   }
@@ -366,6 +434,7 @@ export default function UserInfoEdit() {
     <>
       <div className={`${styles['user-info-box-bo']}  w-100`}>
         <div className={`${styles['info-form-box-bo']} flex-column d-flex`}>
+          {/* 基本資訊區塊 */}
           <div
             className={`${styles['info-default-box-bo']} row justify-content-center align-items-center gap-5 gap-lg-0`}
           >
@@ -434,7 +503,7 @@ export default function UserInfoEdit() {
                 >
                   <h6 className={`${styles['info-name-bo']} h6`}>密碼</h6>
                   <input
-                    type="password"
+                    type="text" // 改成 text 顯示密碼
                     className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
                     value={formValues.password}
                     onChange={onInputChange}
@@ -456,7 +525,7 @@ export default function UserInfoEdit() {
                     >
                       <h6 className={`${styles['info-name-bo']} h6`}>確認</h6>
                       <input
-                        type="password"
+                        type="text" // 這裡改成 text 顯示原密碼
                         className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
                         value={formValues.confirmPassword}
                         onChange={onInputChange}
@@ -478,6 +547,7 @@ export default function UserInfoEdit() {
               </div>
             </div>
 
+            {/* 使用者圖片區塊 */}
             <div
               className={`${styles['default-img-box-bo']} ${styles['move-up-bo']} col-12 col-lg-4 d-flex flex-column justify-content-center align-items-center position-relative`}
             >
@@ -506,6 +576,7 @@ export default function UserInfoEdit() {
             </div>
           </div>
 
+          {/* 詳細資訊區塊 */}
           <div
             className={`${styles['info-detail-box-bo']} row justify-content-center align-items-start gap-5 gap-xl-0`}
           >
@@ -632,9 +703,12 @@ export default function UserInfoEdit() {
                 )}
               </div>
             </div>
+
+            {/* 信用卡表單區塊 */}
             <CreditCardForm cards={cards} setCards={setCards} user={user} />
           </div>
 
+          {/* 操作按鈕區塊 */}
           <div
             className={`${styles['info-btn-box-bo']} d-flex justify-content-center align-items-center gap-5`}
           >
@@ -658,6 +732,8 @@ export default function UserInfoEdit() {
     </>
   )
 }
+
+// 指定佈局
 UserInfoEdit.getLayout = function (page) {
   return <UserCenterLayout>{page}</UserCenterLayout>
 }

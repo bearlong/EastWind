@@ -60,7 +60,7 @@
 
   &:hover,
   &:active {
-    background: var(--bg-text-color);
+    background: var(--white);
     color: var(--background);
 
     @media (max-width: 768px) {

@@ -92,8 +92,26 @@ export const AuthProvider = ({ children }) => {
         return result.status === 'success' ? result.data : null // 返回用戶資料或 null
       }
     } catch (err) {
-      console.error('Token verification error:', err.message) // 打印驗證錯誤
-      return null
+      console.error('Token verification error:', err.message)
+
+      if (err.message === 'jwt expired') {
+        // 如果 token 過期，嘗試使用 refresh token 來獲取新的 access token
+        const newAccessToken = await refreshAccessToken(
+          localStorage.getItem('refreshToken')
+        )
+        if (newAccessToken) {
+          setToken(newAccessToken)
+          localStorage.setItem('accessToken', newAccessToken) // 更新 access token
+          return checkToken(newAccessToken) // 使用新的 token 重新驗證
+        } else {
+          // 如果無法刷新 token，引導用戶重新登入
+          localStorage.removeItem('accessToken')
+          localStorage.removeItem('refreshToken')
+          router.push('/login')
+        }
+      }
+
+      return null // 如果有其他錯誤，返回 null
     }
   }
 
