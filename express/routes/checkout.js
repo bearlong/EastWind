@@ -8,6 +8,7 @@ import multer from 'multer'
 import { v4 as uuidv4 } from 'uuid'
 import moment from 'moment'
 import { createLinePayClient } from 'line-pay-merchant'
+import * as crypto from 'crypto'
 
 const upload = multer()
 
@@ -16,6 +17,23 @@ const linePayClient = createLinePayClient({
   channelSecretKey: process.env.LINE_PAY_CHANNEL_SECRET,
   env: process.env.NODE_ENV,
 })
+
+//綠界全方位金流技術文件：
+// https://developers.ecpay.com.tw/?p=2856
+// 信用卡測試卡號：4311-9522-2222-2222 安全碼 222
+
+//一、選擇帳號，是否為測試環境
+// const MerchantID = '3002607' //必填
+// const HashKey = 'pwFHCqoQZGmho4w6' //3002607
+// const HashIV = 'EkRm7iFT261dpevs' //3002607
+// let isStage = true // 測試環境： true；正式環境：false
+const MerchantID = process.env.ECPAY_MERCHANT_ID //必填
+const HashKey = process.env.ECPAY_HASH_KEY //3002607
+const HashIV = process.env.ECPAY_HASH_IV //3002607
+let isStage = process.env.ECPAY_TEST // 測試環境： true；正式環境：false
+const ReturnURL = process.env.ECPAY_RETURN_URL
+const OrderResultURL = process.env.ECPAY_ORDER_RESULT_URL
+const ReactClientBackURL = process.env.ECPAY_ORDER_CALLBACK_URL
 
 // linepay
 router.get('/LinepayReserve', async (req, res) => {
@@ -44,10 +62,6 @@ router.get('/LinepayReserve', async (req, res) => {
       'SELECT `id`, `total` FROM `user_order` WHERE `id` = ?',
       [orderId]
     )
-    // const [orderDetail] = await dbPromise.execute(
-    //   'SELECT `id`, `name`, `quantity`, `price` FROM `order_detail` WHERE `order_id` = ?',
-    //   [orderId]
-    // )
 
     order = {
       ...order,
@@ -165,12 +179,6 @@ router.get('/confirm', async (req, res) => {
     if (linePayResponse.body.returnCode !== '0000') {
       status = '付款失敗'
     }
-    console.log(
-      status,
-      JSON.stringify(linePayResponse.body),
-      linePayResponse.body.returnCode,
-      orderInfo[0].id
-    )
 
     // 更新資料庫的訂單狀態
     const [result] = await dbPromise.execute(
@@ -234,6 +242,176 @@ router.get('/check-transaction', async (req, res) => {
   }
 })
 
+router.get('/ecpaypayment', async (req, res, next) => {
+  if (!req.query.orderId) {
+    return res.json({ status: 'error', message: 'order id不存在' })
+  }
+
+  // 從資料庫得到order資料
+  const { orderId } = req.query
+  // 從資料庫取得訂單資料
+  let order
+  try {
+    const [orderInfo] = await dbPromise.execute(
+      'SELECT `id`, `total`, `numerical_order` FROM `user_order` WHERE `id` = ?',
+      [orderId]
+    )
+    if (orderInfo.length !== 0) {
+      order = orderInfo[0]
+    }
+  } catch (err) {
+    console.log(err.message)
+  }
+
+  console.log('獲得訂單資料，內容如下：')
+  console.log(order)
+  //二、輸入參數
+  const TotalAmount = order.total
+  const TradeDesc = '商店線上付款'
+  const ItemName = '訂單編號' + order.numerical_order + '商品一批'
+  const ChoosePayment = 'ALL'
+
+  // 以下參數不用改
+  const stage = isStage ? '-stage' : ''
+  const algorithm = 'sha256'
+  const digest = 'hex'
+  const APIURL = `https://payment${stage}.ecpay.com.tw/Cashier/AioCheckOut/V5`
+  // 交易編號
+  const MerchantTradeNo =
+    new Date().toISOString().split('T')[0].replaceAll('-', '') +
+    crypto.randomBytes(32).toString('base64').substring(0, 12)
+  // 交易日期時間
+  const MerchantTradeDate = moment().format('YYYY/MM/DD HH:mm:ss')
+  //三、計算 CheckMacValue 之前
+  let ParamsBeforeCMV = {
+    MerchantID: MerchantID,
+    MerchantTradeNo: MerchantTradeNo,
+    MerchantTradeDate: MerchantTradeDate.toString(),
+    PaymentType: 'aio',
+    EncryptType: 1,
+    TotalAmount: TotalAmount,
+    TradeDesc: TradeDesc,
+    ItemName: ItemName,
+    ChoosePayment: ChoosePayment,
+    ReturnURL,
+    OrderResultURL,
+    CustomField1: order.numerical_order,
+    CustomField2: order.id,
+  }
+
+  //四、計算 CheckMacValue
+  function CheckMacValueGen(parameters, algorithm, digest) {
+    // const crypto = require('crypto')
+    let Step0
+
+    Step0 = Object.entries(parameters)
+      .map(([key, value]) => `${key}=${value}`)
+      .join('&')
+
+    function DotNETURLEncode(string) {
+      const list = {
+        '%2D': '-',
+        '%5F': '_',
+        '%2E': '.',
+        '%21': '!',
+        '%2A': '*',
+        '%28': '(',
+        '%29': ')',
+        '%20': '+',
+      }
+
+      Object.entries(list).forEach(([encoded, decoded]) => {
+        const regex = new RegExp(encoded, 'g')
+        string = string.replace(regex, decoded)
+      })
+
+      return string
+    }
+
+    const Step1 = Step0.split('&')
+      .sort((a, b) => {
+        const keyA = a.split('=')[0]
+        const keyB = b.split('=')[0]
+        return keyA.localeCompare(keyB)
+      })
+      .join('&')
+    const Step2 = `HashKey=${HashKey}&${Step1}&HashIV=${HashIV}`
+    const Step3 = DotNETURLEncode(encodeURIComponent(Step2))
+    const Step4 = Step3.toLowerCase()
+    const Step5 = crypto.createHash(algorithm).update(Step4).digest(digest)
+    const Step6 = Step5.toUpperCase()
+    return Step6
+  }
+
+  const CheckMacValue = CheckMacValueGen(ParamsBeforeCMV, algorithm, digest)
+
+  //五、將所有的參數製作成 payload
+  const AllParams = { ...ParamsBeforeCMV, CheckMacValue }
+  console.log('AllParams:', AllParams)
+
+  const displayInfo = `
+    <p>交易編號: ${MerchantTradeNo}</p>
+    <p>訂單號碼: ${order.numerical_order}</p>
+    <p>交易內容: ${ItemName}</p>
+    <p>價錢: ${TotalAmount}</p>
+  `
+
+  const inputs = Object.entries(AllParams)
+    .map(
+      ([name, value]) => `<input type="hidden" name="${name}" value="${value}">`
+    )
+    .join('')
+
+  const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>全方位金流-測試</title>
+        <style>
+        .submit-btn {
+            border: none;
+            background: url('https://support.ecpay.com.tw/wp-content/uploads/2023/08/logo_pay200x55.png') no-repeat center center;
+            background-size: cover;
+            width: 200px; /* 調整為圖片的寬度 */
+            height: 55px; /* 調整為圖片的高度 */
+            cursor: pointer;
+        }
+    </style>
+</head>
+</head>
+<body>
+    ${displayInfo}
+    <form method="post" action="${APIURL}">
+      ${inputs}
+            <button type="submit" class="submit-btn"></button>
+
+    </form>
+</body>
+</html>
+`
+
+  //res.json({ htmlContent })
+  res.send(htmlContent)
+
+  // const htmlContent = `
+  // <!DOCTYPE html>
+  // <html>
+  // <head>
+  //     <title>全方位金流測試</title>
+  // </head>
+  // <body>
+  //     <form method="post" action="${APIURL}">
+  // ${inputs}
+  // <input type ="submit" value = "送出參數">
+  //     </form>
+  // <script>
+  //   document.forms[0].submit();
+  // </script>
+  // </body>
+  // </html>
+  // `
+})
+
 // 獲得某會員id的有加入到我的最愛清單中的商品id們
 // 此路由只有登入會員能使用
 router.get('/:id', async (req, res) => {
@@ -259,6 +437,47 @@ router.get('/:id', async (req, res) => {
     })
   } catch (err) {
     res.status(400).json({ status: 'error', data: { message: err.message } })
+  }
+})
+
+router.post('/result', async (req, res, next) => {
+  const { CustomField1, CustomField2, RtnCode } = req.body
+  console.log('綠界回傳的資料如下：')
+  console.log(req.body)
+  // res.send('綠界回傳的資料如下：' + JSON.stringify(req.body))
+
+  // 寫入資料表 RtnCode === '1' 代表交易成功
+  if (RtnCode === '1') {
+    const status = '付款完成'
+    const time = moment().format('YYYY-MM-DD HH:mm:ss')
+    try {
+      // 更新資料庫的訂單狀態
+      const [result] = await dbPromise.execute(
+        'UPDATE `user_order` SET `status_now` = ?, `return_code` = ? WHERE `user_order`.`numerical_order` = ?',
+        [status, `RtnCode: ${RtnCode}`, CustomField1]
+      )
+      console.log(result)
+      if (result.changedRows >= 1) {
+        const [resultStatus] = await dbPromise.execute(
+          'INSERT INTO `order_status` (`id`, `order_id`, `status`, `update_at`) VALUES (NULL, ?, ?, ?);',
+          [CustomField2, status, time]
+        )
+
+        if (resultStatus.insertId) {
+          res.redirect(
+            ReactClientBackURL + '?' + new URLSearchParams(req.body).toString()
+          )
+        } else {
+          res
+            .status(400)
+            .json({ status: 'error', data: { message: '付款失敗' } })
+        }
+      } else {
+        res.status(400).json({ status: 'error', data: { message: '付款失敗' } })
+      }
+    } catch (error) {
+      return res.status(404).json({ status: 'fail', data: error.data })
+    }
   }
 })
 
