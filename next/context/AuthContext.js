@@ -1,7 +1,6 @@
 import { createContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import jwt from 'jsonwebtoken'
-import { isLatLong } from 'validator'
 
 // 創建 AuthContext，用於在應用中提供全局的身份驗證狀態
 export const AuthContext = createContext(null)
@@ -68,7 +67,6 @@ export const AuthProvider = ({ children }) => {
           localStorage.removeItem('accessToken') // 刪除無效的 accessToken
           router.push(loginRoute) // 重定向到登入頁面
         }
-        setLoading(false)
       }
 
       verifyAndSetUser() // 驗證並設置用戶狀態
