@@ -24,8 +24,10 @@
 }
 
 .user-img-bo {
-  width: 14rem;
-  border-radius: 50%;
+  width: 14rem; /* 確保寬度固定 */
+  height: 14rem; /* 確保高度與寬度相同 */
+  border-radius: 50%; /* 將正方形轉換為圓形 */
+  object-fit: cover; /* 確保圖片內容完整且不變形 */
 }
 
 .user-welcome-box-bo {

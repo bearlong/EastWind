@@ -9,47 +9,46 @@ export const AuthProvider = ({ children }) => {
   // 狀態管理：token 和 user 信息
   const [token, setToken] = useState(undefined)
   const [user, setUser] = useState(undefined)
-  const [isInitialized, setIsInitialized] = useState(false) // 新增初始化狀態
+  const [isInitialized, setIsInitialized] = useState(false) // 用於追蹤是否初始化完成
 
   const router = useRouter()
   const loginRoute = '/login' // 登入頁面的路徑
   const protectedRoutes = ['/'] // 需要身份驗證的受保護路徑
 
-  // 監聽路由變化，確保未登入的用戶不能訪問受保護的路徑
-  useEffect(() => {
-    if (!user && protectedRoutes.includes(router.pathname)) {
-      router.push(loginRoute) // 如果用戶未登入，且試圖訪問受保護路徑，重定向到登入頁面
-    } else if (user && router.pathname === loginRoute) {
-      router.push('/home') // 如果用戶已登入但在登入頁面，重定向到首頁
-    }
-  }, [router.isReady, router.pathname, user])
-
   // 初始化身份驗證狀態，檢查舊的 accessToken 和 refreshToken
   useEffect(() => {
     const initializeAuth = async () => {
-      const oldToken = localStorage.getItem('accessToken') // 從 localStorage 中獲取舊的 accessToken
-      const refreshToken = localStorage.getItem('refreshToken') // 從 localStorage 中獲取 refreshToken
-
-      if (oldToken) {
-        const user = await checkToken(oldToken) // 驗證舊的 accessToken
-        if (user) {
-          setUser(user) // 設置用戶狀態
-          setToken(oldToken) // 設置 token 狀態
-        } else if (refreshToken) {
-          const newAccessToken = await refreshAccessToken(refreshToken) // 使用 refreshToken 獲取新的 accessToken
-          if (newAccessToken) {
-            setToken(newAccessToken) // 更新 token 狀態
-            localStorage.setItem('accessToken', newAccessToken) // 存儲新的 accessToken 到 localStorage
-          } else {
-            localStorage.removeItem('accessToken') // 刪除無效的 accessToken
-            localStorage.removeItem('refreshToken') // 刪除無效的 refreshToken
-            router.push(loginRoute) // 重定向到登入頁面
-          }
+      if (typeof window !== 'undefined') {
+        const savedUser = JSON.parse(localStorage.getItem('user')) // 從 localStorage 中獲取保存的 user 資料
+        if (savedUser) {
+          setUser(savedUser) // 如果有保存的用戶資料，設置 user 狀態
         } else {
-          localStorage.removeItem('accessToken') // 如果沒有 refreshToken，刪除舊的 accessToken
-          router.push(loginRoute) // 重定向到登入頁面
+          const oldToken = localStorage.getItem('accessToken')
+          const refreshToken = localStorage.getItem('refreshToken')
+
+          if (oldToken) {
+            const user = await checkToken(oldToken) // 驗證舊的 accessToken
+            if (user) {
+              setUser(user) // 設置用戶狀態
+              setToken(oldToken) // 設置 token 狀態
+            } else if (refreshToken) {
+              const newAccessToken = await refreshAccessToken(refreshToken) // 使用 refreshToken 獲取新的 accessToken
+              if (newAccessToken) {
+                setToken(newAccessToken) // 更新 token 狀態
+                localStorage.setItem('accessToken', newAccessToken) // 存儲新的 accessToken 到 localStorage
+              } else {
+                localStorage.removeItem('accessToken') // 刪除無效的 accessToken
+                localStorage.removeItem('refreshToken') // 刪除無效的 refreshToken
+                router.push(loginRoute) // 重定向到登入頁面
+              }
+            } else {
+              localStorage.removeItem('accessToken') // 如果沒有 refreshToken，刪除舊的 accessToken
+              router.push(loginRoute) // 重定向到登入頁面
+            }
+          }
         }
       }
+      setIsInitialized(true) // 初始化完成
     }
 
     initializeAuth() // 初始化身份驗證狀態
@@ -73,45 +72,55 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token])
 
+  // 在初始化完成後，根據 user 狀態進行頁面重定向
+  useEffect(() => {
+    if (isInitialized) {
+      if (!user && protectedRoutes.includes(router.pathname)) {
+        router.push(loginRoute) // 如果用戶未登入且在受保護路徑，重定向到登入頁面
+      } else if (user && router.pathname === loginRoute) {
+        router.push('/home') // 如果用戶已登入且在登入頁面，重定向到首頁
+      }
+    }
+  }, [isInitialized, router.isReady, router.pathname, user])
+
   // 函數：檢查並驗證 token 的有效性
   const checkToken = async (token) => {
     const secretKey = 'boyuboyuboyuIamBoyu'
     try {
-      const decoded = jwt.verify(token, secretKey) // 解碼並驗證 token
+      const decoded = jwt.verify(token, secretKey)
       if (decoded && decoded.id) {
         const response = await fetch(
           `http://localhost:3005/api/user/user/${decoded.id}`,
           {
             method: 'GET',
             headers: {
-              Authorization: `Bearer ${token}`, // 在請求頭部附帶 token
+              Authorization: `Bearer ${token}`,
             },
           }
         )
         const result = await response.json()
-        return result.status === 'success' ? result.data : null // 返回用戶資料或 null
+        return result.status === 'success' ? result.data : null
       }
     } catch (err) {
       console.error('Token verification error:', err.message)
 
       if (err.message === 'jwt expired') {
-        // 如果 token 過期，嘗試使用 refresh token 來獲取新的 access token
-        const newAccessToken = await refreshAccessToken(
-          localStorage.getItem('refreshToken')
-        )
-        if (newAccessToken) {
-          setToken(newAccessToken)
-          localStorage.setItem('accessToken', newAccessToken) // 更新 access token
-          return checkToken(newAccessToken) // 使用新的 token 重新驗證
-        } else {
-          // 如果無法刷新 token，引導用戶重新登入
-          localStorage.removeItem('accessToken')
-          localStorage.removeItem('refreshToken')
-          router.push('/login')
+        const refreshToken = localStorage.getItem('refreshToken')
+        if (refreshToken) {
+          const newAccessToken = await refreshAccessToken(refreshToken)
+          if (newAccessToken) {
+            setToken(newAccessToken) // 更新 token 狀態
+            localStorage.setItem('accessToken', newAccessToken) // 存儲新的 accessToken 到 localStorage
+            return checkToken(newAccessToken) // 再次驗證新的 token
+          } else {
+            localStorage.removeItem('accessToken') // 刪除無效的 accessToken
+            localStorage.removeItem('refreshToken') // 刪除無效的 refreshToken
+          }
         }
+        router.push('/login') // 重定向到登入頁面
       }
 
-      return null // 如果有其他錯誤，返回 null
+      return null
     }
   }
 
@@ -125,20 +134,30 @@ export const AuthProvider = ({ children }) => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ refreshToken }), // 將 refreshToken 作為請求體發送
+          body: JSON.stringify({ refreshToken }),
         }
       )
       const result = await response.json()
-      return result.status === 'success' ? result.accessToken : null // 返回新的 accessToken 或 null
+      return result.status === 'success' ? result.accessToken : null
     } catch (error) {
-      console.error('Failed to refresh access token:', error) // 打印刷新 token 失敗的錯誤
+      console.error('Failed to refresh access token:', error)
       return null
     }
   }
 
+  // 函數：更新用戶圖片
+  const updateUserImage = (newImage) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      user_img: newImage,
+    }))
+  }
+
   // 返回 AuthContext.Provider，提供 user、setUser、token 和 setToken 的上下文
   return (
-    <AuthContext.Provider value={{ user, setUser, token, setToken }}>
+    <AuthContext.Provider
+      value={{ user, setUser, token, setToken, updateUserImage }}
+    >
       {children} {/* 將子組件包裝在 Provider 中 */}
     </AuthContext.Provider>
   )
