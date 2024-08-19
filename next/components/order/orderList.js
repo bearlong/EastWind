@@ -1,271 +1,294 @@
-import React from 'react'
-// import styles from '@/styles/orderList.module.css'
-// import styles from '@/styles/orderList.module.scss'
+import React, { useEffect, useState, useContext } from 'react'
+import { useCart } from '@/hooks/use-cart'
+import { useRouter } from 'next/router'
+import { AuthContext } from '@/context/AuthContext'
+import styles from '@/styles/bearlong/orderList.module.scss'
+import { FaCircle } from 'react-icons/fa6'
+import Image from 'next/image'
+import Link from 'next/link'
 
 export default function OrderList() {
+  const { user, loading } = useContext(AuthContext)
+  const { handleAdd = () => {}, handleShow = () => {}, show } = useCart()
+  const router = useRouter()
+  const { status_now } = router.query
+  const [status, setStatus] = useState('付款完成')
+  const [orderInfo, setOrderInfo] = useState([
+    {
+      pay_method: '',
+      status_now: '',
+      order_date: '',
+      total: 0,
+      delivery_method: '',
+      delivery_address: '{}',
+      numerical_order: '',
+      order_detail_count: 1,
+      first_item_image: '005.webp',
+    },
+  ])
+  const statusMapping = {
+    付款完成: { displayText: '待出貨', color: 'var(--primary)' },
+    已出貨: { displayText: '待收貨', color: 'var(--primary-dark)' },
+    已完成: { displayText: '已完成', color: 'var(--background)' },
+    已取消: { displayText: '已取消', color: 'var(--text-hover-color)' },
+    '退貨/款': { displayText: '退貨/款', color: 'var(--error-color)' },
+  }
+
+  const getOrderInfo = async () => {
+    try {
+      const url = `http://localhost:3005/api/order?id=${user.id}&status_now=${status}`
+      const response = await fetch(url)
+      const result = await response.json()
+      if (result.status === 'success') {
+        const updatedOrderInfo = result.data.orderInfo.map((order) => {
+          // 嘗試將 delivery_address 轉換為 JSON 對象
+          order.delivery_address = JSON.parse(order.delivery_address)
+          return order
+        })
+        setOrderInfo(updatedOrderInfo)
+      } else {
+        console.log(result.data.message)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        if (user) {
+          const url = `http://localhost:3005/api/order?id=${user.id}&status_now=${status}`
+          const response = await fetch(url)
+          const result = await response.json()
+          if (result.status === 'success') {
+            const updatedOrderInfo = result.data.orderInfo.map((order) => {
+              // 嘗試將 delivery_address 轉換為 JSON 對象
+              order.delivery_address = JSON.parse(order.delivery_address)
+              return order
+            })
+            setOrderInfo(updatedOrderInfo)
+          } else {
+            console.log(result.data.message)
+          }
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    if (router.isReady && !loading) {
+      if (user) {
+        fetchUserInfo()
+      } else if (!user && loading === false) {
+        alert('請先登入會員')
+        router.push('/login')
+      }
+    }
+  }, [router.isReady, user])
+
+  useEffect(() => {
+    getOrderInfo()
+  }, [status])
+
+  useEffect(() => {
+    if (status_now) {
+      setStatus(status_now)
+    }
+  }, [router.query])
+
   return (
     <>
-      <div className="menber-info-box-bo">
-        <div className="orderListTitle-bl">
-          <ul className="d-flex justify-content-between align-items-center px-0 px-md-5">
-            <li className="li h6 active">待出貨</li>
-            <li className="li h6">待收貨</li>
-            <li className="li h6">已完成</li>
-            <li className="li h6">已取消</li>
-            <li className="li h6">退貨/款</li>
-          </ul>
-        </div>
-        <div className="orderList-bl">
-          <div className="orderCard-bl">
-            <div className="cardTitle-bl">
-              <p>2024/07/10 訂單編號: 20240710ZZBLBO74</p>
-            </div>
-            <div className="cardBody-bl d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-              <div className="orderInfo-bl d-flex justify-content-between">
-                <div className="imgGroup-bl d-flex flex-column justify-content-around">
-                  <div className="imgBox me-3">
-                    <img
-                      className="img"
-                      src="./images/product/023.webp"
-                      alt=""
-                    />
-                  </div>
-                  <div className="imgBox d-none d-md-grid mt-4 h6">+3</div>
-                </div>
-                <div className="orderContent-bl flex-grow-1 d-flex flex-column justify-content-around">
-                  <p>
-                    狀態:
-                    <span>
-                      {' '}
-                      <i className="span fa-solid fa-circle me-1" />
-                      待出貨
-                    </span>
-                  </p>
-                  <p>寄送: 320桃園市中壢區新生路二段421號</p>
-                  <p>付款方式: 信用卡</p>
-                  <div className="d-flex d-md-inline justify-content-between align-items-center">
-                    <p>總價: NT.10,000</p>
-                    <span className="span d-inline d-md-none p">
-                      {' '}
-                      共 4 樣商品
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="btnGroup-bl d-flex flex-md-column justify-content-around justify-content-md-between">
-                <button
-                  type="button"
-                  className="orderBtn-bl d-md-grid p mb-0 mb-md-3"
-                >
-                  再買一次
-                </button>
-                <button type="button" className="orderBtn-bl d-md-grid p">
-                  查看訂單細節
-                </button>
-              </div>
-            </div>
+      <div className={styles['main']}>
+        <div className={styles['menber-info-box-bo']}>
+          <div className={styles['orderListTitle-bl']}>
+            <ul className="d-flex justify-content-between align-items-center px-0 px-md-5">
+              <button
+                className={`h6   ${
+                  status === '付款完成' ? styles['active'] : ''
+                }`}
+                onClick={() => {
+                  setStatus('付款完成')
+                }}
+              >
+                <li className={`h6`}>待出貨</li>
+              </button>
+              <button
+                className={`h6  ${status === '已出貨' ? styles['active'] : ''}`}
+                onClick={() => {
+                  setStatus('已出貨')
+                }}
+              >
+                <li className={`h6`}>待收貨</li>
+              </button>
+              <button
+                className={`h6   ${
+                  status === '已完成' ? styles['active'] : ''
+                }`}
+                onClick={() => {
+                  setStatus('已完成')
+                }}
+              >
+                <li className={`h6`}>已完成</li>
+              </button>
+              <button
+                className={`h6  ${status === '已取消' ? styles['active'] : ''}`}
+                onClick={() => {
+                  setStatus('已取消')
+                }}
+              >
+                <li className={`h6 `}>已取消</li>
+              </button>
+              <button
+                className={`h6   ${
+                  status === '退貨/款' ? styles['active'] : ''
+                }`}
+                onClick={() => {
+                  setStatus('退貨/款')
+                }}
+              >
+                <li className={`h6`}>退貨/款</li>
+              </button>
+            </ul>
           </div>
-          <div className="orderCard-bl">
-            <div className="cardTitle-bl">
-              <p>2024/07/10 訂單編號: 20240710ZZBLBO74</p>
-            </div>
-            <div className="cardBody-bl d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-              <div className="orderInfo-bl d-flex justify-content-between">
-                <div className="imgGroup-bl d-flex flex-column justify-content-around">
-                  <div className="imgBox me-3">
-                    <img
-                      className="img"
-                      src="./images/product/023.webp"
-                      alt=""
-                    />
+          <div className={styles['orderList-bl']}>
+            {orderInfo.length > 0 ? (
+              orderInfo.map((v) => {
+                const currentStatus = statusMapping[status] || {
+                  displayText: '未知狀態',
+                  color: 'var(--default-color)',
+                }
+                const objectIds = v.object_ids ? v.object_ids.split(',') : []
+                const objectTypes = v.object_types
+                  ? v.object_types.split(',')
+                  : []
+                const quantitys = v.quantitys ? v.quantitys.split(',') : []
+                const prices = v.prices ? v.prices.split(',') : []
+
+                const orderDetails = objectIds.map((id, index) => ({
+                  id: Number(id),
+                  object_type: objectTypes[index],
+                  quantity: Number(quantitys[index]),
+                  price: Number(prices[index]),
+                }))
+                return (
+                  <div
+                    key={v.numerical_order}
+                    className={styles['orderCard-bl']}
+                  >
+                    <div className={styles['cardTitle-bl']}>
+                      <p>
+                        {v.order_date}{' '}
+                        <span className="d-block d-lg-inline">
+                          訂單編號: {v.numerical_order}
+                        </span>
+                      </p>
+                    </div>
+                    <div
+                      className={`d-flex flex-column flex-md-row justify-content-between align-items-md-center ${styles['cardBody-bl']}`}
+                    >
+                      <div
+                        className={`d-flex justify-content-between ${styles['orderInfo-bl']}`}
+                      >
+                        <div
+                          className={`d-flex flex-column justify-content-around ${styles['imgGroup-bl']}`}
+                        >
+                          <div className={`${styles['imgBox']} me-3`}>
+                            <Image
+                              src={`/images/${v.object_type}/${v.first_item_image}`}
+                              width={200}
+                              height={200}
+                              alt=""
+                              className={`${styles.img}`}
+                            />
+                          </div>
+                          <div
+                            className={`${styles['imgBox']} me-3 d-none ${
+                              v.order_detail_count <= 1 ? '' : 'd-md-grid'
+                            } mt-4 h6`}
+                          >
+                            + {v.order_detail_count - 1}
+                          </div>
+                        </div>
+                        <div
+                          className={`${styles['orderContent-bl']} flex-grow-1 d-flex flex-column justify-content-around`}
+                        >
+                          <p>
+                            狀態:
+                            <span
+                              className="ms-3 d-inline-flex justify-content-center align-items-center gap-1"
+                              style={{ color: currentStatus.color }}
+                            >
+                              <FaCircle size={12} />
+                              {currentStatus.displayText}
+                            </span>
+                          </p>
+                          <p>
+                            寄送:{' '}
+                            {v.delivery_method === '宅配'
+                              ? v.delivery_address.address
+                              : '自取'}
+                          </p>
+                          <p>
+                            付款方式:{' '}
+                            {v.pay_method === 'credit'
+                              ? '信用卡'
+                              : v.pay_method}
+                          </p>
+                          <div className="d-flex d-md-inline justify-content-between align-items-center">
+                            <p>總價: NT. {v.total}</p>
+                            <span className="span d-inline d-md-none p">
+                              {' '}
+                              共 {v.order_detail_count} 樣商品
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        className={`${styles['btnGroup-bl']} d-flex flex-md-column justify-content-around justify-content-md-between`}
+                      >
+                        <button
+                          type="button"
+                          className={`${styles['orderBtn-bl']} d-md-grid p mb-0 mb-md-3`}
+                          onClick={() => {
+                            orderDetails.forEach((detail) => {
+                              handleAdd(
+                                detail,
+                                detail.object_type,
+                                detail.quantity
+                              )
+                            })
+                            router.push('/checkout')
+                          }}
+                        >
+                          再買一次
+                        </button>
+                        <Link
+                          type="button"
+                          className={`${styles['orderBtn-bl']} d-md-grid p`}
+                          href={`/user/user-center/order/${v.numerical_order}`}
+                        >
+                          查看訂單細節
+                        </Link>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="orderContent-bl flex-grow-1 d-flex flex-column justify-content-around">
-                  <p>
-                    狀態:
-                    <span>
-                      {' '}
-                      <i className="span fa-solid fa-circle me-1" />
-                      待出貨
-                    </span>
-                  </p>
-                  <p className="">寄送: 320桃園市中壢區新生路二段421號</p>
-                  <p>付款方式: 信用卡</p>
-                  <div className="d-flex d-md-inline justify-content-between align-items-center">
-                    <p>總價: NT.10,000</p>
-                    <span className="span d-inline d-md-none p">
-                      {' '}
-                      共 1 樣商品
-                    </span>
-                  </div>
-                </div>
+                )
+              })
+            ) : (
+              <div className="d-grid justify-content-center align-items-center mt-5 h6 text-center">
+                <Image
+                  src={`/cart.png`}
+                  width={200}
+                  height={200}
+                  alt=""
+                  className={`${styles.img} mb-5`}
+                />
+                您沒有 {statusMapping[status]?.displayText || '此狀態'} 的訂單
               </div>
-              <div className="btnGroup-bl d-flex flex-md-column justify-content-around justify-content-md-between">
-                <button
-                  type="button"
-                  className="orderBtn-bl d-md-grid p mb-0 mb-md-3"
-                >
-                  再買一次
-                </button>
-                <button type="button" className="orderBtn-bl d-md-grid p">
-                  查看訂單細節
-                </button>
-              </div>
-            </div>
-          </div>
-          <div className="orderCard-bl">
-            <div className="cardTitle-bl">
-              <p>2024/07/10 訂單編號: 20240710ZZBLBO74</p>
-            </div>
-            <div className="cardBody-bl d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-              <div className="orderInfo-bl d-flex justify-content-between">
-                <div className="imgGroup-bl d-flex flex-column justify-content-around">
-                  <div className="imgBox me-3">
-                    <img
-                      className="img"
-                      src="./images/product/023.webp"
-                      alt=""
-                    />
-                  </div>
-                  <div className="imgBox d-none d-md-grid mt-4 h6">+3</div>
-                </div>
-                <div className="orderContent-bl flex-grow-1 d-flex flex-column justify-content-around">
-                  <p>
-                    狀態:
-                    <span>
-                      {' '}
-                      <i className="span fa-solid fa-circle me-1" />
-                      待出貨
-                    </span>
-                  </p>
-                  <p>寄送: 320桃園市中壢區新生路二段421號</p>
-                  <p>付款方式: 信用卡</p>
-                  <div className="d-flex d-md-inline justify-content-between align-items-center">
-                    <p>總價: NT.10,000</p>
-                    <span className="span d-inline d-md-none p">
-                      {' '}
-                      共 4 樣商品
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="btnGroup-bl d-flex flex-md-column justify-content-around justify-content-md-between">
-                <button
-                  type="button"
-                  className="orderBtn-bl d-md-grid p mb-0 mb-md-3"
-                >
-                  再買一次
-                </button>
-                <button type="button" className="orderBtn-bl d-md-grid p">
-                  查看訂單細節
-                </button>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
-      <style jsx>
-        {`
-          main {
-            width: 100%;
-            padding: 6.4rem;
-          }
-
-          .menber-info-box-bo {
-            width: 100%;
-            border: 2px solid var(--primary);
-            background: var(--form-bg);
-            .orderListTitle-bl {
-              text-align: center;
-              color: var(--primary);
-              li {
-                width: 100%;
-                height: 5rem;
-                border-bottom: 2px solid var(--primary);
-
-                display: grid;
-                align-items: center;
-                justify-content: center;
-                &:hover {
-                  border-bottom: 5px solid var(--primary);
-                }
-              }
-              .active {
-                border-bottom: 5px solid var(--primary);
-              }
-            }
-            .orderList-bl {
-              padding: 2.4rem 4.8rem;
-
-              .cardTitle-bl {
-                padding: 1rem 2.4rem;
-                background: var(--form-bg-dark);
-              }
-              .cardBody-bl {
-                padding: 2.4rem 2.4rem;
-
-                .orderInfo-bl {
-                  height: 18rem;
-                  max-width: 45rem;
-                  span {
-                    color: var(--primary);
-                  }
-                }
-
-                .imgBox {
-                  width: 80px;
-                  height: 80px;
-                  background: var(--form-bg-dark);
-                  display: grid;
-                  align-items: center;
-                  justify-content: center;
-                  color: var(--text-hover-color);
-                  .img {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                  }
-                }
-                .orderBtn-bl {
-                  width: 13rem;
-                  height: 2.4em;
-                  background: var(--primary);
-                  color: var(--bg-text-color);
-                  border: 1px solid var(--primary);
-                  border-radius: 5px;
-                  display: grid;
-                  align-items: center;
-                  justify-content: center;
-
-                  &:hover {
-                    background: var(--primary-dark);
-                  }
-                }
-              }
-            }
-          }
-
-          @media (max-width: 768px) {
-            main {
-              padding: 0;
-            }
-            .menber-info-box-bo {
-              .orderList-bl {
-                padding: 2.4rem 0;
-                .cardBody-bl {
-                  .orderInfo-bl {
-                    height: 13rem;
-                    max-width: 100%;
-                    .span {
-                      color: var(--primary);
-                    }
-                  }
-                }
-              }
-            }
-          }
-        `}
-      </style>
     </>
   )
 }

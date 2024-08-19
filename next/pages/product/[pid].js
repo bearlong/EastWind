@@ -25,7 +25,13 @@ import { Toaster } from 'react-hot-toast'
 
 export default function Detail() {
   const { user } = useContext(AuthContext)
-  const { handleAdd = () => {}, error = '' } = useCart()
+  const {
+    handleAdd = () => {},
+    error = '',
+    show = () => {},
+    handleShow = () => {},
+    handleClose = () => {},
+  } = useCart()
   const router = useRouter()
   const { pid } = router.query
   const [data, setData] = useState({
@@ -409,7 +415,7 @@ export default function Detail() {
                       notifyAndRemove()
                     } else {
                       handleAdd(data.product, 'product', quantity)
-                      router.push('/checkout')
+                      handleShow()
                     }
                   }}
                 >

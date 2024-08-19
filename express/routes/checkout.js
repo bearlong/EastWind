@@ -44,27 +44,16 @@ router.get('/LinepayReserve', async (req, res) => {
   const { orderId } = req.query
   const packageId = uuidv4()
 
-  let order = {
-    orderId: orderId,
-    currency: 'TWD',
-    amount: 0,
-    packages: [
-      {
-        id: packageId,
-        amount: 0,
-        products: req.body.products,
-      },
-    ],
-    options: { display: { locale: 'zh_TW' } },
-  }
+  let order
   try {
     const [orderInfo] = await dbPromise.execute(
-      'SELECT `id`, `total` FROM `user_order` WHERE `id` = ?',
+      'SELECT `id`, `total`,`numerical_order` FROM `user_order` WHERE `id` = ?',
       [orderId]
     )
 
     order = {
-      ...order,
+      orderId: orderInfo[0].numerical_order,
+      currency: 'TWD',
       amount: orderInfo[0].total,
       packages: [
         {
@@ -73,7 +62,7 @@ router.get('/LinepayReserve', async (req, res) => {
           products: [
             {
               id: orderInfo[0].total,
-              name: orderId,
+              name: orderInfo[0].numerical_order,
               quantity: 1,
               price: orderInfo[0].total,
             },
@@ -147,12 +136,8 @@ router.get('/confirm', async (req, res) => {
     [transactionId]
   )
 
-  console.log(11)
-
   // 交易資料
   const transaction = JSON.parse(orderInfo[0].reservation)
-
-  console.log(222)
 
   // 交易金額
   const amount = transaction.amount
@@ -279,7 +264,11 @@ router.get('/ecpaypayment', async (req, res, next) => {
   // 交易編號
   const MerchantTradeNo =
     new Date().toISOString().split('T')[0].replaceAll('-', '') +
-    crypto.randomBytes(32).toString('base64').substring(0, 12)
+    crypto
+      .randomBytes(32)
+      .toString('base64')
+      .replace(/[+/=]/g, '')
+      .substring(0, 12)
   // 交易日期時間
   const MerchantTradeDate = moment().format('YYYY/MM/DD HH:mm:ss')
   //三、計算 CheckMacValue 之前
@@ -669,41 +658,6 @@ router.put('/:id', upload.none(), async (req, res, next) => {
     }
   } catch (error) {
     return res.status(404).json({ status: 'fail', data: error.data })
-  }
-})
-
-router.delete('/:id', upload.none(), async (req, res, next) => {
-  const oid = getIdParam(req)
-  const { uid, type } = req.body
-  try {
-    const [existingItem] = await dbPromise.execute(
-      'SELECT * FROM `favorite` WHERE `user_id` = ? AND `object_id` = ? AND `object_type` = ?',
-      [uid, oid, type]
-    )
-
-    if (existingItem.length <= 0) {
-      return res.status(400).json({
-        status: 'error',
-        data: { message: '收藏內無該商品，刪除失敗' },
-      })
-    }
-    const [result] = await dbPromise.execute(
-      'DELETE FROM `favorite` WHERE `user_id` = ? AND `object_id` = ? AND `object_type` = ?',
-      [uid, oid, type]
-    )
-    if (result.affectedRows >= 1) {
-      const [fav] = await dbPromise.execute(
-        'SELECT * FROM `favorite` WHERE `user_id` = ? AND `object_type` = ?',
-        [uid, type]
-      )
-      res
-        .status(200)
-        .json({ status: 'success', data: { message: '刪除成功', fav } })
-    } else {
-      res.status(400).json({ status: 'error', data: { message: '刪除失敗' } })
-    }
-  } catch (err) {
-    res.status(400).json({ status: 'error', data: { message: err.message } })
   }
 })
 
