@@ -91,9 +91,12 @@ export default function Header() {
                 </a>
               </li>
               <li>
-                <a className={`h6 ${styles['nav-link-bo']}`} href="">
+                <Link
+                  href="/product/productList"
+                  className={`h6 ${styles['nav-link-bo']}`}
+                >
                   商城
-                </a>
+                </Link>
               </li>
               <li>
                 <a className={`h6 ${styles['nav-link-bo']}`} href="">
@@ -176,12 +179,12 @@ export default function Header() {
                           </a>
                         </li>
                         <li className={styles['navigation-item-bo']}>
-                          <a
-                            href="#"
+                          <Link
+                            href="/product/productList"
                             className={`h6 ${styles['navigation-link-bo']}`}
                           >
                             商城
-                          </a>
+                          </Link>
                         </li>
                         <li className={styles['navigation-item-bo']}>
                           <a

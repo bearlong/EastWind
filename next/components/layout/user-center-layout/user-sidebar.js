@@ -26,8 +26,11 @@ export default function UserSidebar() {
   useEffect(() => {
     const path = router.pathname.split('/').pop() // 獲取當前路徑的最後部分
 
-    // 檢查是否為 info 或 info-edit
-    if (path === 'info-edit') {
+    if (router.pathname.startsWith('/user/user-center/order')) {
+      // 如果路徑是 /user/user-center/order 或 /user/user-center/order/[oid]
+      setActiveLink('order')
+      setFirstLink('order')
+    } else if (path === 'info-edit') {
       setActiveLink('info')
       setFirstLink('info')
     } else {
@@ -43,44 +46,60 @@ export default function UserSidebar() {
   }
 
   // 根據鏈接名稱返回對應的圖標
+
   function getIcon(link) {
     switch (link) {
       case 'info':
         return <FaAddressCard />
+
       case 'booking':
         return <FaShop />
+
       case 'party':
         return <FaUserGroup />
+
       case 'order':
         return <IoReceipt />
+
       case 'course':
         return <ImBook />
+
       case 'favorite':
         return <FaHeartCircleCheck />
+
       case 'coupon':
         return <HiTicket />
+
       default:
         return null
     }
   }
 
   // 根據鏈接名稱返回對應的標籤
+
   function getLabel(link) {
     switch (link) {
       case 'info':
         return '個人資料'
+
       case 'booking':
         return '訂桌紀錄'
+
       case 'party':
         return '揪團紀錄'
+
       case 'order':
         return '歷史訂單'
+
       case 'course':
         return '課程'
+
       case 'favorite':
         return '我的最愛'
+
       case 'coupon':
         return '優惠卷'
+
       default:
         return ''
     }
@@ -338,9 +357,8 @@ export default function UserSidebar() {
                     <Link
                       href="/user/user-center/order"
                       onClick={() => updateActiveLink('order')}
-                      className={`${
-                        styles['user-sidebar-link-bo']
-                      } h6 d-flex align-items-center gap-4 ${
+                      className={`${styles['user-sidebar-link-bo']}
+                      h6 d-flex align-items-center gap-4 ${
                         activeLink === 'order' ? styles['user-link-active'] : ''
                       }`}
                     >
@@ -354,9 +372,8 @@ export default function UserSidebar() {
                     <Link
                       href="/user/user-center/course"
                       onClick={() => updateActiveLink('course')}
-                      className={`${
-                        styles['user-sidebar-link-bo']
-                      } h6 d-flex align-items-center gap-4 ${
+                      className={`${styles['user-sidebar-link-bo']}
+                      h6 d-flex align-items-center gap-4 ${
                         activeLink === 'course'
                           ? styles['user-link-active']
                           : ''
@@ -372,9 +389,8 @@ export default function UserSidebar() {
                     <Link
                       href="/user/user-center/favorite"
                       onClick={() => updateActiveLink('favorite')}
-                      className={`${
-                        styles['user-sidebar-link-bo']
-                      } h6 d-flex align-items-center gap-4 ${
+                      className={`${styles['user-sidebar-link-bo']}
+                      h6 d-flex align-items-center gap-4 ${
                         activeLink === 'favorite'
                           ? styles['user-link-active']
                           : ''
@@ -390,9 +406,8 @@ export default function UserSidebar() {
                     <Link
                       href="/user/user-center/coupon"
                       onClick={() => updateActiveLink('coupon')}
-                      className={`${
-                        styles['user-sidebar-link-bo']
-                      } h6 d-flex align-items-center gap-4 ${
+                      className={`${styles['user-sidebar-link-bo']}
+                      h6 d-flex align-items-center gap-4 ${
                         activeLink === 'coupon'
                           ? styles['user-link-active']
                           : ''
