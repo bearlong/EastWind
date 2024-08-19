@@ -132,7 +132,8 @@ router.post('/upload', upload.array('files', 10), (req, res) => {
   }
 })
 
-router.put('/:id', upload.single('file'), async (req, res) => {
+router.put('/:id', upload.array('files', 10), async (req, res) => {
+  // 將 'single' 改為 'array' 並設定最大上傳數量
   try {
     const courseId = parseInt(req.params.id)
     const courseIndex = courseData.findIndex((c) => c.id === courseId)
