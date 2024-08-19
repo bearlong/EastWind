@@ -5,6 +5,7 @@ import { useCart } from '@/hooks/use-cart'
 import UserCenterLayout from '@/components/layout/user-center-layout'
 import styles from '@/styles/bearlong/orderDetail.module.scss'
 import { FaChevronLeft, FaCircle, FaCheck, FaStar } from 'react-icons/fa6'
+import Image from 'next/image'
 
 export default function OrderDetail() {
   const router = useRouter()
@@ -27,6 +28,11 @@ export default function OrderDetail() {
   })
   const [status, setStatus] = useState([{}])
   const [orderDetail, setOrderDetail] = useState([{}])
+  const [commentShow, setCommentShow] = useState(false)
+  const [ratings, setRatings] = useState({})
+  const [hoverRatings, setHoverRatings] = useState({})
+  const [comments, setComments] = useState({})
+
   const statusMapping = {
     付款完成: { displayText: '待出貨', color: 'var(--primary)' },
     已出貨: { displayText: '待收貨', color: 'var(--primary-dark)' },
@@ -38,6 +44,7 @@ export default function OrderDetail() {
     displayText: '未知狀態',
     color: 'var(--default-color)',
   }
+  let subtotal = 0
   const getStatusUpdateAt = (statuses, targetStatus) => {
     const statusObj = statuses.find((status) => status.status === targetStatus)
     return statusObj ? statusObj.update_at : null
@@ -47,6 +54,25 @@ export default function OrderDetail() {
   const shipmentStatus = getStatusUpdateAt(status, '已出貨')
   const completionStatus = getStatusUpdateAt(status, '已完成')
   const reviewStatus = getStatusUpdateAt(status, '已評論')
+
+  const handleCommentShow = () => {
+    setCommentShow(true)
+  }
+
+  const handleCommentHidden = () => {
+    setCommentShow(false)
+  }
+
+  const handleRatingChange = (name, value) => {
+    setRatings((prevRatings) => ({ ...prevRatings, [name]: value }))
+  }
+
+  const handleHoverRatingChange = (name, value) => {
+    setHoverRatings((prevHoverRatings) => ({
+      ...prevHoverRatings,
+      [name]: value,
+    }))
+  }
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -66,7 +92,7 @@ export default function OrderDetail() {
           }
           setOrderInfo(updatedOrderInfo)
           setStatus(result.data.status)
-          setOrderDetail(result.data.orderDetail)
+          setOrderDetail(result.data.orderDetails)
         }
       } catch (error) {
         console.log(error)
@@ -195,7 +221,7 @@ export default function OrderDetail() {
                     <span className={`${styles['title']} p me-3`}>
                       收件人電話
                     </span>
-                    <p>0912-345-678</p>
+                    <p>{orderInfo.phone}</p>
                   </div>
                 </div>
               </div>
@@ -204,28 +230,42 @@ export default function OrderDetail() {
                   <h6>訂單內容</h6>
                 </div>
                 <div className={`${styles['infoBody-bl']}`}>
-                  <div className={`${styles['orderItem-bl']} d-flex mb-5`}>
-                    <div className={`${styles['itemContent-bl']}`}>
-                      <div className={`${styles['itemImg-bl']}`}>
-                        <img src="./images/product/040.jpg" alt="" />
+                  {orderDetail.map((v, i) => {
+                    subtotal += v.price
+                    return (
+                      <div
+                        key={i}
+                        className={`${styles['orderItem-bl']} d-flex mb-5`}
+                      >
+                        <div className={`${styles['itemContent-bl']}`}>
+                          <div className={`${styles['itemImg-bl']}`}>
+                            <Image
+                              src={`/images/${v.object_type}/${v.img}`}
+                              width={200}
+                              height={200}
+                              alt=""
+                              className={`${styles.img}`}
+                            />
+                          </div>
+                          <div className={`${styles['itemTitle-bl']}  ms-3`}>
+                            <p>{v.name}</p>
+                          </div>
+                        </div>
+                        <div
+                          className={`${styles['itemAmount-bl']}  d-flex justify-content-center align-items-center p-0`}
+                        >
+                          <p className={`${styles['amount']}`}>
+                            x <span>{v.quantity}</span>
+                          </p>
+                        </div>
+                        <div
+                          className={`${styles['itemPrice-bl']} d-flex justify-content-end align-items-center p-0`}
+                        >
+                          <p>NT$ {v.price}</p>
+                        </div>
                       </div>
-                      <div className={`${styles['itemTitle-bl']}  ms-3`}>
-                        <p>634精選系列-34mm</p>
-                      </div>
-                    </div>
-                    <div
-                      className={`${styles['itemAmount-bl']}  d-flex justify-content-center align-items-center p-0`}
-                    >
-                      <p className={`${styles['amount']}`}>
-                        x <span>1</span>
-                      </p>
-                    </div>
-                    <div
-                      className={`${styles['itemPrice-bl']} d-flex justify-content-end align-items-center p-0`}
-                    >
-                      <p>NT$ 2,3850</p>
-                    </div>
-                  </div>
+                    )
+                  })}
 
                   <div className={`${styles['orderprice-bl']}`}>
                     <div
@@ -233,7 +273,7 @@ export default function OrderDetail() {
                     >
                       <p>小計</p>
                       <div className={`${styles['num-bl']}`}>
-                        <p>NT$ 2,380</p>
+                        <p>NT$ {subtotal}</p>
                       </div>
                     </div>
                     <div
@@ -243,7 +283,11 @@ export default function OrderDetail() {
                       <div
                         className={`${styles['num-bl']} ${styles['discount-bl']}`}
                       >
-                        <p>-NT$ 2,380</p>
+                        <p>
+                          {orderInfo.total === subtotal
+                            ? ''
+                            : `-NT$ ${subtotal - orderInfo.total}`}
+                        </p>
                       </div>
                     </div>
                     <div
@@ -251,7 +295,9 @@ export default function OrderDetail() {
                     >
                       <p>運費</p>
                       <div className={`${styles['num-bl']}`}>
-                        <p>NT$ 60</p>
+                        <p>
+                          NT$ {orderInfo.delivery_method === '宅配' ? 60 : 0}
+                        </p>
                       </div>
                     </div>
                     <div
@@ -261,7 +307,7 @@ export default function OrderDetail() {
                       <div
                         className={`${styles['num-bl']} ${styles['totle-bl']}`}
                       >
-                        <h6>NT$ 2,380</h6>
+                        <h6>NT$ {orderInfo.total}</h6>
                       </div>
                     </div>
                   </div>
@@ -278,7 +324,11 @@ export default function OrderDetail() {
                     <span className={`${styles['title']} p me-3`}>
                       付款方式
                     </span>
-                    <p>信用卡</p>
+                    <p>
+                      {orderInfo.pay_method === 'credit'
+                        ? '信用卡'
+                        : orderInfo.pay_method}
+                    </p>
                   </div>
                   <div
                     className={`${styles['cardNumber-bl']} d-flex justify-content-start align-items-center mb-4`}
@@ -286,13 +336,17 @@ export default function OrderDetail() {
                     <span className={`${styles['title']} p me-3`}>
                       卡號末碼
                     </span>
-                    <p>2234</p>
+                    <p>
+                      {orderInfo.pay_info.creditNum4
+                        ? orderInfo.pay_info.creditNum4
+                        : ''}
+                    </p>
                   </div>
                   <div className={`${styles['payTime-bl']} d-flex mb-4`}>
                     <span className={`${styles['title']} p me-3`}>
                       交易時間
                     </span>
-                    <p>2024-05-12</p>
+                    <p>{orderInfo.order_date}</p>
                   </div>
                 </div>
               </div>
@@ -301,7 +355,9 @@ export default function OrderDetail() {
                   <h6>訂單備註</h6>
                 </div>
                 <div className={`${styles['infoBody-bl']}`}>
-                  <div className={`${styles['payType-bl']} d-flex mb-4`}></div>
+                  <div className={`${styles['payType-bl']} d-flex p`}>
+                    {orderInfo.remark}
+                  </div>
                 </div>
               </div>
               <div
@@ -309,6 +365,7 @@ export default function OrderDetail() {
               >
                 <button
                   className={`${styles['openFull-bl']} ${styles['btnOrder-bl']} ${styles['btnComment-bl']} me-0 me-lg-3 mb-lg-0 mb-3`}
+                  onClick={handleCommentShow}
                 >
                   商品評價
                 </button>
@@ -321,53 +378,106 @@ export default function OrderDetail() {
             </div>
           </div>
         </div>
-        <div className={`${styles['fullscreenblack-bl']}`}>
+        <div
+          className={`${styles['fullscreenblack-bl']} ${
+            commentShow ? styles['active'] : ''
+          }`}
+        >
           <div className={`${styles['comment-bl']}`}>
             <h6 className="my-3">商品評論</h6>
             <div className={`${styles['commentArea-bl']} mb-5`}>
-              <div className={`${styles['commentItem-bl']} mb-5 px-2`}>
-                <div className={`${styles['itemContent-bl']} mb-3`}>
-                  <div className={`${styles['itemImg-bl']} mb-3 me-3`}>
-                    <img src="./images/product/040.jpg" alt="" />
-                  </div>
+              {orderDetail.map((v, i) => {
+                return (
                   <div
-                    className={`${styles['iteminfo-bl']} d-flex flex-column justify-content-between`}
+                    key={i}
+                    className={`${styles['commentItem-bl']} mb-5 px-2`}
                   >
-                    <p>蛋黃哥懶得打麻將組</p>
-                    <div
-                      className={`${styles['star-bl']} d-flex align-items-center`}
-                    >
-                      <p className="me-3">評分:</p>
-                      <i className="fas fa-star" />
-                      <i className="fas fa-star" />
-                      <i className="fas fa-star" />
-                      <i className="fas fa-star" />
-                      <i className="fas fa-star" />
+                    <div className={`${styles['itemContent-bl']} mb-3`}>
+                      <div className={`${styles['itemImg-bl']} mb-3 me-3`}>
+                        <Image
+                          src={`/images/${v.object_type}/${v.img}`}
+                          width={200}
+                          height={200}
+                          alt=""
+                          className={`${styles.img}`}
+                        />
+                      </div>
+                      <div
+                        className={`${styles['iteminfo-bl']} d-flex flex-column justify-content-between`}
+                      >
+                        <p>{v.name}</p>
+                        <div
+                          className={`${styles['star-bl']} d-flex align-items-center`}
+                        >
+                          <p className="me-3">評分:</p>
+                          {Array(5)
+                            .fill()
+                            .map((r, i) => {
+                              const score = i + 1
+                              return (
+                                <button
+                                  key={score}
+                                  onClick={() => {
+                                    // 選按後設定分數
+                                    handleRatingChange(v.name, score)
+                                  }}
+                                  onMouseEnter={() => {
+                                    // 進入時設定分數
+                                    handleHoverRatingChange(v.name, score)
+                                  }}
+                                  onMouseLeave={() => {
+                                    //移出時變回預設值
+                                    handleHoverRatingChange(v.name, 0)
+                                  }}
+                                >
+                                  {/* 判斷是否點亮星號，如分數大於對應星號則on */}
+                                  <span
+                                    className={`${
+                                      score <= ratings[v.name] ||
+                                      score <= hoverRatings[v.name]
+                                        ? styles.on
+                                        : styles.off
+                                    } p d-inline-grid justify-content-between align-items-center`}
+                                  >
+                                    <FaStar />
+                                  </span>
+                                </button>
+                              )
+                            })}
+                        </div>
+                      </div>
+                    </div>
+                    <div className={`${styles['commentBox-bl']} `}>
+                      <p className="mb-3">評論:</p>
+                      <textarea
+                        className="form-control p"
+                        name="comment"
+                        id=""
+                        rows={3}
+                        value={comments[v.name]}
+                        onChange={(e) => {
+                          setComments({ ...comments, [v.name]: e.target.value })
+                        }}
+                      />
                     </div>
                   </div>
-                </div>
-                <div className={`${styles['commentBox-bl']} `}>
-                  <p className="mb-3">評論:</p>
-                  <textarea
-                    className="form-control p"
-                    name="comment"
-                    id=""
-                    rows={3}
-                    defaultValue={''}
-                  />
-                </div>
-              </div>
+                )
+              })}
             </div>
             <div
               className={`${styles['btnGroup-bl']} d-flex justify-content-around justify-content-md-end`}
             >
               <button
                 className={`${styles['btnComment-bl']} ${styles['btnOrder-bl']} me-3`}
+                onClick={() => {
+                  console.log(comments, ratings)
+                }}
               >
                 送出
               </button>
               <button
                 className={`${styles['btnOrder-bl']} ${styles['closeFull-bl']}`}
+                onClick={handleCommentHidden}
               >
                 取消
               </button>

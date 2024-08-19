@@ -181,7 +181,7 @@
     width: 50%;
     height: 50%;
     .commentArea-bl {
-      max-height: 60%;
+      max-height: 70%;
       overflow: auto;
     }
     .itemContent-bl {
@@ -197,14 +197,14 @@
         }
       }
       .star-bl {
-        i {
-          font-size: 1.6rem;
-          color: var(--text-hover-color);
-          &:hover {
+        button {
+          background: transparent;
+          border: 0px;
+          .on {
             color: var(--primary);
           }
-          &.active {
-            color: var(--primary);
+          .off {
+            color: var(--text-hover-color);
           }
         }
       }

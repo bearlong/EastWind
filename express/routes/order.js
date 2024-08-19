@@ -11,7 +11,7 @@ router.get('/:oid', async (req, res) => {
 
   try {
     const [orderInfo] = await dbPromise.execute(
-      'SELECT `uo`.`id`,`uo`.`numerical_order`,`uo`.`user_id`, `uo`.`delivery_method`, `uo`.`delivery_address`,  `uo`.`recipient`,   `uo`.`pay_method`,   `uo`.`pay_info`,  `uo`.`total`,  `uo`.`coupons_id`,   `uo`.`discount_info`,   `uo`.`remark`,   `uo`.`status_now`,  `uo`.`order_date`, `u`.`phone`, COUNT(`od`.`id`) AS `order_detail_count`, `od`.`object_type`, GROUP_CONCAT(`od`.`object_id`) AS `object_ids`, GROUP_CONCAT(`od`.`object_type`) AS `object_types`,GROUP_CONCAT(`od`.`name`) AS `names`, GROUP_CONCAT(`od`.`quantity`) AS `quantitys`, GROUP_CONCAT(`od`.`price`) AS `prices`,GROUP_CONCAT( CASE WHEN `od`.`object_type` = "product" THEN `p`.`img` WHEN `od`.`object_type` = "course" THEN `c`.`images` END ) AS all_item_images FROM `user_order` `uo` JOIN `order_detail` `od` ON `uo`.`id` = `od`.`order_id` LEFT JOIN `product` `p` ON `od`.`object_id` = `p`.`id` AND  `od`.`object_type` = "product" LEFT JOIN `course` `c` ON `od`.`object_id` = `c`.`id` AND `od`.`object_type` = "course" WHERE `uo`.`numerical_order` = ?  GROUP BY `uo`.`id` ORDER BY `od`.`id` ASC',
+      'SELECT `uo`.`id`,`uo`.`numerical_order`,`uo`.`user_id`, `uo`.`delivery_method`, `uo`.`delivery_address`,  `uo`.`recipient`,   `uo`.`pay_method`,   `uo`.`pay_info`,  `uo`.`total`,  `uo`.`coupons_id`,   `uo`.`discount_info`,   `uo`.`remark`,   `uo`.`status_now`,  `uo`.`order_date`, `u`.`phone`, COUNT(`od`.`id`) AS `order_detail_count`, `od`.`object_type`, GROUP_CONCAT(`od`.`object_id`) AS `object_ids`, GROUP_CONCAT(`od`.`object_type`) AS `object_types`,GROUP_CONCAT(`od`.`name`) AS `names`, GROUP_CONCAT(`od`.`quantity`) AS `quantitys`, GROUP_CONCAT(`od`.`price`) AS `prices`,GROUP_CONCAT( CASE WHEN `od`.`object_type` = "product" THEN `p`.`img` WHEN `od`.`object_type` = "course" THEN `c`.`images` END ) AS all_item_images FROM `user_order` `uo` JOIN `order_detail` `od` ON `uo`.`id` = `od`.`order_id`LEFT JOIN `user` `u` ON `uo`.`user_id` = `u`.`id` LEFT JOIN `product` `p` ON `od`.`object_id` = `p`.`id` AND  `od`.`object_type` = "product" LEFT JOIN `course` `c` ON `od`.`object_id` = `c`.`id` AND `od`.`object_type` = "course" WHERE `uo`.`numerical_order` = ?  GROUP BY `uo`.`id` ORDER BY `od`.`id` ASC',
       [oid]
     )
 
@@ -24,8 +24,8 @@ router.get('/:oid', async (req, res) => {
         : []
 
       const newNames = orderInfo[0].names ? orderInfo[0].names.split(',') : []
-      const newImages = orderInfo[0].images
-        ? orderInfo[0].images.split(',')
+      const newImages = orderInfo[0].all_item_images
+        ? orderInfo[0].all_item_images.split(',')
         : []
       const newQuantitys = orderInfo[0].quantitys
         ? orderInfo[0].quantitys.split(',')
