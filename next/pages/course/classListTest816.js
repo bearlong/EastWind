@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import styles from '@/styles/aa/classList.scss'
 import Footer from '@/components/layout/default-layout/footer'
+import Header from '@/components/layout/default-layout/header'
 
 export default function ClassList() {
   const [courses, setCourses] = useState([])
@@ -36,6 +37,7 @@ export default function ClassList() {
     <>
       <div className="container">
         <div className="desktop-list-aa">
+          <Header />
           <div className="sec1-aa">
             <div className="texth2-aa">
               <h2>所有課程列表</h2>
