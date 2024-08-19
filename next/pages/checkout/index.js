@@ -8,12 +8,13 @@ import { AuthContext } from '@/context/AuthContext'
 import validator from 'validator'
 import toast from 'react-hot-toast'
 import { Toaster } from 'react-hot-toast'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
 export default function Checkout() {
   const { user, loading } = useContext(AuthContext)
   let subTotal = 0
   let totalPrice
-  let username
   const initSendForm = {
     country: '',
     firstname: '',
@@ -94,11 +95,32 @@ export default function Checkout() {
   const [card, setCard] = useState([])
   const [couponSelect, setCouponSelect] = useState('')
   const [total, setTotal] = useState(0)
+  const notifyAndRemove = (numerical_order) => {
+    Swal.fire({
+      position: 'center',
+      icon: 'success',
+      customClass: {
+        popup: `h6`,
+        title: `h4`,
+        content: `h1`,
+      },
+      title: `訂單已完成</br> 訂單編號為: ${numerical_order} </br> 立即跳轉訂單列表`,
+      showConfirmButton: false,
+      timer: 3000,
+    })
+  }
 
   const goLinePay = (orderId) => {
     if (window.confirm('確認要導向至LINE Pay進行付款?')) {
       // 先連到node伺服器後，導向至LINE Pay付款頁面
       window.location.href = `http://localhost:3005/api/checkout/LinepayReserve?orderId=${orderId}`
+    }
+  }
+
+  const goECPay = (orderId) => {
+    if (window.confirm('確認要導向至ECPay進行付款?')) {
+      // 先連到node伺服器後，導向至LINE Pay付款頁面
+      window.location.href = `http://localhost:3005/api/checkout/ecpaypayment?orderId=${orderId}`
     }
   }
 
@@ -223,7 +245,7 @@ export default function Checkout() {
     let { firstname, lastname, ...newSendData } = sendForm
     let name = firstname + lastname
     if (delivery === '自取') {
-      name = username
+      name = user.username
       newSendData = {}
     }
     formData.append('delivery', delivery)
@@ -270,11 +292,11 @@ export default function Checkout() {
       const result = await response.json()
       if (result.status === 'success') {
         if (payMethod === 'credit') {
-          handleRemoveAll()
-          console.log(result.data.numerical_order)
-          // router.push('/product')
+          handleCreditPay(result.data.orderId, result.data.numerical_order)
         } else if (payMethod === 'Linepay') {
           goLinePay(result.data.orderId)
+        } else if (payMethod === 'ECPay') {
+          goECPay(result.data.orderId)
         }
       } else {
         result.data.message.forEach((message) => {
@@ -292,6 +314,80 @@ export default function Checkout() {
             },
           })
         })
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const handleConfirm = async (transactionId) => {
+    const url = `http://localhost:3005/api/checkout/confirm?transactionId=${transactionId}`
+    try {
+      const response = await fetch(url)
+      const result = await response.json()
+      if (result.status === 'success') {
+        notifyAndRemove(result.data.numerical_order)
+        setTimeout(() => {
+          handleRemoveAll()
+          router.push('/order/orderList')
+        }, 3000)
+      } else {
+        toast.error('付款失敗', {
+          style: {
+            border: `1px solid #d71515`,
+            padding: '16px',
+            fontSize: '16px',
+            color: '#0e0e0e',
+          },
+          iconTheme: {
+            primary: `#d71515`,
+            secondary: '#ffffff',
+            fontSize: '16px',
+          },
+        })
+      }
+      if (result.data) {
+        console.log(result.data)
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const handleCreditPay = async (id, numerical_order) => {
+    const url = `http://localhost:3005/api/checkout/${user.id}`
+    try {
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json', // 設定內容類型為 JSON
+        },
+        body: JSON.stringify({ id: id, numerical_order: numerical_order }),
+      })
+      const result = await response.json()
+      if (result.status === 'success') {
+        notifyAndRemove(result.data.numerical_order)
+        setTimeout(() => {
+          handleRemoveAll()
+          router.push('/order/orderList')
+        }, 3000)
+      } else {
+        toast.error('付款失敗', {
+          style: {
+            border: `1px solid #d71515`,
+            padding: '16px',
+            fontSize: '16px',
+            color: '#0e0e0e',
+          },
+          iconTheme: {
+            primary: `#d71515`,
+            secondary: '#ffffff',
+            fontSize: '16px',
+          },
+        })
+      }
+      if (result.data) {
+        console.log(result.data)
       }
     } catch (err) {
       console.log(err)
@@ -316,7 +412,6 @@ export default function Checkout() {
             })
             setCoupon(coupons)
             setCard(card)
-            username = userInfo[0].username
           } else {
             console.log(result.data.message)
           }
@@ -326,12 +421,27 @@ export default function Checkout() {
       }
     }
     if (router.isReady && !loading) {
+      const { transactionId, orderId, RtnMsg, CustomField1 } = router.query
+
       if (user) {
         fetchUserInfo()
       } else if (!user && loading === false) {
         alert('請先登入會員')
         router.push('/login')
       }
+
+      if (RtnMsg === 'Succeeded') {
+        notifyAndRemove(CustomField1)
+        setTimeout(() => {
+          handleRemoveAll()
+          router.push('/order/orderList')
+        }, 3000)
+      }
+
+      if (!transactionId || !orderId) {
+        return
+      }
+      handleConfirm(transactionId)
     }
   }, [router.isReady, user])
 
@@ -415,6 +525,14 @@ export default function Checkout() {
       })
     }
   }, [cardSelect])
+
+  if (loading) {
+    return (
+      <>
+        <p>與伺服器連線同步中...</p>
+      </>
+    )
+  }
 
   return (
     <>
@@ -949,20 +1067,28 @@ export default function Checkout() {
               </div>
               <input
                 type="radio"
-                id="ECpay"
-                value={'ECpay'}
+                id="ECPay"
+                value={'ECPay'}
                 name="pay-method"
-                checked={payMethod === 'ECpay'}
+                checked={payMethod === 'ECPay'}
                 onChange={(e) => {
                   setPayMethod(e.target.value)
                 }}
               />
               <label
-                htmlFor="ECpay"
+                htmlFor="ECPay"
                 className={`${styles['payment-pay-radio-bo']} ${styles['payment-radio-bo']} p`}
               >
                 <div className={`${styles.circle} me-2`} />
-                ECpay(綠界金流)
+                <div className={`${styles.logoBox}`}>
+                  <Image
+                    src={`../../ECPay/logo300x180.png`}
+                    width={200}
+                    height={200}
+                    alt=""
+                    className={`${styles.img}`}
+                  />
+                </div>
               </label>
               <input
                 type="radio"
@@ -979,7 +1105,15 @@ export default function Checkout() {
                 className={`${styles['payment-pay-radio-bo']} ${styles['bottomBorder']} ${styles['payment-radio-bo']} mb-3 p`}
               >
                 <div className={`${styles.circle} me-2`} />
-                Line pay
+                <div className={`${styles.logoBox}`}>
+                  <Image
+                    src={`../../line-pay/LINE-Pay(h)_W238_n.png`}
+                    width={200}
+                    height={200}
+                    alt=""
+                    className={`${styles.img}`}
+                  />
+                </div>
               </label>
             </div>
           </div>

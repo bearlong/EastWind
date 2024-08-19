@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from 'react'
+import { useContext, useState, useEffect, useRef } from 'react'
 import UserCenterLayout from '@/components/layout/user-center-layout'
 import styles from '@/styles/boyu/user-info-edit.module.scss'
 import { FaEdit } from 'react-icons/fa'
@@ -13,12 +13,10 @@ export default function UserInfoEdit() {
   const router = useRouter()
 
   // 取得當前登入用戶資訊
-  const { user } = useContext(AuthContext)
+  const { user, updateUserImage } = useContext(AuthContext)
 
   // 狀態管理
   const [cards, setCards] = useState([]) // 信用卡列表
-
-  // 用戶詳細資料的狀態管理
   const [formValues, setFormValues] = useState({
     email: '',
     account: '',
@@ -33,32 +31,68 @@ export default function UserInfoEdit() {
   })
 
   const [initialFormValues, setInitialFormValues] = useState({}) // 用於追蹤初始值
-
-  const [isPasswordChanged, setIsPasswordChanged] = useState(false) // 用於追蹤密碼是否更改
-
+  const [isPasswordChanged, setIsPasswordChanged] = useState(false) // 用於追蹤密碼是否修改
   const [emailVerified, setEmailVerified] = useState(false) // 追蹤 email 是否驗證過
+  const [needPwdValidation, setNeedPwdValidation] = useState(true) // 是否需要驗證原密碼
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false)
 
-  useEffect(() => {
-    if (user) {
+  const fileInputRef = useRef(null) // 用於參考文件輸入元素
+
+  // 從伺服器獲取用戶資料
+  const fetchUserData = async () => {
+    if (!user || !user.id) {
+      console.error('User ID is missing or user is not defined.')
+      return
+    }
+    try {
+      const response = await fetch(
+        `http://localhost:3005/api/user/user/${user.id}`
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch user data')
+      }
+
+      const result = await response.json()
+      const updatedUser = result.data
+
+      // 格式化生日
+      const formattedBirthDate = updatedUser.birth
+        ? new Date(updatedUser.birth)
+            .toISOString()
+            .split('T')[0]
+            .replace(/-/g, ' / ')
+        : ''
+
+      // 初始化表單值
       const initialValues = {
-        email: user.email,
-        account: user.account,
-        password: '●'.repeat(user.password.length),
-        username: user.username,
+        email: updatedUser.email || '',
+        account: updatedUser.account || '',
+        password: updatedUser.password || '',
         confirmPassword: '',
-        gender: user.gender,
-        birthDate: user.birth,
-        city: user.city,
-        address: user.address,
-        phone: user.phone,
+        username: updatedUser.username || '',
+        gender: updatedUser.gender || '',
+        birthDate: formattedBirthDate, // 使用格式化後的生日
+        city: updatedUser.city || '',
+        address: updatedUser.address || '',
+        phone: updatedUser.phone || '',
       }
 
       setFormValues(initialValues)
-      setInitialFormValues(initialValues) // 保存初始值
-      setEmailVerified(true) // 初始的 email 預設為已驗證
+      setInitialFormValues(initialValues)
+    } catch (error) {
+      console.error('Failed to fetch user data:', error)
+    }
+  }
+
+  // 初始化用戶數據
+  useEffect(() => {
+    if (user && user.id) {
+      fetchUserData()
     }
   }, [user])
 
+  // 處理表單輸入變更
   const onInputChange = (event) => {
     const { name, value } = event.target
 
@@ -70,21 +104,25 @@ export default function UserInfoEdit() {
     // 如果用戶修改了密碼框的內容，更新`isPasswordChanged`
     if (name === 'password') {
       setIsPasswordChanged(true)
+      setNeedPwdValidation(false) // 當用戶修改密碼時，不再需要驗證原密碼
     }
 
+    // 更新表單值
     setFormValues({
       ...formValues,
       [name]: value,
     })
   }
 
+  // 控制是否顯示確認密碼欄位
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   useEffect(() => {
-    // 當用戶實際更改了密碼時，才顯示確認密碼輸入框
+    // 當用戶實際修改了密碼時，才顯示確認密碼輸入框
     setShowConfirmPassword(formValues.password !== initialFormValues.password)
   }, [formValues.password, initialFormValues.password])
 
+  // 表單驗證
   const [errors, setErrors] = useState({})
 
   const validateForm = async () => {
@@ -101,92 +139,144 @@ export default function UserInfoEdit() {
       phone,
     } = formValues
 
-    // 用於驗證的正則表達式
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    const accountPasswordRegex = /^(?=.*[A-Za-z])[A-Za-z\d]{6,}$/ // 至少6碼且包含英文字
+    const accountPasswordRegex = /^(?=.*[A-Za-z])[A-Za-z\d]{6,}$/
     const phoneRegex = /^09\d{8}$/
 
     const newErrors = {}
 
-    // 檢查帳號和電子信箱的唯一性
-    const { accountExists, emailExists } = await checkUniqueValues(
-      email,
-      account
+    // 檢查是否有任何值被修改
+    const isFormChanged = Object.keys(formValues).some(
+      (key) => formValues[key] !== initialFormValues[key]
     )
 
-    if (emailExists) {
-      newErrors.email = '電子信箱已被使用'
+    if (!isFormChanged) {
+      Swal.fire({
+        title: '未進行任何修改',
+        text: '您尚未對資料進行任何修改。',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+      })
+      return false // 返回 false，表示驗證未通過
     }
 
-    if (accountExists) {
-      newErrors.account = '帳號已存在'
+    // 檢查並驗證 email
+    if (email !== initialFormValues.email) {
+      if (!email || !emailRegex.test(email)) {
+        newErrors.email = '請輸入有效的電子信箱'
+      } else {
+        const { emailExists } = await checkUniqueValues(email, account)
+        if (emailExists) {
+          newErrors.email = '電子信箱已被使用'
+        }
+      }
     }
+    toggleCorrectClass('email', !newErrors.email)
 
-    // 如果電子信箱已存在，直接返回錯誤，無需驗證
-    if (newErrors.email) {
-      setErrors(newErrors)
-      return false
+    // 檢查並驗證帳號
+    if (account !== initialFormValues.account) {
+      if (!account || !accountPasswordRegex.test(account)) {
+        newErrors.account = '帳號應至少6碼，且包含英文字'
+      } else {
+        const { accountExists } = await checkUniqueValues(email, account)
+        if (accountExists) {
+          newErrors.account = '帳號已存在'
+        }
+      }
     }
+    toggleCorrectClass('account', !newErrors.account)
 
-    // 驗證電子信箱
-    if (!email || !emailRegex.test(email)) {
-      newErrors.email = '請輸入有效的電子信箱'
+    // 檢查並驗證密碼
+    if (isPasswordChanged) {
+      if (!password || !accountPasswordRegex.test(password)) {
+        newErrors.password = '密碼應至少6碼，且包含英文字'
+      } else if (password === initialFormValues.password) {
+        newErrors.password = '原密碼不需修改'
+      } else if (password !== confirmPassword) {
+        newErrors.confirmPassword = '兩次密碼輸入不一致'
+      }
     }
+    toggleCorrectClass(
+      'password',
+      !newErrors.password && !newErrors.confirmPassword
+    )
 
-    // 驗證帳號和密碼是否相同
-    if (account && password && account === password) {
-      newErrors.password = '帳號與密碼不能相同'
+    // 其他欄位驗證
+    if (username !== initialFormValues.username) {
+      if (!username) {
+        newErrors.username = '姓名不能為空'
+      }
     }
+    toggleCorrectClass('username', !newErrors.username)
 
-    // 驗證帳號（至少6碼且包含英文字）
-    if (!account || !accountPasswordRegex.test(account)) {
-      newErrors.account = '帳號應至少6碼，且包含英文字'
+    if (gender !== initialFormValues.gender) {
+      if (!gender) {
+        newErrors.gender = '請選擇性別'
+      }
     }
+    toggleCorrectClass('gender', !newErrors.gender)
 
-    // 驗證密碼（至少6碼且包含英文字）
-    if (!password || !accountPasswordRegex.test(password)) {
-      newErrors.password = '密碼應至少6碼，且包含英文字'
+    if (birthDate !== initialFormValues.birthDate) {
+      if (!birthDate) {
+        newErrors.birthDate = '請選擇生日'
+      }
     }
+    toggleCorrectClass('birthDate', !newErrors.birthDate)
 
-    // 驗證確認密碼（僅當密碼已更改時）
-    if (showConfirmPassword && password !== confirmPassword) {
-      newErrors.confirmPassword = '兩次密碼輸入不一致'
-    }
-
-    // 驗證其他欄位
-    if (!username) {
-      newErrors.username = '姓名不能為空'
-    }
-
-    if (!gender) {
-      newErrors.gender = '請選擇性別'
-    }
-
-    if (!birthDate) {
-      newErrors.birthDate = '請選擇生日'
-    }
-
+    // 檢查並驗證城市
     if (!city) {
-      newErrors.city = '請選擇縣市'
+      newErrors.city = '請選擇城市'
     }
+    toggleCorrectClass('city', !newErrors.city)
 
-    if (!address) {
-      newErrors.address = '地址不能為空'
+    if (address !== initialFormValues.address) {
+      if (!address) {
+        newErrors.address = '地址不能為空'
+      }
     }
+    toggleCorrectClass('address', !newErrors.address)
 
-    if (!phone || !phoneRegex.test(phone)) {
-      newErrors.phone = '請輸入有效的手機號碼'
+    if (phone !== initialFormValues.phone) {
+      if (!phoneRegex.test(phone)) {
+        newErrors.phone = '請輸入有效的手機號碼'
+      }
     }
+    toggleCorrectClass('phone', !newErrors.phone)
 
-    if (!emailVerified) {
-      newErrors.emailVerified = '請點擊驗證按鈕以驗證電子信箱'
-    }
-
+    // 更新錯誤訊息狀態
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
+  // 動態添加或移除 info-correct-bo 類的輔助函數
+  const toggleCorrectClass = (fieldName, isValid) => {
+    const element = document.querySelector(`[name="${fieldName}"]`)
+
+    if (element) {
+      // 檢查並強制應用背景色
+      if (isValid) {
+        element.style.backgroundColor = 'rgba(183, 148, 71, 0.2)'
+      } else {
+        element.style.backgroundColor = '' // 清除內聯樣式
+      }
+    } else {
+      console.log(`Element with name "${fieldName}" not found.`)
+    }
+  }
+
+  // 發送驗證郵件
   const sendVerificationEmail = () => {
+    // 如果 email 與初始 email 相同，則不需驗證
+    if (formValues.email === initialFormValues.email) {
+      Swal.fire({
+        title: '原電子信箱',
+        text: '這是您的原電子信箱，不需重新驗證。',
+        icon: 'info',
+        confirmButtonText: 'OK',
+      })
+      return
+    }
+
     // 如果 email 已經存在，禁用驗證按鈕
     if (errors.email) {
       Swal.fire({
@@ -198,7 +288,10 @@ export default function UserInfoEdit() {
       return
     }
 
-    // 模擬發送驗證郵件的 API 請求
+    // 儲存 email 到 localStorage
+    localStorage.setItem('emailToVerify', formValues.email)
+
+    // 發送驗證郵件的 API 請求
     fetch('http://localhost:3005/api/user-edit/send-verification-email', {
       method: 'POST',
       headers: {
@@ -215,7 +308,6 @@ export default function UserInfoEdit() {
             icon: 'success',
             confirmButtonText: 'OK',
           })
-          setEmailVerified(true) // 將 email 設為已驗證
         } else {
           Swal.fire({
             title: '發送失敗',
@@ -235,6 +327,37 @@ export default function UserInfoEdit() {
       })
   }
 
+  // 監聽驗證結果並處理
+  useEffect(() => {
+    const { success } = router.query
+
+    if (success === 'true') {
+      const verifiedEmail = localStorage.getItem('emailToVerify')
+
+      Swal.fire({
+        title: '驗證成功',
+        text: '您的電子信箱已成功驗證。',
+        icon: 'success',
+        confirmButtonText: 'OK',
+      }).then(() => {
+        setFormValues((prevValues) => ({
+          ...prevValues,
+          email: verifiedEmail,
+        }))
+        setEmailVerified(true)
+
+        // 清除 localStorage 中的 emailToVerify
+        localStorage.removeItem('emailToVerify')
+      })
+
+      // 替換 URL 中的 query 參數
+      router.replace('/user/user-center/info-edit', undefined, {
+        shallow: true,
+      })
+    }
+  }, [router.query])
+
+  // 檢查 email 和 account 是否唯一
   const checkUniqueValues = async (email, account) => {
     try {
       const response = await fetch(
@@ -256,6 +379,70 @@ export default function UserInfoEdit() {
     }
   }
 
+  // 處理圖片文件選擇
+  const onFileChange = async (event) => {
+    const file = event.target.files[0]
+
+    if (file) {
+      // 檢查文件類型是否為圖片格式
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif']
+      if (!allowedTypes.includes(file.type)) {
+        Swal.fire({
+          title: '無效的圖片格式',
+          text: '請上傳 JPEG、PNG 或 GIF 格式的圖片。',
+          icon: 'error',
+          confirmButtonText: 'OK',
+        })
+        return
+      }
+
+      const formData = new FormData()
+      formData.append('avatar', file)
+
+      try {
+        const response = await fetch(
+          `http://localhost:3005/api/user-edit/update-avatar/${user.id}`,
+          {
+            method: 'POST',
+            body: formData,
+          }
+        )
+
+        if (!response.ok) {
+          throw new Error('Failed to upload avatar')
+        }
+
+        const data = await response.json()
+        if (data.status === 'success') {
+          updateUserImage(data.filename) // 更新 AuthContext 中的 user_img
+
+          Swal.fire({
+            title: '圖片上傳成功',
+            text: '您的大頭照已成功更換。',
+            icon: 'success',
+            confirmButtonText: 'OK',
+          })
+        } else {
+          Swal.fire({
+            title: '圖片上傳失敗',
+            text: '無法上傳圖片，請稍後再試。',
+            icon: 'error',
+            confirmButtonText: 'OK',
+          })
+        }
+      } catch (error) {
+        console.error('Error uploading avatar:', error)
+        Swal.fire({
+          title: '伺服器錯誤',
+          text: '請稍後再試',
+          icon: 'error',
+          confirmButtonText: 'OK',
+        })
+      }
+    }
+  }
+
+  // 取消編輯
   const cancelEdit = () => {
     const isFormChanged = Object.keys(formValues).some(
       (key) => formValues[key] !== initialFormValues[key]
@@ -278,19 +465,30 @@ export default function UserInfoEdit() {
         },
       }).then((result) => {
         if (result.isConfirmed) {
+          // 清理 localStorage
+          localStorage.removeItem('emailToVerify')
+          localStorage.removeItem('emailVerificationStatus')
           router.push('/user/user-center/info')
         }
       })
     } else {
+      // 清理 localStorage
+      localStorage.removeItem('emailToVerify')
+      localStorage.removeItem('emailVerificationStatus')
       router.push('/user/user-center/info')
     }
   }
 
+  // 更新用戶信息
   const updateUserInfo = async () => {
-    const isValid = await validateForm() // 驗證表單
-
-    if (!isValid) {
-      // 若表單有錯誤，直接返回，不進行後續的資料提交
+    // 首先檢查新的 email 是否已驗證
+    if (!emailVerified && formValues.email !== initialFormValues.email) {
+      Swal.fire({
+        title: '電子信箱未驗證',
+        text: '請先驗證您的新電子信箱後再進行修改。',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+      })
       return
     }
 
@@ -308,23 +506,47 @@ export default function UserInfoEdit() {
         confirmButton: `${styles['swal-btn-bo']}`,
         cancelButton: `${styles['swal-btn-cancel-bo']}`,
       },
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        fetch(`http://localhost:3005/api/user-edit/update-user/${user.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formValues),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.status === 'success') {
-              sessionStorage.setItem('updateSuccess', 'true')
-              router.push('/user/user-center/info')
-            } else {
+        const formIsValid = await validateForm()
+
+        if (formIsValid) {
+          setIsFormSubmitted(true) // 表單驗證通過後設置為已提交
+
+          // 表單驗證通過，執行更新操作
+          fetch(`http://localhost:3005/api/user-edit/update-user/${user.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formValues),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.status === 'success') {
+                // 清理 localStorage
+                localStorage.removeItem('emailToVerify')
+                localStorage.removeItem('emailVerificationStatus')
+
+                sessionStorage.setItem('updateSuccess', 'true')
+                router.push('/user/user-center/info')
+              } else {
+                Swal.fire({
+                  title: '修改失敗',
+                  text: '請稍後再試',
+                  icon: 'error',
+                  confirmButtonText: 'OK',
+                  customClass: {
+                    title: 'h6',
+                    icon: `${styles['swal-icon-bo']}`,
+                    confirmButton: `${styles['swal-btn-bo']}`,
+                  },
+                })
+              }
+            })
+            .catch((error) => {
               Swal.fire({
-                title: '修改失敗',
+                title: '伺服器錯誤',
                 text: '請稍後再試',
                 icon: 'error',
                 confirmButtonText: 'OK',
@@ -334,21 +556,8 @@ export default function UserInfoEdit() {
                   confirmButton: `${styles['swal-btn-bo']}`,
                 },
               })
-            }
-          })
-          .catch((error) => {
-            Swal.fire({
-              title: '伺服器錯誤',
-              text: '請稍後再試',
-              icon: 'error',
-              confirmButtonText: 'OK',
-              customClass: {
-                title: 'h6',
-                icon: `${styles['swal-icon-bo']}`,
-                confirmButton: `${styles['swal-btn-bo']}`,
-              },
             })
-          })
+        }
       }
     })
   }
@@ -360,12 +569,12 @@ export default function UserInfoEdit() {
 
   // 格式化日期
   const createdAt = user.created_at.split(' ')[0].replace(/-/g, ' / ')
-  const birthDate = user.birth.replace(/-/g, ' / ')
 
   return (
     <>
       <div className={`${styles['user-info-box-bo']}  w-100`}>
         <div className={`${styles['info-form-box-bo']} flex-column d-flex`}>
+          {/* 基本資訊區塊 */}
           <div
             className={`${styles['info-default-box-bo']} row justify-content-center align-items-center gap-5 gap-lg-0`}
           >
@@ -388,7 +597,7 @@ export default function UserInfoEdit() {
                     <input
                       type="text"
                       className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
-                      value={formValues.email}
+                      value={formValues.email || ''} // 確保 value 有預設值
                       onChange={onInputChange}
                       name="email"
                       placeholder="請輸入需修改的email"
@@ -416,7 +625,7 @@ export default function UserInfoEdit() {
                   <input
                     type="text"
                     className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
-                    value={formValues.account}
+                    value={formValues.account || ''} // 確保 value 有預設值
                     onChange={onInputChange}
                     name="account"
                     placeholder="請輸入需修改的帳號"
@@ -434,9 +643,9 @@ export default function UserInfoEdit() {
                 >
                   <h6 className={`${styles['info-name-bo']} h6`}>密碼</h6>
                   <input
-                    type="password"
+                    type="text" // 改成 text 顯示密碼
                     className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
-                    value={formValues.password}
+                    value={formValues.password || ''} // 確保 value 有預設值
                     onChange={onInputChange}
                     name="password"
                     placeholder="請輸入需修改的密碼"
@@ -456,9 +665,9 @@ export default function UserInfoEdit() {
                     >
                       <h6 className={`${styles['info-name-bo']} h6`}>確認</h6>
                       <input
-                        type="password"
+                        type="text" // 這裡改成 text 顯示原密碼
                         className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
-                        value={formValues.confirmPassword}
+                        value={formValues.confirmPassword || ''} // 確保 value 有預設值
                         onChange={onInputChange}
                         name="confirmPassword"
                         placeholder="請再次輸入密碼"
@@ -478,6 +687,7 @@ export default function UserInfoEdit() {
               </div>
             </div>
 
+            {/* 使用者圖片區塊 */}
             <div
               className={`${styles['default-img-box-bo']} ${styles['move-up-bo']} col-12 col-lg-4 d-flex flex-column justify-content-center align-items-center position-relative`}
             >
@@ -486,16 +696,23 @@ export default function UserInfoEdit() {
                   className={`${styles['user-img-bo']}`}
                   src={
                     user && user.user_img
-                      ? `/images/boyu/users/${user.user_img}.jpg`
+                      ? `/images/boyu/users/${
+                          user.user_img
+                        }.jpg?${new Date().getTime()}`
                       : user && user.gender === '男'
                       ? '/images/boyu/users/user-male-default.svg'
                       : '/images/boyu/users/user-female-default.svg'
                   }
                   alt={user?.username || 'User'}
                 />
-                <div className={styles['btn-edit-img']}>
+
+                <button
+                  type="button"
+                  className={`${styles['btn-edit-img']} btn`}
+                  onClick={() => fileInputRef.current.click()} // 觸發文件輸入點擊事件
+                >
                   <FaEdit />
-                </div>
+                </button>
               </div>
               <div
                 className={`${styles['create-date-box-bo']} h6 text-center d-flex justify-content-center align-items-center`}
@@ -503,9 +720,17 @@ export default function UserInfoEdit() {
                 <h6>創建日期&nbsp;:&nbsp;</h6>
                 <h6>{createdAt}</h6>
               </div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: 'none' }} // 隱藏文件輸入
+                onChange={onFileChange}
+                accept="image/*" // 限制只能選擇圖片文件
+              />
             </div>
           </div>
 
+          {/* 詳細資訊區塊 */}
           <div
             className={`${styles['info-detail-box-bo']} row justify-content-center align-items-start gap-5 gap-xl-0`}
           >
@@ -525,7 +750,7 @@ export default function UserInfoEdit() {
                   <input
                     type="text"
                     className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
-                    value={formValues.username}
+                    value={formValues.username || ''} // 確保 value 有預設值
                     onChange={onInputChange}
                     name="username"
                     placeholder="請輸入需修改的姓名"
@@ -542,15 +767,18 @@ export default function UserInfoEdit() {
                   className={`${styles['info-col-bo']} d-flex justify-content-center flex-column flex-sm-row`}
                 >
                   <h6 className={`${styles['info-name-bo']} h6`}>性別</h6>
-                  <input
-                    type="text"
-                    className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
-                    value={formValues.gender}
+                  <select
+                    className={`${styles['info-text-bo']} ${styles['input-select']} h6 d-flex align-items-center`}
+                    value={formValues.gender || ''} // 確保 value 有預設值
                     onChange={onInputChange}
                     name="gender"
-                    placeholder="請輸入需修改的性別"
-                  />
+                  >
+                    <option value="">請選擇性別</option>
+                    <option value="男">男</option>
+                    <option value="女">女</option>
+                  </select>
                 </div>
+
                 {errors.gender && (
                   <div className={`d-flex justify-content-start w-100 mb-3`}>
                     <p className={`${styles['text-error-bo']} p`}>
@@ -563,12 +791,16 @@ export default function UserInfoEdit() {
                 >
                   <h6 className={`${styles['info-name-bo']} h6`}>生日</h6>
                   <input
-                    type="text"
-                    className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
-                    value={formValues.birthDate}
+                    type="date" // 將類型設置為日期選擇器
+                    className={`${styles['info-text-bo']} ${styles['dateInput']} h6 d-flex align-items-center`}
+                    value={
+                      formValues.birthDate
+                        ? formValues.birthDate.split('T')[0]
+                        : ''
+                    }
                     onChange={onInputChange}
                     name="birthDate"
-                    placeholder="請輸入需修改的生日"
+                    placeholder="請選擇生日"
                   />
                 </div>
                 {errors.birthDate && (
@@ -585,24 +817,52 @@ export default function UserInfoEdit() {
                   <div
                     className={`w-100 d-flex justify-content-center  gap-3 `}
                   >
-                    <input
-                      type="text"
-                      className={`${styles['info-text-bo']} ${styles['info-city-bo']} h6 d-flex align-items-center`}
-                      value={formValues.city}
+                    <select
+                      className={`${styles['info-text-bo']} ${styles['info-city-bo']} ${styles['input-select']} h6 d-flex align-items-center`}
+                      value={formValues.city || ''} // 確保 value 有預設值
                       onChange={onInputChange}
                       name="city"
-                      placeholder="縣市"
-                    />
+                    >
+                      <option value="">請選擇縣市</option>
+                      <option value="台北市">台北市</option>
+                      <option value="新北市">新北市</option>
+                      <option value="桃園市">桃園市</option>
+                      <option value="台中市">台中市</option>
+                      <option value="台南市">台南市</option>
+                      <option value="高雄市">高雄市</option>
+                      <option value="基隆市">基隆市</option>
+                      <option value="新竹市">新竹市</option>
+                      <option value="嘉義市">嘉義市</option>
+                      <option value="苗栗縣">苗栗縣</option>
+                      <option value="彰化縣">彰化縣</option>
+                      <option value="南投縣">南投縣</option>
+                      <option value="雲林縣">雲林縣</option>
+                      <option value="嘉義縣">嘉義縣</option>
+                      <option value="屏東縣">屏東縣</option>
+                      <option value="宜蘭縣">宜蘭縣</option>
+                      <option value="花蓮縣">花蓮縣</option>
+                      <option value="台東縣">台東縣</option>
+                      <option value="澎湖縣">澎湖縣</option>
+                      <option value="金門縣">金門縣</option>
+                      <option value="連江縣">連江縣</option>
+                    </select>
                     <input
                       type="text"
                       className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
-                      value={formValues.address}
+                      value={formValues.address || ''} // 確保 value 有預設值
                       onChange={onInputChange}
                       name="address"
                       placeholder="請輸入需修改的地址"
                     />
                   </div>
                 </div>
+                {errors.city && (
+                  <div className={`d-flex justify-content-start w-100 mb-3`}>
+                    <p className={`${styles['text-error-bo']} p`}>
+                      {errors.city}
+                    </p>
+                  </div>
+                )}
                 {errors.address && (
                   <div className={`d-flex justify-content-start w-100 mb-3`}>
                     <p className={`${styles['text-error-bo']} p`}>
@@ -617,7 +877,7 @@ export default function UserInfoEdit() {
                   <input
                     type="text"
                     className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
-                    value={formValues.phone}
+                    value={formValues.phone || ''} // 確保 value 有預設值
                     onChange={onInputChange}
                     name="phone"
                     placeholder="請輸入需修改的手機號碼"
@@ -632,9 +892,12 @@ export default function UserInfoEdit() {
                 )}
               </div>
             </div>
+
+            {/* 信用卡表單區塊 */}
             <CreditCardForm cards={cards} setCards={setCards} user={user} />
           </div>
 
+          {/* 操作按鈕區塊 */}
           <div
             className={`${styles['info-btn-box-bo']} d-flex justify-content-center align-items-center gap-5`}
           >
@@ -658,6 +921,8 @@ export default function UserInfoEdit() {
     </>
   )
 }
+
+// 指定佈局
 UserInfoEdit.getLayout = function (page) {
   return <UserCenterLayout>{page}</UserCenterLayout>
 }

@@ -104,10 +104,12 @@ export default function UserSidebar() {
           <div className={styles['user-img-box-bo']}>
             {/* 使用來自 Context 的 user.user_img 來顯示用戶照片 */}
             <img
-              className={`${styles['user-img-bo']} d-none d-md-block`}
+              className={`${styles['user-img-bo']}`}
               src={
                 user && user.user_img
-                  ? `/images/boyu/users/${user.user_img}.jpg`
+                  ? `/images/boyu/users/${
+                      user.user_img
+                    }.jpg?${new Date().getTime()}`
                   : user && user.gender === '男'
                   ? '/images/boyu/users/user-male-default.svg'
                   : '/images/boyu/users/user-female-default.svg'
