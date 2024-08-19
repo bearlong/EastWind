@@ -150,12 +150,12 @@ router.get('/', async (req, res) => {
   }
 })
 
-const [list] = await dbPromise.execute('SELECT * FROM course').catch((err) => {
-  if (err) {
-    console.error(err)
-    return []
-  }
-})
+// const [list] = await dbPromise.execute('SELECT * FROM course').catch((err) => {
+//   if (err) {
+//     console.error(err)
+//     return []
+//   }
+// })
 
 // 獲得所有資料，加入分頁與搜尋字串功能，單一資料表處理
 // courses/qs?page=1&keyword=Ele&brand_ids=1&cat_ids=4,5,6,7,8&sizes=1,2&tags=3,4&colors=1,2&orderby=id,asc&perpage=10&price_range=1500,10000
