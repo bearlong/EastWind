@@ -37,11 +37,9 @@ export default function UserInfo() {
         .then((data) => {
           if (data.status === 'success') {
             setUserData(data.data) // 更新 userData 狀態
-          } else {
-            console.error('Failed to fetch user data:', data.message)
           }
         })
-        .catch((error) => console.error('Error fetching user data:', error))
+        .catch()
     }
   }, [user])
 
@@ -52,11 +50,9 @@ export default function UserInfo() {
         .then((data) => {
           if (data.status === 'success') {
             setCards(data.data)
-          } else {
-            console.error('Failed to fetch credit cards:', data.message)
           }
         })
-        .catch((error) => console.error('Error fetching credit cards:', error))
+        .catch()
     }
   }, [user])
 

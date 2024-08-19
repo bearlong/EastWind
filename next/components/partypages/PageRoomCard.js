@@ -99,8 +99,8 @@ export default function RoomCard({ companyData, partyData }) {
           <h6>費用</h6>
         </div>
         <div className={styles.content}>
-          <p>大廳:100/hr</p>
-          <p>包廂:200/hr</p>
+          <p>大廳：{data.lobby}/hr</p>
+          <p>包廂：{data.vip}/hr</p>
         </div>
       </div>
     </div>
