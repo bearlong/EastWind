@@ -3,6 +3,7 @@ import dbPromise from '##/configs/mysql-promise.js'
 import multer from 'multer'
 import moment from 'moment'
 import cors from 'cors'
+import mysql from 'mysql2/promise.js'
 // 檢查空物件, 轉換req.params為數字
 import { getIdParam } from '#db-helpers/db-tool.js'
 
@@ -12,6 +13,7 @@ import app from '##/app.js'
 
 const router = express.Router()
 const upload = multer()
+router.use(cors())
 
 // 模擬數據
 let courseData = [

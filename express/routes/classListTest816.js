@@ -11,6 +11,10 @@ import { getIdParam } from '#db-helpers/db-tool.js'
 import sequelize from '#configs/db.js'
 import app from '##/app.js'
 
+const router = express.Router()
+const upload = multer()
+router.use(cors())
+
 // 設置檔案儲存方式
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -20,9 +24,6 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + '-' + file.originalname)
   },
 })
-
-const router = express.Router()
-const upload = multer()
 
 // 模擬數據
 // let courseData = [
