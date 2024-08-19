@@ -19,9 +19,7 @@ export default function ClassList() {
   const fetchCourses = async () => {
     try {
       setLoading(true)
-      const response = await axios.get(
-        'http://localhost:3005/api/classListTest816'
-      )
+      const response = await axios.get('http://localhost:3005/api/classList')
       setCourses(response.data)
       setLoading(false)
     } catch (err) {

@@ -8,6 +8,7 @@ import { getIdParam } from '#db-helpers/db-tool.js'
 import sequelize from '#configs/db.js'
 const { Course } = sequelize.models
 import { QueryTypes, Op } from 'sequelize'
+import dbPromise from '##/configs/mysql-promise.js'
 
 /* 
 測試連結:
@@ -146,6 +147,13 @@ router.get('/', async (req, res) => {
       status: 'error',
       message: '無法查詢到資料，查詢字串可能有誤',
     })
+  }
+})
+
+const [list] = await dbPromise.execute('SELECT * FROM course').catch((err) => {
+  if (err) {
+    console.error(err)
+    return []
   }
 })
 

@@ -8,6 +8,7 @@ import { getIdParam } from '#db-helpers/db-tool.js'
 
 // 資料庫使用
 import sequelize from '#configs/db.js'
+import app from '##/app.js'
 
 // 設置檔案儲存方式
 const storage = multer.diskStorage({

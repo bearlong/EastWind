@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import styles from '@/styles/aa/classList.scss'
 import Footer from '@/components/layout/default-layout/footer'
+import Header from '@/components/layout/default-layout/header'
 
 export default function ClassList() {
   const router = useRouter()
@@ -22,7 +23,7 @@ export default function ClassList() {
   const fetchClasses = async () => {
     try {
       setLoading(true)
-      const response = await axios.get('實際的API端點')
+      const response = await axios.get('http://localhost:3005/api/classList')
       setClasses(response.data)
       setLoading(false)
     } catch (err) {
@@ -58,7 +59,7 @@ export default function ClassList() {
     <>
       <div className="container">
         <div className="desktop-list-aa">
-          <div className="class-header-aa">
+          {/* <div className="class-header-aa">
             <ul className="d-flex subBar-aa">
               <li>
                 <a className="subNav" href="">
@@ -191,7 +192,8 @@ export default function ClassList() {
                 </div>
               </li>
             </ul>
-          </div>
+          </div> */}
+          <Header />
           <div className="sec1-aa">
             <div className="text2-aa">
               <h2>課程排行</h2>
