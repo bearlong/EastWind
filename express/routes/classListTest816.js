@@ -1,5 +1,6 @@
 import express from 'express'
 import dbPromise from '##/configs/mysql-promise.js'
+import db from '#configs/mysql.js'
 import multer from 'multer'
 import moment from 'moment'
 import cors from 'cors'
