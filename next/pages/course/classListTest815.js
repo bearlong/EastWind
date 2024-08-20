@@ -65,12 +65,12 @@ export default function ClassList() {
     <div className="classCard-aa">
       <div className="imgBox-aa">
         {rank && <div className={`rank${rank}`}>{rank}</div>}
-        <img src={classData.image} alt={classData.title} />
+        <img src={classData.images} alt={classData.course_name} />
       </div>
       <div className="cardBody-aa">
         <div className="className-aa">
-          <p>{classData.title}</p>
-          <p className="classDescription-aa">{classData.instructor}</p>
+          <p>{classData.course_name}</p>
+          <p className="classDescription-aa">{classData.course_category_id}</p>
         </div>
         <p>NT. {classData.price}</p>
       </div>
