@@ -63,18 +63,18 @@ export default function ClassList() {
     return <div className="no-classes">目前沒有可用的課程</div>
 
   // 課程卡片組件
-  const ClassCard = ({ classData, rank }) => (
+  const ClassCard = ({ courseData, rank }) => (
     <div className="classCard-aa">
       <div className="imgBox-aa">
         {rank && <div className={`rank${rank}`}>{rank}</div>}
-        <img src={classData.images} alt={classData.course_name} />
+        <img src={courseData.images} alt={courseData.course_name} />
       </div>
       <div className="cardBody-aa">
         <div className="className-aa">
-          <p>{classData.course_name}</p>
-          <p className="classDescription-aa">{classData.course_category_id}</p>
+          <p>{courseData.course_name}</p>
+          <p className="classDescription-aa">{courseData.course_category_id}</p>
         </div>
-        <p>NT. {classData.price}</p>
+        <p>NT. {courseData.price}</p>
       </div>
     </div>
   )
@@ -229,7 +229,7 @@ export default function ClassList() {
                 .map((classItem, index) => (
                   <ClassCard
                     key={classItem.id}
-                    classData={classItem}
+                    courseData={classItem}
                     rank={index + 1}
                   />
                 ))}
@@ -272,7 +272,7 @@ export default function ClassList() {
                 .flat()
                 .slice(0, 4)
                 .map((classItem, index) => (
-                  <ClassCard key={classItem.id} classData={classItem} />
+                  <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
             </div>
             <div className="btn-more d-flex">
@@ -308,7 +308,7 @@ export default function ClassList() {
                 .flat()
                 .slice(0, 4)
                 .map((classItem, index) => (
-                  <ClassCard key={classItem.id} classData={classItem} />
+                  <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
             </div>
             <div className="btn-more d-flex">
@@ -344,7 +344,7 @@ export default function ClassList() {
                 .flat()
                 .slice(0, 4)
                 .map((classItem, index) => (
-                  <ClassCard key={classItem.id} classData={classItem} />
+                  <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
             </div>
             <div className="btn-more d-flex">
@@ -380,7 +380,7 @@ export default function ClassList() {
                 .flat()
                 .slice(0, 4)
                 .map((classItem, index) => (
-                  <ClassCard key={classItem.id} classData={classItem} />
+                  <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
             </div>
             <div className="btn-more d-flex">
@@ -416,7 +416,7 @@ export default function ClassList() {
                 .flat()
                 .slice(0, 4)
                 .map((classItem, index) => (
-                  <ClassCard key={classItem.id} classData={classItem} />
+                  <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
             </div>
             <div className="btn-more d-flex">
