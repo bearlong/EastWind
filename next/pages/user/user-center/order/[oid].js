@@ -10,6 +10,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
 export default function OrderDetail() {
   const { user, loading } = useContext(AuthContext)
@@ -43,6 +45,7 @@ export default function OrderDetail() {
     付款完成: { displayText: '待出貨', color: 'var(--primary)' },
     已出貨: { displayText: '待收貨', color: 'var(--primary-dark)' },
     已完成: { displayText: '已完成', color: 'var(--background)' },
+    已評論: { displayText: '已完成', color: 'var(--background)' },
     已取消: { displayText: '已取消', color: 'var(--text-hover-color)' },
     '退貨/款': { displayText: '退貨/款', color: 'var(--error-color)' },
   }
@@ -56,10 +59,10 @@ export default function OrderDetail() {
     return statusObj ? statusObj.update_at : null
   }
 
-  const paymentStatus = getStatusUpdateAt(status, '付款完成')
-  const shipmentStatus = getStatusUpdateAt(status, '已出貨')
-  const completionStatus = getStatusUpdateAt(status, '已完成')
-  const reviewStatus = getStatusUpdateAt(status, '已評論')
+  let paymentStatus = getStatusUpdateAt(status, '付款完成')
+  let shipmentStatus = getStatusUpdateAt(status, '已出貨')
+  let completionStatus = getStatusUpdateAt(status, '已完成')
+  let reviewStatus = getStatusUpdateAt(status, '已評論')
 
   const handleCommentShow = () => {
     setCommentShow(true)
@@ -111,8 +114,9 @@ export default function OrderDetail() {
         })
         const result = await response.json()
         if (result.status === 'success') {
-          handleCommentHidden()
           setExistingComments(result.data.comments)
+          setStatus(result.data.status)
+          setOrderDetail(result.data.orderDetails)
           toast.success('評論成功!', {
             style: {
               border: `#55c57a`,
@@ -126,8 +130,13 @@ export default function OrderDetail() {
               fontSize: '20px',
             },
           })
+
+          setTimeout(() => {
+            handleCommentHidden()
+          }, 1000)
         }
       } catch (error) {
+        console.log(error)
         toast.error(`評論失敗`, {
           style: {
             border: '1px solid #d71515',
@@ -180,6 +189,7 @@ export default function OrderDetail() {
             setStatus(result.data.status)
             setOrderDetail(result.data.orderDetails)
             setExistingComments(result.data.comment)
+            console.log(result.data.comment)
           }
         }
       } catch (error) {
@@ -195,7 +205,14 @@ export default function OrderDetail() {
         router.push('/login')
       }
     }
-  }, [router.isReady])
+  }, [router.isReady, router.query])
+
+  useEffect(() => {
+    paymentStatus = getStatusUpdateAt(status, '付款完成')
+    shipmentStatus = getStatusUpdateAt(status, '已出貨')
+    completionStatus = getStatusUpdateAt(status, '已完成')
+    reviewStatus = getStatusUpdateAt(status, '已評論')
+  }, [status])
   return (
     <>
       <div className={`${styles.main}`}>
@@ -270,7 +287,7 @@ export default function OrderDetail() {
                 <FaCheck className={`p ${completionStatus ? '' : 'd-none'}`} />
               </div>
               <p>{completionStatus ? '訂單完成' : '待收貨'}</p>
-              <p>{completionStatus ? completionStatus : ''}</p>
+              {completionStatus ? completionStatus : ''}
             </div>
             <div
               className={`${styles['statusBox-bl']} text-center d-flex flex-column justify-content-between align-items-center`}
@@ -285,7 +302,7 @@ export default function OrderDetail() {
                 <FaCheck className={`p ${reviewStatus ? '' : 'd-none'}`} />
               </div>
               <p>{reviewStatus ? '評論完成' : '尚未評論'}</p>
-              <p>{reviewStatus ? reviewStatus : ''}</p>
+              {reviewStatus ? reviewStatus : ''}
             </div>
             <div className={`${styles['line']} d-none d-md-block`} />
             <div className={`${styles['arrow']} d-grid d-md-none`}>
@@ -481,81 +498,139 @@ export default function OrderDetail() {
             <h6 className="my-3">商品評論</h6>
             <div className={`${styles['commentArea-bl']} mb-5`}>
               {orderDetail.map((v, i) => {
-                return (
-                  <div
-                    key={i}
-                    className={`${styles['commentItem-bl']} mb-5 px-2`}
-                  >
-                    <div className={`${styles['itemContent-bl']} mb-3`}>
-                      <div className={`${styles['itemImg-bl']} mb-3 me-3`}>
-                        <Image
-                          src={`/images/${v.object_type}/${v.img}`}
-                          width={200}
-                          height={200}
-                          alt=""
-                          className={`${styles.img}`}
-                        />
-                      </div>
-                      <div
-                        className={`${styles['iteminfo-bl']} d-flex flex-column justify-content-between`}
-                      >
-                        <p>{v.name}</p>
+                if (v.comment_status === 1) {
+                  const index = existingComments.findIndex(
+                    (r) =>
+                      r.object_id === v.id && r.object_type === v.object_type
+                  )
+                  return (
+                    <div
+                      key={i}
+                      className={`${styles['commentItem-bl']} mb-5 px-2`}
+                    >
+                      <div className={`${styles['itemContent-bl']} mb-3`}>
+                        <div className={`${styles['itemImg-bl']} mb-3 me-3`}>
+                          <Image
+                            src={`/images/${v.object_type}/${v.img}`}
+                            width={200}
+                            height={200}
+                            alt=""
+                            className={`${styles.img}`}
+                          />
+                        </div>
                         <div
-                          className={`${styles['star-bl']} d-flex align-items-center`}
+                          className={`${styles['iteminfo-bl']} d-flex flex-column justify-content-between`}
                         >
-                          <p className="me-3">評分:</p>
-                          {Array(5)
-                            .fill()
-                            .map((r, i) => {
-                              const score = i + 1
-                              return (
-                                <button
-                                  key={score}
-                                  onClick={() => {
-                                    // 選按後設定分數
-                                    handleRatingChange(v, score)
-                                  }}
-                                  onMouseEnter={() => {
-                                    // 進入時設定分數
-                                    handleHoverRatingChange(v.name, score)
-                                  }}
-                                  onMouseLeave={() => {
-                                    //移出時變回預設值
-                                    handleHoverRatingChange(v.name, 0)
-                                  }}
-                                >
-                                  {/* 判斷是否點亮星號，如分數大於對應星號則on */}
-                                  <span
-                                    className={`${
-                                      score <= ratings[v.name]?.star ||
-                                      score <= hoverRatings[v.name]
-                                        ? styles.on
-                                        : styles.off
-                                    } p d-inline-grid justify-content-between align-items-center`}
-                                  >
-                                    <FaStar />
-                                  </span>
-                                </button>
-                              )
-                            })}
+                          <p>{v.name}</p>
+                          <div
+                            className={`${styles['star-bl']} d-flex align-items-center`}
+                          >
+                            <p className="me-3">評分:</p>
+                            {Array(5)
+                              .fill()
+                              .map((r, i) => {
+                                const score = i + 1
+                                return (
+                                  <div key={score}>
+                                    <span
+                                      className={`${
+                                        score <= existingComments[index]?.star
+                                          ? styles.on
+                                          : styles.off
+                                      } p d-inline-grid justify-content-between align-items-center`}
+                                    >
+                                      <FaStar />
+                                    </span>
+                                  </div>
+                                )
+                              })}
+                          </div>
+                        </div>
+                      </div>
+                      <div className={`${styles['commentBox-bl']} `}>
+                        <p className="mb-3">評論:</p>
+                        <div className={`${styles['box-bl']} p`}>
+                          {existingComments[index]?.content}
                         </div>
                       </div>
                     </div>
-                    <div className={`${styles['commentBox-bl']} `}>
-                      <p className="mb-3">評論:</p>
-                      <textarea
-                        className="form-control p"
-                        name="comment"
-                        id=""
-                        rows={3}
-                        value={comments[v.name]}
-                        onChange={(e) => {
-                          setComments({ ...comments, [v.name]: e.target.value })
-                        }}
-                      />
+                  )
+                } else {
+                  return (
+                    <div
+                      key={i}
+                      className={`${styles['commentItem-bl']} mb-5 px-2`}
+                    >
+                      <div className={`${styles['itemContent-bl']} mb-3`}>
+                        <div className={`${styles['itemImg-bl']} mb-3 me-3`}>
+                          <Image
+                            src={`/images/${v.object_type}/${v.img}`}
+                            width={200}
+                            height={200}
+                            alt=""
+                            className={`${styles.img}`}
+                          />
+                        </div>
+                        <div
+                          className={`${styles['iteminfo-bl']} d-flex flex-column justify-content-between`}
+                        >
+                          <p>{v.name}</p>
+                          <div
+                            className={`${styles['star-bl']} d-flex align-items-center`}
+                          >
+                            <p className="me-3">評分:</p>
+                            {Array(5)
+                              .fill()
+                              .map((r, i) => {
+                                const score = i + 1
+                                return (
+                                  <button
+                                    key={score}
+                                    onClick={() => {
+                                      handleRatingChange(v, score)
+                                    }}
+                                    onMouseEnter={() => {
+                                      handleHoverRatingChange(v.name, score)
+                                    }}
+                                    onMouseLeave={() => {
+                                      handleHoverRatingChange(v.name, 0)
+                                    }}
+                                  >
+                                    <span
+                                      className={`${
+                                        score <= ratings[v.name]?.star ||
+                                        score <= hoverRatings[v.name]
+                                          ? styles.on
+                                          : styles.off
+                                      } p d-inline-grid justify-content-between align-items-center`}
+                                    >
+                                      <FaStar />
+                                    </span>
+                                  </button>
+                                )
+                              })}
+                          </div>
+                        </div>
+                      </div>
+                      <div className={`${styles['commentBox-bl']} `}>
+                        <p className="mb-3">評論:</p>
+                        <textarea
+                          className="form-control p"
+                          name="comment"
+                          id=""
+                          rows={3}
+                          value={comments[v.name]}
+                          onChange={(e) => {
+                            setComments({
+                              ...comments,
+                              [v.name]: e.target.value,
+                            })
+                          }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                )
+                  )
+                }
               })}
             </div>
             <div
@@ -567,6 +642,7 @@ export default function OrderDetail() {
                   console.log(comments, ratings)
                   handleCommentSubmit(e)
                 }}
+                disabled={existingComments.length}
               >
                 送出
               </button>

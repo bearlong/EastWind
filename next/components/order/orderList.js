@@ -30,6 +30,7 @@ export default function OrderList() {
     付款完成: { displayText: '待出貨', color: 'var(--primary)' },
     已出貨: { displayText: '待收貨', color: 'var(--primary-dark)' },
     已完成: { displayText: '已完成', color: 'var(--background)' },
+    已評論: { displayText: '已完成', color: 'var(--background)' },
     已取消: { displayText: '已取消', color: 'var(--text-hover-color)' },
     '退貨/款': { displayText: '退貨/款', color: 'var(--error-color)' },
   }
