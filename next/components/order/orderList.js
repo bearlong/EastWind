@@ -36,6 +36,7 @@ export default function OrderList() {
 
   const getOrderInfo = async () => {
     try {
+      if (!user) return
       const url = `http://localhost:3005/api/order?id=${user.id}&status_now=${status}`
       const response = await fetch(url)
       const result = await response.json()
@@ -58,7 +59,7 @@ export default function OrderList() {
     const fetchUserInfo = async () => {
       try {
         if (user) {
-          const url = `http://localhost:3005/api/order?id=${user.id}&status_now=${status}`
+          const url = `http://localhost:3005/api/order?id=${user.id}&status_now=${status_now}`
           const response = await fetch(url)
           const result = await response.json()
           if (result.status === 'success') {
@@ -91,10 +92,10 @@ export default function OrderList() {
   }, [status])
 
   useEffect(() => {
-    if (status_now) {
+    if (router.isReady && status_now && !loading) {
       setStatus(status_now)
     }
-  }, [router.query])
+  }, [router.isReady, router.query])
 
   return (
     <>
@@ -107,7 +108,7 @@ export default function OrderList() {
                   status === '付款完成' ? styles['active'] : ''
                 }`}
                 onClick={() => {
-                  setStatus('付款完成')
+                  router.push('/user/user-center/order?status_now=付款完成')
                 }}
               >
                 <li className={`h6`}>待出貨</li>
@@ -115,7 +116,7 @@ export default function OrderList() {
               <button
                 className={`h6  ${status === '已出貨' ? styles['active'] : ''}`}
                 onClick={() => {
-                  setStatus('已出貨')
+                  router.push('/user/user-center/order?status_now=已出貨')
                 }}
               >
                 <li className={`h6`}>待收貨</li>
@@ -125,7 +126,7 @@ export default function OrderList() {
                   status === '已完成' ? styles['active'] : ''
                 }`}
                 onClick={() => {
-                  setStatus('已完成')
+                  router.push('/user/user-center/order?status_now=已完成')
                 }}
               >
                 <li className={`h6`}>已完成</li>
@@ -133,7 +134,7 @@ export default function OrderList() {
               <button
                 className={`h6  ${status === '已取消' ? styles['active'] : ''}`}
                 onClick={() => {
-                  setStatus('已取消')
+                  router.push('/user/user-center/order?status_now=已取消')
                 }}
               >
                 <li className={`h6 `}>已取消</li>
@@ -143,7 +144,7 @@ export default function OrderList() {
                   status === '退貨/款' ? styles['active'] : ''
                 }`}
                 onClick={() => {
-                  setStatus('退貨/款')
+                  router.push('/user/user-center/order?status_now=退貨/款')
                 }}
               >
                 <li className={`h6`}>退貨/款</li>

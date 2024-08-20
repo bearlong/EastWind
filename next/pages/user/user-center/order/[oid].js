@@ -2,12 +2,17 @@ import React, { useEffect, useState, useContext } from 'react'
 import OrderList from '@/components/order/orderList'
 import { useRouter } from 'next/router'
 import { useCart } from '@/hooks/use-cart'
+import { AuthContext } from '@/context/AuthContext'
 import UserCenterLayout from '@/components/layout/user-center-layout'
 import styles from '@/styles/bearlong/orderDetail.module.scss'
 import { FaChevronLeft, FaCircle, FaCheck, FaStar } from 'react-icons/fa6'
 import Image from 'next/image'
+import Link from 'next/link'
+import { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 
 export default function OrderDetail() {
+  const { user, loading } = useContext(AuthContext)
   const router = useRouter()
   const { oid } = router.query
   const [orderInfo, setOrderInfo] = useState({
@@ -32,6 +37,7 @@ export default function OrderDetail() {
   const [ratings, setRatings] = useState({})
   const [hoverRatings, setHoverRatings] = useState({})
   const [comments, setComments] = useState({})
+  const [existingComments, setExistingComments] = useState([{}])
 
   const statusMapping = {
     付款完成: { displayText: '待出貨', color: 'var(--primary)' },
@@ -63,8 +69,15 @@ export default function OrderDetail() {
     setCommentShow(false)
   }
 
-  const handleRatingChange = (name, value) => {
-    setRatings((prevRatings) => ({ ...prevRatings, [name]: value }))
+  const handleRatingChange = (object, value) => {
+    setRatings((prevRatings) => ({
+      ...prevRatings,
+      [object.name]: {
+        object_id: object.id,
+        object_type: object.object_type,
+        star: value,
+      },
+    }))
   }
 
   const handleHoverRatingChange = (name, value) => {
@@ -74,33 +87,113 @@ export default function OrderDetail() {
     }))
   }
 
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault()
+
+    const dataArray = Object.keys(ratings).map((key) => ({
+      user_id: user.id,
+      order_id: orderInfo.id,
+      object_id: ratings[key].object_id,
+      object_type: ratings[key].object_type,
+      star: ratings[key].star,
+      content: comments[key] || '', // 若評論不存在，則為空字符串
+    }))
+
+    if (dataArray.length === orderDetail.length) {
+      try {
+        const url = 'http://localhost:3005/api/order/comment'
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dataArray),
+        })
+        const result = await response.json()
+        if (result.status === 'success') {
+          handleCommentHidden()
+          setExistingComments(result.data.comments)
+          toast.success('評論成功!', {
+            style: {
+              border: `#55c57a`,
+              padding: '20px',
+              fontSize: '20px',
+              color: '#0e0e0e',
+            },
+            iconTheme: {
+              primary: `#55c57a`,
+              secondary: '#ffffff',
+              fontSize: '20px',
+            },
+          })
+        }
+      } catch (error) {
+        toast.error(`評論失敗`, {
+          style: {
+            border: '1px solid #d71515',
+            padding: '20px',
+            fontSize: '20px',
+            color: '#d71515',
+          },
+          iconTheme: {
+            primary: '#d71515',
+            secondary: '#ffffff',
+            fontSize: '20px',
+          },
+        })
+      }
+    } else {
+      toast.error(`尚未評論完畢`, {
+        style: {
+          border: '1px solid #d71515',
+          padding: '20px',
+          fontSize: '20px',
+          color: '#d71515',
+        },
+        iconTheme: {
+          primary: '#d71515',
+          secondary: '#ffffff',
+          fontSize: '20px',
+        },
+      })
+    }
+  }
+
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const url = `http://localhost:3005/api/order/${oid}`
-        const response = await fetch(url)
-        const result = await response.json()
-        if (result.status === 'success') {
-          const updatedOrderInfo = {
-            ...result.data.orderInfo,
-            delivery_address: result.data.orderInfo.delivery_address
-              ? JSON.parse(result.data.orderInfo.delivery_address)
-              : {},
-            pay_info: result.data.orderInfo.pay_info
-              ? JSON.parse(result.data.orderInfo.pay_info)
-              : {},
+        if (user) {
+          const url = `http://localhost:3005/api/order/${oid}`
+          const response = await fetch(url)
+          const result = await response.json()
+          if (result.status === 'success') {
+            const updatedOrderInfo = {
+              ...result.data.orderInfo,
+              delivery_address: result.data.orderInfo.delivery_address
+                ? JSON.parse(result.data.orderInfo.delivery_address)
+                : {},
+              pay_info: result.data.orderInfo.pay_info
+                ? JSON.parse(result.data.orderInfo.pay_info)
+                : {},
+            }
+            setOrderInfo(updatedOrderInfo)
+            setStatus(result.data.status)
+            setOrderDetail(result.data.orderDetails)
+            setExistingComments(result.data.comment)
           }
-          setOrderInfo(updatedOrderInfo)
-          setStatus(result.data.status)
-          setOrderDetail(result.data.orderDetails)
         }
       } catch (error) {
         console.log(error)
       }
     }
 
-    if (router.isReady) {
-      fetchUserInfo()
+    if (router.isReady && !loading) {
+      if (user) {
+        fetchUserInfo()
+      } else if (!user && loading === false) {
+        alert('請先登入會員')
+        router.push('/login')
+      }
     }
   }, [router.isReady])
   return (
@@ -110,12 +203,13 @@ export default function OrderDetail() {
           <div
             className={`${styles['orderTitle-bl']} d-flex flex-column flex-md-row justify-content-between`}
           >
-            <div
+            <Link
+              href={`/user/user-center/order?status_now=${orderInfo.status_now}`}
               className={`${styles['btnBack-bl']} d-flex align-items-center`}
             >
               <FaChevronLeft className="h5 mb-2 mb-md-0" />
               <p>回上頁</p>
-            </div>
+            </Link>
             <div
               className={`${styles['orderNumber-bl']} d-flex align-items-center justify-content-between`}
             >
@@ -419,7 +513,7 @@ export default function OrderDetail() {
                                   key={score}
                                   onClick={() => {
                                     // 選按後設定分數
-                                    handleRatingChange(v.name, score)
+                                    handleRatingChange(v, score)
                                   }}
                                   onMouseEnter={() => {
                                     // 進入時設定分數
@@ -433,7 +527,7 @@ export default function OrderDetail() {
                                   {/* 判斷是否點亮星號，如分數大於對應星號則on */}
                                   <span
                                     className={`${
-                                      score <= ratings[v.name] ||
+                                      score <= ratings[v.name]?.star ||
                                       score <= hoverRatings[v.name]
                                         ? styles.on
                                         : styles.off
@@ -469,8 +563,9 @@ export default function OrderDetail() {
             >
               <button
                 className={`${styles['btnComment-bl']} ${styles['btnOrder-bl']} me-3`}
-                onClick={() => {
+                onClick={(e) => {
                   console.log(comments, ratings)
+                  handleCommentSubmit(e)
                 }}
               >
                 送出
@@ -481,6 +576,7 @@ export default function OrderDetail() {
               >
                 取消
               </button>
+              <Toaster position="bottom-center" reverseOrder={false} />
             </div>
           </div>
         </div>
