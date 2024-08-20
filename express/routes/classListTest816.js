@@ -25,52 +25,6 @@ const storage = multer.diskStorage({
   },
 })
 
-// 模擬數據
-// let courseData = [
-//   {
-//     id: 1,
-//     course_name: '西洋棋基礎課程',
-//     course_category_id: 1,
-//     content: '學習西洋棋的基本規則和策略',
-//     price: 4500,
-//     images: '1chess.jpg',
-//     file: '1chess.mp4',
-//     created_at: '2024-08-01 10:00:00',
-//     updated_at: '2024-08-01 10:00:00',
-//     on_datetime: '2024-09-01',
-//     off_datetime: '2024-12-31',
-//     valid: 1,
-//   },
-//   {
-//     id: 2,
-//     course_name: '麻將入門',
-//     course_category_id: 2,
-//     content: '學習麻將的基本玩法和技巧',
-//     price: 3800,
-//     images: '1mahjong.jpg',
-//     file: '1mj.mp4',
-//     created_at: '2024-08-02 14:30:00',
-//     updated_at: '2024-08-02 14:30:00',
-//     on_datetime: '2024-09-15',
-//     off_datetime: '2025-01-15',
-//     valid: 1,
-//   },
-//   {
-//     id: 3,
-//     course_name: '圍棋進階技巧',
-//     course_category_id: 3,
-//     content: '深入學習圍棋的進階戰略和戰術',
-//     price: 5200,
-//     images: '1go.mp4',
-//     file: 'go1.mp4',
-//     created_at: '2024-08-03 09:15:00',
-//     updated_at: '2024-08-03 09:15:00',
-//     on_datetime: '2024-10-01',
-//     off_datetime: '2025-02-28',
-//     valid: 1,
-//   },
-// ]
-
 // 創建 MySQL 連接池
 const courseData = mysql.createPool({
   host: '127.0.0.1',
@@ -82,12 +36,20 @@ const courseData = mysql.createPool({
   queueLimit: 0,
 })
 
-router.use(cors())
-
 // 設置 API 端點
 router.get('/', async (req, res) => {
   try {
-    const { course_category_id, price, page = 1, limit = 10 } = req.query
+    const {
+      course_category_id,
+      course_name,
+      price,
+      content,
+      on_datetime,
+      off_datetime,
+      valid,
+      page = 1,
+      limit = 10,
+    } = req.query
 
     // 這裡應該是從數據庫獲取數據的邏輯
     // 目前使用模擬數據
@@ -96,6 +58,12 @@ router.get('/', async (req, res) => {
     if (course_category_id) {
       filteredCourses = filteredCourses.filter(
         (course) => course.course_category_id === parseInt(course_category_id)
+      )
+    }
+
+    if (course_name) {
+      filteredCourses = filteredCourses.filter(
+        (course) => course.course_name === parseInt(course_name)
       )
     }
 
