@@ -268,54 +268,12 @@ export default function ClassList() {
               <h2>西洋棋</h2>
             </div>
             <div className="classCards-aa">
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
+              {Object.values(classes)
+                .flat()
+                .slice(0, 4)
+                .map((classItem, index) => (
+                  <ClassCard key={classItem.id} classData={classItem} />
+                ))}
             </div>
             <div className="btn-more d-flex">
               <p>查看更多</p>
@@ -346,54 +304,12 @@ export default function ClassList() {
               <h2>麻將</h2>
             </div>
             <div className="classCards-aa">
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
+              {Object.values(classes)
+                .flat()
+                .slice(0, 4)
+                .map((classItem, index) => (
+                  <ClassCard key={classItem.id} classData={classItem} />
+                ))}
             </div>
             <div className="btn-more d-flex">
               <p>查看更多</p>
@@ -424,54 +340,12 @@ export default function ClassList() {
               <h2>圍棋</h2>
             </div>
             <div className="classCards-aa">
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
+              {Object.values(classes)
+                .flat()
+                .slice(0, 4)
+                .map((classItem, index) => (
+                  <ClassCard key={classItem.id} classData={classItem} />
+                ))}
             </div>
             <div className="btn-more d-flex">
               <p>查看更多</p>
@@ -502,54 +376,12 @@ export default function ClassList() {
               <h2>撲克</h2>
             </div>
             <div className="classCards-aa">
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
+              {Object.values(classes)
+                .flat()
+                .slice(0, 4)
+                .map((classItem, index) => (
+                  <ClassCard key={classItem.id} classData={classItem} />
+                ))}
             </div>
             <div className="btn-more d-flex">
               <p>查看更多</p>
@@ -580,54 +412,12 @@ export default function ClassList() {
               <h2>象棋</h2>
             </div>
             <div className="classCards-aa">
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
+              {Object.values(classes)
+                .flat()
+                .slice(0, 4)
+                .map((classItem, index) => (
+                  <ClassCard key={classItem.id} classData={classItem} />
+                ))}
             </div>
             <div className="btn-more d-flex">
               <p>查看更多</p>

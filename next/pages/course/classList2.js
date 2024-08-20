@@ -3,8 +3,11 @@ import { useRouter } from 'next/router'
 import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
+import styles from '@/styles/aa/classList2.scss'
+import Footer from '@/components/layout/default-layout/footer'
+import Header from '@/components/layout/default-layout/header'
 
-export default function ClassList() {
+export default function ClassList2() {
   const router = useRouter()
   const { category_id } = router.query
   const [classes, setClasses] = useState([])
@@ -15,7 +18,7 @@ export default function ClassList() {
     <>
       <div className="container">
         <div className="desktop-list2-aa">
-          <div className="class-header-aa">
+          {/* <div className="class-header-aa">
             <ul className="d-flex subBar-aa">
               <li>
                 <a className="subNav" href="">
@@ -148,7 +151,8 @@ export default function ClassList() {
                 </div>
               </li>
             </ul>
-          </div>
+          </div> */}
+          <Header />
           <div className="sec1-aa">
             <div className="text12-aa">
               <h2>麻將 課程排行</h2>
@@ -542,6 +546,7 @@ export default function ClassList() {
             </div>
           </div>
         </div>
+        <Footer />
       </div>
     </>
   )

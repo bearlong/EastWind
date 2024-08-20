@@ -4,6 +4,8 @@ import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
 import styles from '@/styles/aa/classList.scss'
+import Footer from '@/components/layout/default-layout/footer'
+import Header from '@/components/layout/default-layout/header'
 
 export default function ClassList() {
   const router = useRouter()
