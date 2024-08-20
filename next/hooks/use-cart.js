@@ -152,6 +152,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
   }
 
   const handleRemoveAll = async () => {
+    console.log(user)
     const url = `http://localhost:3005/api/cart/${user.id}`
 
     try {

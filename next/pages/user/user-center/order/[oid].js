@@ -64,6 +64,21 @@ export default function OrderDetail() {
   let completionStatus = getStatusUpdateAt(status, '已完成')
   let reviewStatus = getStatusUpdateAt(status, '已評論')
 
+  const notifyAndRemove = () => {
+    Swal.fire({
+      position: 'center',
+      icon: 'success',
+      customClass: {
+        popup: `h6`,
+        title: `h4`,
+        content: `h1`,
+      },
+      title: `評論已完成!`,
+      showConfirmButton: false,
+      timer: 2000,
+    })
+  }
+
   const handleCommentShow = () => {
     setCommentShow(true)
   }
@@ -117,23 +132,11 @@ export default function OrderDetail() {
           setExistingComments(result.data.comments)
           setStatus(result.data.status)
           setOrderDetail(result.data.orderDetails)
-          toast.success('評論成功!', {
-            style: {
-              border: `#55c57a`,
-              padding: '20px',
-              fontSize: '20px',
-              color: '#0e0e0e',
-            },
-            iconTheme: {
-              primary: `#55c57a`,
-              secondary: '#ffffff',
-              fontSize: '20px',
-            },
-          })
+          notifyAndRemove()
 
           setTimeout(() => {
-            handleCommentHidden()
-          }, 1000)
+            router.push('/user/user-center/order?status=已評論')
+          }, 2000)
         }
       } catch (error) {
         console.log(error)
@@ -173,6 +176,7 @@ export default function OrderDetail() {
       try {
         if (user) {
           const url = `http://localhost:3005/api/order/${oid}`
+          console.log(url)
           const response = await fetch(url)
           const result = await response.json()
           if (result.status === 'success') {
@@ -189,7 +193,6 @@ export default function OrderDetail() {
             setStatus(result.data.status)
             setOrderDetail(result.data.orderDetails)
             setExistingComments(result.data.comment)
-            console.log(result.data.comment)
           }
         }
       } catch (error) {
@@ -197,15 +200,13 @@ export default function OrderDetail() {
       }
     }
 
-    if (router.isReady && !loading) {
-      if (user) {
-        fetchUserInfo()
-      } else if (!user && loading === false) {
-        alert('請先登入會員')
-        router.push('/login')
-      }
+    if (router.isReady && !loading && oid) {
+      fetchUserInfo()
+    } else if (!user && loading === false) {
+      alert('請先登入會員')
+      router.push('/login')
     }
-  }, [router.isReady, router.query])
+  }, [router.isReady, oid, user, loading])
 
   useEffect(() => {
     paymentStatus = getStatusUpdateAt(status, '付款完成')

@@ -422,7 +422,6 @@ export default function Checkout() {
     }
     if (router.isReady && !loading) {
       const { transactionId, orderId, RtnMsg, CustomField1 } = router.query
-
       if (user) {
         fetchUserInfo()
       } else if (!user && loading === false) {

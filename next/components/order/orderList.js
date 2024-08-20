@@ -38,7 +38,7 @@ export default function OrderList() {
   const getOrderInfo = async () => {
     try {
       if (!user) return
-      const url = `http://localhost:3005/api/order?id=${user.id}&status_now=${status}`
+      const url = `http://localhost:3005/api/order?id=${user.id}&status_now=${status_now}`
       const response = await fetch(url)
       const result = await response.json()
       if (result.status === 'success') {
@@ -81,22 +81,17 @@ export default function OrderList() {
     if (router.isReady && !loading) {
       if (user) {
         fetchUserInfo()
+        setStatus(status_now)
       } else if (!user && loading === false) {
         alert('請先登入會員')
         router.push('/login')
       }
     }
-  }, [router.isReady, user])
+  }, [router.isReady, user, router.query])
 
   useEffect(() => {
     getOrderInfo()
   }, [status])
-
-  useEffect(() => {
-    if (router.isReady && status_now && !loading) {
-      setStatus(status_now)
-    }
-  }, [router.isReady, router.query])
 
   return (
     <>
@@ -124,7 +119,9 @@ export default function OrderList() {
               </button>
               <button
                 className={`h6   ${
-                  status === '已完成' ? styles['active'] : ''
+                  status === '已完成' || status === '已評論'
+                    ? styles['active']
+                    : ''
                 }`}
                 onClick={() => {
                   router.push('/user/user-center/order?status_now=已完成')
