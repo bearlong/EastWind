@@ -71,7 +71,7 @@
 
 .favorite-product-box-bo,
 .favorite-course-box-bo,
-.favorite-shop-box-bo {
+.favorite-company-box-bo {
   width: 100%;
   display: grid;
   row-gap: 2.4rem;
@@ -95,7 +95,7 @@
   gap: 1.6rem;
 }
 
-.favorite-shop-box-bo {
+.favorite-company-box-bo {
   gap: 2.4rem;
   grid-template-columns: repeat(2, 1fr);
 
@@ -214,9 +214,13 @@
       gap: 3px; /* 設置產品名稱區塊內元素的間隙為 3px */
 
       /* 設置產品描述的樣式 */
-      .courseDescription,
+
       .productDescription {
         min-height: calc(1.2em * 2); /* 設置產品描述的最小高度為 1.2em 的兩倍 */
+        line-height: 1.2em; /* 設置產品描述的行高為 1.2em */
+      }
+      .courseDescription {
+        min-height: calc(1.2em * 3); /* 設置產品描述的最小高度為 1.2em 的兩倍 */
         line-height: 1.2em; /* 設置產品描述的行高為 1.2em */
       }
     }
@@ -226,7 +230,7 @@
   margin-bottom: 1.6rem;
 }
 
-.shop-card-bo {
+.company-card-bo {
   color: var(--bg-text-color);
   background: var(--background);
   cursor: pointer;
@@ -259,17 +263,17 @@
       opacity: 1;
     }
 
-    .shop-img-bo {
+    .company-img-bo {
       transform: scale(1.05);
       transition: transform 0.4s ease; /* 添加過渡效果 */
     }
 
-    .btn-shop-detail {
+    .btn-company-detail {
       background-color: var(--primary-dark);
       color: var(--bg-text-color);
     }
   }
-  .shop-card-body-bo {
+  .company-card-body-bo {
     gap: 1.6rem;
     @media (max-width: 992px) {
       gap: 1.2rem;
@@ -280,7 +284,7 @@
   }
 
   /* 設置圖片容器的樣式 */
-  .shop-img-box-bo {
+  .company-img-box-bo {
     width: 100%; /* 設置卡片寬度為 100%，以適應父容器 */
     max-width: 12rem; /* 設置卡片最大寬度 */
     height: 100%; /* 設置圖片容器的高度為 28rem */
@@ -332,23 +336,7 @@
   }
 }
 
-.time-text-box-bo {
-  flex-direction: row;
-  @media (max-width: 1100px) {
-    flex-direction: column;
-  }
-  @media (max-width: 992px) {
-    flex-direction: row;
-  }
-  @media (max-width: 810px) {
-    flex-direction: column;
-  }
-  @media (max-width: 768px) {
-    flex-direction: row;
-  }
-}
-
-.btn-shop-detail {
+.btn-company-detail {
   margin-top: 0.8rem;
   gap: 1.2rem;
   padding: 0 1.2rem;
@@ -405,4 +393,41 @@
       transform: translateX(3px);
     }
   }
+}
+
+.ellipsis {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1; /* 顯示的行數，1 表示一行 */
+  overflow: hidden;
+  text-overflow: ellipsis; /* 文字超出部分顯示省略號 */
+  white-space: normal; /* 防止文字不換行 */
+}
+
+.swal-btn-bo {
+  font-size: 1.4rem;
+  font-weight: 500;
+  background-color: #b79347;
+  color: var(--bg-text-color);
+  padding: 0.4rem 1rem;
+}
+
+.swal-popup-bo {
+  background-color: var(--form-bg);
+}
+
+.swal-icon-bo {
+  font-size: 1.6rem;
+
+  @media (max-width: 576px) {
+    font-size: 1.4rem;
+  }
+}
+
+.swal-btn-cancel-bo {
+  font-size: 1.4rem;
+  font-weight: 500;
+  background-color: var(--primary-dark);
+  color: var(--bg-text-color);
+  padding: 0.4rem 1rem;
 }
