@@ -2,14 +2,16 @@ import styles from '@/styles/gw/_RoomCard.module.scss'
 import cardStyles from '@/styles/gw/_card.module.sass'
 import { TiStarFullOutline } from 'react-icons/ti'
 
-import { FaAngleDown } from "react-icons/fa";
+import { FaAngleDown } from 'react-icons/fa'
 
-import Server from '../serverIcon/server';
-
-export default function RoomCard() {
+import Server from '../serverIcon/server'
+// partyData={partyData}
+export default function RoomCard({ companyData, partyData }) {
+  console.log(partyData)
+  const data = companyData || partyData
+  console.log(data)
   return (
-    <>
-       <div className={cardStyles.Card} id="roomInfo">
+    <div className={cardStyles.Card} id="roomInfo">
       <div className={styles.roomTitle}>
         <div className={styles.logoArea}>
           <img
@@ -21,11 +23,10 @@ export default function RoomCard() {
         <div className={styles.nameArea}>
           <div className={styles.rate}>
             <div className="star">
-              <TiStarFullOutline className={styles.starIcon} />
-              <TiStarFullOutline className={styles.starIcon} />
-              <TiStarFullOutline className={styles.starIcon} />
-              <TiStarFullOutline className={styles.starIcon} />
-              <TiStarFullOutline className={styles.starIcon} />
+              {[...Array(5)].map((_, i) => (
+                <TiStarFullOutline key={i} className={styles.starIcon} />
+              ))}
+              {`${data.name ? data.rating : data.partyData.rating}`}
             </div>
             <div className="gap-5">
               <i className="fa-regular fa-heart faSz mx-2" />
@@ -33,15 +34,17 @@ export default function RoomCard() {
             </div>
           </div>
           <div className="title">
-            <h3 className="title">麻將大師板橋一店</h3>
+            <h3 className="title">{`${
+              data.name ? data.name : data.partyData.company_name
+            }`}</h3>
           </div>
         </div>
       </div>
       <div className={styles.roomAdBox}>
         <div className={styles.roomAdd}>
           <div className={styles.infotext}>
-            <p>22047, 新北市板橋區松江街28號</p>
-            <p>電話: 02-26885588</p>
+            <p>{data.address}</p>
+            <p>{data.tele}</p>
           </div>
           <div className={styles.mapImg}>
             <img
@@ -59,27 +62,28 @@ export default function RoomCard() {
               href="#collapseExample"
               role="button"
             >
-              週四: 8:00-22:00
+              {`${data.open_time ? data.open_time : data.partyData.open_time}`}~
+              {`${
+                data.close_time ? data.close_time : data.partyData.close_time
+              }`}
               <FaAngleDown />
             </a>
-            <div className="collapse" id="collapseExample">
+            {/* <div className="collapse" id="collapseExample">
               <div className="p">周一:8:00到22:00</div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
-      
-<div className={styles.serverBox}>
-<Server/>
 
-</div>
+      <div className={styles.serverBox}>
+        <Server />
+      </div>
 
       <div className={styles.roomIntroduction}>
         <div className={styles.title}>
           <h6>店家簡介</h6>
         </div>
         <div className={styles.content}>
-
           <p>
             麻將大師是只欠東風精選店家，場地均提供免費飲料與無限網路，同時提供熟食簡餐多樣選擇。
           </p>
@@ -88,24 +92,17 @@ export default function RoomCard() {
           </p>
           <p>全館嚴格禁菸，定時清潔。</p>
         </div>
-
-
       </div>
 
-
-
       <div className={styles.roomPrice}>
-      <div className={styles.title}>
+        <div className={styles.title}>
           <h6>費用</h6>
         </div>
         <div className={styles.content}>
-
-        <p>大廳:100/hr</p>
-        <p>包廂:200/hr</p>
+          <p>大廳：{data.lobby}/hr</p>
+          <p>包廂：{data.vip}/hr</p>
         </div>
       </div>
     </div>
-    </>
-   
   )
 }

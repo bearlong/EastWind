@@ -20,11 +20,11 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import ProductNav from '@/components/product/product-nav'
 import { AuthContext } from '@/context/AuthContext'
+import toast from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 
 export default function ProductList() {
   const { user } = useContext(AuthContext)
-  console.log(user)
-  let user_id
   const router = useRouter()
   const [products, setProducts] = useState({ top: [], list: [] })
   const [pages, setPages] = useState(1)
@@ -137,8 +137,8 @@ export default function ProductList() {
 
   const getFavorite = async () => {
     try {
-      if (user_id) {
-        const url = `http://localhost:3005/api/favorites?id=${user_id}`
+      if (user) {
+        const url = `http://localhost:3005/api/favorites?id=${user.id}`
         const response = await fetch(url)
         const result = await response.json()
         if (result.status === 'success') {
@@ -273,7 +273,7 @@ export default function ProductList() {
     setCateOption(nextCateOptions)
     setSizeOption(nextSizeOptions)
     setStyleOption(nextStyleOptions)
-    setMaxOption(20000)
+    setMaxOption(200000)
     setMinOption(0)
   }
 
@@ -286,7 +286,7 @@ export default function ProductList() {
     const url = `http://localhost:3005/api/favorites/${object_id}`
     const method = fav ? 'DELETE' : 'POST'
     const body = JSON.stringify({
-      uid: user_id,
+      uid: user.id,
       type: type,
     })
     try {
@@ -299,6 +299,22 @@ export default function ProductList() {
       })
       const result = await response.json()
       if (result.status === 'success') {
+        toast.success(
+          `${method === 'POST' ? '商品已加入收藏!' : '商品已移除收藏!'}`,
+          {
+            style: {
+              border: `1px solid ${method === 'POST' ? '#55c57a' : '#d71515'}`,
+              padding: '16px',
+              fontSize: '16px',
+              color: '#0e0e0e',
+            },
+            iconTheme: {
+              primary: `${method === 'POST' ? '#55c57a' : '#d71515'}`,
+              secondary: '#ffffff',
+              fontSize: '16px',
+            },
+          }
+        )
         const nextList = products.list.map((v) => {
           if (v.product_id === object_id) {
             return { ...v, fav: !v.fav }
@@ -337,12 +353,12 @@ export default function ProductList() {
   }, [router.isReady, router.query])
 
   useEffect(() => {
-    if (user_id) {
+    if (user) {
       getFavorite()
     } else {
       setFavorite([])
     }
-  }, [user_id])
+  }, [user])
 
   return (
     <>
@@ -491,9 +507,7 @@ export default function ProductList() {
                       />
                     </div>
                     <div
-                      className={`${styles['heart']} ${
-                        user_id ? '' : 'd-none'
-                      }`}
+                      className={`${styles['heart']} ${user ? '' : 'd-none'}`}
                     >
                       {product.fav ? (
                         <FaHeart
@@ -562,6 +576,7 @@ export default function ProductList() {
               <i className={styles['edit-icon']} />
             </button>
           </div>
+          <Toaster position="bottom-right" reverseOrder={false} />
         </div>
         <div
           className={` offcanvas-pb offcanvas offcanvas-end`}
@@ -922,7 +937,7 @@ export default function ProductList() {
                   <input
                     type="range"
                     className="form-range min"
-                    max={20000}
+                    max={200000}
                     min={0}
                     defaultValue={minOptions}
                     onChange={(v) => {

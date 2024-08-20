@@ -41,13 +41,6 @@ router.get('/', async (req, res) => {
     style,
   }
 
-  if (max && min) {
-    if (!filter) {
-      filter = ` WHERE \`product\`.\`price\` BETWEEN ${min} AND ${max}`
-    } else {
-      filter += ` AND \`product\`.\`price\` BETWEEN ${min} AND ${max}`
-    }
-  }
   for (const key in filterArr) {
     if (filterArr[key]) {
       if (filterArr[key].includes(',')) {
@@ -91,6 +84,14 @@ router.get('/', async (req, res) => {
       topFilter = ` WHERE ${condition}`
     } else {
       topFilter = ` WHERE \`category_id\` = ${filterArr['category_id']}`
+    }
+  }
+
+  if (max && min) {
+    if (!filter) {
+      filter = ` WHERE \`product\`.\`price\` BETWEEN ${min} AND ${max}`
+    } else {
+      filter += ` AND \`product\`.\`price\` BETWEEN ${min} AND ${max}`
     }
   }
 

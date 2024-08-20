@@ -249,7 +249,7 @@ router.post('/refresh-token', async (req, res) => {
     const newAccessToken = jwt.sign(
       { id: decoded.id, account: decoded.account },
       secretKey,
-      { expiresIn: '10s' } // 根據需要調整過期時間
+      { expiresIn: '30m' } // 根據需要調整過期時間
     )
 
     res.status(200).json({

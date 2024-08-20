@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import styles from '@/styles/bearlong/cart.module.scss'
 import { FaShoppingCart } from 'react-icons/fa'
 import { FaXmark, FaTrashCan, FaPlus, FaMinus } from 'react-icons/fa6'
@@ -9,9 +9,10 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import Link from 'next/link'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import { AuthContext } from '@/context/AuthContext'
 
 export default function Cart({
-  show = () => {},
+  show,
   handleClose = () => {},
   handleShow = () => {},
   cart = [],
@@ -22,6 +23,7 @@ export default function Cart({
   remark = '',
   setRemark = () => {},
 }) {
+  const { user } = useContext(AuthContext)
   let total = 0
   const [showRecommend, setShowRecommend] = useState(false)
 
@@ -129,7 +131,7 @@ export default function Cart({
                               {i + 1}
                             </div>
                             <Image
-                              src={`../../images/product/${product.img}`}
+                              src={`/images/product/${product.img}`}
                               width={280}
                               height={280}
                               alt=""
@@ -141,8 +143,8 @@ export default function Cart({
                             <Image
                               src={
                                 product.img2
-                                  ? `../../images/product/${product.img2}`
-                                  : '../../images/boyu/logo.svg'
+                                  ? `/images/product/${product.img2}`
+                                  : '/images/boyu/logo.svg'
                               }
                               width={280}
                               height={280}
@@ -191,71 +193,81 @@ export default function Cart({
               className={`${styles['cart-bo']}  d-flex flex-column justify-content-between`}
             >
               <div className={styles['cart-body-bo']}>
-                {cart.map((v) => {
-                  total += parseInt(v.quantity, 10) * parseInt(v.price, 10)
-                  return (
-                    <div
-                      className={`${styles['cart-product-bo']} d-flex mb-5`}
-                      key={v.id}
-                    >
-                      <div className={`${styles['cart-product-img-bo']} me-4`}>
-                        <Image
-                          src={`../../images/${v.object_type}/${v.img}`}
-                          width={200}
-                          height={200}
-                          alt=""
-                        />
-                      </div>
+                {cart.length === 0 ? (
+                  <div className="text-center">
+                    <h5>購物車內無商品!</h5>
+                  </div>
+                ) : (
+                  cart.map((v) => {
+                    total += parseInt(v.quantity, 10) * parseInt(v.price, 10)
+                    return (
                       <div
-                        className={`${styles['cart-product-text-box-bo']} flex-grow-1 d-flex flex-column justify-content-between`}
+                        className={`${styles['cart-product-bo']} d-flex mb-5`}
+                        key={v.id}
                       >
                         <div
-                          className={`${styles['cart-product-text-bo']} d-flex justify-content-between`}
+                          className={`${styles['cart-product-img-bo']} me-4`}
                         >
-                          <div className={styles['cart-product-title-bo']}>
-                            <h6>{v.item_name}</h6>
-                            <p>{v.brand_name}</p>
-                          </div>
-                          <FaTrashCan
-                            className="h6"
-                            onClick={() => {
-                              notifyAndRemove(v)
-                            }}
+                          <Image
+                            src={`/images/${v.object_type}/${v.img}`}
+                            width={200}
+                            height={200}
+                            alt=""
                           />
                         </div>
                         <div
-                          className={`${styles['cart-product-text-bo']}  d-flex justify-content-between`}
+                          className={`${styles['cart-product-text-box-bo']} flex-grow-1 d-flex flex-column justify-content-between`}
                         >
                           <div
-                            className={`${styles['cart-product-number-bo']}  d-flex justify-content-between align-items-center`}
+                            className={`${styles['cart-product-text-bo']} d-flex justify-content-between`}
                           >
-                            <FaMinus
-                              className="me-5 p"
+                            <div className={styles['cart-product-title-bo']}>
+                              <h6>{v.item_name}</h6>
+                              <p>{v.brand_name}</p>
+                            </div>
+                            <FaTrashCan
+                              className="h6"
                               onClick={() => {
-                                if (v.quantity <= 1) {
-                                  notifyAndRemove(v)
-                                } else {
-                                  handleDecrease(v)
-                                }
-                              }}
-                            />
-
-                            <h6 className={styles['quantity']}>{v.quantity}</h6>
-                            <FaPlus
-                              className="ms-5 p"
-                              onClick={() => {
-                                handleIncrease(v)
+                                notifyAndRemove(v)
                               }}
                             />
                           </div>
-                          <div className={styles['product-price-bo']}>
-                            <h6>NT$ {v.price}</h6>
+                          <div
+                            className={`${styles['cart-product-text-bo']}  d-flex justify-content-between`}
+                          >
+                            <div
+                              className={`${styles['cart-product-number-bo']}  d-flex justify-content-between align-items-center`}
+                            >
+                              <FaMinus
+                                className="me-5 p"
+                                onClick={() => {
+                                  if (v.quantity <= 1) {
+                                    notifyAndRemove(v)
+                                  } else {
+                                    handleDecrease(v)
+                                  }
+                                }}
+                              />
+
+                              <h6 className={styles['quantity']}>
+                                {v.quantity}
+                              </h6>
+                              <FaPlus
+                                className="ms-5 p"
+                                onClick={() => {
+                                  handleIncrease(v)
+                                }}
+                              />
+                            </div>
+                            <div className={styles['product-price-bo']}>
+                              <h6>NT$ {v.price}</h6>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  )
-                })}
+                    )
+                  })
+                )}
               </div>
               <div className={styles['cart-text-box-bo']}>
                 <div className={`${styles['remark-box-bo ']} mb-3`}>
@@ -276,11 +288,16 @@ export default function Cart({
                   <h6>總計</h6>
                   <h6>NT$ {total}</h6>
                 </div>
-                <button
-                  className={`${styles['pay-button-bo']} d-flex justify-content-center align-items-center`}
+                <Link
+                  className={`${
+                    styles['pay-button-bo']
+                  } d-flex justify-content-center align-items-center ${
+                    user && cart.length > 0 ? '' : 'd-none'
+                  }`}
+                  href={'/checkout'}
                 >
                   <h5>現在付款</h5>
-                </button>
+                </Link>
               </div>
             </div>
           </div>

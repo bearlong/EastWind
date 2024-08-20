@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import JoinBTN from '@/components/roomList/joinBtn'
 import BTNGroup from '@/components/roomList/BtnGroup'
 import PageNext from '@/components/roomList/PageNext'
@@ -6,113 +6,124 @@ import RoomCard from '@/components/roomList/RoomCard'
 import CompanyCard from '@/components/roomList/CompanyCard'
 import RoomSearch from '@/components/roomList/RoomSearch'
 import styles from '@/styles/gw/_roomList.module.sass'
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/router'
 
 export default function Lobby() {
-  const [parties, setParties] = useState([]);
-  const [companies, setCompanies] = useState([]);
-  const [activeView, setActiveView] = useState('join'); // 'join' for 參團, 'host' for 主揪 預設值join
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [activeView, setActiveView] = useState('join')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
+  const [totalItems, setTotalItems] = useState(0)
+  const [searchTerm, setSearchTerm] = useState('')
 
-const router = useRouter();
+  const [selectedArea, setSelectedArea] = useState(null);
+  const itemsPerPage = 9
+  const router = useRouter()
 
-useEffect(() => {
-  const fetchData = async () => {
-    setLoading(true);
-    setError(null);
-    
-    // 從 URL 參數中獲取視圖類型
-    const { view } = router.query;
-    const currentView = view === 'host' ? 'host' : 'join';
-    setActiveView(currentView);
-
+  const fetchData = async (view, page = 1, search = '',area = null) => {
+    setLoading(true)
+    setError(null)
     try {
-      if (currentView === 'join') {
-        const response = await fetch('http://localhost:3005/api/parties');
-        if (!response.ok) throw new Error('Failed to fetch parties');
-        const data = await response.json();
-        setParties(data);
-      } else {
-        const response = await fetch('http://localhost:3005/api/company');
-        if (!response.ok) throw new Error('Failed to fetch companies');
-        const data = await response.json();
-        setCompanies(data);
+      const endpoint = view === 'join' ? 'parties' : 'company'
+      const url = `http://localhost:3005/api/${endpoint}?page=${page}&search=${encodeURIComponent(
+        search
+      )}&area=${encodeURIComponent(area || '')}`
+      console.log('Fetching data from:', url)
+
+      const response = await fetch(url)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
+
+      const result = await response.json()
+      console.log('Received data:', result)
+
+      if (!result || !result.data) {
+        throw new Error('Received invalid data format from server')
+      }
+
+      setData(result.data)
+      setTotalPages(result.totalPages || 0)
+      setCurrentPage(result.currentPage || 1)
+      setTotalItems(result.totalItems || 0)
     } catch (error) {
-      console.error(`Error fetching ${currentView === 'join' ? 'parties' : 'companies'}:`, error);
-      setError(`獲取${currentView === 'join' ? '派對' : '公司'}數據時出錯: ${error.message}`);
+      console.error('Error fetching data:', error)
+      setError(
+        `獲取${view === 'join' ? '派對' : '店家'}數據時出錯: ${error.message}`
+      )
+      setData([])
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  fetchData();
-}, [router.query]); // 依賴於 router.query
 
-  // const fetchData = async () => {
-  //   setLoading(true);
-  //   setError(null);
-  //   try {
-  //     if (activeView === 'join') {
-  //       const response = await fetch('http://localhost:3005/api/parties');
-  //       if (!response.ok) throw new Error('Failed to fetch parties');
-  //       const data = await response.json();
-  //       console.log('Fetched parties:', data);
-  //       setParties(data);
-  //     } else {
-  //       const response = await fetch('http://localhost:3005/api/company');
-  //       if (!response.ok) throw new Error('Failed to fetch companies');
-  //       const data = await response.json();
-  //       console.log('Fetched companies:', data);
-  //       setCompanies(data);
-  //     }
-  //   } catch (error) {
-  //     console.error(`Error fetching ${activeView === 'join' ? 'parties' : 'companies'}:`, error);
-  //     setError(`獲取${activeView === 'join' ? '派對' : '公司'}數據時出錯: ${error.message}`);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  useEffect(() => {
+    const view = router.query.view || 'join';
+  if (view !== activeView) {
 
-  const handleViewChange = (view) => {
-    console.log('View changed to:', view);
     setActiveView(view);
-  };
+    fetchData(view, 1, searchTerm,selectedArea);
+  }
+}, [router.query.view, activeView, fetchData, searchTerm,selectedArea]);
 
-  const renderCards = () => {
-    if (loading) return <div>載入中...</div>;
-    if (error) return <div>{error}</div>;
+const handleSearch = useCallback((term) => {
+  setSearchTerm(term);
+  setCurrentPage(1);
+  fetchData(activeView, 1, term,selectedArea);
+}, [activeView, fetchData,selectedArea]);
 
-    if (activeView === 'join') {
-      console.log('Rendering party cards, count:', parties.length);
-      return parties.map(party => <RoomCard key={party.id} party={party} />);
-    } else {
-      console.log('Rendering company cards, count:', companies.length);
-      return companies.map(company => <CompanyCard key={company.id} company={company} />);
-    }
-  };
+const handleViewChange = useCallback((view) => {
+  router.push(`/lobby/Lobby?view=${view}`, undefined, { shallow: true });
+}, [router]);
 
-  const getTotalCount = () => {
-    return activeView === 'join' ? parties.length : companies.length;
-  };
+
+const handlePageChange = useCallback((newPage) => {
+  setCurrentPage(newPage);
+  fetchData(activeView, newPage, searchTerm,selectedArea);
+}, [activeView, searchTerm, fetchData,selectedArea]);
+
+const handleAreaChange = useCallback((area) => {
+  setSelectedArea(area);
+  setCurrentPage(1);
+  fetchData(activeView, 1, searchTerm, area);
+}, [activeView, fetchData, searchTerm]);
+
+
+const renderedCards = data.map(item => 
+  activeView === 'join' 
+    ? <RoomCard key={item.id} party={item} /> 
+    : <CompanyCard key={item.id} company={item} />
+);
 
   return (
     <div className="container">
       <div className={styles.topBar}>
         <JoinBTN activeView={activeView} onViewChange={handleViewChange} />
-        <RoomSearch />
-        <BTNGroup />
+
+        <RoomSearch onSearch={handleSearch} />
+        <BTNGroup onAreaChange={handleAreaChange} selectedArea={selectedArea}/>
         <div className={styles.totalCount}>
-          共{getTotalCount()}個{activeView === 'join' ? '團' : '店家'}
+          共{totalItems}個{activeView === 'join' ? '團' : '店家'}
         </div>
       </div>
 
       <div className={styles.cardArea}>
-        {renderCards()}
+        {/* {loading && <div>載入中...</div>}
+      {error && <div>{error}</div>}
+      {!loading && !error && renderedCards} */}
+        {renderedCards}
       </div>
-      
-      <PageNext />
+
+      <PageNext
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
+      />
     </div>
-  );
+  )
 }

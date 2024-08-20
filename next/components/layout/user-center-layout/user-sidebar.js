@@ -25,8 +25,15 @@ export default function UserSidebar() {
   // 當路徑發生變化時，更新 activeLink 和 firstLink 的狀態
   useEffect(() => {
     const path = router.pathname.split('/').pop() // 獲取當前路徑的最後部分
-    setActiveLink(path)
-    setFirstLink(path) // 確保 firstLink 也會更新為當前路徑
+
+    // 檢查是否為 info 或 info-edit
+    if (path === 'info-edit') {
+      setActiveLink('info')
+      setFirstLink('info')
+    } else {
+      setActiveLink(path)
+      setFirstLink(path) // 確保 firstLink 也會更新為當前路徑
+    }
   }, [router.pathname])
 
   // 更新 activeLink 和 firstLink 的函數
@@ -97,10 +104,12 @@ export default function UserSidebar() {
           <div className={styles['user-img-box-bo']}>
             {/* 使用來自 Context 的 user.user_img 來顯示用戶照片 */}
             <img
-              className={`${styles['user-img-bo']} d-none d-md-block`}
+              className={`${styles['user-img-bo']}`}
               src={
                 user && user.user_img
-                  ? `/images/boyu/users/${user.user_img}.jpg`
+                  ? `/images/boyu/users/${
+                      user.user_img
+                    }.jpg?${new Date().getTime()}`
                   : user && user.gender === '男'
                   ? '/images/boyu/users/user-male-default.svg'
                   : '/images/boyu/users/user-female-default.svg'

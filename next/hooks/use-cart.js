@@ -1,21 +1,28 @@
 import React, { useState, useContext, createContext, useEffect } from 'react'
+import { AuthContext } from '@/context/AuthContext'
 
 const CartContext = createContext(null)
 
 export const CartProvider = ({ initialCartItems = [], children }) => {
+  const { user } = useContext(AuthContext)
   let items = initialCartItems
   const [cart, setCart] = useState(initialCartItems)
   const [top, setTop] = useState([])
   const [error, setError] = useState(null)
   const [remark, setRemark] = useState('')
-  let user_id
+  const [show, setShow] = useState(false)
+
+  const handleClose = () => setShow(false)
+  const handleShow = () => {
+    setShow(true)
+  }
 
   useEffect(() => {
     const fetchCart = async () => {
       if (!items.length) {
         try {
-          if (typeof window !== 'undefined' && user_id !== undefined) {
-            const url = `http://localhost:3005/api/cart/${user_id}`
+          if (typeof window !== 'undefined' && user !== undefined) {
+            const url = `http://localhost:3005/api/cart/${user.id}`
             const response = await fetch(url)
             const result = await response.json()
             if (result.status === 'success') {
@@ -35,13 +42,14 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       }
     }
     fetchCart()
-  }, [])
+  }, [user])
 
   const handleAdd = async (object, type, quantity) => {
     const foundIndex = cart.findIndex(
       (v) => v.object_id === object.id && v.object_type === type
     )
-    const url = `http://localhost:3005/api/cart/${user_id}/${type}/${object.id}`
+
+    const url = `http://localhost:3005/api/cart/${user.id}/${type}/${object.id}`
     const method = foundIndex > -1 ? 'PUT' : 'POST'
     const updatedQuantity =
       method === 'PUT'
@@ -75,7 +83,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       setError('購物車內無該商品')
       return
     }
-    const url = `http://localhost:3005/api/cart/${user_id}/${object.object_type}/${object.object_id}`
+    const url = `http://localhost:3005/api/cart/${user.id}/${object.object_type}/${object.object_id}`
     const quantity = cart[foundIndex].quantity + 1
     try {
       const response = await fetch(url, {
@@ -101,7 +109,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       setError('購物車內無該商品')
       return
     }
-    const url = `http://localhost:3005/api/cart/${user_id}/${object.object_type}/${object.object_id}`
+    const url = `http://localhost:3005/api/cart/${user.id}/${object.object_type}/${object.object_id}`
     const quantity = cart[foundIndex].quantity - 1
 
     try {
@@ -128,7 +136,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       setError('購物車內無該商品')
       return
     }
-    const url = `http://localhost:3005/api/cart/${user_id}/${object.object_type}/${object.object_id}`
+    const url = `http://localhost:3005/api/cart/${user.id}/${object.object_type}/${object.object_id}`
 
     try {
       const response = await fetch(url, {
@@ -144,7 +152,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
   }
 
   const handleRemoveAll = async () => {
-    const url = `http://localhost:3005/api/cart/${user_id}`
+    const url = `http://localhost:3005/api/cart/${user.id}`
 
     try {
       const response = await fetch(url, {
@@ -176,6 +184,9 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
         handleDecrease,
         handleRemove,
         handleRemoveAll,
+        handleClose,
+        handleShow,
+        show,
       }}
     >
       {children}

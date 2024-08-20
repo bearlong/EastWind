@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import Carousel from '@/components/product/carousel'
 import ProductNav from '@/components/product/product-nav'
 import Image from 'next/image'
@@ -17,10 +17,21 @@ import { useRouter } from 'next/router'
 import StarRating from '@/components/product/starRating'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { useCart } from '@/hooks/use-cart'
+import { AuthContext } from '@/context/AuthContext'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import toast from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 
 export default function Detail() {
-  let user_id
-  const { handleAdd = () => {}, error = '' } = useCart()
+  const { user } = useContext(AuthContext)
+  const {
+    handleAdd = () => {},
+    error = '',
+    show = () => {},
+    handleShow = () => {},
+    handleClose = () => {},
+  } = useCart()
   const router = useRouter()
   const { pid } = router.query
   const [data, setData] = useState({
@@ -55,13 +66,14 @@ export default function Detail() {
   })
   const [imgMain, setImgMain] = useState('')
   const [quantity, setQuantity] = useState(1)
+  const MySwal = withReactContent(Swal)
 
   const getProduct = async (id) => {
     let newData, error
     const url =
       'http://localhost:3005/api/products/' +
       id +
-      `${user_id ? `?uid=${user_id}` : ''}`
+      `${user ? `?uid=${user.id}` : ''}`
     newData = await fetch(url)
       .then((res) => res.json())
       .then((result) => {
@@ -134,7 +146,7 @@ export default function Detail() {
     const url = `http://localhost:3005/api/favorites/${object_id}`
     const method = fav ? 'DELETE' : 'POST'
     const body = JSON.stringify({
-      uid: user_id,
+      uid: user.id,
       type: type,
     })
     try {
@@ -147,6 +159,22 @@ export default function Detail() {
       })
       const result = await response.json()
       if (result.status === 'success') {
+        toast.success(
+          `${method === 'POST' ? '商品已加入收藏!' : '商品已移除收藏!'}`,
+          {
+            style: {
+              border: `1px solid ${method === 'POST' ? '#55c57a' : '#d71515'}`,
+              padding: '16px',
+              fontSize: '16px',
+              color: '#0e0e0e',
+            },
+            iconTheme: {
+              primary: `${method === 'POST' ? '#55c57a' : '#d71515'}`,
+              secondary: '#ffffff',
+              fontSize: '16px',
+            },
+          }
+        )
         const nextProduct = { ...data.product, fav: !data.product.fav }
         setData({ ...data, product: nextProduct })
       } else {
@@ -155,6 +183,22 @@ export default function Detail() {
     } catch (err) {
       console.log(err)
     }
+  }
+
+  const notifyAndRemove = () => {
+    Swal.fire({
+      icon: 'error',
+      title: '尚未登入',
+      text: '請先登入才能購買!',
+      customClass: {
+        popup: `h6`,
+        title: `h4`,
+        content: `h1`,
+        confirmButton: `p ${styles.confirmButton}`,
+        footer: `p ${styles.confirmFooter}`,
+      },
+      footer: '<a href="/login">前往登入</a>',
+    })
   }
 
   useEffect(() => {
@@ -281,7 +325,7 @@ export default function Detail() {
                   <button
                     className={`d-flex align-items-center btn btn-outline-primary ${
                       styles.like
-                    }  ${user_id ? '' : 'd-none'}`}
+                    }  ${user ? '' : 'd-none'}`}
                     onClick={() => {
                       handleFavToggle(data.product.id, 'product')
                     }}
@@ -363,17 +407,29 @@ export default function Detail() {
               <div
                 className={`${styles['buttonGroup-bl']} d-flex justify-content-between flex-column`}
               >
-                <div
+                <button
                   type="button"
                   className={`${styles['btnRectangle']} ${styles['buy']}  mb-3`}
+                  onClick={() => {
+                    if (!user) {
+                      notifyAndRemove()
+                    } else {
+                      handleAdd(data.product, 'product', quantity)
+                      handleShow()
+                    }
+                  }}
                 >
                   立即購買
-                </div>
+                </button>
                 <button
                   type="button"
                   className={`${styles['btnRectangle']}`}
                   onClick={() => {
-                    handleAdd(data.product, 'product', quantity)
+                    if (!user) {
+                      notifyAndRemove()
+                    } else {
+                      handleAdd(data.product, 'product', quantity)
+                    }
                   }}
                 >
                   加入購物車
@@ -382,6 +438,7 @@ export default function Detail() {
             </div>
           </div>
         </div>
+        <Toaster position="bottom-right" reverseOrder={false} />
         <div className={`${styles['productDetailSection2-bl']}  row`}>
           <div className={` col-12 col-md-8`}>
             <div className={`  mb-5`}>

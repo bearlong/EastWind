@@ -50,9 +50,10 @@
   }
 
   .payment-radio-bo {
-    display: inline-block;
+    display: inline-flex;
     width: 100%;
     border: 2px solid var(--primary);
+    align-items: center;
     padding: 1.6rem 1rem;
     background: var(--primary-light);
   }
@@ -63,6 +64,16 @@
     height: 12px;
     border-radius: 50%;
     border: 2px solid var(--primary);
+  }
+  label .logoBox {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    .img {
+      width: 100%;
+      height: 24px;
+      object-fit: cover;
+    }
   }
 
   input[type='checkbox'],
@@ -131,7 +142,7 @@
     width: 100%;
     background: var(--primary);
     color: var(--white);
-    border: 1px solid var(--primary);
+    border: 2px solid var(--primary);
     border-radius: 5px;
     height: 70px;
     cursor: pointer;
