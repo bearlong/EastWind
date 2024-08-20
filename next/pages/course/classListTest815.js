@@ -4,6 +4,8 @@ import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
 import styles from '@/styles/aa/classList.scss'
+import Footer from '@/components/layout/default-layout/footer'
+import Header from '@/components/layout/default-layout/header'
 
 export default function ClassList() {
   const router = useRouter()
@@ -34,7 +36,7 @@ export default function ClassList() {
       const newClasses = {}
       for (const category of categories) {
         // 對每個類別發送API請求
-        const response = await axios.get(`http://localhost:3005/api/classes`)
+        const response = await axios.get(`http://localhost:3005/api/classList`)
         newClasses[category] = response.data
       }
       setClasses(newClasses)
@@ -65,12 +67,12 @@ export default function ClassList() {
     <div className="classCard-aa">
       <div className="imgBox-aa">
         {rank && <div className={`rank${rank}`}>{rank}</div>}
-        <img src={classData.image} alt={classData.title} />
+        <img src={classData.images} alt={classData.course_name} />
       </div>
       <div className="cardBody-aa">
         <div className="className-aa">
-          <p>{classData.title}</p>
-          <p className="classDescription-aa">{classData.instructor}</p>
+          <p>{classData.course_name}</p>
+          <p className="classDescription-aa">{classData.course_category_id}</p>
         </div>
         <p>NT. {classData.price}</p>
       </div>
