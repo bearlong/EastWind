@@ -67,12 +67,12 @@ export default function ClassList() {
     <div className="classCard-aa">
       <div className="imgBox-aa">
         {rank && <div className={`rank${rank}`}>{rank}</div>}
-        <img src={classData.image} alt={classData.title} />
+        <img src={classData.images} alt={classData.course_name} />
       </div>
       <div className="cardBody-aa">
         <div className="className-aa">
-          <p>{classData.title}</p>
-          <p className="classDescription-aa">{classData.instructor}</p>
+          <p>{classData.course_name}</p>
+          <p className="classDescription-aa">{classData.course_category_id}</p>
         </div>
         <p>NT. {classData.price}</p>
       </div>
@@ -223,17 +223,17 @@ export default function ClassList() {
               <h2>課程排行</h2>
             </div>
             <div className="classCards-aa">
-            {Object.values(classes)
-              .flat()
-              .slice(0, 4)
-              .map((classItem, index) => (
-                <ClassCard
-                  key={classItem.id}
-                  classData={classItem}
-                  rank={index + 1}
-                />
-              ))}
-          </div>
+              {Object.values(classes)
+                .flat()
+                .slice(0, 4)
+                .map((classItem, index) => (
+                  <ClassCard
+                    key={classItem.id}
+                    classData={classItem}
+                    rank={index + 1}
+                  />
+                ))}
+            </div>
             <div className="line-aa">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
