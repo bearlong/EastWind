@@ -10,6 +10,12 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
   const [top, setTop] = useState([])
   const [error, setError] = useState(null)
   const [remark, setRemark] = useState('')
+  const [show, setShow] = useState(false)
+
+  const handleClose = () => setShow(false)
+  const handleShow = () => {
+    setShow(true)
+  }
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -42,6 +48,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
     const foundIndex = cart.findIndex(
       (v) => v.object_id === object.id && v.object_type === type
     )
+
     const url = `http://localhost:3005/api/cart/${user.id}/${type}/${object.id}`
     const method = foundIndex > -1 ? 'PUT' : 'POST'
     const updatedQuantity =
@@ -177,6 +184,9 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
         handleDecrease,
         handleRemove,
         handleRemoveAll,
+        handleClose,
+        handleShow,
+        show,
       }}
     >
       {children}

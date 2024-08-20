@@ -16,15 +16,15 @@ export default function Header() {
     top,
     error,
     remark,
+    show,
     setRemark,
     handleIncrease = () => {},
     handleDecrease = () => {},
     handleRemove = () => {},
+    handleShow = () => {},
+    handleClose = () => {},
   } = useCart()
-  const [show, setShow] = useState(false)
 
-  const handleClose = () => setShow(false)
-  const handleShow = () => setShow(true)
   const { logout } = useAuth()
   const { user } = useContext(AuthContext)
 

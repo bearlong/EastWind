@@ -329,7 +329,7 @@ export default function Checkout() {
         notifyAndRemove(result.data.numerical_order)
         setTimeout(() => {
           handleRemoveAll()
-          router.push('/order/orderList')
+          router.push('/user/user-center/order')
         }, 3000)
       } else {
         toast.error('付款失敗', {
@@ -369,7 +369,7 @@ export default function Checkout() {
         notifyAndRemove(result.data.numerical_order)
         setTimeout(() => {
           handleRemoveAll()
-          router.push('/order/orderList')
+          router.push('/user/user-center/order')
         }, 3000)
       } else {
         toast.error('付款失敗', {
@@ -434,7 +434,7 @@ export default function Checkout() {
         notifyAndRemove(CustomField1)
         setTimeout(() => {
           handleRemoveAll()
-          router.push('/order/orderList')
+          router.push('/user/user-center/order')
         }, 3000)
       }
 
