@@ -1,14 +1,4 @@
 import express from 'express'
-<<<<<<< HEAD
-import dbPromise from '##/configs/mysql-promise.js'
-import db from '#configs/mysql.js'
-import multer from 'multer'
-import moment from 'moment'
-import cors from 'cors'
-import mysql from 'mysql2/promise.js'
-// 檢查空物件, 轉換req.params為數字
-import { getIdParam } from '#db-helpers/db-tool.js'
-=======
 // import dbPromise from '##/configs/mysql-promise.js'
 // import multer from 'multer'
 // import moment from 'moment'
@@ -16,7 +6,6 @@ import { getIdParam } from '#db-helpers/db-tool.js'
 // import mysql from 'mysql2/promise.js'
 // // 檢查空物件, 轉換req.params為數字
 // import { getIdParam } from '#db-helpers/db-tool.js'
->>>>>>> c962fbe0e74e94d26228e7f83ae17b8c125695ab
 
 // // 資料庫使用
 // import sequelize from '#configs/db.js'
@@ -47,29 +36,22 @@ const router = express.Router()
 //   queueLimit: 0,
 // })
 
-<<<<<<< HEAD
-// 設置 API 端點
-router.get('/', async (req, res) => {
-  try {
-    const {
-      course_category_id,
-      course_name,
-      price,
-      content,
-      on_datetime,
-      off_datetime,
-      valid,
-      page = 1,
-      limit = 10,
-    } = req.query
-=======
 // router.use(cors())
 
 // 設置 API 端點
 // router.get('/', async (req, res) => {
 //   try {
-//     const { course_category_id, price, page = 1, limit = 10 } = req.query
->>>>>>> c962fbe0e74e94d26228e7f83ae17b8c125695ab
+//     const {
+//       course_category_id,
+//       course_name,
+//       price,
+//       content,
+//       on_datetime,
+//       off_datetime,
+//       valid,
+//       page = 1,
+//       limit = 10,
+//     } = req.query
 
 //     // 這裡應該是從數據庫獲取數據的邏輯
 //     // 目前使用模擬數據
@@ -81,25 +63,11 @@ router.get('/', async (req, res) => {
 //       )
 //     }
 
-<<<<<<< HEAD
-    if (course_name) {
-      filteredCourses = filteredCourses.filter(
-        (course) => course.course_name === parseInt(course_name)
-      )
-    }
-
-    if (price) {
-      filteredCourses = filteredCourses.filter(
-        (course) => course.price <= parseInt(price)
-      )
-    }
-=======
 //     if (price) {
 //       filteredCourses = filteredCourses.filter(
 //         (course) => course.price <= parseInt(price)
 //       )
 //     }
->>>>>>> c962fbe0e74e94d26228e7f83ae17b8c125695ab
 
 //     const startIndex = (page - 1) * limit
 //     const endIndex = page * limit
