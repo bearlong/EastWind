@@ -8,6 +8,7 @@ import moment from 'moment'
 import multer from 'multer'
 const upload = multer()
 
+//此oid為流水編號
 router.get('/:oid', async (req, res) => {
   const oid = req.params.oid
   console.log(oid)
@@ -191,6 +192,41 @@ router.post('/comment', upload.none(), async (req, res) => {
       status: 'success',
       data: { message: '寫入成功', comments, status, orderDetails },
     })
+  } catch (err) {
+    res.status(400).json({ status: 'error', message: err.message })
+  }
+})
+
+router.put('/:oid', upload.none(), async (req, res) => {
+  const oid = req.params.oid
+  const time = moment().format('YYYY-MM-DD HH:mm:ss')
+  try {
+    const [orderInfo] = await dbPromise.execute(
+      'SELECT * FROM `user_order` WHERE `numerical_order` = ?',
+      [oid]
+    )
+
+    if (orderInfo.length > 0) {
+      const order_id = orderInfo[0].id
+      dbPromise.execute(
+        'INSERT INTO `order_status` (`id`, `order_id`, `status`, `update_at`) VALUES (NULL, ?, ?, ?);',
+        [order_id, '已完成', time]
+      )
+      dbPromise.execute(
+        'UPDATE `user_order` SET `status_now` = ? WHERE `user_order`.`id` = ?;',
+        ['已完成', order_id]
+      )
+
+      const [status] = await dbPromise.execute(
+        'SELECT * FROM `order_status` WHERE `order_id` = ?',
+        [order_id]
+      )
+
+      res.status(200).json({
+        status: 'success',
+        data: { message: '寫入成功', status },
+      })
+    }
   } catch (err) {
     res.status(400).json({ status: 'error', message: err.message })
   }

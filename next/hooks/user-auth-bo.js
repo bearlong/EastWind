@@ -91,7 +91,7 @@ const useAuth = () => {
   const refreshToken = async () => {
     const storedRefreshToken = localStorage.getItem('refreshToken')
     if (!storedRefreshToken) return
-
+    console.log(storedRefreshToken)
     try {
       const response = await fetch('http://localhost:3005/api/refresh-token', {
         method: 'POST',

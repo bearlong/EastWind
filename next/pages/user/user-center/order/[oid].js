@@ -79,6 +79,29 @@ export default function OrderDetail() {
     })
   }
 
+  const notifyAndReceipt = () => {
+    Swal.fire({
+      title: '確認收貨?',
+      text: '確定商品品項及數量都正確!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#b79347',
+      cancelButtonColor: '#747474',
+      confirmButtonText: '完成訂單',
+      cancelButtonText: '取消',
+      customClass: {
+        popup: `h5`,
+        title: `h4`,
+        confirmButton: `p me-3`,
+        cancelButton: `p`,
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleChangeStatus()
+      }
+    })
+  }
+
   const handleCommentShow = () => {
     setCommentShow(true)
   }
@@ -103,6 +126,49 @@ export default function OrderDetail() {
       ...prevHoverRatings,
       [name]: value,
     }))
+  }
+
+  const handleChangeStatus = async () => {
+    try {
+      const url = `http://localhost:3005/api/order/${oid}`
+      const response = await fetch(url, {
+        method: 'PUT',
+      })
+      const result = await response.json()
+      if (result.status === 'success') {
+        setStatus(result.data.status)
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          customClass: {
+            popup: `h6`,
+            title: `h4`,
+            content: `h1`,
+          },
+          title: `確認收貨!`,
+          showConfirmButton: false,
+          timer: 1500,
+        })
+        setTimeout(() => {
+          setCommentShow(true)
+        }, 1500)
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error(`收貨失敗，請洽客服人員`, {
+        style: {
+          border: '1px solid #d71515',
+          padding: '20px',
+          fontSize: '20px',
+          color: '#d71515',
+        },
+        iconTheme: {
+          primary: '#d71515',
+          secondary: '#ffffff',
+          fontSize: '20px',
+        },
+      })
+    }
   }
 
   const handleCommentSubmit = async (e) => {
@@ -133,9 +199,8 @@ export default function OrderDetail() {
           setStatus(result.data.status)
           setOrderDetail(result.data.orderDetails)
           notifyAndRemove()
-
           setTimeout(() => {
-            router.push('/user/user-center/order?status=已評論')
+            router.push('/user/user-center/order?status_now=已評論')
           }, 2000)
         }
       } catch (error) {
@@ -324,7 +389,8 @@ export default function OrderDetail() {
                   <div className={`${styles['address']} d-flex mb-4`}>
                     <span className={`${styles['title']} p me-3`}>寄送</span>
                     <p>
-                      {orderInfo.delivery_method === '宅配'
+                      {orderInfo.delivery_method === '宅配' ||
+                      orderInfo.delivery_method === '7-11店到店'
                         ? `${orderInfo.delivery_address.city} ${orderInfo.delivery_address.address}`
                         : '自取'}
                     </p>
@@ -477,9 +543,19 @@ export default function OrderDetail() {
               >
                 <button
                   className={`${styles['openFull-bl']} ${styles['btnOrder-bl']} ${styles['btnComment-bl']} me-0 me-lg-3 mb-lg-0 mb-3`}
-                  onClick={handleCommentShow}
+                  onClick={() => {
+                    if (orderInfo.status_now !== '已出貨') {
+                      handleCommentShow()
+                    } else {
+                      notifyAndReceipt()
+                    }
+                  }}
+                  disabled={orderInfo.status_now === '付款完成'}
                 >
-                  商品評價
+                  {orderInfo.status_now === '已出貨' ||
+                  orderInfo.status_now === '付款完成'
+                    ? '確認收貨'
+                    : '商品評論'}
                 </button>
                 <button
                   className={`${styles['btnOrder-bl']} ${styles['btnRefund-bl']}`}
@@ -640,7 +716,6 @@ export default function OrderDetail() {
               <button
                 className={`${styles['btnComment-bl']} ${styles['btnOrder-bl']} me-3`}
                 onClick={(e) => {
-                  console.log(comments, ratings)
                   handleCommentSubmit(e)
                 }}
                 disabled={existingComments.length}

@@ -411,7 +411,7 @@ router.get('/:id', async (req, res) => {
       [id]
     )
     const [coupons] = await dbPromise.execute(
-      'SELECT `coupons_for_user`.`coupon_id`,`coupons`.`name`, `coupons`.`discount_value`  FROM `coupons_for_user` JOIN `coupons` ON `coupons`.`id` = `coupons_for_user`.`coupon_id` WHERE `coupons_for_user`.`user_id` = ? AND `coupons_for_user`.status = "unused"',
+      'SELECT `coupons_for_user`.`coupon_id`,`coupons`.`name`, `coupons`.`discount_value`, `coupons`.`limit_value`  FROM `coupons_for_user` JOIN `coupons` ON `coupons`.`id` = `coupons_for_user`.`coupon_id` WHERE `coupons_for_user`.`user_id` = ? AND `coupons_for_user`.status = "unused"',
       [id]
     )
 
@@ -502,6 +502,11 @@ router.post('/:id', upload.none(), async (req, res, next) => {
     if (!country || !postCode || !city || !address || !recipient) {
       errors.push('宅配信息填寫不完整')
     }
+  } else if (delivery === '7-11店到店') {
+    const { city, address } = delivery_addressJson || {}
+    if (!city || !address || !recipient) {
+      errors.push('未選擇門市')
+    }
   }
 
   if (!payMethod) {
@@ -580,6 +585,11 @@ router.post('/:id', upload.none(), async (req, res, next) => {
       dbPromise.execute(
         'INSERT INTO `order_status` (`id`, `order_id`, `status`, `update_at`) VALUES (NULL, ?, ?, ?);',
         [result.insertId, '未付款', time]
+      )
+
+      dbPromise.execute(
+        'UPDATE `coupons_for_user` SET `status` = ? WHERE `coupons_for_user`.`user_id` = ? AND coupon_id = ?;',
+        ['used', user_id, coupon_id]
       )
 
       res.status(201).json({

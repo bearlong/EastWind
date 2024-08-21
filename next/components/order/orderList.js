@@ -11,7 +11,9 @@ export default function OrderList() {
   const { user, loading } = useContext(AuthContext)
   const { handleAdd = () => {}, handleShow = () => {}, show } = useCart()
   const router = useRouter()
-  const { status_now } = router.query
+  let status_now = router.query.status_now
+    ? router.query.status_now
+    : '付款完成'
   const [status, setStatus] = useState('付款完成')
   const [orderInfo, setOrderInfo] = useState([
     {
@@ -35,26 +37,26 @@ export default function OrderList() {
     '退貨/款': { displayText: '退貨/款', color: 'var(--error-color)' },
   }
 
-  const getOrderInfo = async () => {
-    try {
-      if (!user) return
-      const url = `http://localhost:3005/api/order?id=${user.id}&status_now=${status_now}`
-      const response = await fetch(url)
-      const result = await response.json()
-      if (result.status === 'success') {
-        const updatedOrderInfo = result.data.orderInfo.map((order) => {
-          // 嘗試將 delivery_address 轉換為 JSON 對象
-          order.delivery_address = JSON.parse(order.delivery_address)
-          return order
-        })
-        setOrderInfo(updatedOrderInfo)
-      } else {
-        console.log(result.data.message)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  // const getOrderInfo = async () => {
+  //   try {
+  //     if (!user) return
+  //     const url = `http://localhost:3005/api/order?id=${user.id}&status_now=${status_now}`
+  //     const response = await fetch(url)
+  //     const result = await response.json()
+  //     if (result.status === 'success') {
+  //       const updatedOrderInfo = result.data.orderInfo.map((order) => {
+  //         // 嘗試將 delivery_address 轉換為 JSON 對象
+  //         order.delivery_address = JSON.parse(order.delivery_address)
+  //         return order
+  //       })
+  //       setOrderInfo(updatedOrderInfo)
+  //     } else {
+  //       console.log(result.data.message)
+  //     }
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -89,9 +91,9 @@ export default function OrderList() {
     }
   }, [router.isReady, user, router.query])
 
-  useEffect(() => {
-    getOrderInfo()
-  }, [status])
+  // useEffect(() => {
+  //   getOrderInfo()
+  // }, [status])
 
   return (
     <>
@@ -223,8 +225,11 @@ export default function OrderList() {
                           </p>
                           <p>
                             寄送:{' '}
-                            {v.delivery_method === '宅配'
-                              ? v.delivery_address.address
+                            {v.delivery_method === '宅配' ||
+                            v.delivery_method === '7-11店到店'
+                              ? v.delivery_address.city +
+                                ' ' +
+                                v.delivery_address.address
                               : '自取'}
                           </p>
                           <p>
