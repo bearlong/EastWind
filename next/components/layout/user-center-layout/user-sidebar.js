@@ -22,6 +22,11 @@ export default function UserSidebar() {
   // 從 AuthContext 中獲取 user 狀態
   const { user } = useContext(AuthContext)
 
+  useEffect(() => {
+    // 當 user 狀態變化時，強制重新渲染
+    setActiveLink((prev) => prev)
+  }, [user])
+
   // 當路徑發生變化時，更新 activeLink 和 firstLink 的狀態
   useEffect(() => {
     const path = router.pathname.split('/').pop() // 獲取當前路徑的最後部分
@@ -104,7 +109,7 @@ export default function UserSidebar() {
         return ''
     }
   }
-
+  console.log('User in Sidebar:', user)
   return (
     <section>
       {/* 桌面版側邊欄 */}

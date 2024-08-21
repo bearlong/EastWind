@@ -68,10 +68,12 @@ router.get('/:userId/:status', async (req, res) => {
           booking_record.notes,
           booking_record.total_price,
           mahjong_table.id AS table_id,
+          mahjong_table.company_id AS company_id,
           company.name AS company_name,
           company.tele AS company_tele,  -- 公司電話
           company.address AS company_address,
-          user.username AS username
+          user.username AS username,
+          (SELECT COUNT(*) FROM mahjong_table WHERE company_id = company.id AND id <= mahjong_table.id) AS table_number
       FROM 
           booking_record
       JOIN 
@@ -82,8 +84,6 @@ router.get('/:userId/:status', async (req, res) => {
           user ON booking_record.user_id = user.id
       WHERE 
           booking_record.user_id = ? AND booking_record.status = ?;
-
-
     `
     const [bookings] = await connection.execute(query, [userId, status])
     res.status(200).json({ status: 'success', data: { bookings } })

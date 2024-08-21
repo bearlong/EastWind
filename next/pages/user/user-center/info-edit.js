@@ -13,7 +13,7 @@ export default function UserInfoEdit() {
   const router = useRouter()
 
   // 取得當前登入用戶資訊
-  const { user, updateUserImage } = useContext(AuthContext)
+  const { user, updateUserImage, updateUserUsername } = useContext(AuthContext)
 
   // 狀態管理
   const [cards, setCards] = useState([]) // 信用卡列表
@@ -473,6 +473,7 @@ export default function UserInfoEdit() {
         const data = await response.json()
         if (data.status === 'success') {
           updateUserImage(data.filename) // 更新 AuthContext 中的 user_img
+          updateUserUsername(formValues.username) // 更新 AuthContext 中的用戶名
 
           Swal.fire({
             title: '圖片上傳成功',

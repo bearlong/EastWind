@@ -24,10 +24,10 @@ export default function UserBooking() {
 
   // 排序方式列表
   const sortOptions = [
-    { label: '揪團編號從大到小', key: 'order_number', order: 'desc' },
-    { label: '揪團編號從小到大', key: 'order_number', order: 'asc' },
-    { label: '棋牌室從 A 到 Z ', key: 'company_name', order: 'asc' },
-    { label: '棋牌室從 Z 到 A ', key: 'company_name', order: 'desc' },
+    { label: '預訂編號從大到小', key: 'order_number', order: 'desc' },
+    { label: '預訂編號從小到大', key: 'order_number', order: 'asc' },
+    { label: '棋牌室從A到Z', key: 'company_name', order: 'asc' },
+    { label: '棋牌室從Z到A', key: 'company_name', order: 'desc' },
     { label: '預訂時間從早到晚', key: 'date', order: 'asc' },
     { label: '預訂時間從晚到早', key: 'date', order: 'desc' },
   ]
@@ -53,6 +53,10 @@ export default function UserBooking() {
     sortBooking(key, order)
   }
 
+  const formatTime = (time) => {
+    return time.split(':').slice(0, 2).join(':')
+  }
+
   useEffect(() => {
     if (user && user.id) {
       fetch(
@@ -61,7 +65,14 @@ export default function UserBooking() {
         .then((response) => response.json())
         .then((data) => {
           if (data.status === 'success') {
-            setBooking(data.data.bookings)
+            const transformedBookings = data.data.bookings.map((booking) => ({
+              ...booking,
+              playroom_type: booking.playroom_type === 0 ? '大廳' : '包廂',
+              price: Math.floor(booking.total_price),
+              start_time: formatTime(booking.start_time),
+              end_time: formatTime(booking.end_time),
+            }))
+            setBooking(transformedBookings)
           } else {
             console.error('Failed to fetch bookings:', data.message)
           }
@@ -69,7 +80,6 @@ export default function UserBooking() {
         .catch((error) => {
           console.error('Error fetching bookings:', error)
         })
-      console.log(booking)
     }
   }, [selectedStatus, user])
 
@@ -154,7 +164,7 @@ export default function UserBooking() {
                     {sortOptions.map((option, index) => (
                       <li
                         key={index}
-                        className="h6 d-flex justify-content-between align-items-center gap-5"
+                        className={`h6 d-flex justify-content-between align-items-center gap-5 ${styles['sort-list-li-bo']}`}
                         onClick={() => sortByIndex(index)}
                       >
                         {option.label}
@@ -169,13 +179,14 @@ export default function UserBooking() {
                 </div>
               </div>
             </div>
+
             <div className={styles['booking-list-th-bo']}>
               <ul className="text-center">
                 <li
                   className="p d-flex justify-content-center align-items-center text-center gap-3"
                   onClick={() => sortByIndex(activeSortIndex === 1 ? 0 : 1)} // 切換排序方式
                 >
-                  揪團編號 <FaSort />
+                  預訂編號 <FaSort />
                 </li>
                 <li
                   className="p d-flex justify-content-center align-items-center text-center gap-3"
@@ -236,7 +247,7 @@ export default function UserBooking() {
                       )}
                       {selectedStatus === 'completed' && (
                         <div
-                          className={`h6 d-flex justify-content-center align-items-center gap-2`}
+                          className={`${styles['state-text-bo']} h6 d-flex justify-content-center align-items-center gap-2`}
                         >
                           <FaCheck />
                           已完成
@@ -244,7 +255,7 @@ export default function UserBooking() {
                       )}
                       {selectedStatus === 'cancelled' && (
                         <div
-                          className={`h6 d-flex justify-content-center align-items-center gap-2`}
+                          className={`${styles['state-text-bo']} h6 d-flex justify-content-center align-items-center gap-2`}
                         >
                           <FaXmark />
                           已取消
@@ -278,42 +289,32 @@ export default function UserBooking() {
                           className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center`}
                         >
                           <FaShop className={`${styles['col-icon-bo']}`} />
-                          {item.playroom_type}/ {item.table_id}
+                          {item.playroom_type} / {item.table_number} 號桌
                         </li>
                         <li
                           className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center`}
                         >
                           <FaMoneyBill className={`${styles['col-icon-bo']}`} />
-                          {item.total_price}
+                          {item.price}
                         </li>
                       </ul>
 
                       <div className="d-flex flex-row flex-sm-column justify-content-between align-items-center gap-3">
-                        <button
+                        <Link
+                          href={`/lobby/Company/${item.id}`}
                           className={`${styles['btn-shop-detail']} btn p d-flex justify-content-center align-items-center`}
                         >
                           <FaMagnifyingGlass
                             className={` ${styles['btn-icon-bo']}`}
                           />
-                          <Link
-                            href={`/lobby/Company/${item.id}`}
+                          <div
                             className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
                           >
                             <p>店家</p>
                             <p>詳情</p>
-                          </Link>
-                        </button>
-                        <button
-                          className={`${styles['btn-shop-Contact']} btn p d-flex justify-content-center align-items-center`}
-                        >
-                          <FaCommentDots />
-                          <div
-                            className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
-                          >
-                            <p>聯絡</p>
-                            <p>店家</p>
                           </div>
-                        </button>
+                        </Link>
+
                         <button
                           className={`${styles['btn-QR-code']} btn p d-flex justify-content-center align-items-center`}
                         >
@@ -373,7 +374,7 @@ export default function UserBooking() {
                         )}
                         {selectedStatus === 'completed' && (
                           <div
-                            className={`h6 d-flex justify-content-center align-items-center gap-2`}
+                            className={` ${styles['state-text-bo']} h6 d-flex justify-content-center align-items-center gap-2`}
                           >
                             <FaCheck />
                             已完成
@@ -381,7 +382,7 @@ export default function UserBooking() {
                         )}
                         {selectedStatus === 'cancelled' && (
                           <div
-                            className={`h6 d-flex justify-content-center align-items-center gap-2`}
+                            className={` ${styles['state-text-bo']} h6 d-flex justify-content-center align-items-center gap-2`}
                           >
                             <FaXmark />
                             已取消
@@ -416,18 +417,19 @@ export default function UserBooking() {
                           className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center`}
                         >
                           <FaShop className={`${styles['col-icon-bo']}`} />
-                          {item.playroom_type}/ {item.table_id}/
+                          {item.playroom_type} / {item.table_number} 號桌
                         </li>
                         <li
                           className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center`}
                         >
                           <FaMoneyBill className={`${styles['col-icon-bo']}`} />
-                          600
+                          {item.price}
                         </li>
                       </ul>
 
                       <div className="d-flex flex-row flex-sm-column justify-content-between align-items-center gap-3">
-                        <button
+                        <Link
+                          href={`/lobby/Company/${item.id}`}
                           className={`${styles['btn-shop-detail']} btn p d-flex justify-content-center align-items-center`}
                         >
                           <FaMagnifyingGlass
@@ -439,18 +441,8 @@ export default function UserBooking() {
                             <p>店家</p>
                             <p>詳情</p>
                           </div>
-                        </button>
-                        <button
-                          className={`${styles['btn-shop-Contact']} btn p d-flex justify-content-center align-items-center`}
-                        >
-                          <FaCommentDots />
-                          <div
-                            className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
-                          >
-                            <p>聯絡</p>
-                            <p>店家</p>
-                          </div>
-                        </button>
+                        </Link>
+
                         <button
                           className={`${styles['btn-QR-code']} btn p d-flex justify-content-center align-items-center`}
                         >

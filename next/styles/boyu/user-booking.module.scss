@@ -274,6 +274,12 @@
   }
 }
 
+.state-text-bo {
+  @media (max-width: 576px) {
+    width: 7rem;
+  }
+}
+
 .show-detail-desktop-bo {
   display: none;
 }
@@ -294,4 +300,8 @@
 }
 .show-detail-mobile-bo:checked ~ .list-col-body-bo {
   display: flex;
+}
+
+.sort-list-li-bo {
+  width: 20rem;
 }
