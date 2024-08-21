@@ -4,6 +4,7 @@ import { AuthContext } from '@/context/AuthContext'
 const CartContext = createContext(null)
 
 export const CartProvider = ({ initialCartItems = [], children }) => {
+  let subtotal = 0
   const { user } = useContext(AuthContext)
   let items = initialCartItems
   const [cart, setCart] = useState(initialCartItems)
@@ -11,6 +12,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
   const [error, setError] = useState(null)
   const [remark, setRemark] = useState('')
   const [show, setShow] = useState(false)
+  const [cartTotal, setCartTotal] = useState(0)
 
   const handleClose = () => setShow(false)
   const handleShow = () => {
@@ -26,6 +28,10 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
             const response = await fetch(url)
             const result = await response.json()
             if (result.status === 'success') {
+              result.data.cart.forEach((cartItem) => {
+                subtotal += cartItem.quantity * cartItem.price
+              })
+              setCartTotal(subtotal)
               setCart(result.data.cart)
               setTop(result.data.top)
               setRemark('')
@@ -152,7 +158,6 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
   }
 
   const handleRemoveAll = async () => {
-    console.log(user)
     const url = `http://localhost:3005/api/cart/${user.id}`
 
     try {
@@ -188,6 +193,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
         handleClose,
         handleShow,
         show,
+        cartTotal,
       }}
     >
       {children}

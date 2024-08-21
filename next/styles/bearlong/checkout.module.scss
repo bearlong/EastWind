@@ -83,6 +83,14 @@
   input:checked + label .circle {
     background: var(--primary);
   }
+  .sevenBox-bl {
+    max-height: 0;
+    overflow: hidden;
+    transition: 0.5s;
+  }
+  .seven:checked ~ .sevenBox-bl {
+    max-height: 230px;
+  }
 
   .cdNum {
     width: calc(1.6rem * 4);
@@ -138,7 +146,7 @@
     }
   }
 
-  .paypent-button-bo {
+  .payment-button-bo {
     width: 100%;
     background: var(--primary);
     color: var(--white);

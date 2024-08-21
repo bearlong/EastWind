@@ -10,11 +10,13 @@ import toast from 'react-hot-toast'
 import { Toaster } from 'react-hot-toast'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import { useShip711StoreOpener } from '@/hooks/use-ship-711-store'
 
 export default function Checkout() {
   const { user, loading } = useContext(AuthContext)
   let subTotal = 0
   let totalPrice
+  const [couponTemplate, setCouponTemplate] = useState(null)
   const initSendForm = {
     country: '',
     firstname: '',
@@ -28,12 +30,14 @@ export default function Checkout() {
     remark = '',
     setRemark = () => {},
     handleRemoveAll = () => {},
+    cartTotal,
   } = useCart()
   const router = useRouter()
   const [delivery, setDelivery] = useState('宅配')
   const [deliveryPrice, setDeliveryPrice] = useState(60)
   const [sendForm, setSendForm] = useState(initSendForm)
   const [payMethod, setPayMethod] = useState('credit')
+  const [hasConfirmed, setHasConfirmed] = useState(false)
   const [payInfo, setPayInfo] = useState({
     creditNum1: '',
     creditNum2: '',
@@ -95,6 +99,10 @@ export default function Checkout() {
   const [card, setCard] = useState([])
   const [couponSelect, setCouponSelect] = useState('')
   const [total, setTotal] = useState(0)
+  const { store711, openWindow, closeWindow } = useShip711StoreOpener(
+    'http://localhost:3005/api/shipment/711',
+    { enableLocalStorage: false }
+  )
   const notifyAndRemove = (numerical_order) => {
     Swal.fire({
       position: 'center',
@@ -149,6 +157,10 @@ export default function Checkout() {
       if (validator.isEmpty(sendForm.address, { ignore_whitespace: true })) {
         newErrors.address ||= '請輸入地址'
       }
+    } else if (delivery === '7-11店到店') {
+      if (validator.isEmpty(store711.storename, { ignore_whitespace: true })) {
+        newErrors.address ||= '請選擇門市'
+      }
     }
 
     if (payMethod === 'credit') {
@@ -177,18 +189,22 @@ export default function Checkout() {
       if (validator.isEmpty(payInfo.cardholder, { ignore_whitespace: true })) {
         newErrors.cardholder ||= '請輸入持卡人姓名'
       }
-      if (!payInfo.useDeliveryAddress) {
+      if (
+        !payInfo.useDeliveryAddress ||
+        (payMethod === 'credit' && delivery === '7-11店到店') ||
+        (payMethod === 'credit' && delivery === '自取')
+      ) {
         if (validator.isEmpty(payInfo.country, { ignore_whitespace: true })) {
-          newErrors.billingAddressCountry ||= '請選擇國家'
+          newErrors.billingAddressCountry ||= '請選擇帳單國家'
         }
         if (validator.isEmpty(payInfo.postCode, { ignore_whitespace: true })) {
-          newErrors.billingAddressPostCode ||= '請輸入郵遞區號'
+          newErrors.billingAddressPostCode ||= '請輸入帳單郵遞區號'
         }
         if (validator.isEmpty(payInfo.city, { ignore_whitespace: true })) {
-          newErrors.billingAddressCity ||= '請選擇縣市'
+          newErrors.billingAddressCity ||= '請選擇帳單縣市'
         }
         if (validator.isEmpty(payInfo.address, { ignore_whitespace: true })) {
-          newErrors.billingAddressAddress ||= '請輸入地址'
+          newErrors.billingAddressAddress ||= '請輸入帳單地址'
         }
       }
     }
@@ -247,6 +263,9 @@ export default function Checkout() {
     if (delivery === '自取') {
       name = user.username
       newSendData = {}
+    } else if (delivery === '7-11店到店') {
+      name = user.username
+      newSendData = { city: store711.storename, address: store711.storeaddress }
     }
     formData.append('delivery', delivery)
     formData.append('delivery_address', JSON.stringify(newSendData))
@@ -265,7 +284,7 @@ export default function Checkout() {
       }
       formData.append('payInfo', JSON.stringify(newPayInfo))
     } else {
-      const newPayInfo = {}
+      const newPayInfo = payInfo
       formData.append('payInfo', JSON.stringify(newPayInfo))
     }
     formData.append('total', total)
@@ -329,7 +348,7 @@ export default function Checkout() {
         notifyAndRemove(result.data.numerical_order)
         setTimeout(() => {
           handleRemoveAll()
-          router.push('/user/user-center/order')
+          router.push('/user/user-center/order?status_now=付款完成')
         }, 3000)
       } else {
         toast.error('付款失敗', {
@@ -369,7 +388,7 @@ export default function Checkout() {
         notifyAndRemove(result.data.numerical_order)
         setTimeout(() => {
           handleRemoveAll()
-          router.push('/user/user-center/order')
+          router.push('/user/user-center/order?status_now=付款完成')
         }, 3000)
       } else {
         toast.error('付款失敗', {
@@ -433,13 +452,14 @@ export default function Checkout() {
         notifyAndRemove(CustomField1)
         setTimeout(() => {
           handleRemoveAll()
-          router.push('/user/user-center/order')
+          router.push('/user/user-center/order?status_now=付款完成')
         }, 3000)
       }
 
-      if (!transactionId || !orderId) {
+      if (!transactionId || !orderId || hasConfirmed) {
         return
       }
+      setHasConfirmed(true)
       handleConfirm(transactionId)
     }
   }, [router.isReady, user])
@@ -465,7 +485,7 @@ export default function Checkout() {
   }, [couponSelect, deliveryPrice])
 
   useEffect(() => {
-    if (delivery === '自取') {
+    if (delivery === '自取' || delivery === '7-11店到店') {
       setSendForm(initSendForm)
       const newformError = { ...formError, ...initSendForm }
       setFormError(newformError)
@@ -525,6 +545,21 @@ export default function Checkout() {
     }
   }, [cardSelect])
 
+  useEffect(() => {
+    const newCoupons = coupons.filter((v) => v.limit_value <= cartTotal)
+    const template = newCoupons.map((v, i) => {
+      return (
+        <option key={i} value={v.coupon_id}>
+          {v.name} -{' '}
+          {v.discount_value >= 100
+            ? `折價 ${v.discount_value}`
+            : `${v.discount_value} %OFF`}
+        </option>
+      )
+    })
+    setCouponTemplate(template)
+  }, [cartTotal, coupons])
+
   if (loading) {
     return (
       <>
@@ -560,6 +595,50 @@ export default function Checkout() {
             </label>
             <input
               type="radio"
+              id="711"
+              defaultValue={'7-11店到店'}
+              className={`${styles.seven}`}
+              name="delivery"
+              checked={delivery === '7-11店到店'}
+              onChange={(e) => {
+                setDelivery('7-11店到店')
+              }}
+            />
+            <label
+              htmlFor="711"
+              className={`${styles['payment-delivery-radio-bo']} ${styles['payment-radio-bo']}  p`}
+            >
+              <div className={`${styles.circle} me-2`} />
+              7-11店到店
+            </label>
+            <div className={`p ${styles['sevenBox-bl']}`}>
+              <button
+                className={`btn btn-primary text-light my-3 p`}
+                onClick={() => {
+                  openWindow()
+                }}
+              >
+                選擇門市
+              </button>
+              <br />
+              門市名稱:{' '}
+              <input
+                type="text"
+                className="form-control p"
+                value={store711.storename}
+                disabled
+              />
+              <br />
+              門市地址:{' '}
+              <input
+                type="text"
+                className="form-control p mb-3"
+                value={store711.storeaddress}
+                disabled
+              />
+            </div>
+            <input
+              type="radio"
               id="pickup"
               defaultValue={'自取'}
               name="delivery"
@@ -593,7 +672,7 @@ export default function Checkout() {
                 onBlur={(e) => {
                   handleBlur(e)
                 }}
-                disabled={delivery === '自取'}
+                disabled={delivery === '自取' || delivery === '7-11店到店'}
               >
                 <option value="">請選擇</option>
                 <option value={'台灣'}>台灣</option>
@@ -618,7 +697,7 @@ export default function Checkout() {
                   onBlur={(e) => {
                     handleBlur(e)
                   }}
-                  disabled={delivery === '自取'}
+                  disabled={delivery === '自取' || delivery === '7-11店到店'}
                 />
                 <label htmlFor="Firstname">姓</label>
                 <div className={`${styles['errorBox']}`}>
@@ -641,7 +720,7 @@ export default function Checkout() {
                   onBlur={(e) => {
                     handleBlur(e)
                   }}
-                  disabled={delivery === '自取'}
+                  disabled={delivery === '自取' || delivery === '7-11店到店'}
                 />
                 <label htmlFor="lastname">名</label>
                 <div className={`${styles['errorBox']}`}>
@@ -667,7 +746,7 @@ export default function Checkout() {
                   onBlur={(e) => {
                     handleBlur(e)
                   }}
-                  disabled={delivery === '自取'}
+                  disabled={delivery === '自取' || delivery === '7-11店到店'}
                 />
                 <label htmlFor="postCode">郵遞區號</label>
                 <div className={`${styles['errorBox']}`}>
@@ -689,7 +768,7 @@ export default function Checkout() {
                   onBlur={(e) => {
                     handleBlur(e)
                   }}
-                  disabled={delivery === '自取'}
+                  disabled={delivery === '自取' || delivery === '7-11店到店'}
                 >
                   <option value="">請選擇</option>
                   {citySelect.map((v, i) => {
@@ -718,7 +797,7 @@ export default function Checkout() {
                 onBlur={(e) => {
                   handleBlur(e)
                 }}
-                disabled={delivery === '自取'}
+                disabled={delivery === '自取' || delivery === '7-11店到店'}
               />
               <label htmlFor="address">地址</label>
               <div className={`${styles['errorBox']}`}>{formError.address}</div>
@@ -937,6 +1016,7 @@ export default function Checkout() {
                       ...payInfo,
                       useDeliveryAddress: !payInfo.useDeliveryAddress,
                     })
+                    console.log(payInfo.useDeliveryAddress)
                   }}
                 />
                 <label
@@ -1138,16 +1218,7 @@ export default function Checkout() {
               >
                 <option value={''}>請選擇</option>
                 <option value={0}>不使用優惠券</option>
-                {coupons.map((v, i) => {
-                  return (
-                    <option key={i} value={v.coupon_id}>
-                      {v.name} -{' '}
-                      {v.discount_value >= 100
-                        ? `折價 ${v.discount_value}`
-                        : `${v.discount_value} %OFF`}
-                    </option>
-                  )
-                })}
+                {couponTemplate}
               </select>
               <label htmlFor="couponSelect">選擇優惠券</label>
               <div className={`${styles['errorBox']}`}>
@@ -1194,7 +1265,7 @@ export default function Checkout() {
             </div>
           </div>
           <button
-            className={`${styles['paypent-button-bo']}  h5 d-flex justify-content-center align-items-center mb-5`}
+            className={`${styles['payment-button-bo']}  h5 d-flex justify-content-center align-items-center mb-5`}
             onClick={(e) => {
               handleSubmit(e)
             }}

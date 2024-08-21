@@ -331,17 +331,6 @@ export default function ProductNav() {
           </li>
         </ul>
       </div>
-      <style jsx>
-        {`
-          @media (max-width: 992px) {
-            .product-header-bl {
-              .subBar-bl {
-                padding: 2rem 0;
-              }
-            }
-          }
-        `}
-      </style>
     </>
   )
 }

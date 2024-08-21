@@ -86,9 +86,12 @@ export default function Header() {
               className={`d-flex justify-content-center align-items-center ${styles['nav-list-bo']}`}
             >
               <li>
-                <a className={`h6 ${styles['nav-link-bo']}`} href="">
+                <Link
+                  className={`h6 ${styles['nav-link-bo']}`}
+                  href="/lobby/Entrance"
+                >
                   棋牌室
-                </a>
+                </Link>
               </li>
               <li>
                 <Link
@@ -99,9 +102,9 @@ export default function Header() {
                 </Link>
               </li>
               <li>
-                <a className={`h6 ${styles['nav-link-bo']}`} href="">
+                <Link className={`h6 ${styles['nav-link-bo']}`} href="">
                   線上課程
-                </a>
+                </Link>
               </li>
             </ul>
           </nav>
@@ -111,24 +114,24 @@ export default function Header() {
             >
               <li>
                 <Link href="/home">
-                  <IoHome className={` ${styles['icon-bo']}`} />
+                  <IoHome className={` ${styles['icon-bo']} me-4 me-md-5`} />
                 </Link>
               </li>
               <li>
                 {user ? (
                   <Link href="/user/user-center/info">
-                    <FaUser className={` ${styles['icon-bo']}`} />
+                    <FaUser className={` ${styles['icon-bo']}  me-4 me-md-5`} />
                   </Link>
                 ) : (
                   <Link href="/login">
-                    <FaUser className={` ${styles['icon-bo']}`} />
+                    <FaUser className={` ${styles['icon-bo']}  me-4 me-md-5`} />
                   </Link>
                 )}
               </li>
               <li>
                 <div className="position-relative">
                   <FaShoppingCart
-                    className={` ${styles['icon-bo']}`}
+                    className={` ${styles['icon-bo']}  me-4 me-md-5`}
                     onClick={handleShow}
                   />
 
@@ -144,7 +147,9 @@ export default function Header() {
               {user && ( // 只有在 user 存在時才顯示登出按鈕
                 <li>
                   <Link href="" type="button" onClick={onLogout}>
-                    <FaRightFromBracket className={` ${styles['icon-bo']}`} />
+                    <FaRightFromBracket
+                      className={` ${styles['icon-bo']} me-4 me-md-0`}
+                    />
                   </Link>
                 </li>
               )}
