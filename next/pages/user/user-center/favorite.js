@@ -174,7 +174,7 @@ export default function UserFavorite() {
                         >
                           {favorite.course_name}
                         </p>
-                        <p className="h6">NT$ {favorite.price}</p>
+                        <p className="p">NT$ {favorite.price}</p>
                       </div>
                     </div>
                   </div>
@@ -218,7 +218,7 @@ export default function UserFavorite() {
                           >
                             {favorite.name}
                           </p>
-                          <p className="h6">NT$ {favorite.price}</p>
+                          <p className="p">NT$ {favorite.price}</p>
                         </div>
                       </div>
                     </div>
@@ -255,13 +255,17 @@ export default function UserFavorite() {
                       className={`${styles['company-card-body-bo']} d-flex justify-content-center align-items-center w-100`}
                     >
                       <div className={styles['company-img-box-bo']}>
-                        <img
+                        {/* <img
                           className={styles['company-img-bo']}
                           src={
                             favorite.image
                               ? `/images/company/${favorite.image}`
-                              : '/images/room-default.jpg'
+                              : `/images/company/room-default.jpg`
                           } // 如果沒有圖片則顯示預設圖片
+                          alt={favorite.name}
+                        /> */}
+                        <img
+                          src={`/images/company/room-default.jpg`}
                           alt={favorite.name}
                         />
                       </div>

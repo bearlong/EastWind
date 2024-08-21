@@ -56,7 +56,7 @@
 
   @media (max-width: 992px) {
     grid-template-columns: repeat(3, 1fr);
-    padding: 2.4em;
+    padding: 2.4em 1.6rem;
   }
 
   @media (max-width: 768px) {
@@ -430,4 +430,30 @@
   background-color: var(--primary-dark);
   color: var(--bg-text-color);
   padding: 0.4rem 1rem;
+}
+
+.courseImgBox {
+  aspect-ratio: 16 / 9; /* 維持16:9的比例 */
+  width: 100%;
+  overflow: hidden;
+}
+
+.courseImgBox img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.productImgBox,
+.company-img-box-bo {
+  aspect-ratio: 1 / 1; /* 維持1:1的比例，保持正方形 */
+  width: 100%;
+  overflow: hidden;
+}
+
+.productImgBox img,
+.company-img-bo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
