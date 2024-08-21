@@ -532,7 +532,7 @@ export default function Detail() {
                       >
                         <div className={`${styles['pic-bl']} me-3`}>
                           <Image
-                            src={`../../images/product/${imgMain}`}
+                            src={`/images/boyu/users/${value.user_img}.jpg`}
                             width={280}
                             height={280}
                             alt=""
@@ -540,7 +540,7 @@ export default function Detail() {
                         </div>
                         <div className="cardBody-bl">
                           <div className={`${styles['userInfo-bl']} mb-4`}>
-                            <p>user_name</p>
+                            <p>{value.username}</p>
                             <StarRating initRating={value.star} />
                             <p>{value.date}</p>
                           </div>

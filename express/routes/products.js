@@ -423,7 +423,8 @@ router.get('/:id/comment/:star', async (req, res, next) => {
       "SELECT * from comment WHERE `object_type` = 'product' AND `object_id` = " +
         id +
         ' AND `star` = ' +
-        star
+        star +
+        ' ORDER BY date DESC'
     )
     .catch((err) => {
       if (err) {
@@ -490,8 +491,9 @@ router.get('/:id', async (req, res, next) => {
 
   const [comment] = await dbPromise
     .execute(
-      "SELECT * from comment WHERE `object_type` = 'product' AND `object_id` = " +
-        id
+      "SELECT `comment`.*, `user`.`username`, `user`.`user_img` from comment JOIN user ON `comment`.`user_id` = `user`.`id` WHERE `comment`.`object_type` = 'product' AND `comment`.`object_id` = " +
+        id +
+        '  ORDER BY date DESC'
     )
     .catch((err) => {
       if (err) {
