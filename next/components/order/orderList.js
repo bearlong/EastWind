@@ -11,7 +11,9 @@ export default function OrderList() {
   const { user, loading } = useContext(AuthContext)
   const { handleAdd = () => {}, handleShow = () => {}, show } = useCart()
   const router = useRouter()
-  const { status_now } = router.query
+  let status_now = router.query.status_now
+    ? router.query.status_now
+    : '付款完成'
   const [status, setStatus] = useState('付款完成')
   const [orderInfo, setOrderInfo] = useState([
     {
@@ -30,35 +32,37 @@ export default function OrderList() {
     付款完成: { displayText: '待出貨', color: 'var(--primary)' },
     已出貨: { displayText: '待收貨', color: 'var(--primary-dark)' },
     已完成: { displayText: '已完成', color: 'var(--background)' },
+    已評論: { displayText: '已完成', color: 'var(--background)' },
     已取消: { displayText: '已取消', color: 'var(--text-hover-color)' },
     '退貨/款': { displayText: '退貨/款', color: 'var(--error-color)' },
   }
 
-  const getOrderInfo = async () => {
-    try {
-      const url = `http://localhost:3005/api/order?id=${user.id}&status_now=${status}`
-      const response = await fetch(url)
-      const result = await response.json()
-      if (result.status === 'success') {
-        const updatedOrderInfo = result.data.orderInfo.map((order) => {
-          // 嘗試將 delivery_address 轉換為 JSON 對象
-          order.delivery_address = JSON.parse(order.delivery_address)
-          return order
-        })
-        setOrderInfo(updatedOrderInfo)
-      } else {
-        console.log(result.data.message)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  // const getOrderInfo = async () => {
+  //   try {
+  //     if (!user) return
+  //     const url = `http://localhost:3005/api/order?id=${user.id}&status_now=${status_now}`
+  //     const response = await fetch(url)
+  //     const result = await response.json()
+  //     if (result.status === 'success') {
+  //       const updatedOrderInfo = result.data.orderInfo.map((order) => {
+  //         // 嘗試將 delivery_address 轉換為 JSON 對象
+  //         order.delivery_address = JSON.parse(order.delivery_address)
+  //         return order
+  //       })
+  //       setOrderInfo(updatedOrderInfo)
+  //     } else {
+  //       console.log(result.data.message)
+  //     }
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
         if (user) {
-          const url = `http://localhost:3005/api/order?id=${user.id}&status_now=${status}`
+          const url = `http://localhost:3005/api/order?id=${user.id}&status_now=${status_now}`
           const response = await fetch(url)
           const result = await response.json()
           if (result.status === 'success') {
@@ -79,22 +83,17 @@ export default function OrderList() {
     if (router.isReady && !loading) {
       if (user) {
         fetchUserInfo()
+        setStatus(status_now)
       } else if (!user && loading === false) {
         alert('請先登入會員')
         router.push('/login')
       }
     }
-  }, [router.isReady, user])
+  }, [router.isReady, user, router.query])
 
-  useEffect(() => {
-    getOrderInfo()
-  }, [status])
-
-  useEffect(() => {
-    if (status_now) {
-      setStatus(status_now)
-    }
-  }, [router.query])
+  // useEffect(() => {
+  //   getOrderInfo()
+  // }, [status])
 
   return (
     <>
@@ -107,7 +106,7 @@ export default function OrderList() {
                   status === '付款完成' ? styles['active'] : ''
                 }`}
                 onClick={() => {
-                  setStatus('付款完成')
+                  router.push('/user/user-center/order?status_now=付款完成')
                 }}
               >
                 <li className={`h6`}>待出貨</li>
@@ -115,17 +114,19 @@ export default function OrderList() {
               <button
                 className={`h6  ${status === '已出貨' ? styles['active'] : ''}`}
                 onClick={() => {
-                  setStatus('已出貨')
+                  router.push('/user/user-center/order?status_now=已出貨')
                 }}
               >
                 <li className={`h6`}>待收貨</li>
               </button>
               <button
                 className={`h6   ${
-                  status === '已完成' ? styles['active'] : ''
+                  status === '已完成' || status === '已評論'
+                    ? styles['active']
+                    : ''
                 }`}
                 onClick={() => {
-                  setStatus('已完成')
+                  router.push('/user/user-center/order?status_now=已完成')
                 }}
               >
                 <li className={`h6`}>已完成</li>
@@ -133,7 +134,7 @@ export default function OrderList() {
               <button
                 className={`h6  ${status === '已取消' ? styles['active'] : ''}`}
                 onClick={() => {
-                  setStatus('已取消')
+                  router.push('/user/user-center/order?status_now=已取消')
                 }}
               >
                 <li className={`h6 `}>已取消</li>
@@ -143,7 +144,7 @@ export default function OrderList() {
                   status === '退貨/款' ? styles['active'] : ''
                 }`}
                 onClick={() => {
-                  setStatus('退貨/款')
+                  router.push('/user/user-center/order?status_now=退貨/款')
                 }}
               >
                 <li className={`h6`}>退貨/款</li>
@@ -224,8 +225,11 @@ export default function OrderList() {
                           </p>
                           <p>
                             寄送:{' '}
-                            {v.delivery_method === '宅配'
-                              ? v.delivery_address.address
+                            {v.delivery_method === '宅配' ||
+                            v.delivery_method === '7-11店到店'
+                              ? v.delivery_address.city +
+                                ' ' +
+                                v.delivery_address.address
                               : '自取'}
                           </p>
                           <p>

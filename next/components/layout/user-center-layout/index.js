@@ -1,8 +1,8 @@
 import Head from 'next/head'
 import { useLoader } from '@/hooks/use-loader'
 
-import Header from './header.jsx'
-import Footer from './footer.jsx'
+import Header from '../default-layout/header.jsx'
+import Footer from '../default-layout/footer.jsx'
 import UserSidebar from './user-sidebar.js'
 
 export default function UserCenterLayout({ children }) {

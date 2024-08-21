@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(undefined)
   const [user, setUser] = useState(undefined)
   const [isInitialized, setIsInitialized] = useState(false) // 用於追蹤是否初始化完成
+  const [loading, setLoading] = useState(true)
 
   const router = useRouter()
   const loginRoute = '/login' // 登入頁面的路徑
@@ -48,6 +49,7 @@ export const AuthProvider = ({ children }) => {
           }
         }
       }
+      setLoading(false)
       setIsInitialized(true) // 初始化完成
     }
 
@@ -67,6 +69,7 @@ export const AuthProvider = ({ children }) => {
           localStorage.removeItem('accessToken') // 刪除無效的 accessToken
           router.push(loginRoute) // 重定向到登入頁面
         }
+        setLoading(false)
       }
 
       verifyAndSetUser() // 驗證並設置用戶狀態
@@ -157,7 +160,15 @@ export const AuthProvider = ({ children }) => {
   // 返回 AuthContext.Provider，提供 user、setUser、token 和 setToken 的上下文
   return (
     <AuthContext.Provider
-      value={{ user, setUser, token, setToken, updateUserImage }}
+      value={{
+        user,
+        setUser,
+        token,
+        setToken,
+        updateUserImage,
+        loading,
+        setLoading,
+      }}
     >
       {children} {/* 將子組件包裝在 Provider 中 */}
     </AuthContext.Provider>

@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useContext } from 'react'
+import { AuthContext } from '@/context/AuthContext'
 import {
   popupCenter,
   subscribe,
@@ -13,24 +14,22 @@ export function useShip711StoreOpener(
   serverCallbackUrl = '', //必要。伺服器7-11運送商店用Callback路由網址
   {
     title = '7-11運送店家選擇視窗', //跳出視窗標題
-    h = 680, //跳出視窗高度
+    h = 720, //跳出視窗高度
     w = 950, //跳出視窗寬度
     autoCloseMins = 5, //自動關閉
     enableLocalStorage = true, //是否didMount時要讀取localStorage中資料
-    keyLocalStorage = 'store711', // localStorage中的key
   } = {}
 ) {
   // 除錯用
-  //console.log(serverCallbackUrl, title, h, w, autoCloseMins, enableLocalStorage,keyLocalStorage )
-
-  const [storedValue, setValue] = useLocalStorage(keyLocalStorage, {
-    storeid: '',
-    storename: '',
-    storeaddress: '',
-    outside: '',
-    ship: '',
-    TempVar: '',
-  })
+  // console.log(
+  //   serverCallbackUrl,
+  //   title,
+  //   h,
+  //   w,
+  //   autoCloseMins,
+  //   enableLocalStorage,
+  //   keyLocalStorage
+  // )
 
   // 跳出子女視窗用
   const newWindow = useRef(null)
@@ -40,9 +39,6 @@ export function useShip711StoreOpener(
     storeid: '',
     storename: '',
     storeaddress: '',
-    outside: '',
-    ship: '',
-    TempVar: '',
   })
 
   const [startCountDown, setStartCountDown] = useState(false)
@@ -51,11 +47,6 @@ export function useShip711StoreOpener(
   const [countDown, setContDown] = useState(60 * autoCloseMins)
 
   // 如果使用localStorage，才會使用localStroage的值作為預設值
-  useEffect(() => {
-    if (storedValue && storedValue.storeid && enableLocalStorage) {
-      setStore711(storedValue)
-    }
-  }, [])
 
   useEffect(() => {
     subscribe('stop-countdown', (e) => setStartCountDown(false))
@@ -143,15 +134,6 @@ export function useShip711StoreOpener(
 }
 
 export function useShip711StoreCallback(keyLocalStorage = 'store711') {
-  const [storedValue, setValue] = useLocalStorage(keyLocalStorage, {
-    storeid: '',
-    storename: '',
-    storeaddress: '',
-    outside: '',
-    ship: '',
-    TempVar: '',
-  })
-
   const router = useRouter()
 
   useEffect(() => {
@@ -177,7 +159,6 @@ export function useShip711StoreCallback(keyLocalStorage = 'store711') {
       )
 
       // 設定到localStorage
-      setValue(router.query)
 
       // FIXME: mobile browser can't close self
       // DOMException: Blocked a frame with origin "http://192.168.0.106:3000" from accessing a cross-origin frame.
