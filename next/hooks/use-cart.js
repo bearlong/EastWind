@@ -51,6 +51,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
   }, [user])
 
   const handleAdd = async (object, type, quantity) => {
+    console.log(object, type, quantity)
     const foundIndex = cart.findIndex(
       (v) => v.object_id === object.id && v.object_type === type
     )
@@ -74,6 +75,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       const result = await response.json()
       if (result.status === 'success') {
         setCart(result.data.cart)
+        setCartTotal(result.data.total)
       }
     } catch (error) {
       setError(error.message)
@@ -100,6 +102,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       const result = await response.json()
       if (result.status === 'success') {
         setCart(result.data.cart)
+        setCartTotal(result.data.total)
       }
     } catch (error) {
       setError(error.message)
@@ -127,6 +130,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       const result = await response.json()
       if (result.status === 'success') {
         setCart(result.data.cart)
+        setCartTotal(result.data.total)
       }
     } catch (error) {
       setError(error.message)
@@ -151,6 +155,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       const result = await response.json()
       if (result.status === 'success') {
         setCart(result.data.cart)
+        setCartTotal(result.data.total)
       }
     } catch (error) {
       setError(error.message)
@@ -171,6 +176,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       const result = await response.json()
       if (result.status === 'success') {
         setCart([])
+        setCartTotal(0)
       }
     } catch (error) {
       setError(error.message)

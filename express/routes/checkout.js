@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid'
 import moment from 'moment'
 import { createLinePayClient } from 'line-pay-merchant'
 import * as crypto from 'crypto'
+import transporter from '#configs/mail.js'
 
 const upload = multer()
 
@@ -401,8 +402,6 @@ router.get('/ecpaypayment', async (req, res, next) => {
   // `
 })
 
-// 獲得某會員id的有加入到我的最愛清單中的商品id們
-// 此路由只有登入會員能使用
 router.get('/:id', async (req, res) => {
   const id = getIdParam(req)
   try {
@@ -486,6 +485,7 @@ router.post('/:id', upload.none(), async (req, res, next) => {
     remark,
     cart,
   } = req.body
+  let mailArr = []
 
   console.log(req.body)
   const cartArray = JSON.parse(cart)
@@ -576,29 +576,197 @@ router.post('/:id', upload.none(), async (req, res, next) => {
     if (result.insertId) {
       const time = moment().format('YYYY-MM-DD HH:mm:ss')
       cartArray.forEach((cartItem) => {
+        mailArr.push({
+          name: cartItem.item_name,
+          quantity: cartItem.quantity,
+          price: cartItem.price,
+          total: Number(cartItem.quantity) * Number(cartItem.price),
+        })
         const { object_id, object_type, quantity, price, item_name } = cartItem
         dbPromise.execute(
           'INSERT INTO `order_detail` (`id`, `name`, `order_id`, `object_id`, `object_type`, `quantity`,`price`) VALUES (NULL,?,?,?,?,?,?)',
           [item_name, result.insertId, object_id, object_type, quantity, price]
         )
       })
-      dbPromise.execute(
-        'INSERT INTO `order_status` (`id`, `order_id`, `status`, `update_at`) VALUES (NULL, ?, ?, ?);',
-        [result.insertId, '未付款', time]
-      )
+      let subTotal = 0
+      const mailOptions = {
+        from: `"support"<${process.env.SMTP_TO_EMAIL}>`,
+        to: 'a86774546@gmail.com',
+        subject: '感謝購買只欠東風的產品',
+        text: '感謝購買只欠東風的產品，您的訂單已成功建立。',
+        html: `
+    <!DOCTYPE html>
+    <html lang="zh">
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <style>
+          body { background-color: #aaaaaa; margin: 0; padding: 0; }
+          main { display: flex; justify-content: center; align-items: center; padding: 20px; }
+          .mail { background: #2b4d37; color: #ffffff; padding: 20px; border-radius: 8px; max-width: 600px; width: 100%; }
+          h3, h4, p { color: #ffffff; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { border: 1px solid #ccc; padding: 8px; color: #000000; vertical-align: middle; }
+          th { background: #eaeaea; }
+          td { background: #ffffff; }
+          .red { color: red; }
+              .center { text-align: center; }
+          .amount-container {
+            display: table;
+            width: 100%;
+          }
+          .amount-row {
+            display: table-row;
+          }
+          .amount-cell {
+            display: table-cell;
+            padding: 8px;
+          }
+          .amount-cell.currency {
+            text-align: left;
+          }
+          .amount-cell.amount {
+            text-align: right;
+          }
+        </style>
+      </head>
+      <body>
+        <main>
+          <div class="mail">
+            <h3>感謝購買 [只欠東風] 的產品</h3>
+            <h4>訂單${uuid}已建立成功</h4>
+            <p class="m-0">您可點擊下方連結查看最新訂單紀錄</p>
+            <p class="m-0">
+              訂單網址
+              <a href="http://localhost:3000/user/user-center/order?status_now=%E4%BB%98%E6%AC%BE%E5%AE%8C%E6%88%90" style="color: #ffffff;">只欠東風</a>
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">商品</th>
+                  <th scope="col">單價</th>
+                  <th scope="col">數量</th>
+                  <th scope="col">價格</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${mailArr
+                  .map((item) => {
+                    subTotal += item.total
+                    return `<tr>
+                      <td>${item.name}</td>
+                      <td class="center">${item.price}</td>
+                      <td class="center">${item.quantity}</td>
+                      <td>
+                        <div class="amount-container">
+                          <div class="amount-row">
+                            <div class="amount-cell currency">${' '}NT$</div>
+                            <div class="amount-cell amount">${item.total}</div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>`
+                  })
+                  .join('')}
+                <tr>
+                  <td>小計</td>
+                  <td></td>
+                  <td></td>
+                  <td>
+                    <div class="amount-container">
+                      <div class="amount-row">
+                        <div class="amount-cell currency">${' '}NT$</div>
+                        <div class="amount-cell amount">${subTotal}</div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>金流: ${payMethod === 'credit' ? '信用卡' : payMethod}</td>
+                  <td></td>
+                  <td></td>
+                  <td>
+                    <div class="amount-container">
+                      <div class="amount-row">
+                        <div class="amount-cell currency">${' '}NT$</div>
+                        <div class="amount-cell amount">0</div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>物流: ${delivery}</td>
+                  <td></td>
+                  <td></td>
+                  <td>
+                    <div class="amount-container">
+                      <div class="amount-row">
+                        <div class="amount-cell currency">${' '}NT$</div>
+                        <div class="amount-cell amount">${delivery === '宅配' ? 60 : 0}</div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>折扣</td>
+                  <td></td>
+                  <td></td>
+                  <td class="red">
+                    <div class="amount-container">
+                      <div class="amount-row">
+                        <div class="amount-cell currency">-NT$</div>
+                        <div class="amount-cell amount">${total - (subTotal + (delivery === '宅配' ? 60 : 0))}</div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>總計</td>
+                  <td></td>
+                  <td></td>
+                  <td>
+                    <div class="amount-container">
+                      <div class="amount-row">
+                        <div class="amount-cell currency">${' '}NT$</div>
+                        <div class="amount-cell amount">${total}</div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </main>
+      </body>
+    </html>
+  `,
+      }
 
-      dbPromise.execute(
-        'UPDATE `coupons_for_user` SET `status` = ? WHERE `coupons_for_user`.`user_id` = ? AND coupon_id = ?;',
-        ['used', user_id, coupon_id]
-      )
+      transporter.sendMail(mailOptions, (err, response) => {
+        if (err) {
+          // 失敗處理
+          return res.status(400).json({ status: 'error', message: err })
+        } else {
+          // 成功回覆的json
+          dbPromise.execute(
+            'INSERT INTO `order_status` (`id`, `order_id`, `status`, `update_at`) VALUES (NULL, ?, ?, ?);',
+            [result.insertId, '未付款', time]
+          )
 
-      res.status(201).json({
-        status: 'success',
-        data: {
-          message: '訂單建立成功',
-          orderId: result.insertId,
-          numerical_order: uuid,
-        },
+          dbPromise.execute(
+            'UPDATE `coupons_for_user` SET `status` = ? WHERE `coupons_for_user`.`user_id` = ? AND coupon_id = ?;',
+            ['used', user_id, coupon_id]
+          )
+
+          return res.status(201).json({
+            status: 'success',
+            data: {
+              message: '訂單建立成功',
+              orderId: result.insertId,
+              numerical_order: uuid,
+            },
+          })
+        }
       })
     } else {
       res

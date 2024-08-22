@@ -20,7 +20,12 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       if (typeof window !== 'undefined') {
-        const savedUser = JSON.parse(localStorage.getItem('user')) // 從 localStorage 中獲取保存的 user 資料
+        const savedUser = JSON.parse(localStorage.getItem('user'))
+        const noReload = localStorage.getItem('noReload')
+        if (noReload) {
+          localStorage.removeItem('noReload')
+          return
+        } // 從 localStorage 中獲取保存的 user 資料
         if (savedUser) {
           setUser(savedUser) // 如果有保存的用戶資料，設置 user 狀態
         } else {
@@ -90,6 +95,12 @@ export const AuthProvider = ({ children }) => {
   // 函數：檢查並驗證 token 的有效性
   const checkToken = async (token) => {
     const secretKey = 'boyuboyuboyuIamBoyu'
+    const noReload = localStorage.getItem('noReload')
+    if (noReload) {
+      localStorage.removeItem('noReload')
+      return
+    }
+
     try {
       const decoded = jwt.verify(token, secretKey)
       if (decoded && decoded.id) {
