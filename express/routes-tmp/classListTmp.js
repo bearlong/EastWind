@@ -17,6 +17,19 @@ const router = express.Router()
 
 // GET 獲得所有資料，加入分頁與搜尋字串功能，單一資料表處理
 router.get('/', async (req, res) => {
+  const course = {}
+
+  const [list] = await dbPromise
+    .execute('SELECT * FROM course')
+    .catch((err) => {
+      if (err) {
+        console.error(err)
+        return []
+      }
+    })
+
+  course['list'] = list
+
   // 獲取query參數值
   const {
     name = '', // string, 對應 name 欄位, `name LIKE '%name%'`
@@ -128,13 +141,6 @@ router.get('/', async (req, res) => {
   }
 })
 
-const [list] = await dbPromise.execute('SELECT * FROM course').catch((err) => {
-  if (err) {
-    console.error(err)
-    return []
-  }
-})
-
 // 獲得所有資料，加入分頁與搜尋字串功能，單一資料表處理
 // courses/qs?page=1&keyword=Ele&orderby=id,asc&perpage=10&price_range=1500,10000
 // router.get('/qs', async (req, res, next) => {
@@ -149,11 +155,11 @@ const [list] = await dbPromise.execute('SELECT * FROM course').catch((err) => {
 
 // //   // TODO: 這裡可以檢查各query string正確性或給預設值，檢查不足可能會產生查詢錯誤
 
-  // 建立資料庫搜尋條件
-  const conditions = []
+// // 建立資料庫搜尋條件
+// const conditions = []
 
-  // 關鍵字，keyword 使用 `name LIKE '%keyword%'`
-  conditions[0] = keyword ? `name LIKE '%${keyword}%'` : ''
+// // 關鍵字，keyword 使用 `name LIKE '%keyword%'`
+// conditions[0] = keyword ? `name LIKE '%${keyword}%'` : ''
 
 // //   // 品牌，brand_ids 使用 `brand_id IN (4,5,6,7)`
 // //   conditions[1] = brand_ids ? `brand_id IN (${brand_ids})` : ''
@@ -170,38 +176,38 @@ const [list] = await dbPromise.execute('SELECT * FROM course').catch((err) => {
 // //   // 尺寸: FIND_IN_SET(3, size) OR FIND_IN_SET(2, size)
 // //   conditions[5] = getFindInSet(sizes, 'size')
 
-  // 價格
-  conditions[6] = getBetween(price_range, 'price', 1500, 10000)
+// // 價格
+// conditions[6] = getBetween(price_range, 'price', 1500, 10000)
 
-  // 各條件為AND相接(不存在時不加入where從句中)
-  const where = getWhere(conditions, 'AND')
+// // 各條件為AND相接(不存在時不加入where從句中)
+// const where = getWhere(conditions, 'AND')
 
-  // 排序用，預設使用id, asc
-  const order = getOrder(orderby)
+// // 排序用，預設使用id, asc
+// const order = getOrder(orderby)
 
-  // 分頁用
-  // page預設為1，perpage預設為10
-  const perpageNow = Number(perpage) || 10
-  const pageNow = Number(page) || 1
-  const limit = perpageNow
-  // page=1 offset=0; page=2 offset= perpage * 1; ...
-  const offset = (pageNow - 1) * perpageNow
+// // 分頁用
+// // page預設為1，perpage預設為10
+// const perpageNow = Number(perpage) || 10
+// const pageNow = Number(page) || 1
+// const limit = perpageNow
+// // page=1 offset=0; page=2 offset= perpage * 1; ...
+// const offset = (pageNow - 1) * perpageNow
 
-  const sqlCourses = `SELECT * FROM course ${where} ${order} LIMIT ${limit} OFFSET ${offset}`
-  const sqlCount = `SELECT COUNT(*) AS count FROM course ${where}`
+// const sqlCourses = `SELECT * FROM course ${where} ${order} LIMIT ${limit} OFFSET ${offset}`
+// const sqlCount = `SELECT COUNT(*) AS count FROM course ${where}`
 
-  console.log(sqlCourses)
+// console.log(sqlCourses)
 
-  const courses = await sequelize.query(sqlCourses, {
-    type: QueryTypes.SELECT, //執行為SELECT
-    raw: true, // 只需要資料表中資料
-  })
+// const courses = await sequelize.query(sqlCourses, {
+//   type: QueryTypes.SELECT, //執行為SELECT
+//   raw: true, // 只需要資料表中資料
+// })
 
-  const data = await sequelize.query(sqlCount, {
-    type: QueryTypes.SELECT, //執行為SELECT
-    raw: true, // 只需要資料表中資料
-    plain: true, // 只需一筆資料
-  })
+// const data = await sequelize.query(sqlCount, {
+//   type: QueryTypes.SELECT, //執行為SELECT
+//   raw: true, // 只需要資料表中資料
+//   plain: true, // 只需一筆資料
+// })
 
 // //   // 查詢
 // //   // const total = await countWithQS(where)
@@ -219,25 +225,34 @@ const [list] = await dbPromise.execute('SELECT * FROM course').catch((err) => {
 // //   //   ]
 // //   // }
 
-  const result = {
-    total: data.count,
-    perpage: Number(perpage),
-    page: Number(page),
-    data: courses,
-  }
+//   const result = {
+//     total: data.count,
+//     perpage: Number(perpage),
+//     page: Number(page),
+//     data: courses,
+//   }
 
-  res.json(result)
-})
+//   res.json(result)
+// })
 
 // 獲得單筆資料
 router.get('/:id', async (req, res, next) => {
   // 轉為數字
   const id = getIdParam(req)
 
+  const [course] = await dbPromise
+    .execute(`SELECT * FROM course WHERE id =?`, [id])
+    .catch((err) => {
+      if (err) {
+        console.error(err)
+        return []
+      }
+    })
+
   // 只會回傳單筆資料
-  const course = await Course.findByPk(id, {
-    raw: true, // 只需要資料表中資料
-  })
+  // const course = await Course.findByPk(id, {
+  //   raw: true, // 只需要資料表中資料
+  // })
 
   return res.json({ status: 'success', data: { course } })
 })
