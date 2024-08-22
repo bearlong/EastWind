@@ -14,7 +14,7 @@ export default function ClassList() {
 
   // 向伺服器連線的程式碼；向伺服器fetch獲取資料
   const getCourses = async () => {
-    const apiURL = `http://localhost:3005/api/course`
+    const apiURL = `http://localhost:3005/api/classListTmp`
     try {
       const res = await fetch(apiURL)
       const data = await res.json()
