@@ -11,7 +11,7 @@ export default function BookingLeftArea({ companyData }) {
     <div className={styles.leftArea}>
       <RoomNav />
       <RoomCard companyData={companyData} />
-      <PhotoCard />
+      <PhotoCard companyData={companyData}/>
       <ToKnow />
     </div>
   )

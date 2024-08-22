@@ -78,10 +78,14 @@
 
 .booking-list-th-bo ul {
   display: grid;
-  grid-template-columns: 3.5fr 3.5fr 4.2fr 5fr;
+  grid-template-columns: 4fr 3.5fr 4.2fr 2fr 2fr;
 
   @media (max-width: 1200px) {
-    grid-template-columns: 4fr 4fr 4fr 5fr; /* 調整這些值以匹配你的設計需求 */
+    grid-template-columns: 3fr 4fr 3fr 4fr;
+  }
+
+  @media (max-width: 992px) {
+    grid-template-columns: 3fr 3fr 3fr 2.5fr;
   }
 
   @media (max-width: 768px) {
@@ -152,10 +156,18 @@
 }
 
 .list-col-head-desktop-bo {
+  display: grid;
+  grid-template-columns: 3.5fr 3.5fr 4.2fr 2.2fr 1.5fr;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
   padding: 1rem 0;
 
+  @media (max-width: 1200px) {
+    grid-template-columns: 3fr 4fr 3fr 3fr 1fr;
+  }
   @media (max-width: 992px) {
-    gap: 1.2rem;
+    grid-template-columns: 3fr 3fr 3fr 2fr 0.5fr;
   }
 }
 
@@ -166,6 +178,7 @@
 .list-col-body-bo,
 .list-col-desktop-body-bo {
   justify-content: space-between;
+
   background-color: var(--form-bg);
   padding: 1.6rem 7.2rem 1.6rem 6rem;
 
@@ -216,8 +229,9 @@
 }
 
 .btn-text-bo {
+  color: var(--bg-text-color);
   flex-direction: row;
-  @media (max-width: 430px) {
+  @media (max-width: 576px) {
     flex-direction: column;
   }
 }
@@ -247,11 +261,22 @@
     color: var(--bg-text-color);
   }
 
+  @media (max-width: 576px) {
+    width: 7rem;
+  }
+
   .btn-cancel-text-bo {
+    text-wrap: nowrap;
     flex-direction: row;
-    @media (max-width: 900px) {
+    @media (max-width: 1015px) {
       flex-direction: column;
     }
+  }
+}
+
+.state-text-bo {
+  @media (max-width: 576px) {
+    width: 7rem;
   }
 }
 
@@ -275,4 +300,8 @@
 }
 .show-detail-mobile-bo:checked ~ .list-col-body-bo {
   display: flex;
+}
+
+.sort-list-li-bo {
+  width: 20rem;
 }

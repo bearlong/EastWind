@@ -81,7 +81,6 @@
   background: var(--form-bg-dark);
   color: var(--primary-dark);
   border: 3px solid transparent;
-  margin-bottom: -3px;
 
   @media (max-width: 768px) {
     padding: 1.2rem 0;
@@ -124,21 +123,20 @@
 
   margin-top: -3px;
   border: 3px solid var(--primary);
-  padding: 3.6rem 2.4rem;
+  padding: 2.4rem;
 
   @media (max-width: 1200px) {
-    padding: 2.4rem;
     gap: 1.6rem;
   }
 
   @media (max-width: 992px) {
-    padding: 1.6rem 2.4rem;
+    padding: 1.6rem;
   }
 
   @media (max-width: 768px) {
     grid-template-columns: repeat(1, 1fr);
 
-    padding: 1.6em 2.4rem;
+    padding: 1.6em;
   }
   @media (max-width: 576px) {
     padding: 2.4rem 1.2rem;
@@ -199,8 +197,16 @@
       height: 10rem; /* 設置圖片容器的高度為 28rem */
     }
 
+    @media (max-width: 768px) {
+      width: 9rem; /* 設置卡片寬度為 100%，以適應父容器 */
+      height: 9rem; /* 設置圖片容器的高度為 28rem */
+    }
+
     .icon-shop-bo {
       font-size: 4.8rem;
+      @media (max-width: 768px) {
+        font-size: 3.6rem;
+      }
     }
   }
 
@@ -288,4 +294,32 @@
       transform: translateX(3px);
     }
   }
+}
+
+.swal-btn-bo {
+  font-size: 1.4rem;
+  font-weight: 500;
+  background-color: #b79347;
+  color: var(--bg-text-color);
+  padding: 0.4rem 1rem;
+}
+
+.swal-popup-bo {
+  background-color: var(--form-bg);
+}
+
+.swal-icon-bo {
+  font-size: 1.6rem;
+
+  @media (max-width: 576px) {
+    font-size: 1.4rem;
+  }
+}
+
+.swal-btn-cancel-bo {
+  font-size: 1.4rem;
+  font-weight: 500;
+  background-color: var(--primary-dark);
+  color: var(--bg-text-color);
+  padding: 0.4rem 1rem;
 }

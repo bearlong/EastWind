@@ -11,7 +11,11 @@ export default function BookingRightArea({ companyData }) {
     end_time: null,
     playroom_type: '',
     notes: '',
+    rules: [],
+    company_id: companyData.id,
+    total_price: 0,
   })
+  console.log(bookingData)
 
   const [rules, setRules] = useState([])
   const [errors, setErrors] = useState({})
@@ -54,8 +58,18 @@ export default function BookingRightArea({ companyData }) {
         bookingData.start_time,
         bookingData.end_time
       )
+      const calculatedTotalPrice = calculateTotalPrice(
+        hours,
+        bookingData.playroom_type
+      )
       setTotalHours(hours)
-      setTotalPrice(calculateTotalPrice(hours, bookingData.playroom_type))
+      setTotalPrice(calculatedTotalPrice)
+
+      // 更新 bookingData 中的 total_price
+      setBookingData((prev) => ({
+        ...prev,
+        total_price: calculatedTotalPrice,
+      }))
     }
   }, [bookingData.start_time, bookingData.end_time, bookingData.playroom_type])
 
@@ -65,9 +79,9 @@ export default function BookingRightArea({ companyData }) {
     return Math.max(0, Math.round(diffHours * 2) / 2) // 四舍五入到最近的 0.5 小时
   }
 
- 
   const calculateTotalPrice = (hours, playroom_type) => {
-    const hourlyRate = Number(playroom_type) === 0 ? companyData.lobby : companyData.vip
+    const hourlyRate =
+      Number(playroom_type) === 0 ? companyData.lobby : companyData.vip
     console.log(hourlyRate)
     return hours * hourlyRate
   }
@@ -85,15 +99,15 @@ export default function BookingRightArea({ companyData }) {
     setBookingData({ ...bookingData, [name]: value })
   }
 
-  // const handleRuleChange = (e) => {
-  //   const { value, checked } = e.target
-  //   setBookingData((prev) => ({
-  //     ...prev,
-  //     rules: checked
-  //       ? [...prev.rules, value]
-  //       : prev.rules.filter((rule) => rule !== value),
-  //   }))
-  // }
+  const handleRuleChange = (e) => {
+    const { value, checked } = e.target
+    setBookingData((prev) => ({
+      ...prev,
+      rules: checked
+        ? [...prev.rules, value]
+        : prev.rules.filter((rule) => rule !== value),
+    }))
+  }
 
   const validateForm = () => {
     const newErrors = {}
@@ -132,7 +146,6 @@ export default function BookingRightArea({ companyData }) {
           playroom_type: parseInt(bookingData.playroom_type),
           notes: bookingData.notes || '',
           total_price: totalPrice,
-
           company_id: companyData.id, // 添加公司 ID
         }
         const response = await fetch('http://localhost:3005/api/booking', {
@@ -161,30 +174,48 @@ export default function BookingRightArea({ companyData }) {
       }
     }
   }
+  const handleSubmitParty = async (e) => {
+    e.preventDefault()
+    if (validateForm()) {
+      try {
+        const formatTime = (date) => {
+          return date ? date.toTimeString().split(' ')[0] : null;
+        };
+        const partyData = {
+          ...bookingData,
+          date: bookingData.date.toISOString().split('T')[0], // 格式化日期
+          start_time: formatTime(bookingData.start_time),
+          end_time: formatTime(bookingData.end_time),
+ 
+        }
+        console.log('Submitting party data:', partyData)
+        const response = await fetch('http://localhost:3005/api/hostParty', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
 
-  // const handleSubmitParty = async (e) => {
-  //   e.preventDefault()
-  //   if (validateForm()) {
-  //     try {
-  //       const response = await fetch('http://localhost:3005/api/bookings', {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //         body: JSON.stringify(bookingData),
-  //       })
-  //       if (!response.ok) {
-  //         throw new Error('Failed to submit booking')
-  //       }
-  //       const result = await response.json()
-  //       console.log('訂單已創建:', result)
-  //       // 這裡可以添加成功提示或重定向邏輯
-  //     } catch (error) {
-  //       console.error('創建訂單失敗:', error)
-  //       setErrors((prev) => ({ ...prev, submit: '提交訂單失敗，請稍後再試' }))
-  //     }
-  //   }
-  // }
+          body: JSON.stringify(partyData),
+        })
+        if (!response.ok) {
+          throw new Error('Failed to submit booking')
+        }
+        const result = await response.json()
+        console.log('派對已創建:', result)
+        // 這裡可以添加成功提示或重定向邏輯
+        alert(`預訂成功創建！您的桌號是: ${result.numerical_order}`)
+      } catch (error) {
+        if (error.response && error.response.status === 400) {
+          const errorDetails = error.response.data.details
+          const errorMessages = Object.values(errorDetails).filter((msg) => msg)
+          setErrors((prev) => ({ ...prev, submit: errorMessages.join(', ') }))
+        } else {
+          setErrors((prev) => ({ ...prev, submit: '提交派對失敗，請稍後再試' }))
+        }
+      }
+    }
+ 
+  }
 
   return (
     <div className="rightArea col-4 g-3">
@@ -337,7 +368,7 @@ export default function BookingRightArea({ companyData }) {
           aria-labelledby="party-tab"
           tabIndex="0"
         >
-          {/* <div className="card">
+          <div className="card">
             <div className="card-body">
               <h5 className="card-title gw-bb w-100">{companyData.name}</h5>
 
@@ -453,7 +484,7 @@ export default function BookingRightArea({ companyData }) {
                 )}
               </form>
             </div>
-          </div> */}
+          </div>
         </div>
       </div>
     </div>
