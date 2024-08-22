@@ -9,12 +9,8 @@ import { getIdParam } from '#db-helpers/db-tool.js'
 
 // 資料庫使用
 import sequelize from '#configs/db.js'
-const { Course } = sequelize.models
-import { QueryTypes, Op } from 'sequelize'
-import app from '##/app.js'
 
 const router = express.Router()
-
 // GET 獲得所有資料，加入分頁與搜尋字串功能，單一資料表處理
 router.get('/', async (req, res) => {
   const course = {}
@@ -39,106 +35,107 @@ router.get('/', async (req, res) => {
     raw = true, //boolean, 代表只回傳courses陣列
   } = req.query
 
+  res.send({})
   // !!注意: 以下都要檢查各query參數值的正確性，或給定預設值，要不然可能會產生資料庫查詢錯誤
   // 建立例如: `CONCAT(",", color, ",") REGEXP ",(1|2),"`
-  const genConcatRegexp = (param, column) => {
-    return sequelize.where(
-      sequelize.fn('CONCAT', ',', sequelize.col(column), ','),
-      {
-        [Op.regexp]: `,(${param.split(',').join('|')}),`,
-      }
-    )
-  }
+  // const genConcatRegexp = (param, column) => {
+  //   return sequelize.where(
+  //     sequelize.fn('CONCAT', ',', sequelize.col(column), ','),
+  //     {
+  //       [Op.regexp]: `,(${param.split(',').join('|')}),`,
+  //     }
+  //   )
+  // }
 
   // 建立各where條件從句用
-  const genClause = (key, value) => {
-    switch (key) {
-      case 'name':
-        return {
-          name: {
-            [Op.like]: `%${value}%`,
-          },
-        }
-      case 'price_gte':
-        // 會有'0'字串的情況，注意要跳過此條件
-        if (!Number(value)) return ''
+  // const genClause = (key, value) => {
+  //   switch (key) {
+  //     case 'name':
+  //       return {
+  //         name: {
+  //           [Op.like]: `%${value}%`,
+  //         },
+  //       }
+  //     case 'price_gte':
+  //       // 會有'0'字串的情況，注意要跳過此條件
+  //       if (!Number(value)) return ''
 
-        return {
-          price: {
-            [Op.gte]: Number(value),
-          },
-        }
-      case 'price_lte':
-        // 會有'0'字串的情況，注意要跳過此條件
-        if (!Number(value)) return ''
+  //       return {
+  //         price: {
+  //           [Op.gte]: Number(value),
+  //         },
+  //       }
+  //     case 'price_lte':
+  //       // 會有'0'字串的情況，注意要跳過此條件
+  //       if (!Number(value)) return ''
 
-        return {
-          price: {
-            [Op.lte]: Number(value),
-          },
-        }
-      default:
-        return ''
-    }
-  }
+  //       return {
+  //         price: {
+  //           [Op.lte]: Number(value),
+  //         },
+  //       }
+  //     default:
+  //       return ''
+  //   }
+  // }
 
   // where各條件(以AND相連)
-  const conditions = []
-  for (const [key, value] of Object.entries(req.query)) {
-    if (value) {
-      conditions.push(genClause(key, value))
-    }
-  }
+  // const conditions = []
+  // for (const [key, value] of Object.entries(req.query)) {
+  //   if (value) {
+  //     conditions.push(genClause(key, value))
+  //   }
+  // }
 
-  console.log(conditions)
+  // console.log(conditions)
 
   // 分頁用
-  const page = Number(req.query.page) || 1
-  const perpage = Number(req.query.perpage) || 10
-  const offset = (page - 1) * perpage
-  const limit = perpage
+  // const page = Number(req.query.page) || 1
+  // const perpage = Number(req.query.perpage) || 10
+  // const offset = (page - 1) * perpage
+  // const limit = perpage
 
-  // 排序用
-  const orderDirection = req.query.order || 'ASC'
-  const order = req.query.sort
-    ? [[req.query.sort, orderDirection]]
-    : [['id', 'ASC']]
+  // // 排序用
+  // const orderDirection = req.query.order || 'ASC'
+  // const order = req.query.sort
+  //   ? [[req.query.sort, orderDirection]]
+  //   : [['id', 'ASC']]
 
   // 避免sql查詢錯誤導致後端當掉，使用try/catch語句
-  try {
-    const { count, rows } = await Course.findAndCountAll({
-      where: { [Op.and]: conditions },
-      raw: true, // 只需要資料表中資料
-      offset,
-      limit,
-      order,
-    })
+  // try {
+  //   const { count, rows } = await Course.findAndCountAll({
+  //     where: { [Op.and]: conditions },
+  //     raw: true, // 只需要資料表中資料
+  //     offset,
+  //     limit,
+  //     order,
+  //   })
 
-    if (req.query.raw === 'true') {
-      return res.json(rows)
-    }
+  //   if (req.query.raw === 'true') {
+  //     return res.json(rows)
+  //   }
 
-    // 計算總頁數
-    const pageCount = Math.ceil(count / Number(perpage)) || 0
+  //   // 計算總頁數
+  //   const pageCount = Math.ceil(count / Number(perpage)) || 0
 
-    return res.json({
-      status: 'success',
-      data: {
-        total: count,
-        pageCount,
-        page,
-        perpage,
-        courses: rows,
-      },
-    })
-  } catch (e) {
-    console.log(e)
+  //   return res.json({
+  //     status: 'success',
+  //     data: {
+  //       total: count,
+  //       pageCount,
+  //       page,
+  //       perpage,
+  //       courses: rows,
+  //     },
+  //   })
+  // } catch (e) {
+  //   console.log(e)
 
-    return res.json({
-      status: 'error',
-      message: '無法查詢到資料，查詢字串可能有誤',
-    })
-  }
+  //   return res.json({
+  //     status: 'error',
+  //     message: '無法查詢到資料，查詢字串可能有誤',
+  //   })
+  // }
 })
 
 // 獲得所有資料，加入分頁與搜尋字串功能，單一資料表處理
@@ -241,7 +238,10 @@ router.get('/:id', async (req, res, next) => {
   const id = getIdParam(req)
 
   const [course] = await dbPromise
-    .execute(`SELECT * FROM course WHERE id =?`, [id])
+    .execute(
+      'SELECT `course`.* , `course_category`.`name` AS `category_name` FROM course JOIN `course_category` ON `course_category`.`id` = `course`.`course_category_id` WHERE `course`.`id` = ?',
+      [id]
+    )
     .catch((err) => {
       if (err) {
         console.error(err)
