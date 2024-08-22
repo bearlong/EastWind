@@ -71,6 +71,17 @@ router.get('/', async (req, res) => {
       }
     })
 
+  const [list] = await dbPromise
+    .execute(
+      'SELECT `course`.`name`, `course`.`price`, `course`.`category_id` FROM `course`'
+    )
+    .catch((err) => {
+      if (err) {
+        console.error(err)
+        return []
+      }
+    })
+
   // 這裡應該是從數據庫獲取數據的邏輯
   // 目前使用模擬數據
   //     let filteredCourses = courseData
@@ -105,20 +116,20 @@ router.get('/', async (req, res) => {
   res.json(course)
 })
 
-// router.get('/course/[cid]', async (req, res) => {
-//   try {
-//     const courseId = parseInt(req.params.id)
-//     const course = courseData.find((c) => c.id === courseId)
+router.get('/course/[cid]', async (req, res) => {
+  try {
+    const courseId = parseInt(req.params.id)
+    const course = courseData.find((c) => c.id === courseId)
 
-//     if (!course) {
-//       return res.status(404).json({ message: '找不到課程' })
-//     }
+    if (!course) {
+      return res.status(404).json({ message: '找不到課程' })
+    }
 
-//     res.json(course)
-//   } catch (error) {
-//     res.status(500).json({ message: '伺服器錯誤' })
-//   }
-// })
+    res.json(course)
+  } catch (error) {
+    res.status(500).json({ message: '伺服器錯誤' })
+  }
+})
 
 // router.post('/upload', upload.array('files', 10), (req, res) => {
 //   try {

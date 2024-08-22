@@ -8,10 +8,13 @@ import Footer from '@/components/layout/default-layout/footer'
 import Header from '@/components/layout/default-layout/header'
 
 export default function classDetail() {
+
+
+  
   return (
     <>
       <div className="container desktopdetail-aa">
-        <div className="class-header-aa">
+        {/* <div className="class-header-aa">
           <ul className="d-flex subBar-aa">
             <li>
               <a className="subNav" href="">
@@ -144,7 +147,10 @@ export default function classDetail() {
               </div>
             </li>
           </ul>
-        </div>
+        </div> */}
+
+        <Header />
+
         <div className="detailsec1-aa">
           <div className="text14-aa text-hover">
             <h6>
@@ -527,6 +533,8 @@ stroke: var(--bg-text-color, #FAF7F0);">
             </div>
           </div>
         </div>
+
+        <Footer />
       </div>
     </>
   )
