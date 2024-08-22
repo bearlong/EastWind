@@ -283,9 +283,7 @@ export default function ProductNav() {
             <Link className={styles['subNav']} href="productList?category_id=5">
               <h6>桌遊</h6>
             </Link>
-            <div
-              className={`${styles['subBarBody-bl']} ${styles['rightBar-bl']}`}
-            >
+            <div className={`${styles['subBarBody-bl']} ${styles['last-bl']}`}>
               <div className="d-flex">
                 <div>
                   <h6 className={styles['title']}>精選推薦</h6>
@@ -331,17 +329,6 @@ export default function ProductNav() {
           </li>
         </ul>
       </div>
-      <style jsx>
-        {`
-          @media (max-width: 992px) {
-            .product-header-bl {
-              .subBar-bl {
-                padding: 2rem 0;
-              }
-            }
-          }
-        `}
-      </style>
     </>
   )
 }

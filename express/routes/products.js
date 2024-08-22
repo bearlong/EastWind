@@ -40,6 +40,7 @@ router.get('/', async (req, res) => {
     size,
     style,
   }
+
   for (const key in filterArr) {
     if (filterArr[key]) {
       if (filterArr[key].includes(',')) {
@@ -72,14 +73,6 @@ router.get('/', async (req, res) => {
     }
   }
 
-  if (max && min) {
-    if (!filter) {
-      filter = ` WHERE \`product\`.\`price\` BETWEEN ${min} AND ${max}`
-    } else {
-      filter += ` AND \`product\`.\`price\` BETWEEN ${min} AND ${max}`
-    }
-  }
-
   if (filterArr['category_id']) {
     if (filterArr['category_id'].includes(',')) {
       const values = filterArr['category_id']
@@ -91,6 +84,14 @@ router.get('/', async (req, res) => {
       topFilter = ` WHERE ${condition}`
     } else {
       topFilter = ` WHERE \`category_id\` = ${filterArr['category_id']}`
+    }
+  }
+
+  if (max && min) {
+    if (!filter) {
+      filter = ` WHERE \`product\`.\`price\` BETWEEN ${min} AND ${max}`
+    } else {
+      filter += ` AND \`product\`.\`price\` BETWEEN ${min} AND ${max}`
     }
   }
 
@@ -422,7 +423,8 @@ router.get('/:id/comment/:star', async (req, res, next) => {
       "SELECT * from comment WHERE `object_type` = 'product' AND `object_id` = " +
         id +
         ' AND `star` = ' +
-        star
+        star +
+        ' ORDER BY date DESC'
     )
     .catch((err) => {
       if (err) {
@@ -448,11 +450,16 @@ router.get('/:id/comment/:star', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   // 轉為數字
   const id = getIdParam(req)
+  const { uid } = req.query
   let cateId = 0
   // , COUNT(`comment`.`id`) AS `comment_count`
   const [product] = await dbPromise
     .execute(
-      'SELECT `product`.* , `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` , COUNT(`comment`.`id`) AS `comment_count` FROM `product` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product" WHERE `product`.`id` = ' +
+      'SELECT `product`.* , `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` , COUNT(`comment`.`id`) AS `comment_count` ' +
+        `${uid ? ',CASE WHEN `favorite`.`object_id` IS NOT NULL THEN TRUE ELSE FALSE END AS `fav`' : ''}` +
+        'FROM `product` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product" ' +
+        `${uid ? 'LEFT JOIN `favorite` ON `favorite`.`object_id` = `product`.`id` AND `favorite`.`object_type` = "product" AND `favorite`.`user_id` = ' + uid : ''}` +
+        ' WHERE `product`.`id` = ' +
         id
     )
     .catch((err) => {
@@ -484,8 +491,9 @@ router.get('/:id', async (req, res, next) => {
 
   const [comment] = await dbPromise
     .execute(
-      "SELECT * from comment WHERE `object_type` = 'product' AND `object_id` = " +
-        id
+      "SELECT `comment`.*, `user`.`username`, `user`.`user_img` from comment JOIN user ON `comment`.`user_id` = `user`.`id` WHERE `comment`.`object_type` = 'product' AND `comment`.`object_id` = " +
+        id +
+        '  ORDER BY date DESC'
     )
     .catch((err) => {
       if (err) {
@@ -524,6 +532,7 @@ router.get('/:id', async (req, res, next) => {
       )
     )
   })
+  console.log(starCount)
 
   return res.json({
     status: 'success',

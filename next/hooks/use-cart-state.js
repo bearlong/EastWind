@@ -149,4 +149,4 @@ export const CartProvider = ({
   )
 }
 
-export const useCart = () => useContext(CartContext)
+export const useCarts = () => useContext(CartContext)
