@@ -1,48 +1,53 @@
 import express from 'express'
+import dbPromise from '##/configs/mysql-promise.js'
+import multer from 'multer'
+import moment from 'moment'
+// import cors from 'cors'
+import mysql from 'mysql2/promise.js'
+// 檢查空物件, 轉換req.params為數字
+import { getIdParam } from '#db-helpers/db-tool.js'
+
+// 資料庫使用
+import sequelize from '#configs/db.js'
+const { Course } = sequelize.models
+import { QueryTypes, Op } from 'sequelize'
+import app from '##/app.js'
+
 const router = express.Router()
-
-// // 檢查空物件, 轉換req.params為數字
-// import { getIdParam } from '#db-helpers/db-tool.js'
-
-// // 資料庫使用
-// import sequelize from '#configs/db.js'
-// const { Course } = sequelize.models
-// import { QueryTypes, Op } from 'sequelize'
-// import dbPromise from '##/configs/mysql-promise.js'
 
 // /*
 // 測試連結:
 // /courses?page=3&perpage=10&brand_ids=1,2,4&cat_ids=4,5,6,10,11,12&color_ids=1,2&size_ids=2,3&tag_ids=1,2,4&name_like=e&price_gte=1500&price_lte=10000&sort=price&order=asc
 // */
-// // GET 獲得所有資料，加入分頁與搜尋字串功能，單一資料表處理
-// router.get('/', async (req, res) => {
-//   // 獲取query參數值
-//   // const {
-//   //   page = 1, // number,  用於 OFFSET =  (Number(page) - 1) * Number(perpage),
-//   //   perpage = 10, // number, 用於 LIMIT
-//   //   name_like = '', // string, 對應 name 欄位, `name LIKE '%name_like%'`
-//   //   brand_ids = '', // string, 對應 brand_id 欄位,  `brand_id IN (brand_ids)`
-//   //   cat_ids = '', // string, 對應 cat_id 欄位,  `cat_id IN (cat_ids)`
-//   //   color_ids = '', // string, 對應 color 欄位,  `CONCAT(",", color, ",") REGEXP ",(1|2),"`
-//   //   tag_ids = '', // string, 對應 tag 欄位,
-//   //   size_ids = '', // string, 對應 size 欄位,
-//   //   sort='price' // string, 排序欄位 用於 ORDER BY
-//   //   order='asc' // string, 排序順序 用於 ORDER BY 'asc' | 'desc', 預設為'asc'
-//   //   price_gte = 1500 // number, 對應 price 欄位, `price >= 1500`
-//   //   price_lte = 100000 // number, 對應 price 欄位, `price <= 10000`
-//   //   raw=true, //boolean, 代表只回傳courses陣列
-//   // } = req.query
+// GET 獲得所有資料，加入分頁與搜尋字串功能，單一資料表處理
+router.get('/', async (req, res) => {
+  // 獲取query參數值
+  const {
+    page = 1, // number,  用於 OFFSET =  (Number(page) - 1) * Number(perpage),
+    perpage = 10, // number, 用於 LIMIT
+    name_like = '', // string, 對應 name 欄位, `name LIKE '%name_like%'`
+    brand_ids = '', // string, 對應 brand_id 欄位,  `brand_id IN (brand_ids)`
+    cat_ids = '', // string, 對應 cat_id 欄位,  `cat_id IN (cat_ids)`
+    color_ids = '', // string, 對應 color 欄位,  `CONCAT(",", color, ",") REGEXP ",(1|2),"`
+    tag_ids = '', // string, 對應 tag 欄位,
+    size_ids = '', // string, 對應 size 欄位,
+    sort='price', // string, 排序欄位 用於 ORDER BY
+    order='asc', // string, 排序順序 用於 ORDER BY 'asc' | 'desc', 預設為'asc'
+    price_gte = 1500, // number, 對應 price 欄位, `price >= 1500`
+    price_lte = 100000, // number, 對應 price 欄位, `price <= 10000`
+    raw=true, //boolean, 代表只回傳courses陣列
+  } = req.query
 
-//   // !!注意: 以下都要檢查各query參數值的正確性，或給定預設值，要不然可能會產生資料庫查詢錯誤
-//   // 建立例如: `CONCAT(",", color, ",") REGEXP ",(1|2),"`
-//   const genConcatRegexp = (param, column) => {
-//     return sequelize.where(
-//       sequelize.fn('CONCAT', ',', sequelize.col(column), ','),
-//       {
-//         [Op.regexp]: `,(${param.split(',').join('|')}),`,
-//       }
-//     )
-//   }
+  // !!注意: 以下都要檢查各query參數值的正確性，或給定預設值，要不然可能會產生資料庫查詢錯誤
+  // 建立例如: `CONCAT(",", color, ",") REGEXP ",(1|2),"`
+  const genConcatRegexp = (param, column) => {
+    return sequelize.where(
+      sequelize.fn('CONCAT', ',', sequelize.col(column), ','),
+      {
+        [Op.regexp]: `,(${param.split(',').join('|')}),`,
+      }
+    )
+  }
 
 //   // 建立各where條件從句用
 //   const genClause = (key, value) => {
