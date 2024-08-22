@@ -37,6 +37,7 @@
   background: var(--background);
   position: absolute;
   z-index: 99;
+
   &:hover {
     display: block;
   }
@@ -70,6 +71,10 @@
       }
     }
   }
+}
+.last-bl {
+  right: 0;
+  left: auto;
 }
 
 @media (max-width: 1440px) {

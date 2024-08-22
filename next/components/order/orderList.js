@@ -37,27 +37,6 @@ export default function OrderList() {
     '退貨/款': { displayText: '退貨/款', color: 'var(--error-color)' },
   }
 
-  // const getOrderInfo = async () => {
-  //   try {
-  //     if (!user) return
-  //     const url = `http://localhost:3005/api/order?id=${user.id}&status_now=${status_now}`
-  //     const response = await fetch(url)
-  //     const result = await response.json()
-  //     if (result.status === 'success') {
-  //       const updatedOrderInfo = result.data.orderInfo.map((order) => {
-  //         // 嘗試將 delivery_address 轉換為 JSON 對象
-  //         order.delivery_address = JSON.parse(order.delivery_address)
-  //         return order
-  //       })
-  //       setOrderInfo(updatedOrderInfo)
-  //     } else {
-  //       console.log(result.data.message)
-  //     }
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
-
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -90,10 +69,6 @@ export default function OrderList() {
       }
     }
   }, [router.isReady, user, router.query])
-
-  // useEffect(() => {
-  //   getOrderInfo()
-  // }, [status])
 
   return (
     <>
@@ -154,7 +129,7 @@ export default function OrderList() {
           <div className={styles['orderList-bl']}>
             {orderInfo.length > 0 ? (
               orderInfo.map((v) => {
-                const currentStatus = statusMapping[status] || {
+                const currentStatus = statusMapping[v.status_now] || {
                   displayText: '未知狀態',
                   color: 'var(--default-color)',
                 }
