@@ -15,6 +15,7 @@ import {
 } from 'react-icons/fa6'
 import { FaStar, FaMapMarkerAlt, FaChevronDown } from 'react-icons/fa'
 import Link from 'next/link'
+import Swal from 'sweetalert2'
 
 export default function UserBooking() {
   const [activeSortIndex, setActiveSortIndex] = useState(0)
@@ -82,6 +83,84 @@ export default function UserBooking() {
         })
     }
   }, [selectedStatus, user])
+
+  const cancelBooking = (bookingId) => {
+    Swal.fire({
+      title: '你確定要取消預訂嗎？',
+      html: `<span class="p">取消後將無法恢復！</span>`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '確認取消',
+      cancelButtonText: '取消操作',
+      customClass: {
+        popup: `${styles['swal-popup-bo']}`,
+        title: 'h6',
+        icon: `${styles['swal-icon-bo']}`,
+        confirmButton: `${styles['swal-btn-bo']}`,
+        cancelButton: `${styles['swal-btn-cancel-bo']}`,
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`http://localhost:3005/api/user-booking/cancel/${bookingId}`, {
+          method: 'PUT',
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status === 'success') {
+              Swal.fire({
+                title: '已取消！',
+                html: `<span class="p">你的預訂已被取消。</span>`,
+                icon: 'success',
+                confirmButtonText: '確認',
+                customClass: {
+                  popup: `${styles['swal-popup-bo']}`,
+                  title: 'h6',
+                  icon: `${styles['swal-icon-bo']}`,
+                  confirmButton: `${styles['swal-btn-bo']}`,
+                  cancelButton: `${styles['swal-btn-cancel-bo']}`,
+                },
+              }).then(() => {
+                // 更新預訂狀態並跳轉到已取消狀態
+                setSelectedStatus('cancelled')
+                setBooking((prevBookings) =>
+                  prevBookings.filter((item) => item.id !== bookingId)
+                )
+              })
+            } else {
+              Swal.fire({
+                title: '錯誤！',
+                html: `<span class="p">${data.message}</span>`,
+                icon: 'error',
+                confirmButtonText: '確認',
+                customClass: {
+                  popup: `${styles['swal-popup-bo']}`,
+                  title: 'h6',
+                  icon: `${styles['swal-icon-bo']}`,
+                  confirmButton: `${styles['swal-btn-bo']}`,
+                  cancelButton: `${styles['swal-btn-cancel-bo']}`,
+                },
+              })
+            }
+          })
+          .catch((error) => {
+            console.error('Error updating booking:', error)
+            Swal.fire({
+              title: '錯誤！',
+              html: `<span class="p">無法取消預訂。</span>`,
+              icon: 'error',
+              confirmButtonText: '確認',
+              customClass: {
+                popup: `${styles['swal-popup-bo']}`,
+                title: 'h6',
+                icon: `${styles['swal-icon-bo']}`,
+                confirmButton: `${styles['swal-btn-bo']}`,
+                cancelButton: `${styles['swal-btn-cancel-bo']}`,
+              },
+            })
+          })
+      }
+    })
+  }
 
   return (
     <>
@@ -233,8 +312,9 @@ export default function UserBooking() {
                         </div>
                       </div>
                       {selectedStatus === 'booked' && (
-                        <div
+                        <button
                           className={`${styles['btn-cancel-bo']} btn h6 d-flex justify-content-center align-items-center gap-2`}
+                          onClick={() => cancelBooking(item.id)}
                         >
                           <FaBan />
                           <div
@@ -243,7 +323,7 @@ export default function UserBooking() {
                             <p>取消</p>
                             <p>預訂</p>
                           </div>
-                        </div>
+                        </button>
                       )}
                       {selectedStatus === 'completed' && (
                         <div
@@ -360,8 +440,9 @@ export default function UserBooking() {
                       <div></div>
                       <div className="d-flex justify-content-center align-items-center gap-4 ">
                         {selectedStatus === 'booked' && (
-                          <div
+                          <button
                             className={`${styles['btn-cancel-bo']} btn h6 d-flex justify-content-center align-items-center gap-2`}
+                            onClick={() => cancelBooking(item.id)}
                           >
                             <FaBan />
                             <div
@@ -370,7 +451,7 @@ export default function UserBooking() {
                               <p>取消</p>
                               <p>預訂</p>
                             </div>
-                          </div>
+                          </button>
                         )}
                         {selectedStatus === 'completed' && (
                           <div

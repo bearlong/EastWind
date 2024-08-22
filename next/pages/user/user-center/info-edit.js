@@ -13,7 +13,8 @@ export default function UserInfoEdit() {
   const router = useRouter()
 
   // 取得當前登入用戶資訊
-  const { user, updateUserImage, updateUserUsername } = useContext(AuthContext)
+  const { user, updateUserImage, updateUserUsername, updateUserGender } =
+    useContext(AuthContext)
 
   // 狀態管理
   const [cards, setCards] = useState([]) // 信用卡列表
@@ -210,7 +211,7 @@ export default function UserInfoEdit() {
       !newErrors.password && !newErrors.confirmPassword
     )
 
-    // 其他欄位驗證
+    // 檢查並驗證姓名
     if (username !== initialFormValues.username) {
       if (!username) {
         newErrors.username = '姓名不能為空'
@@ -218,6 +219,7 @@ export default function UserInfoEdit() {
     }
     toggleCorrectClass('username', !newErrors.username)
 
+    // 檢查並驗證性別
     if (gender !== initialFormValues.gender) {
       if (!gender) {
         newErrors.gender = '請選擇性別'
@@ -225,29 +227,7 @@ export default function UserInfoEdit() {
     }
     toggleCorrectClass('gender', !newErrors.gender)
 
-    toggleCorrectClass('birthDate', !newErrors.birthDate)
-
-    // 檢查並驗證城市
-    if (!city) {
-      newErrors.city = '請選擇城市'
-    }
-    toggleCorrectClass('city', !newErrors.city)
-
-    if (address !== initialFormValues.address) {
-      if (!address) {
-        newErrors.address = '地址不能為空'
-      }
-    }
-    toggleCorrectClass('address', !newErrors.address)
-
-    if (phone !== initialFormValues.phone) {
-      if (!phoneRegex.test(phone)) {
-        newErrors.phone = '請輸入有效的手機號碼'
-      }
-    }
-    toggleCorrectClass('phone', !newErrors.phone)
-
-    // 檢查 `年`、`月`、和 `日` 的值是否正確
+    // 檢查並驗證生日
     if (!year || !month || !day) {
       newErrors.birthDate = '請選擇完整的生日'
       toggleCorrectClass('year', false)
@@ -259,6 +239,26 @@ export default function UserInfoEdit() {
       toggleCorrectClass('day', true)
     }
     toggleCorrectClass('birthDate', !newErrors.birthDate)
+
+    // 檢查並驗證城市
+    if (!city) {
+      newErrors.city = '請選擇城市'
+    }
+    toggleCorrectClass('city', !newErrors.city)
+
+    // 檢查並驗證地址
+    if (!address) {
+      newErrors.address = '地址不能為空'
+    }
+    toggleCorrectClass('address', !newErrors.address)
+
+    // 檢查並驗證手機
+    if (!phone) {
+      newErrors.phone = '手機不能為空'
+    } else if (!phoneRegex.test(phone)) {
+      newErrors.phone = '請輸入有效的手機號碼（09XXXXXXXX）'
+    }
+    toggleCorrectClass('phone', !newErrors.phone)
 
     // 更新錯誤訊息狀態
     setErrors(newErrors)
@@ -582,6 +582,7 @@ export default function UserInfoEdit() {
 
         if (formIsValid) {
           const birthDate = `${formValues.year}-${formValues.month}-${formValues.day}`
+          updateUserGender(formValues.gender)
 
           const updatedFormValues = {
             ...formValues,
@@ -604,6 +605,7 @@ export default function UserInfoEdit() {
                 localStorage.removeItem('emailVerificationStatus')
 
                 sessionStorage.setItem('updateSuccess', 'true')
+                updateUserUsername(formValues.username) // 在成功後更新名稱
 
                 // 顯示成功訊息並跳轉
                 Swal.fire({

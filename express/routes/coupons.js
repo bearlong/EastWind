@@ -47,12 +47,12 @@ router.get('/unused/:userId', async (req, res) => {
   const userId = req.params.userId
 
   try {
-    // 從資料庫中選取該用戶尚未使用的優惠券
+    // 從資料庫中選取該用戶尚未使用且仍在有效期內的優惠券
     const [couponsUnused] = await connection.query(
       'SELECT `coupons_for_user`.*, `coupons`.`name`, `coupons`.`discount_type`, `coupons`.`discount_value`, `coupons`.`valid_from`, `coupons`.`valid_to`, `coupons`.`limit_value` ' +
         'FROM `coupons_for_user` ' +
         'INNER JOIN `coupons` ON `coupons_for_user`.`coupon_id` = `coupons`.`id` ' +
-        'WHERE `coupons_for_user`.`user_id` = ? AND `coupons_for_user`.`status` = "unused"',
+        'WHERE `coupons_for_user`.`user_id` = ? AND `coupons_for_user`.`status` = "unused" AND `coupons`.`valid_to` >= CURDATE()',
       [userId]
     )
     res.status(200).json({ status: 'success', data: couponsUnused })

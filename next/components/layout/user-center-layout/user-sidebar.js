@@ -363,9 +363,11 @@ export default function UserSidebar() {
                       href="/user/user-center/order"
                       onClick={() => updateActiveLink('order')}
                       className={`${styles['user-sidebar-link-bo']}
-                      h6 d-flex align-items-center gap-4 ${
-                        activeLink === 'order' ? styles['user-link-active'] : ''
-                      }`}
+                        h6 d-flex align-items-center gap-4 ${
+                          activeLink === 'order'
+                            ? styles['user-link-active']
+                            : ''
+                        }`}
                     >
                       <IoReceipt />
                       歷史訂單
@@ -378,11 +380,11 @@ export default function UserSidebar() {
                       href="/user/user-center/course"
                       onClick={() => updateActiveLink('course')}
                       className={`${styles['user-sidebar-link-bo']}
-                      h6 d-flex align-items-center gap-4 ${
-                        activeLink === 'course'
-                          ? styles['user-link-active']
-                          : ''
-                      }`}
+                        h6 d-flex align-items-center gap-4 ${
+                          activeLink === 'course'
+                            ? styles['user-link-active']
+                            : ''
+                        }`}
                     >
                       <ImBook />
                       課程
@@ -395,11 +397,11 @@ export default function UserSidebar() {
                       href="/user/user-center/favorite"
                       onClick={() => updateActiveLink('favorite')}
                       className={`${styles['user-sidebar-link-bo']}
-                      h6 d-flex align-items-center gap-4 ${
-                        activeLink === 'favorite'
-                          ? styles['user-link-active']
-                          : ''
-                      }`}
+                        h6 d-flex align-items-center gap-4 ${
+                          activeLink === 'favorite'
+                            ? styles['user-link-active']
+                            : ''
+                        }`}
                     >
                       <FaHeartCircleCheck />
                       我的最愛
@@ -412,11 +414,11 @@ export default function UserSidebar() {
                       href="/user/user-center/coupon"
                       onClick={() => updateActiveLink('coupon')}
                       className={`${styles['user-sidebar-link-bo']}
-                      h6 d-flex align-items-center gap-4 ${
-                        activeLink === 'coupon'
-                          ? styles['user-link-active']
-                          : ''
-                      }`}
+                        h6 d-flex align-items-center gap-4 ${
+                          activeLink === 'coupon'
+                            ? styles['user-link-active']
+                            : ''
+                        }`}
                     >
                       <HiTicket />
                       優惠卷

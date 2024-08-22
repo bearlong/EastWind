@@ -133,29 +133,31 @@
 }
 
 .room-image-box-bo {
-  width: 26vw; /* 限制最大寬度為26vw */
-  pointer-events: none; /* 禁止圖片點擊 */
+  width: 26vw;
+  pointer-events: none;
   z-index: 2;
-  overflow: hidden; /* 隱藏超出容器的內容 */
-  position: relative; /* 確保圖片在容器內滾動 */
-  height: 90rem; /* 設定圖片容器的高度 */
+  overflow: hidden;
+  position: relative;
+  height: 90rem;
 
   @media (max-width: 1400px) {
-    height: 75rem; /* 設定圖片容器的高度 */
+    height: 75rem;
   }
 
   @media (max-width: 1200px) {
-    height: 62rem; /* 設定圖片容器的高度 */
+    height: 62rem;
   }
 
   @media (max-width: 992px) {
-    height: 51rem; /* 設定圖片容器的高度 */
+    height: 51rem;
     flex: 1;
   }
 
   @media (max-width: 768px) {
-    height: auto; /* 設定圖片容器的高度 */
+    height: auto;
     width: 100vw;
+    display: flex;
+    justify-content: center;
   }
 
   &::before {
@@ -165,9 +167,8 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色 */
-    z-index: 3; /* 確保在圖片上方 */
-    pointer-events: none; /* 禁止點擊 */
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 3;
   }
 }
 
@@ -178,21 +179,20 @@
 }
 
 .room-image-bo {
-  width: 100%; /* 確保圖片容器填滿父元素 */
-  margin: 0 auto; /* 將容器居中 */
+  width: 100%;
+  margin: 0 auto;
   aspect-ratio: 16 / 9;
 }
 
 .image-up-bo {
-  animation: scrollUp 8s linear infinite; /* 設定滾動動畫 */
+  animation: scrollUp 30s linear infinite;
   @media (max-width: 768px) {
-    animation: scrollLeft 8s linear infinite; /* 設定滾動動畫 */
+    animation: scrollLeft 30s linear infinite;
   }
 }
 
 .image-down-bo {
-  animation: scrollDown 8s linear infinite;
-  /* 設定滾動動畫 */
+  animation: scrollDown 30s linear infinite;
   @media (max-width: 768px) {
     display: none;
   }
@@ -200,28 +200,37 @@
 
 @keyframes scrollUp {
   0% {
-    transform: translateY(100%); /* 開始位置 */
+    transform: translateY(0); /* 第一張開始 */
+  }
+  95% {
+    transform: translateY(-100%); /* 滾動到最後一張 */
   }
   100% {
-    transform: translateY(0); /* 中間位置 */
+    transform: translateY(0); /* 立即回到第一張 */
   }
 }
 
 @keyframes scrollDown {
   0% {
-    transform: translateY(0); /* 開始位置 */
+    transform: translateY(0); /* 第一張開始 */
+  }
+  95% {
+    transform: translateY(100%); /* 滾動到最後一張 */
   }
   100% {
-    transform: translateY(100%); /* 中間位置 */
+    transform: translateY(0); /* 立即回到第一張 */
   }
 }
 
 @keyframes scrollLeft {
   0% {
-    transform: translateX(0); /* 開始位置 */
+    transform: translateX(0); /* 第一張開始 */
+  }
+  95% {
+    transform: translateX(-100%); /* 滾動到最後一張 */
   }
   100% {
-    transform: translateX(100%); /* 中間位置 */
+    transform: translateX(0); /* 立即回到第一張 */
   }
 }
 

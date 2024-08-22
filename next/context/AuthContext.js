@@ -165,6 +165,14 @@ export const AuthProvider = ({ children }) => {
     }))
   }
 
+  // 更新用戶性別
+  const updateUserGender = (newGender) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      gender: newGender,
+    }))
+  }
+
   // 返回 AuthContext.Provider，提供 user、setUser、token 和 setToken 的上下文
   return (
     <AuthContext.Provider
@@ -175,6 +183,7 @@ export const AuthProvider = ({ children }) => {
         setToken,
         updateUserImage,
         updateUserUsername,
+        updateUserGender,
         loading,
         setLoading,
       }}

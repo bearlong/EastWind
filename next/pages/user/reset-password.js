@@ -59,6 +59,11 @@ export default function ResetPassword() {
       return
     }
 
+    if (password === account) {
+      setPasswordError('新密碼不能與帳號相同')
+      return
+    }
+
     if (!confirmPassword) {
       setConfirmPasswordError('請確認新密碼')
       return
