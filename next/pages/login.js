@@ -27,12 +27,6 @@ export default function Login() {
     const storedAccount = localStorage.getItem('registeredAccount') || ''
     const storedPassword = localStorage.getItem('registeredPassword') || ''
 
-    console.log(
-      '從 localStorage 獲取的帳號和密碼:',
-      storedAccount,
-      storedPassword
-    )
-
     if (storedAccount && storedPassword) {
       setAccount(storedAccount)
       setPassword(storedPassword)

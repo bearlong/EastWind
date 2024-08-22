@@ -109,7 +109,6 @@ export default function UserSidebar() {
         return ''
     }
   }
-  console.log('User in Sidebar:', user)
   return (
     <section>
       {/* 桌面版側邊欄 */}
