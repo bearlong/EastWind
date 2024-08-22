@@ -26,14 +26,16 @@ router.get('/', async (req, res) => {
 
   course['list'] = list
 
+  res.json(course)
+
   // 獲取query參數值
-  const {
-    name = '', // string, 對應 name 欄位, `name LIKE '%name%'`
-    sort = 'price', // string, 排序欄位 用於 ORDER BY
-    price_gte = 1500, // number, 對應 price 欄位, `price >= 1500`
-    price_lte = 100000, // number, 對應 price 欄位, `price <= 10000`
-    raw = true, //boolean, 代表只回傳courses陣列
-  } = req.query
+  // const {
+  //   name = '', // string, 對應 name 欄位, `name LIKE '%name%'`
+  //   sort = 'price', // string, 排序欄位 用於 ORDER BY
+  //   price_gte = 1500, // number, 對應 price 欄位, `price >= 1500`
+  //   price_lte = 100000, // number, 對應 price 欄位, `price <= 10000`
+  //   raw = true, //boolean, 代表只回傳courses陣列
+  // } = req.query
 
   res.send({})
   // !!注意: 以下都要檢查各query參數值的正確性，或給定預設值，要不然可能會產生資料庫查詢錯誤
