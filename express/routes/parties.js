@@ -105,10 +105,10 @@ router.get('/:id', async (req, res) => {
     DATE_FORMAT(CONCAT(p.date, ' ', p.start_at), '%Y-%m-%dT%H:%i:%s') as start_time,
     DATE_FORMAT(CONCAT(p.date, ' ', p.end_at), '%Y-%m-%dT%H:%i:%s') as end_time,
     (
-      (p.userID_main IS NOT NULL) +
-      (p.userID_join1 IS NOT NULL) +
-      (p.userID_join2 IS NOT NULL) +
-      (p.userID_join3 IS NOT NULL)
+      (p.userID_main != 0) +
+      (p.userID_join1 != 0) +
+      (p.userID_join2 != 0) +
+      (p.userID_join3 != 0)
     ) as player_count,
     c.name as company_name,
     c.address,
@@ -125,10 +125,10 @@ router.get('/:id', async (req, res) => {
   AND
     p.date >= CURDATE()
     AND (
-      (p.userID_main IS NOT NULL) +
-      (p.userID_join1 IS NOT NULL) +
-      (p.userID_join2 IS NOT NULL) +
-      (p.userID_join3 IS NOT NULL)
+      (p.userID_main != 0) +
+      (p.userID_join1 != 0) +
+      (p.userID_join2 != 0) +
+      (p.userID_join3 != 0)
     ) < 4
     
   ORDER BY 

@@ -72,10 +72,24 @@ router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params
     const query = `
-      SELECT *, ROUND(rating, 1) AS rating 
-      FROM company 
-      WHERE id = ? AND valid = '1'
-    `
+  SELECT 
+    c.*, 
+    ROUND(c.rating, 1) AS rating,
+    GROUP_CONCAT(DISTINCT cp.img) AS company_photos,
+    GROUP_CONCAT(DISTINCT CONCAT(st.name, ':', st.icon)) AS services
+  FROM 
+    company c
+  LEFT JOIN 
+    company_photo cp ON c.id = cp.room_id
+  LEFT JOIN
+    services_for_company sfc ON c.id = sfc.company_id
+  LEFT JOIN
+    services_tags st ON sfc.services_id = st.id
+  WHERE 
+    c.id = ? AND c.valid = '1'
+  GROUP BY 
+    c.id
+`
     const [company] = await connection.execute(query, [id])
 
     if (company.length === 0) {
