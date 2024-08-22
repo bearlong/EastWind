@@ -10,6 +10,9 @@ export default function RoomCard({ companyData, partyData }) {
   console.log(partyData)
   const data = companyData || partyData
   console.log(data)
+
+  const services = companyData.services ? companyData.services.split(',') : [];
+
   return (
     <div className={cardStyles.Card} id="roomInfo">
       <div className={styles.roomTitle}>
@@ -68,15 +71,15 @@ export default function RoomCard({ companyData, partyData }) {
               }`}
               <FaAngleDown />
             </a>
-            {/* <div className="collapse" id="collapseExample">
-              <div className="p">周一:8:00到22:00</div>
-            </div> */}
+       
           </div>
         </div>
       </div>
 
       <div className={styles.serverBox}>
-        <Server />
+      {services.map((service, index) => (
+          <Server key={index} service={service} />
+        ))}
       </div>
 
       <div className={styles.roomIntroduction}>
