@@ -129,38 +129,39 @@ export default function ClassDetail() {
               Thinking）結合工程的務實與效率、數理方面的抽象邏輯思考，將能更有效解決複雜的問題。
             </h6>
           </div>
-          <div className="texth2detail4-aa">
+
+          <div className={styles['texth2detail4-aa']}>
             <h6>
               程式語言的學習，首重邏輯思考能力，面對未來快速變化的社會，若能培養運算思維（Computational
               Thinking）結合工程的務實與效率、數理方面的抽象邏輯思考，將能更有效解決複雜的問題。
             </h6>
           </div>
         </div>
-        <div className="texth2detail2-aa">
-          <div className="texth2detail21-aa">
+        <div className={styles['texth2detail2-aa']}>
+          <div className={styles['texth2detail21-aa']}>
             <h2>章節</h2>
           </div>
         </div>
-        <div className="chap4-detail-aa">
-          <div className="unit-aa">
-            <div className="text16-aa">
+        <div className={styles['chap4detail-aa']}>
+          <div className={styles['unit-aa']}>
+            <div className={styles['text16-aa']}>
               <h6>單元一覽</h6>
             </div>
             <div
-              className="text14-aa"
+              className={styles['text14-aa']}
               style={{ color: 'var(--text-hover, #747474)' }}
             >
               <p>1 章 10 單元｜總時長 60 分鐘</p>
             </div>
           </div>
-          <div className="textgruop15-aa">
-            <div className="text15-aa">
-              <div className="text15-1-aa">
+          <div className={styles['textgruop15-aa']}>
+            <div className={styles['text15-aa']}>
+              <div className={styles['text15-1-aa']}>
                 <h6 style={{ color: 'var(--bg-text-color, #faf7f0)' }}>
                   本課程章節
                 </h6>
               </div>
-              <div className="btn-more15-aa">
+              <div className={styles['btnmore15-aa']}>
                 {/* <div class="Ellipse15-aa" style="stroke-width: 2px;
 stroke: var(--bg-text-color, #FAF7F0);">
           <svg xmlns="http://www.w3.org/2000/svg" width="29" height="30" viewBox="0 0 29 30" fill="none">
@@ -178,58 +179,58 @@ stroke: var(--bg-text-color, #FAF7F0);">
               </div>
             </div>
           </div>
-          <div className="text14-group-aa">
-            <div className="text14-1-aa">
+          <div className={styles['text14group-aa']}>
+            <div className={styles['text14-1-aa']}>
               <h6>01</h6>
             </div>
-            <div className="text14-2-aa">
+            <div className={styles['text14-2-aa']}>
               <h6>如何排列西洋棋</h6>
             </div>
-            <div className="text14-3-aa">
+            <div className={styles['text14-3-aa']}>
               <h6>09:40</h6>
             </div>
           </div>
-          <div className="text14-group-aa">
-            <div className="text14-1-aa">
+          <div className={styles['text14group-aa']}>
+            <div className={styles['text14-1-aa']}>
               <h6>02</h6>
             </div>
-            <div className="text14-2-aa">
+            <div className={styles['text14-2-aa']}>
               <h6>棋子介紹與基本移動</h6>
             </div>
-            <div className="text14-3-aa">
+            <div className={styles['text14-3-aa']}>
               <h6>16:26</h6>
             </div>
           </div>
-          <div className="text14-group-aa">
-            <div className="text14-1-aa">
+          <div className={styles['text14group-aa']}>
+            <div className={styles['text14-1-aa']}>
               <h6>03</h6>
             </div>
-            <div className="text14-2-aa">
+            <div className={styles['text14-2-aa']}>
               <h6>棋盤控制與中心控制</h6>
             </div>
-            <div className="text14-3-aa">
+            <div className={styles['text14-3-aa']}>
               <h6>16:54</h6>
             </div>
           </div>
-          <div className="text14-group-aa">
-            <div className="text14-1-aa">
+          <div className={styles['text14group-aa']}>
+            <div className={styles['text14-1-aa']}>
               <h6>04</h6>
             </div>
-            <div className="text14-2-aa">
+            <div className={styles['text14-2-aa']}>
               <h6>開局策略與基本開局介紹</h6>
             </div>
-            <div className="text14-3-aa">
+            <div className={styles['text14-3-aa']}>
               <h6>14:39</h6>
             </div>
           </div>
         </div>
-        <div className="desec2-aa">
-          <div className="texth2sec2-aa">
+        <div className={styles['desec2-aa']}>
+          <div className={styles['texth2sec2-aa']}>
             <h2>推薦課程</h2>
           </div>
-          <div className="desec21-aa">
-            <div className="btn-more-mini-l-aa">
-              <div className="Ellipse-l-aa">
+          <div className={styles['desec21-aa']}>
+            <div className={styles['btnmoremini-l-aa']}>
+              <div className={styles['ellipse-l-aa']}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width={50}
@@ -262,15 +263,15 @@ stroke: var(--bg-text-color, #FAF7F0);">
                 </svg>
               </div>
             </div>
-            <div className="sec2cardgroup-aa">
-              <div className="sec2classtCard-aa">
+            <div className={styles['sec2cardgroup-aa']}>
+              <div className={styles['sec2classtcard-aa']}>
                 <Image
                   src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
                   alt=""
-                  className="sec2CardImg-aa"
+                  className={styles['sec2cardimg-aa']}
                 />
-                <div className="sec2cardBody-aa">
-                  <div className="declassName-aa">
+                <div className={styles['sec2cardbody-aa']}>
+                  <div className={styles['declassname-aa']}>
                     <p>西洋棋國手教你下西洋棋</p>
                     <p>劉業揚＆楊元翰</p>
                   </div>
@@ -285,14 +286,14 @@ stroke: var(--bg-text-color, #FAF7F0);">
                   </p>
                 </div>
               </div>
-              <div className="sec2classtCard-aa">
+              <div className={styles['sec2classtcard-aa']}>
                 <Image
                   src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
                   alt=""
-                  className="sec2CardImg-aa"
+                  className={styles['sec2cardimg-aa']}
                 />
-                <div className="sec2cardBody-aa">
-                  <div className="declassName-aa">
+                <div className={styles['sec2cardbody-aa']}>
+                  <div className={styles['declassname-aa']}>
                     <p>西洋棋國手教你下西洋棋</p>
                     <p>劉業揚＆楊元翰</p>
                   </div>
@@ -307,14 +308,14 @@ stroke: var(--bg-text-color, #FAF7F0);">
                   </p>
                 </div>
               </div>
-              <div className="sec2classtCard-aa">
+              <div className={styles['sec2classtcard-aa']}>
                 <Image
                   src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
                   alt=""
-                  className="sec2CardImg-aa"
+                  className={styles['sec2cardimg-aa']}
                 />
-                <div className="sec2cardBody-aa">
-                  <div className="declassName-aa">
+                <div className={styles['sec2cardbody-aa']}>
+                  <div className={styles['declassname-aa']}>
                     <p>西洋棋國手教你下西洋棋</p>
                     <p>劉業揚＆楊元翰</p>
                   </div>
@@ -329,14 +330,14 @@ stroke: var(--bg-text-color, #FAF7F0);">
                   </p>
                 </div>
               </div>
-              <div className="sec2classtCard-aa">
+              <div className={styles['sec2classtcard-aa']}>
                 <Image
                   src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
                   alt=""
-                  className="sec2CardImg-aa"
+                  className={styles['sec2cardimg-aa']}
                 />
-                <div className="sec2cardBody-aa">
-                  <div className="declassName-aa">
+                <div className={styles['sec2cardbody-aa']}>
+                  <div className={styles['declassname-aa']}>
                     <p>西洋棋國手教你下西洋棋</p>
                     <p>劉業揚＆楊元翰</p>
                   </div>
@@ -352,8 +353,8 @@ stroke: var(--bg-text-color, #FAF7F0);">
                 </div>
               </div>
             </div>
-            <div className="btn-more-mini-r-aa">
-              <div className="Ellipse-r-aa">
+            <div className={styles['btnmoremini-r-aa']}>
+              <div className={styles['ellipse-r-aa']}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width={50}
@@ -370,7 +371,7 @@ stroke: var(--bg-text-color, #FAF7F0);">
                   />
                 </svg>
               </div>
-              <div className="Arrow-r-aa">
+              <div className={styles['arrow-r-aa']}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width={17}

@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import styles from '@/styles/aa/classList.module.scss'
 
-export default function ClassList() {
+export default function CourseList() {
   // 注意1: 初始值至少要空陣列，初次render是用初始值
   // 注意2: 應用執行過程中，一定要保持狀態資料類型都是陣列
   const [courses, setCourses] = useState([])
