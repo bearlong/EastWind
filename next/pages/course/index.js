@@ -6,7 +6,7 @@ export default function CourseIndex() {
 
   // 確認window(瀏覽器)開始運作
   if (typeof window !== 'undefined') {
-    router.push('/course/courseList')
+    router.push('/course/classList')
   }
 
   return <></>
