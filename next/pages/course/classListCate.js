@@ -3,11 +3,11 @@ import { useRouter } from 'next/router'
 import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
-import styles from '@/styles/aa/classList2.scss'
+import styles from '@/styles/aa/classList2.module.scss'
 import Footer from '@/components/layout/default-layout/footer'
 import Header from '@/components/layout/default-layout/header'
 
-export default function ClassList2() {
+export default function ClassListCate() {
   const router = useRouter()
   const { category_id } = router.query
   const [classes, setClasses] = useState([])
