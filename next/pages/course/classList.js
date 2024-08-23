@@ -45,6 +45,8 @@ export default function ClassList() {
             'https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993'
           }
           alt={courseData.course_name || ''}
+          style={{ width: '100%', height: 'auto' }}
+          placeholder="blur"
         />
       </div>
       <div className={styles['cardBody-aa']}>
@@ -63,140 +65,6 @@ export default function ClassList() {
     <>
       <div className="container">
         <div className={styles['className-aa']}>
-          {/* <div className="class-header-aa">
-            <ul className="d-flex subBar-aa">
-              <li>
-                <a className="subNav" href="">
-                  <h6>西洋棋</h6>
-                </a>
-                <div className="subBarBody-aa d-none">
-                  <div className="d-flex">
-                    <div className="subBarDetail-aa">
-                      <h6 className="title">總覽</h6>
-                      <ul>
-                        <li>
-                          <a href="">啟蒙課程</a>
-                        </li>
-                        <li>
-                          <a href="">基礎課程</a>
-                        </li>
-                        <li>
-                          <a href="">進階課程</a>
-                        </li>
-                        <li>
-                          <a href="">高階課程</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li>
-                <a className="subNav" href="">
-                  <h6>麻將</h6>
-                </a>
-                <div className="subBarBody-aa d-none">
-                  <div className="d-flex">
-                    <div className="subBarDetail-aa">
-                      <h6 className="title">總覽</h6>
-                      <ul>
-                        <li>
-                          <a href="">啟蒙課程</a>
-                        </li>
-                        <li>
-                          <a href="">基礎課程</a>
-                        </li>
-                        <li>
-                          <a href="">進階課程</a>
-                        </li>
-                        <li>
-                          <a href="">高階課程</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li>
-                <a className="subNav" href="">
-                  <h6>圍棋</h6>
-                </a>
-                <div className="subBarBody-aa d-none">
-                  <div className="d-flex">
-                    <div className="subBarDetail-aa">
-                      <h6 className="title">總覽</h6>
-                      <ul>
-                        <li>
-                          <a href="">啟蒙課程</a>
-                        </li>
-                        <li>
-                          <a href="">基礎課程</a>
-                        </li>
-                        <li>
-                          <a href="">進階課程</a>
-                        </li>
-                        <li>
-                          <a href="">高階課程</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li>
-                <a className="subNav" href="">
-                  <h6>撲克</h6>
-                </a>
-                <div className="subBarBody-aa d-none">
-                  <div className="d-flex">
-                    <div className="subBarDetail-aa">
-                      <h6 className="title">總覽</h6>
-                      <ul>
-                        <li>
-                          <a href="">啟蒙課程</a>
-                        </li>
-                        <li>
-                          <a href="">基礎課程</a>
-                        </li>
-                        <li>
-                          <a href="">進階課程</a>
-                        </li>
-                        <li>
-                          <a href="">高階課程</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li>
-                <a className="subNav" href="">
-                  <h6>象棋</h6>
-                </a>
-                <div className="subBarBody-aa d-none">
-                  <div className="d-flex">
-                    <div className="subBarDetail-aa">
-                      <h6 className="title">總覽</h6>
-                      <ul>
-                        <li>
-                          <a href="">啟蒙課程</a>
-                        </li>
-                        <li>
-                          <a href="">基礎課程</a>
-                        </li>
-                        <li>
-                          <a href="">進階課程</a>
-                        </li>
-                        <li>
-                          <a href="">高階課程</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div> */}
           <div className={styles['sec1-aa']}>
             <div className={styles['text2-aa']}>
               <h2>課程排行</h2>
@@ -266,7 +134,6 @@ export default function ClassList() {
             </div>
             <div className={`${styles['btn-more']} d-flex`}>
               <p>查看更多</p>
-              {/* <i class=""></i> */}
               <svg
                 className={styles['btn-more1']}
                 xmlns="http://www.w3.org/2000/svg"
