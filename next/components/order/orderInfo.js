@@ -111,7 +111,7 @@ export default function OrderInfo({
             </div>
             <div className={`${styles['infoBody-bl']}`}>
               {orderDetail.map((v, i) => {
-                subtotal += v.price
+                subtotal += v.price * v.quantity
                 return (
                   <div
                     key={i}
@@ -166,7 +166,11 @@ export default function OrderInfo({
                     <p>
                       {orderInfo.total === subtotal
                         ? ''
-                        : `-NT$ ${subtotal - orderInfo.total}`}
+                        : `-NT$ ${
+                            subtotal -
+                            orderInfo.total +
+                            (orderInfo.delivery_method === '宅配' ? 60 : 0)
+                          }`}
                     </p>
                   </div>
                 </div>

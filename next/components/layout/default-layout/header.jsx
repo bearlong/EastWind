@@ -176,12 +176,12 @@ export default function Header() {
                     <nav className={styles['navigation-nav-bo']}>
                       <ul className={styles['navigation-list-bo']}>
                         <li className={styles['navigation-item-bo']}>
-                          <a
-                            href="#"
+                          <Link
+                            href="/lobby/Entrance"
                             className={`h6 ${styles['navigation-link-bo']}`}
                           >
                             棋牌室
-                          </a>
+                          </Link>
                         </li>
                         <li className={styles['navigation-item-bo']}>
                           <Link

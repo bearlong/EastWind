@@ -107,6 +107,15 @@
       font-size: 2.4rem;
       font-weight: 900;
       transition: 0.3s;
+      &:disabled {
+        border: 2px solid var(--text-hover-color);
+        color: var(--text-hover-color);
+        cursor: not-allowed;
+        &:hover {
+          border: 2px solid var(--text-hover-color);
+          color: var(--text-hover-color);
+        }
+      }
       &:hover {
         border-color: var(--primary-dark);
         color: var(--primary-dark);
@@ -119,6 +128,17 @@
       &:hover {
         background: var(--primary-dark);
         color: var(--white);
+      }
+      &:disabled {
+        background: var(--text-hover-color);
+        border: 2px solid var(--text-hover-color);
+        color: var(--white);
+        cursor: not-allowed;
+        &:hover {
+          background: var(--text-hover-color);
+          border: 2px solid var(--text-hover-color);
+          color: var(--white);
+        }
       }
     }
   }
