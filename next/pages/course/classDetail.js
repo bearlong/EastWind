@@ -8,154 +8,16 @@ import styles from '@/styles/aa/classDetail.module.scss'
 export default function ClassDetail() {
   return (
     <>
-      <div className="container desktopdetail-aa">
-        {/* <div className="class-header-aa">
-          <ul className="d-flex subBar-aa">
-            <li>
-              <a className="subNav" href="">
-                <h6>西洋棋</h6>
-              </a>
-              <div className="subBarBody-aa d-none">
-                <div className="d-flex">
-                  <div className="subBarDetail-aa">
-                    <h6 className="title">總覽</h6>
-                    <ul>
-                      <li>
-                        <a href="">啟蒙課程</a>
-                      </li>
-                      <li>
-                        <a href="">基礎課程</a>
-                      </li>
-                      <li>
-                        <a href="">進階課程</a>
-                      </li>
-                      <li>
-                        <a href="">高階課程</a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </li>
-            <li>
-              <a className="subNav" href="">
-                <h6>麻將</h6>
-              </a>
-              <div className="subBarBody-aa d-none">
-                <div className="d-flex">
-                  <div className="subBarDetail-aa">
-                    <h6 className="title">總覽</h6>
-                    <ul>
-                      <li>
-                        <a href="">啟蒙課程</a>
-                      </li>
-                      <li>
-                        <a href="">基礎課程</a>
-                      </li>
-                      <li>
-                        <a href="">進階課程</a>
-                      </li>
-                      <li>
-                        <a href="">高階課程</a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </li>
-            <li>
-              <a className="subNav" href="">
-                <h6>圍棋</h6>
-              </a>
-              <div className="subBarBody-aa d-none">
-                <div className="d-flex">
-                  <div className="subBarDetail-aa">
-                    <h6 className="title">總覽</h6>
-                    <ul>
-                      <li>
-                        <a href="">啟蒙課程</a>
-                      </li>
-                      <li>
-                        <a href="">基礎課程</a>
-                      </li>
-                      <li>
-                        <a href="">進階課程</a>
-                      </li>
-                      <li>
-                        <a href="">高階課程</a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </li>
-            <li>
-              <a className="subNav" href="">
-                <h6>撲克</h6>
-              </a>
-              <div className="subBarBody-aa d-none">
-                <div className="d-flex">
-                  <div className="subBarDetail-aa">
-                    <h6 className="title">總覽</h6>
-                    <ul>
-                      <li>
-                        <a href="">啟蒙課程</a>
-                      </li>
-                      <li>
-                        <a href="">基礎課程</a>
-                      </li>
-                      <li>
-                        <a href="">進階課程</a>
-                      </li>
-                      <li>
-                        <a href="">高階課程</a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </li>
-            <li>
-              <a className="subNav" href="">
-                <h6>象棋</h6>
-              </a>
-              <div className="subBarBody-aa d-none">
-                <div className="d-flex">
-                  <div className="subBarDetail-aa">
-                    <h6 className="title">總覽</h6>
-                    <ul>
-                      <li>
-                        <a href="">啟蒙課程</a>
-                      </li>
-                      <li>
-                        <a href="">基礎課程</a>
-                      </li>
-                      <li>
-                        <a href="">進階課程</a>
-                      </li>
-                      <li>
-                        <a href="">高階課程</a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div> */}
-
-        <div className="detailsec1-aa">
-          <div className="text14-aa text-hover">
+      <div className={`${styles.container} ${styles['desktopdetail-aa']}`}>
+        <div className={styles['detailsec1-aa']}>
+          <div className={`${styles['text14-aa']} ${styles['text-hover']}`}>
             <h6>
               <span>所有課程</span> &gt; <span>麻將</span> &gt;{' '}
               <span>初級</span>
             </h6>
           </div>
-          <div className="desec1box-aa">
-            <div className="de1-ins-aa">
-              {/* <img
-      src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993" alt=""
-    /> */}
+          <div className={styles['desec1box-aa']}>
+            <div className={styles['de1-ins-aa']}>
               {/* <video
                 src="./video/chessvideo/2chess.mp4"
                 muted=""
@@ -166,45 +28,44 @@ export default function ClassDetail() {
                 width="100%"
               /> */}
             </div>
-            <div className="detextright1-aa">
-              <div className="detextright2-aa">
-                <div className="detextright1-aa">
+            <div className={styles['detextright1-aa']}>
+              <div className={styles['detextright2-aa']}>
+                <div className={styles['detextright1-aa']}>
                   <h4>麻將入門特訓 - 基礎實作到證照攻略</h4>
                 </div>
               </div>
-              <div className="detextright3-aa">
-                <div className="textrighth51-aa">
+              <div className={styles['detextright3-aa']}>
+                <div className={styles['textrighth51-aa']}>
                   <h5>徐乃麟</h5>
                 </div>
-                <div className="textrighth52-aa">
+                <div className={styles['textrighth52-aa']}>
                   <h5>類別：麻將</h5>
                 </div>
               </div>
-              <div className="detextright4-aa">
+              <div className={styles['detextright4-aa']}>
                 <h5>
-                  麻將證照攻略課程，教你麻將的程式語法與麻將證照攻略，循序漸進學習麻將
-                  開發環境的建置..
+                  麻將證照攻略課程，教你麻將的程式語法與麻將證照攻略，循序漸進學習麻將開發環境的建置..
                 </h5>
               </div>
-              <div className="detextright5-aa">
+              <div className={styles['detextright5-aa']}>
                 <h4>NT$2,480</h4>
-                <div className="chh6-aa">
-                  <div className="chh61-aa">
-                    <h6 className="chh62-aa">查看章節</h6>
+                <div className={styles['chh6-aa']}>
+                  <div className={styles['chh61-aa']}>
+                    <h6 className={styles['chh62-aa']}>查看章節</h6>
                   </div>
                   <h6 style={{ color: 'var(--text-hover, #747474)' }}>
                     總時長 60 分鐘
                   </h6>
                 </div>
               </div>
-              <div className="detextright6-aa">
-                <div className="BTNde1-aa">
-                  <div className="BUTTONde1-aa">
+              <div className={styles['detextright6-aa']}>
+                <div className={styles['BTNde1-aa']}>
+                  <div className={styles['BUTTONde1-aa']}>
                     <h5>立即購買</h5>
                   </div>
                 </div>
-                <div className="BTNde2-aa">
-                  <div className="BUTTONde2-aa">
+                <div className={styles['BTNde2-aa']}>
+                  <div className={styles['BUTTONde2-aa']}>
                     <h5>加入購物車</h5>
                   </div>
                 </div>
