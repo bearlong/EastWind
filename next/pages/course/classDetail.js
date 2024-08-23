@@ -81,7 +81,7 @@ export default function ClassDetail() {
         <div className={styles['detailpic-aa']}>
           <div className={styles['detailpic1-aa']}>
             <div className={styles['depic1-aa']}>
-              <img
+              <Image
                 src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
                 alt=""
               />
@@ -110,7 +110,7 @@ export default function ClassDetail() {
         <div className={styles['detailpic-aa']}>
           <div className={styles['detailpic1-aa']}>
             <div className={styles['depic1-aa']}>
-              <img
+              <Image
                 src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
                 alt=""
               />
@@ -264,7 +264,7 @@ stroke: var(--bg-text-color, #FAF7F0);">
             </div>
             <div className="sec2cardgroup-aa">
               <div className="sec2classtCard-aa">
-                <img
+                <Image
                   src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
                   alt=""
                   className="sec2CardImg-aa"
@@ -286,7 +286,7 @@ stroke: var(--bg-text-color, #FAF7F0);">
                 </div>
               </div>
               <div className="sec2classtCard-aa">
-                <img
+                <Image
                   src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
                   alt=""
                   className="sec2CardImg-aa"
@@ -308,7 +308,7 @@ stroke: var(--bg-text-color, #FAF7F0);">
                 </div>
               </div>
               <div className="sec2classtCard-aa">
-                <img
+                <Image
                   src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
                   alt=""
                   className="sec2CardImg-aa"
@@ -330,7 +330,7 @@ stroke: var(--bg-text-color, #FAF7F0);">
                 </div>
               </div>
               <div className="sec2classtCard-aa">
-                <img
+                <Image
                   src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
                   alt=""
                   className="sec2CardImg-aa"
