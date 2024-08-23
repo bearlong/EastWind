@@ -4,38 +4,33 @@ import { FaCheck } from 'react-icons/fa6'
 import useAuth from '@/hooks/user-auth-bo'
 import Swal from 'sweetalert2'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 export default function Login() {
+  const router = useRouter()
+
   // 定義狀態來管理表單輸入值和錯誤訊息
   const [account, setAccount] = useState('')
   const [password, setPassword] = useState('')
   const [accountError, setAccountError] = useState('')
   const [passwordError, setPasswordError] = useState('')
-  const [generalError, setGeneralError] = useState('')
 
   const { login } = useAuth() // 使用自定義的 useAuth 鉤子來處理登入邏輯
-
-  // 在組件加載時清除任何存在的 token
-  useEffect(() => {
-    localStorage.removeItem('nextXXXToken')
-  }, [])
-
-  // 從 sessionStorage 中讀取賬號和密碼並設置到狀態中
-  useEffect(() => {
-    const storedAccount = sessionStorage.getItem('registeredAccount') || ''
-    const storedPassword = sessionStorage.getItem('registeredPassword') || ''
-    setAccount(storedAccount)
-    setPassword(storedPassword)
-
-    // 清理 sessionStorage 中的帳號和密碼
-    sessionStorage.removeItem('registeredAccount')
-    sessionStorage.removeItem('registeredPassword')
-  }, [])
 
   // 從 localStorage 中讀取賬號並設置到狀態中
   useEffect(() => {
     const storedAccount = localStorage.getItem('savedAccount') || ''
     setAccount(storedAccount)
+  }, [])
+
+  useEffect(() => {
+    const storedAccount = localStorage.getItem('registeredAccount') || ''
+    const storedPassword = localStorage.getItem('registeredPassword') || ''
+
+    if (storedAccount && storedPassword) {
+      setAccount(storedAccount)
+      setPassword(storedPassword)
+    }
   }, [])
 
   // 處理登入邏輯
@@ -61,19 +56,42 @@ export default function Login() {
       const result = await login(account, password) // 等待登入結果
 
       if (result.success) {
-        localStorage.removeItem('savedAccount') // 清除儲存的帳號
-        Swal.fire({
-          title: '登入成功！',
-          html: `<span class="p">${result.name} 歡迎回來！</span>`,
-          icon: 'success',
-          customClass: {
-            popup: `${styles['swal-popup-bo']}`, // 自訂整個彈出視窗的 class
-            title: 'h6',
-            icon: `${styles['swal-icon-bo']}`, // 添加自定義 class
-            confirmButton: `${styles['swal-btn-bo']}`, // 添加自定義按鈕 class
-          },
-          confirmButtonText: '確認', // 修改按鈕文字
-        })
+        // 檢查是否為新註冊會員
+        const registeredAccount = localStorage.getItem('registeredAccount')
+
+        if (registeredAccount && registeredAccount === account) {
+          localStorage.removeItem('registeredAccount') // 清除儲存的帳號
+          localStorage.removeItem('registeredPassword') // 清除儲存的密碼
+
+          // 顯示 SweetAlert 提示新會員需要填寫資料
+          Swal.fire({
+            title: '註冊成功！',
+            html: `<span class="p">歡迎加入！請先填寫會員資料。</span>`,
+            icon: 'info',
+            customClass: {
+              popup: `${styles['swal-popup-bo']}`, // 自訂整個彈出視窗的 class
+              title: 'h6',
+              icon: `${styles['swal-icon-bo']}`, // 添加自定義 class
+              confirmButton: `${styles['swal-btn-bo']}`, // 添加自定義按鈕 class
+            },
+            confirmButtonText: '確認',
+          }).then(() => {
+            router.push('/user/user-center/info-edit') // 跳轉到會員資訊修改頁面
+          })
+        } else {
+          Swal.fire({
+            title: '登入成功！',
+            html: `<span class="p">${result.name} 歡迎回來！</span>`,
+            icon: 'success',
+            customClass: {
+              popup: `${styles['swal-popup-bo']}`, // 自訂整個彈出視窗的 class
+              title: 'h6',
+              icon: `${styles['swal-icon-bo']}`, // 添加自定義 class
+              confirmButton: `${styles['swal-btn-bo']}`, // 添加自定義按鈕 class
+            },
+            confirmButtonText: '確認',
+          })
+        }
       } else {
         // 根據返回的錯誤訊息設置相應的錯誤狀態
         if (result.message.includes('帳號')) {

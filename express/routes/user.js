@@ -161,7 +161,7 @@ router.post('/login', upload.none(), async (req, res) => {
       },
       secretKey,
       {
-        expiresIn: '10s', // 設置 accessToken 的過期時間
+        expiresIn: '30m', // 設置 accessToken 的過期時間
       }
     )
 

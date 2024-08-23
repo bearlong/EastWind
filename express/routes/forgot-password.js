@@ -61,7 +61,7 @@ router.post('/forgot-password', async (req, res) => {
     if (emailByAccount.length === 0) {
       return res.status(400).json({
         status: 'fail',
-        message: '無此註冊電子信箱',
+        message: '帳號與電子信箱不匹配',
       })
     }
 
@@ -130,9 +130,9 @@ router.post('/reset-password', async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY)
     const email = decoded.email
 
-    // 從資料庫中獲取當前用戶的密碼
+    // 從資料庫中獲取用戶的帳號和密碼
     const [user] = await connection.execute(
-      'SELECT password FROM user WHERE email = ?',
+      'SELECT account, password FROM user WHERE email = ?',
       [email]
     )
 
@@ -143,7 +143,15 @@ router.post('/reset-password', async (req, res) => {
       })
     }
 
-    const currentPassword = user[0].password
+    const { account, password: currentPassword } = user[0]
+
+    // 檢查新密碼是否與帳號相同
+    if (password === account) {
+      return res.status(400).json({
+        status: 'fail',
+        message: '新密碼不能與帳號相同',
+      })
+    }
 
     // 檢查新密碼是否與舊密碼相同
     if (currentPassword === password) {

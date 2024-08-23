@@ -532,6 +532,7 @@ router.get('/:id', async (req, res, next) => {
       )
     )
   })
+  console.log(starCount)
 
   return res.json({
     status: 'success',

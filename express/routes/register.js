@@ -43,23 +43,19 @@ router.post('/register', async (req, res) => {
   }
 
   // 檢查帳號是否有效
+  const accountRegex = /^(?=.*[a-zA-Z]).{6,}$/
   if (!account) {
     errors.account = '請填入帳號'
-  } else {
-    const accountRegex = /^(?=.*[a-zA-Z]).{6,}$/
-    if (!accountRegex.test(account)) {
-      errors.account = '帳號應至少6碼，需包含英文字'
-    }
+  } else if (!accountRegex.test(account)) {
+    errors.account = '帳號應至少6碼，包含至少一個英文字'
   }
 
   // 檢查密碼是否有效
+  const passwordRegex = /^(?=.*[a-zA-Z]).{6,}$/
   if (!password) {
     errors.password = '請填入密碼'
-  } else {
-    const passwordRegex = /^(?=.*[a-zA-Z]).{6,}$/
-    if (!passwordRegex.test(password)) {
-      errors.password = '帳號應至少6碼，需包含英文字'
-    }
+  } else if (!passwordRegex.test(password)) {
+    errors.password = '密碼應至少6碼，包含至少一個英文字'
   }
 
   // 如果有任何驗證錯誤，返回錯誤響應
@@ -186,6 +182,31 @@ router.post('/send-verification', async (req, res) => {
       status: 'error',
       message: '伺服器錯誤，請稍後再試',
     })
+  }
+})
+
+// 檢查帳號與email唯一性
+router.post('/check-unique', async (req, res) => {
+  const { email, account, userId } = req.body
+
+  try {
+    const [emailResult] = await connection.execute(
+      'SELECT id FROM user WHERE email = ? AND id != ?',
+      [email, userId || 0] // 用 0 代替 null，防止 SQL 出錯
+    )
+
+    const [accountResult] = await connection.execute(
+      'SELECT id FROM user WHERE account = ? AND id != ?',
+      [account, userId || 0]
+    )
+
+    const emailExists = emailResult.length > 0
+    const accountExists = accountResult.length > 0
+
+    res.status(200).json({ emailExists, accountExists })
+  } catch (error) {
+    console.error('Error checking uniqueness:', error)
+    res.status(500).json({ status: 'error', message: '伺服器錯誤' })
   }
 })
 

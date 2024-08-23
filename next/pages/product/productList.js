@@ -37,7 +37,8 @@ export default function ProductList() {
   const [pages, setPages] = useState(1)
   const [brandOptions, setBrandOption] = useState([])
   const [cateOptions, setCateOption] = useState([])
-  const { brand_id, category_id, size, style, search, max, min } = router.query
+  const { brand_id, category_id, size, style, search, max, min, orderBy } =
+    router.query
   let initialFilters = {
     brand_id: router.query.brand_id || '',
     category_id: router.query.category_id || '',
@@ -46,7 +47,7 @@ export default function ProductList() {
     search: router.query.search || '',
     max: router.query.max || '',
     min: router.query.min || '',
-    orderBy: '',
+    orderBy: router.query.orderBy || '',
     isFilter: false,
   }
   const [filters, setFilters] = useState(initialFilters)
@@ -366,7 +367,7 @@ export default function ProductList() {
         search: search || '',
         max: max || '',
         min: min || '',
-        orderBy: '',
+        orderBy: orderBy || '',
         isFilter: false,
       }
       getFavorite()
@@ -590,7 +591,10 @@ export default function ProductList() {
                 {pages * 12 > products.total ? products.total : pages * 12} /{' '}
                 {products.total}
               </p>
-              <div className="progress" role="progressbar">
+              <div
+                className={` ${styles.progress} progress`}
+                role="progressbar"
+              >
                 <div
                   className="progress-bar"
                   style={{ width: `${((pages * 12) / products.total) * 100}%` }}

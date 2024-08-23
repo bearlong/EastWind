@@ -72,7 +72,10 @@ export default function ForgotPassword() {
           setAccountError(result.message)
         }
 
-        if (result.message.includes('電子信箱')) {
+        if (
+          result.message.includes('電子信箱') ||
+          result.message.includes('匹配')
+        ) {
           setEmailError(result.message)
         }
       }

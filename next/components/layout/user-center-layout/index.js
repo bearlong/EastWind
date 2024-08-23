@@ -5,12 +5,13 @@ import Header from '../default-layout/header.jsx'
 import Footer from '../default-layout/footer.jsx'
 import UserSidebar from './user-sidebar.js'
 
-export default function UserCenterLayout({ children }) {
+export default function UserCenterLayout({ title = '只欠東風', children }) {
   const { loader } = useLoader()
 
   return (
     <>
       <Head>
+        <title>{title}</title>
         <meta name="viewport" content="width=device-width" />
       </Head>
       <Header />

@@ -8,7 +8,7 @@ import { useLoader } from '@/hooks/use-loader'
 import Header from './header.jsx'
 import Footer from './footer.jsx'
 
-export default function DefaultLayout({ title = 'Next-BS5', children }) {
+export default function DefaultLayout({ title = '只欠東風', children }) {
   const { loader } = useLoader()
 
   return (

@@ -19,6 +19,7 @@ export default function UserFavorite() {
   useEffect(() => {
     const fetchFavorites = async () => {
       const userId = user?.id
+      console.log(favorites)
 
       try {
         const response = await fetch(

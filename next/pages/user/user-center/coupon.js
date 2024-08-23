@@ -18,7 +18,7 @@ export default function UserCoupons() {
   const userId = user?.id // 使用可選鏈式操作來確保 `user` 已初始化
   const [coupons, setCoupons] = useState([]) // 儲存從後端獲取的優惠券數據
   const [couponCode, setCouponCode] = useState('') // 優惠代碼狀態
-  const [filterStatus, setFilterStatus] = useState('active') // 預設顯示可領取的優惠券
+  const [filterStatus, setFilterStatus] = useState('unused') // 預設顯示可領取的優惠券
 
   // 獨立函數：通過代碼新增優惠券
   const addCouponByCode = async (couponCode) => {
@@ -87,7 +87,7 @@ export default function UserCoupons() {
   // 根據狀態加載優惠券
   useEffect(() => {
     const fetchCoupons = async () => {
-      if (!userId && filterStatus !== 'active') return // 如果 `userId` 未定義且不是 'active' 狀態，則不執行 fetch 操作
+      if (!userId && filterStatus !== 'active') return
 
       let apiUrl = `http://localhost:3005/api/coupons/${filterStatus}/${userId}`
 
@@ -97,10 +97,8 @@ export default function UserCoupons() {
           const data = await response.json()
           const validCoupons = data.data.filter((coupon) => {
             const today = new Date().toISOString().split('T')[0]
-
-            return coupon.valid_to >= today // 只保留有效的優惠券
+            return coupon.valid_to >= today // 過濾出有效的優惠券
           })
-
           setCoupons(validCoupons)
         } else {
           console.error('無法撈取優惠券:', response.statusText)

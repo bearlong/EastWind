@@ -25,7 +25,6 @@
   @media (max-width: 576px) {
     align-items: start;
     gap: 0.8rem;
-    margin-bottom: 1.6rem;
   }
 }
 
@@ -316,6 +315,9 @@
 .text-error-bo {
   padding-left: 6.4rem;
   color: var(--primary);
+  @media (max-width: 576px) {
+    padding-left: 0.4rem;
+  }
 }
 
 .btn-email-bo {
