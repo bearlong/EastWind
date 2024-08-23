@@ -35,11 +35,54 @@ export default function ClassList() {
   }, [])
 
   // 課程卡片組件
+  // const ClassCard = ({ courseData, rank }) => (
+  //   <div className={styles['classCard-aa']}>
+  //     <div className={styles['imgBox-aa']}>
+  //       {rank && <div className={styles['`rank${rank}`']}>{rank}</div>}
+  //       <img src={courseData.images} alt={courseData.course_name} />
+  //     </div>
+  //     <div className={styles['cardBody-aa']}>
+  //       <div className={styles['className-aa']}>
+  //         <p>{courseData.course_name}</p>
+  //         <p className={styles['classDescription-aa']}>
+  //           {courseData.course_category_id}
+  //         </p>
+  //       </div>
+  //       <p>NT. {courseData.price}</p>
+  //     </div>
+  //   </div>
+  // )
+
+  // const ClassCard = (
+  //   <div className={styles['classCard-aa']}>
+  //     <div className={styles['imgBox-aa']}>
+  //       <div className={styles['rank1']}>1</div>
+  //       <Image
+  //         src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993" // {`/images/aa/1go.jpg`}
+  //         alt=""
+  //       />
+  //     </div>
+  //     <div className={styles['cardBody-aa']}>
+  //       <div className={styles['className-aa']}>
+  //         <p>西洋棋國手教你下西洋棋</p>
+  //         <p className={styles['classDescription-aa']}>劉業揚＆楊元翰</p>
+  //       </div>
+  //       <p>NT. 450</p>
+  //     </div>
+  //   </div>
+  // )
+
   const ClassCard = ({ courseData, rank }) => (
     <div className={styles['classCard-aa']}>
       <div className={styles['imgBox-aa']}>
-        {rank && <div className={styles['`rank${rank}`']}>{rank}</div>}
-        <img src={courseData.images} alt={courseData.course_name} />
+        {rank && <div className={styles[`rank${rank}`]}>{rank}</div>}
+        <Image
+          src={
+            courseData.images ||
+            'https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993'
+          }
+          alt={courseData.course_name || ''}
+        />
       </div>
       <div className={styles['cardBody-aa']}>
         <div className={styles['className-aa']}>
@@ -252,7 +295,7 @@ export default function ClassList() {
               <p>查看更多</p>
               {/* <i class=""></i> */}
               <svg
-                className="btn-more1"
+                className={styles['btn-more1']}
                 xmlns="http://www.w3.org/2000/svg"
                 width={109}
                 height={14}
@@ -273,7 +316,7 @@ export default function ClassList() {
                 />
               </svg>
             </div>
-            <div className="text2-aa">
+            <div className={styles['text2-aa']}>
               <h2>麻將</h2>
             </div>
             <div className={styles['classCards-aa']}>
@@ -284,11 +327,11 @@ export default function ClassList() {
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
             </div>
-            <div className="btn-more d-flex">
+            <div className={`${styles['btn-more']} d-flex`}>
               <p>查看更多</p>
               {/* <i class="edit-icon"></i> */}
               <svg
-                className="btn-more1"
+                className={styles['btn-more1']}
                 xmlns="http://www.w3.org/2000/svg"
                 width={109}
                 height={14}
@@ -309,7 +352,7 @@ export default function ClassList() {
                 />
               </svg>
             </div>
-            <div className="text2-aa">
+            <div className={styles['text2-aa']}>
               <h2>圍棋</h2>
             </div>
             <div className={styles['classCards-aa']}>
@@ -320,11 +363,11 @@ export default function ClassList() {
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
             </div>
-            <div className="btn-more d-flex">
+            <div className={`${styles['btn-more']} d-flex`}>
               <p>查看更多</p>
               {/* <i class="edit-icon"></i> */}
               <svg
-                className="btn-more1"
+                className={styles['btn-more1']}
                 xmlns="http://www.w3.org/2000/svg"
                 width={109}
                 height={14}
@@ -345,7 +388,7 @@ export default function ClassList() {
                 />
               </svg>
             </div>
-            <div className="text2-aa">
+            <div className={styles['text2-aa']}>
               <h2>撲克</h2>
             </div>
             <div className={styles['classCards-aa']}>
@@ -356,11 +399,11 @@ export default function ClassList() {
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
             </div>
-            <div className="btn-more d-flex">
+            <div className={`${styles['btn-more']} d-flex`}>
               <p>查看更多</p>
               {/* <i class="edit-icon"></i> */}
               <svg
-                className="btn-more1"
+                className={styles['btn-more1']}
                 xmlns="http://www.w3.org/2000/svg"
                 width={109}
                 height={14}
@@ -381,7 +424,7 @@ export default function ClassList() {
                 />
               </svg>
             </div>
-            <div className="text2-aa">
+            <div className={styles['text2-aa']}>
               <h2>象棋</h2>
             </div>
             <div className={styles['classCards-aa']}>
@@ -392,11 +435,11 @@ export default function ClassList() {
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
             </div>
-            <div className="btn-more d-flex">
+            <div className={`${styles['btn-more']} d-flex`}>
               <p>查看更多</p>
               {/* <i class="edit-icon"></i> */}
               <svg
-                className="btn-more1"
+                className={styles['btn-more1']}
                 xmlns="http://www.w3.org/2000/svg"
                 width={109}
                 height={14}
