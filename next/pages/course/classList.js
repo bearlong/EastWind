@@ -17,11 +17,11 @@ export default function ClassList() {
       const res = await fetch(apiURL)
       const data = await res.json()
 
-      // console.log(data)
+      console.log(data.data.courses)
 
       // 設定到狀態中 ==> 觸發re-render(進入update階段)
-      if (Array.isArray(data)) {
-        setCourses(data)
+      if (Array.isArray(data.data.courses)) {
+        setCourses(data.data.courses)
       }
     } catch (e) {
       console.error(e)
@@ -41,12 +41,12 @@ export default function ClassList() {
         {rank && <div className={styles[`rank${rank}`]}>{rank}</div>}
         <Image
           src={
-            courseData.images ||
+            `../public/images/aa/${courseData.images}` ||
             'https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993'
           }
           alt={courseData.course_name || ''}
-          style={{ width: '100%', height: 'auto' }}
-          placeholder="blur"
+          width={200}
+          height={200}
         />
       </div>
       <div className={styles['cardBody-aa']}>

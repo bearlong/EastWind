@@ -84,7 +84,8 @@ export default function ClassDetail() {
               <Image
                 src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
                 alt=""
-                style={{ width: '100%', height: 'auto' }}
+                width={200}
+                height={200}
               />
             </div>
           </div>
@@ -114,7 +115,8 @@ export default function ClassDetail() {
               <Image
                 src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
                 alt=""
-                style={{ width: '100%', height: 'auto' }}
+                width={200}
+                height={200}
               />
             </div>
           </div>
@@ -270,7 +272,8 @@ stroke: var(--bg-text-color, #FAF7F0);">
                 <Image
                   src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
                   alt=""
-                  style={{ width: '100%', height: 'auto' }}
+                  width={200}
+                  height={200}
                   className={styles['sec2cardimg-aa']}
                 />
                 <div className={styles['sec2cardbody-aa']}>
@@ -293,30 +296,8 @@ stroke: var(--bg-text-color, #FAF7F0);">
                 <Image
                   src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
                   alt=""
-                  className={styles['sec2cardimg-aa']}
-                  style={{ width: '100%', height: 'auto' }}
-                />
-                <div className={styles['sec2cardbody-aa']}>
-                  <div className={styles['declassname-aa']}>
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p>劉業揚＆楊元翰</p>
-                  </div>
-                  <p
-                    style={{
-                      color: 'var(--text-color, #0e0e0e)',
-                      textAlign: 'center',
-                      alignSelf: 'stretch',
-                    }}
-                  >
-                    NT$450
-                  </p>
-                </div>
-              </div>
-              <div className={styles['sec2classtcard-aa']}>
-                <Image
-                  src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                  alt=""
-                  style={{ width: '100%', height: 'auto' }}
+                  width={200}
+                  height={200}
                   className={styles['sec2cardimg-aa']}
                 />
                 <div className={styles['sec2cardbody-aa']}>
@@ -339,7 +320,32 @@ stroke: var(--bg-text-color, #FAF7F0);">
                 <Image
                   src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
                   alt=""
-                  style={{ width: '100%', height: 'auto' }}
+                  width={200}
+                  height={200}
+                  className={styles['sec2cardimg-aa']}
+                />
+                <div className={styles['sec2cardbody-aa']}>
+                  <div className={styles['declassname-aa']}>
+                    <p>西洋棋國手教你下西洋棋</p>
+                    <p>劉業揚＆楊元翰</p>
+                  </div>
+                  <p
+                    style={{
+                      color: 'var(--text-color, #0e0e0e)',
+                      textAlign: 'center',
+                      alignSelf: 'stretch',
+                    }}
+                  >
+                    NT$450
+                  </p>
+                </div>
+              </div>
+              <div className={styles['sec2classtcard-aa']}>
+                <Image
+                  src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
+                  alt=""
+                  width={200}
+                  height={200}
                   className={styles['sec2cardimg-aa']}
                 />
                 <div className={styles['sec2cardbody-aa']}>
