@@ -84,8 +84,8 @@ export default function ClassDetail() {
               <Image
                 src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
                 alt=""
-                width={200}
-                height={200}
+                width={640}
+                height={360}
               />
             </div>
           </div>

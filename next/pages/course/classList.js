@@ -41,12 +41,13 @@ export default function ClassList() {
         {rank && <div className={styles[`rank${rank}`]}>{rank}</div>}
         <Image
           src={
-            `../public/images/aa/${courseData.images}` ||
+            `/images/aa/${courseData.images}` ||
             'https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993'
           }
           alt={courseData.course_name || ''}
           width={200}
           height={200}
+          objectFit="cover"
         />
       </div>
       <div className={styles['cardBody-aa']}>
