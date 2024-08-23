@@ -35,43 +35,6 @@ export default function ClassList() {
   }, [])
 
   // 課程卡片組件
-  // const ClassCard = ({ courseData, rank }) => (
-  //   <div className={styles['classCard-aa']}>
-  //     <div className={styles['imgBox-aa']}>
-  //       {rank && <div className={styles['`rank${rank}`']}>{rank}</div>}
-  //       <img src={courseData.images} alt={courseData.course_name} />
-  //     </div>
-  //     <div className={styles['cardBody-aa']}>
-  //       <div className={styles['className-aa']}>
-  //         <p>{courseData.course_name}</p>
-  //         <p className={styles['classDescription-aa']}>
-  //           {courseData.course_category_id}
-  //         </p>
-  //       </div>
-  //       <p>NT. {courseData.price}</p>
-  //     </div>
-  //   </div>
-  // )
-
-  // const ClassCard = (
-  //   <div className={styles['classCard-aa']}>
-  //     <div className={styles['imgBox-aa']}>
-  //       <div className={styles['rank1']}>1</div>
-  //       <Image
-  //         src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993" // {`/images/aa/1go.jpg`}
-  //         alt=""
-  //       />
-  //     </div>
-  //     <div className={styles['cardBody-aa']}>
-  //       <div className={styles['className-aa']}>
-  //         <p>西洋棋國手教你下西洋棋</p>
-  //         <p className={styles['classDescription-aa']}>劉業揚＆楊元翰</p>
-  //       </div>
-  //       <p>NT. 450</p>
-  //     </div>
-  //   </div>
-  // )
-
   const ClassCard = ({ courseData, rank }) => (
     <div className={styles['classCard-aa']}>
       <div className={styles['imgBox-aa']}>
