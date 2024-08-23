@@ -3,14 +3,15 @@ import 'dotenv/config.js'
 import connection from '##/configs/mysql-promise.js'
 
 import { v4 as uuidv4 } from 'uuid'
-import { customAlphabet } from 'nanoid';
+import { customAlphabet } from 'nanoid'
 
 const router = express.Router()
-const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-const nanoid = customAlphabet(alphabet, 10);
+const alphabet =
+  '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+const nanoid = customAlphabet(alphabet, 10)
 
 function generateShortId() {
-  return nanoid();
+  return nanoid()
 }
 router.post('/', async (req, res) => {
   const numerical_order = generateShortId()
@@ -25,7 +26,7 @@ router.post('/', async (req, res) => {
     rules,
     user_id,
   } = req.body
-  const userID_main = user_id || 1 // 使用傳入的 user_id，如果沒有則默認為 1
+  const userID_main = user_id  ;
 
   if (
     !date ||
@@ -33,7 +34,8 @@ router.post('/', async (req, res) => {
     !end_time ||
     playroom_type === undefined ||
     total_price === undefined ||
-    !company_id
+    !company_id ||
+    !userID_main
   ) {
     return res.status(400).json({ error: '缺少必要的預訂信息' })
   }
@@ -42,11 +44,16 @@ router.post('/', async (req, res) => {
     // 插入預訂記錄
     const [partyResult] = await connection.execute(
       `INSERT INTO party
-       (numerical_order, userID_main, company_id, date, start_at, end_at, playroom_type, notes, total_price, status) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       (numerical_order, userID_main, userID_join1,
+        userID_join2,
+        userID_join3, company_id, date, start_at, end_at, playroom_type, notes, total_price, status) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)`,
       [
         numerical_order,
         userID_main,
+        0,
+        0,
+        0,
         company_id,
         date,
         start_time,
@@ -54,7 +61,7 @@ router.post('/', async (req, res) => {
         playroom_type,
         notes || null,
         total_price,
-        'pending',
+        'booked',
       ]
     )
 
@@ -74,7 +81,7 @@ router.post('/', async (req, res) => {
       message: '派對成功創建',
       id: partyId,
       numerical_order: numerical_order,
-      status: 'pending'
+      status: 'pending',
     })
   } catch (error) {
     console.error('Database query error:', error)

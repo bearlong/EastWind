@@ -7,8 +7,11 @@ import Link from 'next/link'
 import { AuthContext } from '@/context/AuthContext'
 import UserCenterLayout from '@/components/layout/user-center-layout'
 import Swal from 'sweetalert2'
+import { useRouter } from 'next/router'
 
 export default function UserInfo() {
+  const router = useRouter()
+
   // 從 AuthContext 中獲取 user 狀態
   const { user } = useContext(AuthContext)
   const [userData, setUserData] = useState(null) // 使用 useState 管理用戶資料
@@ -16,35 +19,54 @@ export default function UserInfo() {
 
   useEffect(() => {
     const updateSuccess = sessionStorage.getItem('updateSuccess')
-    if (updateSuccess) {
-      Swal.fire({
-        title: '修改成功！',
-        icon: 'success',
-        confirmButtonText: 'OK',
-        customClass: {
-          title: 'h6',
-          icon: `${styles['swal-icon-bo']}`,
-          confirmButton: `${styles['swal-btn-bo']}`,
-        },
-      })
-      sessionStorage.removeItem('updateSuccess') // 清除成功訊息
-    }
+    const isFirstEdit = sessionStorage.getItem('isFirstEdit')
 
-    // 從伺服器獲取最新的用戶資料
-    if (user) {
-      fetch(`http://localhost:3005/api/user/user/${user.id}`)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.status === 'success') {
-            setUserData(data.data) // 更新 userData 狀態
-          }
+    if (updateSuccess) {
+      if (isFirstEdit === 'true') {
+        Swal.fire({
+          title: '填寫成功！',
+          html: `<span class="p">填寫資料完成，獲得歡迎優惠券！</span>`,
+          icon: 'success',
+          confirmButtonText: '查看優惠券',
+          customClass: {
+            title: 'h6',
+            icon: `${styles['swal-icon-bo']}`,
+            confirmButton: `${styles['swal-btn-bo']}`,
+          },
+        }).then(() => {
+          sessionStorage.removeItem('isFirstEdit') // 清除標誌
+          router.push('/user/user-center/coupon') // 跳轉到優惠券頁面
         })
-        .catch()
+      } else {
+        Swal.fire({
+          title: '修改成功！',
+          icon: 'success',
+          confirmButtonText: 'OK',
+          customClass: {
+            title: 'h6',
+            icon: `${styles['swal-icon-bo']}`,
+            confirmButton: `${styles['swal-btn-bo']}`,
+          },
+        })
+      }
+
+      sessionStorage.removeItem('updateSuccess') // 清除成功訊息
     }
   }, [user])
 
   useEffect(() => {
     if (user) {
+      fetch(`http://localhost:3005/api/user/user/${user.id}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status === 'success') {
+            setUserData(data.data) // 成功獲取並設置 userData
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching user data:', error)
+        })
+
       fetch(`http://localhost:3005/api/user/user/${user.id}/cards`)
         .then((response) => response.json())
         .then((data) => {
@@ -52,7 +74,9 @@ export default function UserInfo() {
             setCards(data.data)
           }
         })
-        .catch()
+        .catch((error) => {
+          console.error('Error fetching cards data:', error)
+        })
     }
   }, [user])
 

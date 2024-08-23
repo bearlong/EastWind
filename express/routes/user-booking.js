@@ -83,10 +83,40 @@ router.get('/:userId/:status', async (req, res) => {
       JOIN 
           user ON booking_record.user_id = user.id
       WHERE 
-          booking_record.user_id = ? AND booking_record.status = ?;
+          booking_record.user_id = ? AND booking_record.status = ?
+      ORDER BY 
+          booking_record.date DESC,
+          booking_record.start_time DESC;
     `
     const [bookings] = await connection.execute(query, [userId, status])
     res.status(200).json({ status: 'success', data: { bookings } })
+  } catch (err) {
+    console.error('Database query failed:', err.stack || err.message)
+    res.status(500).json({ status: 'error', message: err.message })
+  }
+})
+
+router.put('/cancel/:bookingId', async (req, res) => {
+  const { bookingId } = req.params
+
+  if (!bookingId) {
+    return res.status(400).json({ status: 'error', message: '缺少預訂 ID' })
+  }
+
+  try {
+    // 更新預訂狀態為已取消
+    const query = `
+      UPDATE booking_record
+      SET status = 'cancelled'
+      WHERE id = ?
+    `
+    const [result] = await connection.execute(query, [bookingId])
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ status: 'error', message: '找不到該預訂' })
+    }
+
+    res.status(200).json({ status: 'success', message: '預訂已取消' })
   } catch (err) {
     console.error('Database query failed:', err.stack || err.message)
     res.status(500).json({ status: 'error', message: err.message })

@@ -24,25 +24,6 @@ const app = express()
 app.use(cors(corsOptions))
 app.use(express.json())
 
-router.get('/:userId', async (req, res) => {
-  const { userId } = req.params
-
-  if (!userId) {
-    return res.status(400).json({ status: 'error', message: '缺少用戶 ID' })
-  }
-
-  try {
-    const query = `
-      SELECT * FROM party WHERE user_id = ?
-    `
-    const [partys] = await connection.execute(query, [userId])
-    res.status(200).json({ status: 'success', data: { partys } })
-  } catch (err) {
-    console.error('Database query failed:', err.stack || err.message)
-    res.status(500).json({ status: 'error', message: err.message })
-  }
-})
-
 router.get('/:userId/:status', async (req, res) => {
   const { userId, status } = req.params
 
@@ -54,49 +35,50 @@ router.get('/:userId/:status', async (req, res) => {
 
   try {
     const query = `
-       SELECT 
-          party.id,
-          party.numerical_order as order_number,
-          party.table_id,
-          party.userID_main as user_main,
-          user_main.username as main_username,  -- 主邀請者名稱
-          party.userID_join1 as user_join1,
-          user_join1.username as join1_username, -- 第一位加入者名稱
-          party.userID_join2 as user_join2,
-          user_join2.username as join2_username, -- 第二位加入者名稱
-          party.userID_join3 as user_join3,
-          user_join3.username as join3_username, -- 第三位加入者名稱
-          party.date,
-          party.start_at,
-          party.end_at,
-          party.status,
-          party.created_at,
-          party.playroom_type,
-          party.notes,
-          party.total_price,
-          party.company_id,
-          mahjong_table.company_id AS table_company_id,
-          company.name AS company_name,
-          company.tele AS company_tele,  -- 公司電話
-          company.address AS company_address,
-          (SELECT COUNT(*) FROM mahjong_table WHERE company_id = company.id AND id <= mahjong_table.id) AS table_number
+      SELECT DISTINCT
+        party.id,
+        party.numerical_order as order_number,
+        COALESCE(party.table_id, '') as table_id,
+        party.userID_main as user_main,
+        user_main.username as main_username,
+        party.userID_join1 as user_join1,
+        COALESCE(user_join1.username, '') as join1_username,
+        party.userID_join2 as user_join2,
+        COALESCE(user_join2.username, '') as join2_username,
+        party.userID_join3 as user_join3,
+        COALESCE(user_join3.username, '') as join3_username,
+        party.date,
+        party.start_at,
+        party.end_at,
+        party.status,
+        party.created_at,
+        party.playroom_type,
+        party.notes,
+        party.total_price,
+        party.company_id,
+        company.name AS company_name,
+        company.tele AS company_tele,
+        company.address AS company_address,
+        (SELECT COUNT(*) FROM mahjong_table WHERE company_id = company.id AND id <= mahjong_table.id) AS table_number
       FROM 
-          party
-      JOIN 
-          mahjong_table ON party.table_id = mahjong_table.id
-      JOIN 
-          company ON mahjong_table.company_id = company.id
+        party
       LEFT JOIN 
-          user AS user_main ON party.userID_main = user_main.id
+        company ON party.company_id = company.id
       LEFT JOIN 
-          user AS user_join1 ON party.userID_join1 = user_join1.id
+        user AS user_main ON party.userID_main = user_main.id
       LEFT JOIN 
-          user AS user_join2 ON party.userID_join2 = user_join2.id
+        user AS user_join1 ON party.userID_join1 = user_join1.id
       LEFT JOIN 
-          user AS user_join3 ON party.userID_join3 = user_join3.id
+        user AS user_join2 ON party.userID_join2 = user_join2.id
+      LEFT JOIN 
+        user AS user_join3 ON party.userID_join3 = user_join3.id
       WHERE 
-          (party.userID_main = ? OR party.userID_join1 = ? OR party.userID_join2 = ? OR party.userID_join3 = ?) 
-          AND party.status = ?;
+        (party.userID_main = ? OR party.userID_join1 = ? OR party.userID_join2 = ? OR party.userID_join3 = ?)
+        AND party.status = ?
+      ORDER BY 
+        party.date DESC,
+        party.start_at DESC;
+
     `
     const [partys] = await connection.execute(query, [
       userId,
@@ -123,18 +105,18 @@ router.get('/join/:userId/:status', async (req, res) => {
 
   try {
     const query = `
-      SELECT 
+    SELECT DISTINCT
         party.id,
         party.numerical_order as order_number,
-        party.table_id,
+        COALESCE(party.table_id, '') as table_id,
         party.userID_main as user_main,
-        user_main.username as main_username,  -- 主邀請者名稱
+        user_main.username as main_username,
         party.userID_join1 as user_join1,
-        user_join1.username as join1_username, -- 第一位加入者名稱
+        COALESCE(user_join1.username, '') as join1_username,
         party.userID_join2 as user_join2,
-        user_join2.username as join2_username, -- 第二位加入者名稱
+        COALESCE(user_join2.username, '') as join2_username,
         party.userID_join3 as user_join3,
-        user_join3.username as join3_username, -- 第三位加入者名稱
+        COALESCE(user_join3.username, '') as join3_username,
         party.date,
         party.start_at,
         party.end_at,
@@ -144,17 +126,14 @@ router.get('/join/:userId/:status', async (req, res) => {
         party.notes,
         party.total_price,
         party.company_id,
-        mahjong_table.company_id AS table_company_id,
         company.name AS company_name,
-        company.tele AS company_tele,  -- 公司電話
+        company.tele AS company_tele,
         company.address AS company_address,
         (SELECT COUNT(*) FROM mahjong_table WHERE company_id = company.id AND id <= mahjong_table.id) AS table_number
       FROM 
         party
-      JOIN 
-        mahjong_table ON party.table_id = mahjong_table.id
-      JOIN 
-        company ON mahjong_table.company_id = company.id
+      LEFT JOIN 
+        company ON party.company_id = company.id
       LEFT JOIN 
         user AS user_main ON party.userID_main = user_main.id
       LEFT JOIN 
@@ -164,10 +143,15 @@ router.get('/join/:userId/:status', async (req, res) => {
       LEFT JOIN 
         user AS user_join3 ON party.userID_join3 = user_join3.id
       WHERE 
-        (party.userID_join1 = ? OR party.userID_join2 = ? OR party.userID_join3 = ?)
-        AND party.status = ?;
+        (party.userID_main = ? OR party.userID_join1 = ? OR party.userID_join2 = ? OR party.userID_join3 = ?)
+        AND party.status = ?
+      ORDER BY 
+        party.date DESC,
+        party.start_at DESC;
+
     `
     const [partys] = await connection.execute(query, [
+      userId,
       userId,
       userId,
       userId,

@@ -11,6 +11,8 @@ import { AuthContext } from '@/context/AuthContext'
 import Swal from 'sweetalert2'
 
 export default function Header() {
+  const [isChecked, setIsChecked] = useState(false) // 用於管理復選框狀態
+
   const {
     cart,
     top,
@@ -62,6 +64,10 @@ export default function Header() {
         })
       }
     })
+  }
+
+  const onLinkClick = () => {
+    setIsChecked(false) // 點擊連結後取消選取復選框
   }
 
   return (
@@ -161,6 +167,8 @@ export default function Header() {
                       type="checkbox"
                       className={styles['navigation-checkbox-bo']}
                       id="navi-toggle"
+                      checked={isChecked} // 使用狀態來控制是否選中
+                      onChange={() => setIsChecked(!isChecked)} // 變更狀態
                     />
                     <label
                       htmlFor="navi-toggle"
@@ -179,6 +187,7 @@ export default function Header() {
                           <Link
                             href="/lobby/Entrance"
                             className={`h6 ${styles['navigation-link-bo']}`}
+                            onClick={onLinkClick} // 監聽點擊事件
                           >
                             棋牌室
                           </Link>
@@ -187,17 +196,19 @@ export default function Header() {
                           <Link
                             href="/product/productList"
                             className={`h6 ${styles['navigation-link-bo']}`}
+                            onClick={onLinkClick} // 監聽點擊事件
                           >
                             商城
                           </Link>
                         </li>
                         <li className={styles['navigation-item-bo']}>
-                          <a
+                          <Link
                             href="#"
                             className={`h6 ${styles['navigation-link-bo']}`}
+                            onClick={onLinkClick} // 監聽點擊事件
                           >
                             線上課程
-                          </a>
+                          </Link>
                         </li>
                       </ul>
                     </nav>

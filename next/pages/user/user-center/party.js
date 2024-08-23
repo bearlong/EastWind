@@ -23,15 +23,16 @@ export default function UserParty() {
   const [selectedStatus, setSelectedStatus] = useState('booked')
   const [party, setParty] = useState([])
   const [role, setRole] = useState('主揪') // 新增角色狀態
+  const [members, setMembers] = useState([])
 
   // 排序方式列表
   const sortOptions = [
     { label: '揪團編號從大到小', key: 'order_number', order: 'desc' },
     { label: '揪團編號從小到大', key: 'order_number', order: 'asc' },
-    { label: '揪團時間從早到晚', key: 'date', order: 'asc' },
-    { label: '揪團時間從晚到早', key: 'date', order: 'desc' },
     { label: '棋牌室從 A 到 Z ', key: 'company_name', order: 'asc' },
     { label: '棋牌室從 Z 到 A ', key: 'company_name', order: 'desc' },
+    { label: '揪團時間從早到晚', key: 'date', order: 'asc' },
+    { label: '揪團時間從晚到早', key: 'date', order: 'desc' },
   ]
 
   const changeStatus = (status) => {
@@ -44,12 +45,28 @@ export default function UserParty() {
 
   const sortParty = (key, order) => {
     const sortedParty = [...party].sort((a, b) => {
-      if (order === 'asc') {
-        return a[key] > b[key] ? 1 : -1
+      let valueA, valueB
+
+      if (key === 'date') {
+        valueA = new Date(`${a.date}T${a.start_time}`)
+        valueB = new Date(`${b.date}T${b.start_time}`)
+      } else if (key === 'company_name') {
+        // 忽略大小寫比較公司名稱
+        valueA = a[key].toLowerCase()
+        valueB = b[key].toLowerCase()
       } else {
-        return a[key] < b[key] ? 1 : -1
+        // 其他情況下的排序處理
+        valueA = a[key]
+        valueB = b[key]
+      }
+
+      if (order === 'asc') {
+        return valueA > valueB ? 1 : -1
+      } else {
+        return valueA < valueB ? 1 : -1
       }
     })
+
     setParty(sortedParty)
   }
 
@@ -68,10 +85,8 @@ export default function UserParty() {
       let apiUrl = `http://localhost:3005/api/user-party/${user.id}/${selectedStatus}`
 
       if (role === '主揪') {
-        // 主揪的 API 請求
         apiUrl = `http://localhost:3005/api/user-party/${user.id}/${selectedStatus}`
       } else if (role === '參團') {
-        // 參團的 API 請求
         apiUrl = `http://localhost:3005/api/user-party/join/${user.id}/${selectedStatus}`
       }
 
@@ -79,35 +94,45 @@ export default function UserParty() {
         .then((response) => response.json())
         .then((data) => {
           if (data.status === 'success') {
-            const transformedPartys = data.data.partys.map((party) => ({
-              ...party,
-              playroom_type: party.playroom_type === 0 ? '大廳' : '包廂',
-              price: Math.floor(party.total_price),
-              start_time: formatTime(party.start_at),
-              end_time: formatTime(party.end_at),
-              members: [
+            const transformedPartys = data.data.partys.map((party) => {
+              const membersArray = [
                 {
                   role: '主揪',
                   name: party.main_username,
                   id: party.user_main,
                 },
-                {
+              ]
+              if (party.join1_username) {
+                membersArray.push({
                   role: '參團',
                   name: party.join1_username,
                   id: party.user_join1,
-                },
-                {
+                })
+              }
+              if (party.join2_username) {
+                membersArray.push({
                   role: '參團',
                   name: party.join2_username,
                   id: party.user_join2,
-                },
-                {
+                })
+              }
+              if (party.join3_username) {
+                membersArray.push({
                   role: '參團',
                   name: party.join3_username,
                   id: party.user_join3,
-                },
-              ],
-            }))
+                })
+              }
+
+              return {
+                ...party,
+                playroom_type: party.playroom_type === 0 ? '大廳' : '包廂',
+                price: Math.floor(party.total_price),
+                start_time: formatTime(party.start_at),
+                end_time: formatTime(party.end_at),
+                members: membersArray,
+              }
+            })
             setParty(transformedPartys)
           } else {
             console.error('Failed to fetch parties:', data.message)
@@ -169,7 +194,7 @@ export default function UserParty() {
                 selectedStatus === 'booked' ? styles['state-choose-bo'] : ''
               }`}
             >
-              已揪團
+              等待中
             </li>
             <li
               onClick={() => changeStatus('completed')}
@@ -185,7 +210,7 @@ export default function UserParty() {
                 selectedStatus === 'cancelled' ? styles['state-choose-bo'] : ''
               }`}
             >
-              已取消
+              已流團
             </li>
           </ul>
 
@@ -349,12 +374,18 @@ export default function UserParty() {
                           <FaPhone className={` ${styles['col-icon-bo']}`} />
                           {item.company_tele}
                         </li>
-                        <li
-                          className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
-                        >
-                          <FaShop className={` ${styles['col-icon-bo']}`} />
-                          {item.playroom_type} / {item.table_number} 號桌
-                        </li>
+                        {/* 只有當狀態為 'completed' 時才顯示桌子ID */}
+                        {selectedStatus === 'completed' && (
+                          <li
+                            className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
+                          >
+                            <FaShop className={` ${styles['col-icon-bo']}`} />
+                            {item.table_id !== '未指定'
+                              ? `${item.playroom_type} / ${item.table_number} 號桌`
+                              : '未指定桌號'}
+                          </li>
+                        )}
+
                         <li
                           className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
                         >
@@ -395,32 +426,30 @@ export default function UserParty() {
                     </div>
 
                     <div className={styles['group-box-bo']}>
-                      {item.members
-                        .filter((member) => member.id !== 0) // 過濾掉 user_id 為 0 的成員
-                        .map((member, index) => (
+                      {item.members.map((member, index) => (
+                        <div
+                          key={index}
+                          className={`${
+                            styles['group-member-box-bo']
+                          } d-flex justify-content-center align-items-center ${
+                            member.id === user.id
+                              ? styles['member-self-bo']
+                              : ''
+                          } gap-3`}
+                        >
+                          <img
+                            className={styles['member-img-bo']}
+                            src={`/images/boyu/users/user${member.id}.jpg`} // 動態生成圖片路徑
+                            alt={member.name}
+                          />
                           <div
-                            key={index}
-                            className={`${
-                              styles['group-member-box-bo']
-                            } d-flex justify-content-center align-items-center ${
-                              member.id === user.id
-                                ? styles['member-self-bo']
-                                : ''
-                            } gap-3`}
+                            className={`${styles['member-text-box']} d-flex`}
                           >
-                            <img
-                              className={styles['member-img-bo']}
-                              src={`/images/boyu/users/user${member.id}.jpg`} // 動態生成圖片路徑
-                              alt={member.name}
-                            />
-                            <div
-                              className={`${styles['member-text-box']} d-flex`}
-                            >
-                              <p>{member.role}</p>
-                              <p>{member.name}</p>
-                            </div>
+                            <p>{member.role}</p>
+                            <p>{member.name}</p>
                           </div>
-                        ))}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -508,12 +537,18 @@ export default function UserParty() {
                           <FaPhone className={` ${styles['col-icon-bo']}`} />
                           {item.company_tele}
                         </li>
-                        <li
-                          className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
-                        >
-                          <FaShop className={` ${styles['col-icon-bo']}`} />
-                          {item.playroom_type} / {item.table_number} 號桌
-                        </li>
+                        {/* 只有當狀態為 'completed' 時才顯示桌子ID */}
+                        {selectedStatus === 'completed' && (
+                          <li
+                            className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
+                          >
+                            <FaShop className={` ${styles['col-icon-bo']}`} />
+                            {item.table_id !== '未指定'
+                              ? `${item.playroom_type} / ${item.table_number} 號桌`
+                              : '未指定桌號'}
+                          </li>
+                        )}
+
                         <li
                           className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
                         >
@@ -554,32 +589,30 @@ export default function UserParty() {
                     </div>
 
                     <div className={styles['group-box-bo']}>
-                      {item.members
-                        .filter((member) => member.id !== 0) // 過濾掉 user_id 為 0 的成員
-                        .map((member, index) => (
+                      {item.members.map((member, index) => (
+                        <div
+                          key={index}
+                          className={`${
+                            styles['group-member-box-bo']
+                          } d-flex justify-content-center align-items-center ${
+                            member.id === user.id
+                              ? styles['member-self-bo']
+                              : ''
+                          } gap-3`}
+                        >
+                          <img
+                            className={styles['member-img-bo']}
+                            src={`/images/boyu/users/user${member.id}.jpg`} // 動態生成圖片路徑
+                            alt={member.name}
+                          />
                           <div
-                            key={index}
-                            className={`${
-                              styles['group-member-box-bo']
-                            } d-flex justify-content-center align-items-center ${
-                              member.id === user.id
-                                ? styles['member-self-bo']
-                                : ''
-                            } gap-3`}
+                            className={`${styles['member-text-box']} d-flex`}
                           >
-                            <img
-                              className={styles['member-img-bo']}
-                              src={`/images/boyu/users/user${member.id}.jpg`} // 動態生成圖片路徑
-                              alt={member.name}
-                            />
-                            <div
-                              className={`${styles['member-text-box']} d-flex`}
-                            >
-                              <p>{member.role}</p>
-                              <p>{member.name}</p>
-                            </div>
+                            <p>{member.role}</p>
+                            <p>{member.name}</p>
                           </div>
-                        ))}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>

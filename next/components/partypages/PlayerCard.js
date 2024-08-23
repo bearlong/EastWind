@@ -1,6 +1,6 @@
 import styles from "@/styles/gw/_PlayerCard.module.scss";
 
-export default function PlayerCard() {
+export default function PlayerCard({partyData}) {
   const [playerName, playerImage] = ["Vic Chen", "/images/gw/img/user/周杰倫.jpeg"];
   return (
     <div className={styles.playerCard}>

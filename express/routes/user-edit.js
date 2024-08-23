@@ -103,7 +103,15 @@ router.put('/update-user/:userId', async (req, res) => {
   } = req.body
 
   try {
-    // 執行SQL更新操作，更新用戶資訊
+    // 檢查用戶是否已經完成了第一次修改
+    const [user] = await connection.execute(
+      'SELECT first_edit_completed FROM user WHERE id = ?',
+      [userId]
+    )
+
+    const firstEditCompleted = user[0].first_edit_completed
+
+    // 更新用戶資料
     const [result] = await connection.execute(
       `UPDATE user SET 
           email = ?, 
@@ -114,7 +122,8 @@ router.put('/update-user/:userId', async (req, res) => {
           birth = ?, 
           city= ?, 
           address = ?, 
-          phone = ? 
+          phone = ?, 
+          first_edit_completed = ? 
         WHERE id = ?`,
       [
         email,
@@ -126,19 +135,55 @@ router.put('/update-user/:userId', async (req, res) => {
         city,
         address,
         phone,
+        true, // 將 first_edit_completed 設為 true
         userId,
       ]
     )
 
-    // 檢查是否成功更新
+    // 如果更新成功
     if (result.affectedRows > 0) {
-      res.status(200).json({ status: 'success', message: '用戶資料已更新' })
+      let isFirstEdit = false // 預設不是第一次修改
+      let message = '用戶資料已成功更新。'
+
+      // 如果這是第一次修改，發送優惠券
+      if (!firstEditCompleted) {
+        isFirstEdit = true // 標記為第一次修改
+        try {
+          const couponResponse = await fetch(
+            `http://localhost:3005/api/coupons/send-welcome-coupon/${userId}`,
+            { method: 'POST' }
+          )
+
+          const couponData = await couponResponse.json()
+
+          if (couponData.status === 'success') {
+            message = '用戶資料填寫成功。'
+          } else {
+            message = '用戶資料已更新，但優惠券發送失敗。'
+          }
+        } catch (error) {
+          console.error('Error sending coupon:', error)
+          message = '用戶資料已更新，但優惠券發送失敗。'
+        }
+      }
+
+      res.status(200).json({
+        status: 'success',
+        message,
+        isFirstEdit, // 將是否為第一次修改的狀態返回前端
+      })
     } else {
-      res.status(404).json({ status: 'fail', message: '找不到此用戶' })
+      res.status(404).json({
+        status: 'fail',
+        message: '找不到此用戶',
+      })
     }
   } catch (error) {
     console.error('Error updating user information:', error)
-    res.status(500).json({ status: 'error', message: '伺服器錯誤' })
+    res.status(500).json({
+      status: 'error',
+      message: '伺服器錯誤',
+    })
   }
 })
 
