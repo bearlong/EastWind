@@ -4,6 +4,7 @@ import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
 import styles from '@/styles/aa/classList.module.scss'
+// import ClassCard from '@/components/course/class-card'
 
 export default function ClassList() {
   // 注意1: 初始值至少要空陣列，初次render是用初始值
