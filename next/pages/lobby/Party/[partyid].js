@@ -29,6 +29,7 @@ export default function Party() {
         .then((data) => {
           if (data) {
             setPartyData(data)
+
           } else {
             throw new Error('No data received')
           }
@@ -53,7 +54,7 @@ export default function Party() {
         <BreadCrumb />
         <div className={styles.main}>
           <PartyLeftArea partyData={partyData} />
-          <PartyRightArea partyData={partyData}/>
+          <PartyRightArea partyData={partyData} />
         </div>
       </div>
     </>
