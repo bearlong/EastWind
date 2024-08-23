@@ -12,7 +12,7 @@ export default function ClassList() {
 
   // 向伺服器連線的程式碼；向伺服器fetch獲取資料
   const getCourses = async () => {
-    const apiURL = `http://localhost:3005/api/classListTmp`
+    const apiURL = `http://localhost:3005/api/course`
     try {
       const res = await fetch(apiURL)
       const data = await res.json()
@@ -238,7 +238,7 @@ export default function ClassList() {
             <div className={styles['text2-aa']}>
               <h2>課程排行</h2>
             </div>
-            <div className={styles['classCards-aa']}>
+            {/* <div className={styles['classCards-aa']}>
               {Object.values(courses)
                 .flat()
                 .slice(0, 4)
@@ -249,6 +249,16 @@ export default function ClassList() {
                     rank={index + 1}
                   />
                 ))}
+            </div> */}
+
+            <div className={styles['classCards-aa']}>
+              {courses.slice(0, 4).map((classItem, index) => (
+                <ClassCard
+                  key={classItem.id}
+                  courseData={classItem}
+                  rank={index + 1}
+                />
+              ))}
             </div>
             <div className={styles['line-aa']}>
               <svg
