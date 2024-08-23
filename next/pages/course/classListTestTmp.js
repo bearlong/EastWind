@@ -3,9 +3,7 @@ import { useRouter } from 'next/router'
 import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
-import styles from '@/styles/aa/classList.scss'
-import Footer from '@/components/layout/default-layout/footer'
-import Header from '@/components/layout/default-layout/header'
+import styles from '@/styles/aa/classList.module.scss'
 
 export default function ClassList() {
   // 注意1: 初始值至少要空陣列，初次render是用初始值
@@ -38,15 +36,17 @@ export default function ClassList() {
 
   // 課程卡片組件
   const ClassCard = ({ courseData, rank }) => (
-    <div className="classCard-aa">
-      <div className="imgBox-aa">
-        {rank && <div className={`rank${rank}`}>{rank}</div>}
+    <div className={styles['classCard-aa']}>
+      <div className={styles['imgBox-aa']}>
+        {rank && <div className={styles['`rank${rank}`']}>{rank}</div>}
         <img src={courseData.images} alt={courseData.course_name} />
       </div>
-      <div className="cardBody-aa">
-        <div className="className-aa">
+      <div className={styles['cardBody-aa']}>
+        <div className={styles['className-aa']}>
           <p>{courseData.course_name}</p>
-          <p className="classDescription-aa">{courseData.course_category_id}</p>
+          <p className={styles['classDescription-aa']}>
+            {courseData.course_category_id}
+          </p>
         </div>
         <p>NT. {courseData.price}</p>
       </div>
@@ -56,7 +56,7 @@ export default function ClassList() {
   return (
     <>
       <div className="container">
-        <div className="desktop-list-aa">
+        <div className={styles['className-aa']}>
           {/* <div className="class-header-aa">
             <ul className="d-flex subBar-aa">
               <li>
@@ -191,12 +191,11 @@ export default function ClassList() {
               </li>
             </ul>
           </div> */}
-          <Header />
-          <div className="sec1-aa">
-            <div className="text2-aa">
+          <div className={styles['sec1-aa']}>
+            <div className={styles['text2-aa']}>
               <h2>課程排行</h2>
             </div>
-            <div className="classCards-aa">
+            <div className={styles['classCards-aa']}>
               {Object.values(courses)
                 .flat()
                 .slice(0, 4)
@@ -208,7 +207,7 @@ export default function ClassList() {
                   />
                 ))}
             </div>
-            <div className="line-aa">
+            <div className={styles['line-aa']}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width={1298}
@@ -235,13 +234,13 @@ export default function ClassList() {
                 </defs>
               </svg>
             </div>
-            <div className="texth2-aa">
+            <div className={styles['texth2-aa']}>
               <h2>所有課程 列表</h2>
             </div>
-            <div className="text2-aa">
+            <div className={styles['text2-aa']}>
               <h2>西洋棋</h2>
             </div>
-            <div className="classCards-aa">
+            <div className={styles['classCards-aa']}>
               {Object.values(courses)
                 .flat()
                 .slice(0, 4)
@@ -249,7 +248,7 @@ export default function ClassList() {
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
             </div>
-            <div className="btn-more d-flex">
+            <div className={`${styles['btn-more']} d-flex`}>
               <p>查看更多</p>
               {/* <i class=""></i> */}
               <svg
@@ -277,7 +276,7 @@ export default function ClassList() {
             <div className="text2-aa">
               <h2>麻將</h2>
             </div>
-            <div className="classCards-aa">
+            <div className={styles['classCards-aa']}>
               {Object.values(courses)
                 .flat()
                 .slice(0, 4)
@@ -313,7 +312,7 @@ export default function ClassList() {
             <div className="text2-aa">
               <h2>圍棋</h2>
             </div>
-            <div className="classCards-aa">
+            <div className={styles['classCards-aa']}>
               {Object.values(courses)
                 .flat()
                 .slice(0, 4)
@@ -349,7 +348,7 @@ export default function ClassList() {
             <div className="text2-aa">
               <h2>撲克</h2>
             </div>
-            <div className="classCards-aa">
+            <div className={styles['classCards-aa']}>
               {Object.values(courses)
                 .flat()
                 .slice(0, 4)
@@ -385,7 +384,7 @@ export default function ClassList() {
             <div className="text2-aa">
               <h2>象棋</h2>
             </div>
-            <div className="classCards-aa">
+            <div className={styles['classCards-aa']}>
               {Object.values(courses)
                 .flat()
                 .slice(0, 4)
@@ -419,7 +418,6 @@ export default function ClassList() {
               </svg>
             </div>
           </div>
-          <Footer />
         </div>
       </div>
     </>
