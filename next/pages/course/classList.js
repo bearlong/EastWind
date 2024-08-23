@@ -38,6 +38,7 @@ export default function ClassList() {
   // 課程卡片組件
   const ClassCard = ({ courseData, rank }) => (
     <div className={styles['classCard-aa']}>
+      <Link href={`/course/classDetail/${courseData.id}`}></Link>
       <div className={styles['imgBox-aa']}>
         {rank && <div className={styles[`rank${rank}`]}>{rank}</div>}
         <Image
@@ -53,7 +54,7 @@ export default function ClassList() {
       </div>
       <div className={styles['cardBody-aa']}>
         <div className={styles['className-aa']}>
-          <p>{courseData.course_name}</p>
+          <p className={styles['courseName']}>{courseData.course_name}</p>
           <p className={styles['classDescription-aa']}>
             {courseData.course_category_id}
           </p>
@@ -62,6 +63,14 @@ export default function ClassList() {
       </div>
     </div>
   )
+
+  // const CoursesList = ({ courses }) => (
+  //   <div>
+  //     {courses.list.map((course, index) => (
+  //       <ClassCard key={course.id} courseData={course} rank={index + 1} />
+  //     ))}
+  //   </div>
+  // )
 
   return (
     <>
