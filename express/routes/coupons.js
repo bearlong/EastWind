@@ -34,14 +34,11 @@ router.get('/active/:userId', async (req, res) => {
       [userId]
     )
 
-    const firstEditCompleted = user[0].first_edit_completed
-
-    // 查詢該用戶尚未領取的所有有效優惠券，排除不應該領取的「新會員優惠」優惠券
+    // 查詢該用戶尚未領取的所有有效優惠券，排除「新會員優惠」優惠券
     const [coupons] = await connection.query(
       'SELECT coupons.* FROM `coupons` ' +
         'LEFT JOIN `coupons_for_user` ON coupons.id = coupons_for_user.coupon_id AND coupons_for_user.user_id = ? ' +
-        'WHERE coupons_for_user.coupon_id IS NULL ' +
-        (firstEditCompleted ? 'AND coupons.name != "新會員優惠" ' : '') + // 排除「新會員優惠」
+        'WHERE coupons_for_user.coupon_id IS NULL AND coupons.name != "新會員優惠" ' +
         'ORDER BY coupons.id DESC',
       [userId]
     )

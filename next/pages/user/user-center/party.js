@@ -25,6 +25,9 @@ export default function UserParty() {
   const [role, setRole] = useState('主揪') // 新增角色狀態
   const [members, setMembers] = useState([])
 
+  const [searchQuery, setSearchQuery] = useState('') // 用來存儲用戶輸入值的狀態
+  const [searchKeyword, setSearchKeyword] = useState('') // 新增搜尋關鍵字狀態
+
   // 排序方式列表
   const sortOptions = [
     { label: '揪團編號從大到小', key: 'order_number', order: 'desc' },
@@ -78,6 +81,20 @@ export default function UserParty() {
 
   const formatTime = (time) => {
     return time.split(':').slice(0, 2).join(':')
+  }
+
+  const triggerSearch = () => {
+    setSearchKeyword(searchQuery) // 按下搜尋按鈕時，根據 `searchQuery` 設置 `searchKeyword`
+  }
+
+  // 當輸入框內容改變時執行的函數
+  const searchInputChange = (e) => {
+    const inputValue = e.target.value
+    setSearchQuery(inputValue)
+
+    if (inputValue === '') {
+      setSearchKeyword('') // 當輸入框為空時，設置 `searchKeyword` 為空，這樣會顯示全部結果
+    }
   }
 
   useEffect(() => {
@@ -145,20 +162,50 @@ export default function UserParty() {
   }, [selectedStatus, role, user])
 
   const filteredParty = party.filter((item) => {
+    const matchCompanyName = item.company_name.includes(searchKeyword)
+    const matchOrderNumber = item.order_number
+      .toString()
+      .includes(searchKeyword)
+
     if (role === '主揪') {
-      return item.main_username === user.username
+      return (
+        item.main_username === user.username &&
+        (matchCompanyName || matchOrderNumber)
+      )
     } else if (role === '參團') {
-      return [
-        item.join1_username,
-        item.join2_username,
-        item.join3_username,
-      ].includes(user.username)
+      return (
+        [
+          item.join1_username,
+          item.join2_username,
+          item.join3_username,
+        ].includes(user.username) &&
+        (matchCompanyName || matchOrderNumber)
+      )
     }
     return false
   })
 
   return (
     <div className={`${styles['user-party-box-bo']}   w-100`}>
+      <div
+        className={`${styles['search-box-bo']} d-flex flex-column flex-sm-row justify-content-center align-items-center gap-lg-4 gap-3 `}
+      >
+        <h6>搜尋</h6>
+        <input
+          type="text"
+          placeholder="請輸入店名或揪團編號"
+          className={`${styles['input-search-bo']} p`}
+          value={searchQuery} // 綁定搜尋關鍵字
+          onChange={searchInputChange} // 更新搜尋關鍵字並監聽輸入
+        />
+        <button
+          className={`${styles['btn-search']} h6 d-flex justify-content-between align-items-center`}
+          onClick={triggerSearch} // 點擊後觸發搜尋
+        >
+          <FaMagnifyingGlass />
+        </button>
+      </div>
+
       <div className={`${styles['party-list-box-bo']} flex-column d-flex`}>
         <div className={styles['party-list-head-bo']}>
           <ul
