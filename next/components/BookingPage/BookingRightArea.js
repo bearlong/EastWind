@@ -3,8 +3,11 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import PartyNav from '../partypages/PartyNav'
 import { setHours, setMinutes } from 'date-fns'
+import Swal from 'sweetalert2'
+import  {useRouter}  from 'next/router'
 
-export default function BookingRightArea({ companyData }) {
+export default function BookingRightArea({ companyData,user }) {
+  const router = useRouter();
   const [bookingData, setBookingData] = useState({
     date: new Date(),
     start_time: null,
@@ -14,6 +17,7 @@ export default function BookingRightArea({ companyData }) {
     rules: [],
     company_id: companyData.id,
     total_price: 0,
+    user_id:''
   })
   console.log(bookingData)
 
@@ -132,16 +136,38 @@ export default function BookingRightArea({ companyData }) {
 
   const handleSubmitBooking = async (e) => {
     e.preventDefault()
+    if (!user) {
+      Swal.fire({
+        title: '請先登入',
+        text: '您需要先登入才能進行預訂或揪團。',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '前往登入',
+        cancelButtonText: '取消'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // 在這裡添加重定向到登入頁面的邏輯
+          router.push('/login')
+          // 例如：window.location.href = '/login'
+          console.log('重定向到登入頁面')
+        }
+      })
+
+      setErrors((prev) => ({ ...prev, submit: '請先登入後再進行預訂' }))
+      return
+    }
     if (validateForm()) {
       try {
         const bookingPayload = {
           // id 由数据库自动生成
           // table_id 由后端分配
-          user_id: 1, // 假设用户 ID 为 1，实际应该从认证系统获取
+          user_id: user.id, 
           date: bookingData.date.toISOString().split('T')[0],
           start_time: bookingData.start_time.toTimeString().split(' ')[0],
           end_time: bookingData.end_time.toTimeString().split(' ')[0],
-          status: 'pending', // 假设初始状态为 pending
+          status: 'booked', // 假设初始状态为 pending
           // created_at 由后端或数据库自动生成
           playroom_type: parseInt(bookingData.playroom_type),
           notes: bookingData.notes || '',
@@ -176,13 +202,39 @@ export default function BookingRightArea({ companyData }) {
   }
   const handleSubmitParty = async (e) => {
     e.preventDefault()
+    if (!user) {
+
+      Swal.fire({
+        title: '請先登入',
+        text: '您需要先登入才能進行預訂或揪團。',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '前往登入',
+        cancelButtonText: '取消'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // 在這裡添加重定向到登入頁面的邏輯
+          router.push('/login')
+          // 例如：window.location.href = '/login'
+          console.log('重定向到登入頁面')
+        }
+      })
+
+
+      setErrors((prev) => ({ ...prev, submit: '請先登入後再進行預訂' }))
+      return
+    }
     if (validateForm()) {
       try {
         const formatTime = (date) => {
           return date ? date.toTimeString().split(' ')[0] : null;
         };
         const partyData = {
+
           ...bookingData,
+          user_id: user.id, 
           date: bookingData.date.toISOString().split('T')[0], // 格式化日期
           start_time: formatTime(bookingData.start_time),
           end_time: formatTime(bookingData.end_time),

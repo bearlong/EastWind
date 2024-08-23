@@ -1,10 +1,18 @@
 import express from 'express'
 import 'dotenv/config.js'
 import connection from '##/configs/mysql-promise.js'
+import { customAlphabet } from 'nanoid'
 
 const router = express.Router()
 
+const alphabet =
+  '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+const nanoid = customAlphabet(alphabet, 10)
+function generateShortId() {
+  return nanoid()
+}
 router.post('/', async (req, res) => {
+  const numerical_order = generateShortId()
   const {
     date,
     start_time,
@@ -15,14 +23,16 @@ router.post('/', async (req, res) => {
     company_id,
   } = req.body
   const user_id = 1 // 假設用戶 ID 為 1，實際應該從認證中獲取
-  console.log(date,
+  console.log(
+    date,
     start_time,
     end_time,
     playroom_type,
     notes,
     total_price,
-    company_id,)
-console.log(req.body);
+    company_id
+  )
+  console.log(req.body)
   if (
     !date ||
     !start_time ||
@@ -78,11 +88,12 @@ console.log(req.body);
     // 插入預訂記錄
     const insertQuery = `
       INSERT INTO booking_record 
-      (user_id, table_id, date, start_time, end_time, playroom_type, notes, total_price, status) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (numerical_order,user_id, table_id, date, start_time, end_time, playroom_type, notes, total_price, status) 
+      VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
 
     const [result] = await connection.execute(insertQuery, [
+      numerical_order,
       user_id,
       availableTableId,
       date,
@@ -91,7 +102,7 @@ console.log(req.body);
       playroom_type,
       notes || null,
       total_price,
-      'pending',
+      'booked',
     ])
 
     if (result.affectedRows === 1) {
@@ -100,7 +111,6 @@ console.log(req.body);
         id: result.insertId,
         tableId: availableTableId,
       })
-      
     } else {
       throw new Error('預訂創建失敗')
     }

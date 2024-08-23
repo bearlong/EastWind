@@ -224,7 +224,13 @@ export default function ProductDetail({
             </div>
             <div className="my-3 my-md-0">
               <p className="mb-2">
-                庫存數量: <span>{data.product.stock}</span>
+                庫存數量:{' '}
+                <span>{data.product.stock <= 0 ? 0 : data.product.stock}</span>{' '}
+                <span className="text-danger">
+                  {data.product.stock > 0
+                    ? ''
+                    : '暫無庫存，加入收藏關注到貨狀況'}
+                </span>
               </p>
               <div className={`d-flex justify-content-between`}>
                 <h5>數量</h5>
@@ -240,7 +246,11 @@ export default function ProductDetail({
                   <FaPlus
                     style={{ marginInlineStart: '50px' }}
                     fontSize={16}
-                    onClick={handleIncrease}
+                    onClick={() => {
+                      if (quantity < data.product.stock) {
+                        handleIncrease()
+                      }
+                    }}
                   />
                 </div>
               </div>
@@ -252,6 +262,7 @@ export default function ProductDetail({
                 type="button"
                 className={`${styles['btnRectangle']} ${styles['buy']}  mb-3`}
                 onClick={() => {
+                  console.log(data.stock)
                   if (!user) {
                     notifyAndRemove()
                   } else {
@@ -259,8 +270,9 @@ export default function ProductDetail({
                     handleShow()
                   }
                 }}
+                disabled={data.product.stock <= 0}
               >
-                立即購買
+                {data.product.stock <= 0 ? '暫無庫存' : '立即購買'}
               </button>
               <button
                 type="button"
@@ -272,6 +284,7 @@ export default function ProductDetail({
                     handleAdd(data.product, 'product', quantity)
                   }
                 }}
+                disabled={data.product.stock <= 0}
               >
                 加入購物車
               </button>

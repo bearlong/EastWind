@@ -4,7 +4,7 @@ import MyFooter from './my-footer'
 import Head from 'next/head'
 import NextBreadCrumb from '@/components/common/next-breadcrumb'
 import { useLoader } from '@/hooks/use-loader'
-
+import ToTheTop from '@/components/icons/to-the-top'
 import Header from './header.jsx'
 import Footer from './footer.jsx'
 
@@ -20,6 +20,8 @@ export default function DefaultLayout({ title = '只欠東風', children }) {
       <Header />
       {/* <MyNavbarBS5 /> */}
       <main className="flex-shrink-0">
+        <ToTheTop />
+
         {/* <NextBreadCrumb isHomeIcon isChevron bgClass="" /> */}
         {children}
         {/* 全域的載入動畫指示器 */}

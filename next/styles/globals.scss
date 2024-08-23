@@ -551,3 +551,16 @@ textarea:-moz-autofill,
 select:-moz-autofill {
   color: $primary;
 }
+
+.toTop {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 1px solid var(--primary-dark);
+  background: var(--white);
+  color: var(--primary-dark);
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 999;
+}
