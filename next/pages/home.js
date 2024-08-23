@@ -1,7 +1,31 @@
+import { useState, useEffect } from 'react'
 import styles from '@/styles/boyu/home.module.scss'
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
+import Link from 'next/link'
 
 export default function Home() {
+  const [products, setProducts] = useState([]) // 儲存商品資料的狀態
+
+  useEffect(() => {
+    // 撈取商品資料
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('http://localhost:3005/api/home/products') // 假設你的 API 端點為 /api/products
+        const data = await response.json()
+
+        if (response.ok) {
+          setProducts(data.products) // 假設 API 返回的資料結構中包含 `products` 陣列
+        } else {
+          console.error('Failed to fetch products:', data.message)
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error)
+      }
+    }
+
+    fetchProducts()
+  }, []) // [] 確保只在組件掛載時撈取資料
+
   return (
     <>
       <div className={styles['bg-video-box']}>
@@ -408,10 +432,13 @@ export default function Home() {
                 <h6>方便快捷的預訂流程，讓您無憂享受麻將樂趣。</h6>
               </div>
             </div>
-            <div className={`${styles['btn-more']} d-flex align-items-center`}>
+            <Link
+              href="/lobby/Entrance"
+              className={`${styles['btn-more']} d-flex align-items-center`}
+            >
               <p>立即查看</p>
               <i className={`${styles['edit-icon']}`}></i>
-            </div>
+            </Link>
           </div>
           <div
             className={`${styles['room-image-box-bo']} ${styles['room-image-box-up-bo']} d-flex flex-row flex-md-column justify-content-center align-items-center`}
@@ -606,7 +633,8 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div
+                <Link
+                  href="/product/productList?category_id=1"
                   className={`${styles['text-more-bo']} d-flex justify-content-center align-items-center`}
                 >
                   <p className="h6 d-none d-sm-block">查看更多麻將商品</p>
@@ -616,7 +644,7 @@ export default function Home() {
                   >
                     <FaArrowRight className={styles['more-mini-icon']} />
                   </div>
-                </div>
+                </Link>
               </div>
             </div>
             <div
@@ -636,106 +664,33 @@ export default function Home() {
                   <FaArrowRight className={styles['btn-move-card-left-bo']} />
                 </div>
               </div>
-              <div
-                className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
-              >
-                <div className={styles['imgBox']}>
-                  <img src="/images/boyu/product/product.png" alt="" />
-                </div>
-                <div className={`${styles['cardBody']} text-center`}>
-                  <div
-                    className={`${styles['productName']} d-flex flex-column justify-content-center align-items-center text-center`}
-                  >
-                    <p className="h6">東方不敗</p>
-                    <p
-                      className={`${styles['productDescription']} h6 d-flex justify-content-center align-items-center text-center`}
-                    >
-                      132東方無聲派-33mm
-                    </p>
-                    <p className="h6">NT$ 1,900</p>
+              {products.map((product) => (
+                <Link
+                  href={`/product/${product.id}`}
+                  key={product.id}
+                  className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
+                >
+                  <div className={styles['imgBox']}>
+                    <img
+                      src={`/images/product/${product.img}`}
+                      alt={product.name}
+                    />
                   </div>
-                </div>
-              </div>
-              <div
-                className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
-              >
-                <div className={styles['imgBox']}>
-                  <img src="/images/boyu/product/product.png" alt="" />
-                </div>
-                <div className={`${styles['cardBody']} text-center`}>
-                  <div
-                    className={`${styles['productName']} d-flex flex-column justify-content-center align-items-center text-center`}
-                  >
-                    <p className="h6">東方不敗</p>
-                    <p
-                      className={`${styles['productDescription']} h6 d-flex justify-content-center align-items-center text-center`}
+                  <div className={`${styles['cardBody']} text-center`}>
+                    <div
+                      className={`${styles['productName']} d-flex flex-column justify-content-center align-items-center text-center`}
                     >
-                      132東方無聲派-33mm
-                    </p>
-                    <p className="h6">NT$ 1,900</p>
+                      <p className="h6"> {product.brand_name}</p>
+                      <p
+                        className={`${styles['productDescription']} h6 d-flex justify-content-center align-items-center text-center`}
+                      >
+                        {product.product_name}
+                      </p>
+                      <p className="h6">NT$ {product.price}</p>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div
-                className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
-              >
-                <div className={styles['imgBox']}>
-                  <img src="/images/boyu/product/product.png" alt="" />
-                </div>
-                <div className={`${styles['cardBody']} text-center`}>
-                  <div
-                    className={`${styles['productName']} d-flex flex-column justify-content-center align-items-center text-center`}
-                  >
-                    <p className="h6">東方不敗</p>
-                    <p
-                      className={`${styles['productDescription']} h6 d-flex justify-content-center align-items-center text-center`}
-                    >
-                      132東方無聲派-33mm
-                    </p>
-                    <p className="h6">NT$ 1,900</p>
-                  </div>
-                </div>
-              </div>
-              <div
-                className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
-              >
-                <div className={styles['imgBox']}>
-                  <img src="/images/boyu/product/product.png" alt="" />
-                </div>
-                <div className={`${styles['cardBody']} text-center`}>
-                  <div
-                    className={`${styles['productName']} d-flex flex-column justify-content-center align-items-center text-center`}
-                  >
-                    <p className="h6">東方不敗</p>
-                    <p
-                      className={`${styles['productDescription']} h6 d-flex justify-content-center align-items-center text-center`}
-                    >
-                      132東方無聲派-33mm
-                    </p>
-                    <p className="h6">NT$ 1,900</p>
-                  </div>
-                </div>
-              </div>
-              <div
-                className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
-              >
-                <div className={styles['imgBox']}>
-                  <img src="/images/boyu/product/product.png" alt="" />
-                </div>
-                <div className={`${styles['cardBody']} text-center`}>
-                  <div
-                    className={`${styles['productName']} d-flex flex-column justify-content-center align-items-center text-center`}
-                  >
-                    <p className="h6">東方不敗</p>
-                    <p
-                      className={`${styles['productDescription']} h6 d-flex justify-content-center align-items-center text-center`}
-                    >
-                      132東方無聲派-33mm
-                    </p>
-                    <p className="h6">NT$ 1,900</p>
-                  </div>
-                </div>
-              </div>
+                </Link>
+              ))}
             </div>
           </div>
           <div
@@ -760,7 +715,8 @@ export default function Home() {
                     <p className="h6">享受智慧與樂趣的完美結合。</p>
                   </div>
                 </div>
-                <div
+                <Link
+                  href="/product/productList?category_id=5"
                   className={`${styles['text-more-bo']} d-flex justify-content-center align-items-center`}
                 >
                   <p className="h6 d-none d-sm-block">查看更多桌遊商品</p>
@@ -771,7 +727,7 @@ export default function Home() {
                   >
                     <FaArrowRight className={styles['more-mini-icon']} />
                   </div>
-                </div>
+                </Link>
               </div>
             </div>
             <div
@@ -791,106 +747,33 @@ export default function Home() {
                   <FaArrowRight className={styles['btn-move-card-left-bo']} />
                 </div>
               </div>
-              <div
-                className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
-              >
-                <div className={styles['imgBox']}>
-                  <img src="/images/boyu/product/product1.jpg" alt="" />
-                </div>
-                <div className={`${styles['cardBody']} text-center`}>
-                  <div
-                    className={`${styles['productName']} d-flex flex-column justify-content-center align-items-center text-center`}
-                  >
-                    <p className="h6">高竹嵐</p>
-                    <p
-                      className={`${styles['productDescription']} h6 d-flex justify-content-center align-items-center text-center`}
-                    >
-                      矮人十兄弟
-                    </p>
-                    <p className="h6">NT$ 400</p>
+              {products.map((product) => (
+                <Link
+                  href={`/product/${product.id}`}
+                  key={product.id}
+                  className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
+                >
+                  <div className={styles['imgBox']}>
+                    <img
+                      src={`/images/product/${product.img}`}
+                      alt={product.name}
+                    />
                   </div>
-                </div>
-              </div>
-              <div
-                className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
-              >
-                <div className={styles['imgBox']}>
-                  <img src="/images/boyu/product/product1.jpg" alt="" />
-                </div>
-                <div className={`${styles['cardBody']} text-center`}>
-                  <div
-                    className={`${styles['productName']} d-flex flex-column justify-content-center align-items-center text-center`}
-                  >
-                    <p className="h6">高竹嵐</p>
-                    <p
-                      className={`${styles['productDescription']} h6 d-flex justify-content-center align-items-center text-center`}
+                  <div className={`${styles['cardBody']} text-center`}>
+                    <div
+                      className={`${styles['productName']} d-flex flex-column justify-content-center align-items-center text-center`}
                     >
-                      矮人十兄弟
-                    </p>
-                    <p className="h6">NT$ 400</p>
+                      <p className="h6"> {product.brand_name}</p>
+                      <p
+                        className={`${styles['productDescription']} h6 d-flex justify-content-center align-items-center text-center`}
+                      >
+                        {product.product_name}
+                      </p>
+                      <p className="h6">NT$ {product.price}</p>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div
-                className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
-              >
-                <div className={styles['imgBox']}>
-                  <img src="/images/boyu/product/product1.jpg" alt="" />
-                </div>
-                <div className={`${styles['cardBody']} text-center`}>
-                  <div
-                    className={`${styles['productName']} d-flex flex-column justify-content-center align-items-center text-center`}
-                  >
-                    <p className="h6">高竹嵐</p>
-                    <p
-                      className={`${styles['productDescription']} h6 d-flex justify-content-center align-items-center text-center`}
-                    >
-                      矮人十兄弟
-                    </p>
-                    <p className="h6">NT$ 400</p>
-                  </div>
-                </div>
-              </div>
-              <div
-                className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
-              >
-                <div className={styles['imgBox']}>
-                  <img src="/images/boyu/product/product1.jpg" alt="" />
-                </div>
-                <div className={`${styles['cardBody']} text-center`}>
-                  <div
-                    className={`${styles['productName']} d-flex flex-column justify-content-center align-items-center text-center`}
-                  >
-                    <p className="h6">高竹嵐</p>
-                    <p
-                      className={`${styles['productDescription']} h6 d-flex justify-content-center align-items-center text-center`}
-                    >
-                      矮人十兄弟
-                    </p>
-                    <p className="h6">NT$ 400</p>
-                  </div>
-                </div>
-              </div>
-              <div
-                className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
-              >
-                <div className={styles['imgBox']}>
-                  <img src="/images/boyu/product/product1.jpg" alt="" />
-                </div>
-                <div className={`${styles['cardBody']} text-center`}>
-                  <div
-                    className={`${styles['productName']} d-flex flex-column justify-content-center align-items-center text-center`}
-                  >
-                    <p className="h6">高竹嵐</p>
-                    <p
-                      className={`${styles['productDescription']} h6 d-flex justify-content-center align-items-center text-center`}
-                    >
-                      矮人十兄弟
-                    </p>
-                    <p className="h6">NT$ 400</p>
-                  </div>
-                </div>
-              </div>
+                </Link>
+              ))}
             </div>
           </div>
         </section>
