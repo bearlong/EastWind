@@ -76,7 +76,7 @@ export default function Header() {
         className={`${styles['header-bo']} fixed-top container-fluid sticky-top py-3`}
       >
         <div
-          className={`${styles['header-box-bo']}  container-fluid d-flex justify-content-between align-items-center ${styles['nav-bar-bo']}`}
+          className={`${styles['header-box-bo']}  container-fluid d-flex justify-content-between align-items-center`}
         >
           <div className={styles['logo-box-bo']}>
             <Link href="/home">
@@ -87,7 +87,7 @@ export default function Header() {
               />
             </Link>
           </div>
-          <nav className={styles['nav-bar-bo']}>
+          <nav className={`${styles['nav-bar-bo']}  `}>
             <ul
               className={`d-flex justify-content-center align-items-center ${styles['nav-list-bo']}`}
             >

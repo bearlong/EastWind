@@ -215,6 +215,7 @@ export default function Register() {
           },
           confirmButtonText: '確認', // 修改按鈕文字
         })
+        router.push('/login') // 跳轉到優惠券頁面
       } else {
         setEmailError(result.message)
       }

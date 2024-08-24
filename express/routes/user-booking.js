@@ -45,6 +45,7 @@ router.get('/:userId', async (req, res) => {
 
 router.get('/:userId/:status', async (req, res) => {
   const { userId, status } = req.params
+  const { search } = req.query // 取得搜尋關鍵字
 
   if (!userId || !status) {
     return res
@@ -53,7 +54,7 @@ router.get('/:userId/:status', async (req, res) => {
   }
 
   try {
-    const query = `
+    let query = `
        SELECT 
           booking_record.id,
           booking_record.numerical_order as order_number,
@@ -70,7 +71,7 @@ router.get('/:userId/:status', async (req, res) => {
           mahjong_table.id AS table_id,
           mahjong_table.company_id AS company_id,
           company.name AS company_name,
-          company.tele AS company_tele,  -- 公司電話
+          company.tele AS company_tele,
           company.address AS company_address,
           user.username AS username,
           (SELECT COUNT(*) FROM mahjong_table WHERE company_id = company.id AND id <= mahjong_table.id) AS table_number
@@ -84,11 +85,25 @@ router.get('/:userId/:status', async (req, res) => {
           user ON booking_record.user_id = user.id
       WHERE 
           booking_record.user_id = ? AND booking_record.status = ?
+    `
+
+    // 如果有搜尋關鍵字，添加搜尋條件
+    if (search) {
+      query +=
+        ' AND (company.name LIKE ? OR booking_record.numerical_order LIKE ?)'
+    }
+
+    query += `
       ORDER BY 
           booking_record.date DESC,
           booking_record.start_time DESC;
     `
-    const [bookings] = await connection.execute(query, [userId, status])
+
+    const queryParams = search
+      ? [userId, status, `%${search}%`, `%${search}%`]
+      : [userId, status]
+
+    const [bookings] = await connection.execute(query, queryParams)
     res.status(200).json({ status: 'success', data: { bookings } })
   } catch (err) {
     console.error('Database query failed:', err.stack || err.message)

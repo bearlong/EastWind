@@ -82,13 +82,14 @@
 
 /* 導航項目樣式 */
 .navigation-item-bo {
+  display: none;
   margin: 1rem; /* 設置外邊距 */
 }
 
 /* 導航鏈接樣式 */
 .navigation-link-bo:link,
 .navigation-link-bo:visited {
-  display: inline-block; /* 設置行內塊 */
+  display: none;
   padding: 0.6rem 1.2rem; /* 設置內邊距 */
   color: var(--bg-text-color); /* 設置文字顏色 */
   text-decoration: none; /* 去除文字裝飾 */
@@ -170,4 +171,16 @@
   .navigation-icon-bo::after {
   top: 0; /* 設置距頂部0 */
   transform: rotate(-135deg); /* 設置旋轉角度 */
+}
+
+/* 將所有鏈接項目和鏈接預設隱藏 */
+.navigation-item-bo,
+.navigation-link-bo {
+  display: none;
+}
+
+/* 當復選框被選中時，顯示導航項目和鏈接 */
+.navigation-checkbox-bo:checked ~ .navigation-nav-bo .navigation-item-bo,
+.navigation-checkbox-bo:checked ~ .navigation-nav-bo .navigation-link-bo {
+  display: block; /* 或 inline-block 取決於你的需求 */
 }

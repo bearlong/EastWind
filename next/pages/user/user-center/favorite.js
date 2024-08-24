@@ -14,6 +14,8 @@ export default function UserFavorite() {
   const userId = user?.id
 
   const [favorites, setFavorites] = useState([])
+  const [searchQuery, setSearchQuery] = useState('') // 用來存儲用戶輸入值的狀態
+  const [searchKeyword, setSearchKeyword] = useState('') // 新增搜尋關鍵字狀態
 
   // 當 activeTab 改變時從後端獲取對應的最愛資料
   useEffect(() => {
@@ -23,7 +25,9 @@ export default function UserFavorite() {
 
       try {
         const response = await fetch(
-          `http://localhost:3005/api/user-favorite/${userId}/${activeTab}`
+          `http://localhost:3005/api/user-favorite/${userId}/${activeTab}?search=${encodeURIComponent(
+            searchKeyword
+          )}`
         )
         const result = await response.json()
 
@@ -40,7 +44,22 @@ export default function UserFavorite() {
     if (userId) {
       fetchFavorites()
     }
-  }, [activeTab, userId])
+  }, [activeTab, searchKeyword, userId])
+
+  const triggerSearch = () => {
+    setSearchKeyword(searchQuery) // 當按下搜尋按鈕時，將用戶輸入的值賦予 searchKeyword
+  }
+
+  // 當輸入框內容改變時執行的函數
+  const searchInputChange = (e) => {
+    const inputValue = e.target.value
+    setSearchQuery(inputValue)
+
+    // 如果輸入框為空，觸發顯示所有最愛的動作
+    if (inputValue === '') {
+      setSearchKeyword('') // 重設為空字串以顯示所有最愛
+    }
+  }
 
   const removeFavorite = async (favoriteId) => {
     const result = await Swal.fire({
@@ -98,6 +117,25 @@ export default function UserFavorite() {
 
   return (
     <div className={`${styles['user-favorite-box-bo']} w-100`}>
+      <div
+        className={`${styles['search-box-bo']} d-flex flex-column flex-sm-row justify-content-center align-items-center gap-lg-4 gap-3 `}
+      >
+        <h6>搜尋最愛</h6>
+        <input
+          type="text"
+          placeholder="請輸入關鍵字"
+          className={`${styles['input-search-bo']} p`}
+          value={searchQuery} // 綁定搜尋關鍵字
+          onChange={searchInputChange} // 更新搜尋關鍵字並監聽輸入
+        />
+        <button
+          className={`${styles['btn-search']} h6 d-flex justify-content-between align-items-center`}
+          onClick={triggerSearch} // 點擊後觸發搜尋
+        >
+          <FaMagnifyingGlass />
+        </button>
+      </div>
+
       <div className={`${styles['favorite-list-box-bo']} flex-column d-flex`}>
         <div className={styles['favorite-list-head-bo']}>
           <ul
@@ -256,15 +294,6 @@ export default function UserFavorite() {
                       className={`${styles['company-card-body-bo']} d-flex justify-content-center align-items-center w-100`}
                     >
                       <div className={styles['company-img-box-bo']}>
-                        {/* <img
-                          className={styles['company-img-bo']}
-                          src={
-                            favorite.image
-                              ? `/images/company/${favorite.image}`
-                              : `/images/company/room-default.jpg`
-                          } // 如果沒有圖片則顯示預設圖片
-                          alt={favorite.name}
-                        /> */}
                         <img
                           src={`/images/company/room-default.jpg`}
                           alt={favorite.name}
