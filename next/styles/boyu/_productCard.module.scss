@@ -2,12 +2,17 @@
 
 /* 設置產品卡片的樣式 */
 .productCard {
+  height: auto;
   cursor: pointer;
-  width: 29rem; /* 設置產品卡片的寬度為 29rem */
+  width: 28rem; /* 設置產品卡片的寬度為 29rem */
   position: relative; /* 設置產品卡片的相對定位 */
   color: var(--bg-text-color);
+
   @media (max-width: 768px) {
-    width: 24rem;
+    width: 23rem;
+  }
+  @media (max-width: 576px) {
+    width: 20rem;
   }
 
   img {
@@ -20,9 +25,6 @@
     img {
       transform: scale(1.05);
       transition: transform 0.4s ease; /* 添加過渡效果 */
-      object-fit: cover;
-      height: 100%;
-      width: 100%;
     }
 
     p {
@@ -73,9 +75,9 @@
 
       /* 設置產品描述的樣式 */
       .productDescription {
-        margin: 1.2rem 0;
-        min-height: calc(1.2em * 2); /* 設置產品描述的最小高度為 1.2em 的兩倍 */
-        line-height: 1.4em; /* 設置產品描述的行高為 1.2em */
+        margin: 0.6rem 0;
+        min-height: calc(1.3em * 2); /* 設置產品描述的最小高度為 1.2em 的兩倍 */
+        line-height: 1.3em; /* 設置產品描述的行高為 1.2em */
       }
     }
   }

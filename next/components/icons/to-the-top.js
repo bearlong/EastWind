@@ -29,7 +29,7 @@ export default function ToTheTop() {
     <>
       <button
         onClick={handleToTop}
-        className={`${showDiv ? '' : 'd-none'} toTop d-md-none`}
+        className={`${showDiv ? '' : 'd-none'} toTop`}
       >
         <FaAngleUp size={20} />
       </button>
