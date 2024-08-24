@@ -25,6 +25,7 @@ import { Toaster } from 'react-hot-toast'
 import { FadeLoader } from 'react-spinners'
 import ProductCard from '@/components/product/productCard'
 import ToTheTop from '@/components/icons/to-the-top'
+import { Autoplay } from 'swiper/modules'
 
 const override = {
   display: 'block',
@@ -384,6 +385,32 @@ export default function ProductList() {
       setFavorite([])
     }
   }, [user])
+  const [autoplay, setAutoplay] = useState({
+    delay: 2500,
+    disableOnInteraction: false,
+  })
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 992) {
+        setAutoplay({
+          delay: 2500,
+          disableOnInteraction: false,
+        })
+      } else {
+        setAutoplay(false)
+      }
+    }
+
+    // 初始檢查
+    handleResize()
+
+    // 當視窗大小改變時重新檢查
+    window.addEventListener('resize', handleResize)
+
+    // 清除事件監聽器
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   return (
     <>
@@ -398,6 +425,7 @@ export default function ProductList() {
               <Swiper
                 spaceBetween={10}
                 slidesPerView={1}
+                autoplay={autoplay}
                 direction="horizontal"
                 autoHeight={true}
                 loop={false}
@@ -406,6 +434,7 @@ export default function ProductList() {
                   992: { slidesPerView: 3, spaceBetween: 30 },
                   1200: { slidesPerView: 4, spaceBetween: 40 },
                 }}
+                modules={[Autoplay]}
               >
                 {products.top.map((product, i) => {
                   return (

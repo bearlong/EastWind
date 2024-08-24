@@ -295,6 +295,9 @@ export default function Cart({
                     user && cart.length > 0 ? '' : 'd-none'
                   }`}
                   href={'/checkout'}
+                  onClick={() => {
+                    handleClose()
+                  }}
                 >
                   <h5>現在付款</h5>
                 </Link>

@@ -457,6 +457,11 @@
   .product-header-bl {
     .subBar-bl {
       padding: 2rem 0;
+      .subNav {
+        &:hover + .subBarBody-bl {
+          display: none;
+        }
+      }
     }
   }
 
