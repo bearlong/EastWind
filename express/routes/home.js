@@ -8,7 +8,6 @@ const router = express.Router()
 const upload = multer()
 
 // 設定CORS白名單和選項
-// 允許特定來源的請求，並配置CORS選項以允許攜帶憑證（如Cookie）
 const whitelist = ['http://localhost:5500', 'http://localhost:3000']
 const corsOptions = {
   credentials: true,
@@ -21,15 +20,16 @@ const corsOptions = {
   },
 }
 
-const app = express() // 創建Express應用實例
+const app = express()
 
-app.use(cors(corsOptions)) // 使用CORS中間件，應用CORS設置
-app.use(express.json()) // 使用JSON中間件來解析請求體中的JSON資料
+app.use(cors(corsOptions))
+app.use(express.json())
 
 // 撈取商品資料的API
 router.get('/products', async (req, res) => {
   try {
-    const query = `
+    // 隨機選取 category_id 為 1 的 20 筆商品
+    const queryCategory1 = `
       SELECT 
         product.id, 
         product.name AS product_name, 
@@ -44,13 +44,42 @@ router.get('/products', async (req, res) => {
       INNER JOIN 
         brand ON product.brand_id = brand.id
       WHERE 
-        product.category_id IN (1, 5)
+        product.category_id = 1
+      ORDER BY RAND() 
+      LIMIT 20
     `
 
-    const [rows] = await connection.execute(query) // 查詢指定 category_id 的商品資料
+    // 隨機選取 category_id 為 5 的 20 筆商品
+    const queryCategory5 = `
+      SELECT 
+        product.id, 
+        product.name AS product_name, 
+        product.price, 
+        product.img,
+        product_category.name AS category_name, 
+        brand.name AS brand_name
+      FROM 
+        product 
+      INNER JOIN 
+        product_category ON product.category_id = product_category.id 
+      INNER JOIN 
+        brand ON product.brand_id = brand.id
+      WHERE 
+        product.category_id = 5
+      ORDER BY RAND() 
+      LIMIT 20
+    `
+
+    // 執行兩個查詢
+    const [rowsCategory1] = await connection.execute(queryCategory1)
+    const [rowsCategory5] = await connection.execute(queryCategory5)
+
+    // 合併結果
+    const products = [...rowsCategory1, ...rowsCategory5]
+
     res.json({
       status: 'success',
-      products: rows,
+      products: products,
     })
   } catch (error) {
     console.error('Error fetching products:', error)

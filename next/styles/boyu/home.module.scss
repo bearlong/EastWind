@@ -46,17 +46,20 @@
 }
 
 .guide-box-bo {
+  overflow: hidden; /* 確保不會顯示多餘的內容 */
+
   gap: 3.6rem;
   position: relative;
   z-index: 2;
 }
 
 .text-more-bo {
+  color: var(--bg-text-color);
   cursor: pointer;
   transition: 0.3s;
   gap: 1.2rem;
   @media (max-width: 576px) {
-    gap: 0.8rem;
+    gap: 0.5rem;
   }
   &:hover {
     color: var(--primary);
@@ -154,7 +157,7 @@
   }
 
   @media (max-width: 768px) {
-    height: auto;
+    height: 100%;
     width: 100vw;
     display: flex;
     justify-content: center;
@@ -185,14 +188,18 @@
 }
 
 .image-up-bo {
-  animation: scrollUp 30s linear infinite;
+  animation: scrollUp 10s linear infinite;
   @media (max-width: 768px) {
-    animation: scrollLeft 30s linear infinite;
+    animation: scrollLeft 10s linear infinite;
+    height: 20rem;
+  }
+  @media (max-width: 576px) {
+    height: 16rem;
   }
 }
 
 .image-down-bo {
-  animation: scrollDown 30s linear infinite;
+  animation: scrollDown 10s linear infinite;
   @media (max-width: 768px) {
     display: none;
   }
@@ -265,19 +272,40 @@
 /* product */
 .product-section-bo {
   z-index: 2; /* 內容在影片層之上 */
-  padding: 6.4rem 6.4rem 8rem 6.4rem;
+  padding: 6.4rem 0 8rem;
+
   color: var(--bg-text-color);
   gap: 6.4rem;
-  overflow: hidden;
+
   position: relative;
   background-color: var(--background); /* 底層背景顏色 */
 
   @media (max-width: 768px) {
-    padding: 6.4rem 2.4rem 8rem 2.4rem;
+    padding: 6.4rem 0 8rem;
     gap: 3.6rem;
   }
   @media (max-width: 576px) {
-    padding: 3.6rem 2.4rem 4.8rem 2.4rem;
+    padding: 3.6rem 0 4.8rem;
+  }
+}
+
+.product-text-box-bo {
+  padding: 0 11.2rem;
+
+  @media (max-width: 1200px) {
+    padding: 0 8rem;
+  }
+
+  @media (max-width: 992px) {
+    padding: 0 6rem;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0 4.8rem;
+  }
+
+  @media (max-width: 576px) {
+    padding: 0 2.4rem;
   }
 }
 
@@ -326,11 +354,15 @@
   }
 }
 
-.move-card-btn-box {
+.move-card-btn-right-box,
+.move-card-btn-left-box {
+  position: absolute;
+  left: -0.5rem;
+
   width: 8rem;
   height: 8rem;
   border-radius: 50%;
-  border: 3px solid var(--primary);
+  border: 4px solid var(--primary);
   cursor: pointer;
   transition: 0.3s;
 
@@ -338,7 +370,6 @@
     color: var(--primary-dark);
     border-color: var(--primary-dark);
     background-color: rgba(250, 247, 240, 0.5);
-    transform: translateX(3px);
 
     & .btn-move-card-right-bo,
     & .btn-move-card-left-bo {
@@ -349,6 +380,38 @@
   @media (max-width: 768px) {
     width: 6.4rem;
     height: 6.4rem;
+    left: -0.3rem;
+  }
+}
+
+.move-card-btn-right-box {
+  top: -25rem;
+
+  @media (max-width: 768px) {
+    top: -21rem;
+  }
+
+  @media (max-width: 576px) {
+    top: -10rem;
+    left: 15rem;
+  }
+
+  &:hover {
+    transform: translateX(3px);
+  }
+}
+.move-card-btn-left-box {
+  top: -12rem;
+
+  @media (max-width: 768px) {
+    top: -11rem;
+  }
+  @media (max-width: 576px) {
+    top: -10rem;
+    left: -7rem;
+  }
+  &:hover {
+    transform: translateX(-3px);
   }
 }
 
@@ -415,7 +478,7 @@
 }
 
 .course-box-bo {
-  gap: 14em;
+  gap: 14rem;
   position: relative;
   @media (max-width: 768px) {
     gap: 6.4rem;
@@ -461,4 +524,59 @@
 
 .move-course-btn-box-right-bo {
   right: 0;
+}
+
+.mahjong-card-box-bo {
+  overflow: visible; /* 允許內容超出容器邊界 */
+  transform: translateX(110px); /* 初始偏移 */
+  transition: transform 0.3s ease-in-out;
+
+  @media (max-width: 1200px) {
+    transform: translateX(75px); /* 初始偏移 */
+  }
+
+  @media (max-width: 992px) {
+    transform: translateX(60px); /* 初始偏移 */
+  }
+
+  @media (max-width: 768px) {
+    transform: translateX(50px); /* 初始偏移 */
+  }
+
+  @media (max-width: 576px) {
+    transform: translateX(80px); /* 初始偏移 */
+  }
+}
+
+.boardGame-card-box-bo {
+  overflow: visible; /* 允許內容超出容器邊界 */
+  transform: translateX(-110px); /* 初始偏移（向右） */
+  transition: transform 0.3s ease-in-out;
+
+  @media (max-width: 1200px) {
+    transform: translateX(-75px); /* 初始偏移 */
+  }
+
+  @media (max-width: 992px) {
+    transform: translateX(-60px); /* 初始偏移 */
+  }
+
+  @media (max-width: 768px) {
+    transform: translateX(-50px); /* 初始偏移 */
+  }
+
+  @media (max-width: 576px) {
+    transform: translateX(-80px); /* 初始偏移 */
+  }
+}
+
+.swiper-container {
+  overflow: visible !important; /* 確保 swiper 容器允許內容超出邊界 */
+  width: 100%;
+}
+
+.swiper-slide {
+  flex-shrink: 0;
+  height: 100%;
+  width: auto !important;
 }
