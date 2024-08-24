@@ -8,10 +8,18 @@ import 'swiper/css/navigation'
 import { Navigation } from 'swiper/modules'
 
 export default function Home() {
-  const [products, setProducts] = useState([]) // 儲存商品資料的狀態
+  const [mahjongProducts, setMahjongProducts] = useState([])
+  const [boardGameProducts, setBoardGameProducts] = useState([])
   const [isClient, setIsClient] = useState(false)
   const [swiperReady, setSwiperReady] = useState(false) // 控制 Swiper 是否已經就緒
-
+  const [mahjongSwiperState, setMahjongSwiperState] = useState({
+    isLastSlide: false,
+    isFirstSlide: true,
+  })
+  const [boardGameSwiperState, setBoardGameSwiperState] = useState({
+    isLastSlide: false,
+    isFirstSlide: true,
+  })
   useEffect(() => {
     setIsClient(true) // 在客戶端渲染時設置為 true
   }, [])
@@ -60,15 +68,23 @@ export default function Home() {
     (_, index) => `/images/boyu/rooms/room${index + 1}.jpg`
   )
 
+  // 課程資料數組
+  const courses = [
+    { title: '麻將', description: '智慧與運氣的完美結合。' },
+    { title: '西洋棋', description: '策略與智力的精彩對決。' },
+    { title: '撲克牌', description: '簡單易學，挑戰無限。' },
+    { title: '圍棋', description: '黑白交錯，古老智慧。' },
+    { title: '象棋', description: '車馬交鋒，運籌帷幄。' },
+  ]
+
   useEffect(() => {
-    // 撈取商品資料
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://localhost:3005/api/home/products') // 假設你的 API 端點為 /api/products
+        const response = await fetch('http://localhost:3005/api/home/products')
         const data = await response.json()
-
         if (response.ok) {
-          setProducts(data.products) // 假設 API 返回的資料結構中包含 `products` 陣列
+          setMahjongProducts(data.mahjongProducts)
+          setBoardGameProducts(data.boardGameProducts)
         } else {
           console.error('Failed to fetch products:', data.message)
         }
@@ -78,7 +94,7 @@ export default function Home() {
     }
 
     fetchProducts()
-  }, []) // [] 確保只在組件掛載時撈取資料
+  }, [])
 
   useEffect(() => {
     setSwiperReady(true) // Swiper 就緒後設置為 true
@@ -281,7 +297,7 @@ export default function Home() {
               className={`${styles['product-text-box-bo']}   d-flex gap-5 flex-column`}
             >
               <div
-                className={`${styles['product-text-body-bo']} d-flex justify-content-between`}
+                className={`${styles['product-text-body-bo']} gap-2 d-flex justify-content-between`}
               >
                 <div
                   className={`${styles['product-title-box-bo']} gap-3 d-flex flex-column justify-content-center align-items-start`}
@@ -302,7 +318,7 @@ export default function Home() {
                   className={`${styles['text-more-bo']} d-flex justify-content-center align-items-center`}
                 >
                   <p className="h6 d-none d-sm-block">查看更多麻將商品</p>
-                  <p className="h6 d-block d-sm-none">查看更多</p>
+                  <p className="h6 d-block d-sm-none  text-nowrap">查看更多</p>
                   <div
                     className={`${styles['btn-more-mini']} d-flex justify-content-center align-items-center`}
                   >
@@ -319,13 +335,23 @@ export default function Home() {
               >
                 <div
                   id="swiper-next-mahjong"
-                  className={`${styles['move-card-btn-left-box']} d-flex justify-content-center align-items-center`}
+                  className={`${styles['move-card-btn-left-box']}  
+                  ${
+                    mahjongSwiperState.isLastSlide
+                      ? styles['disabled-button']
+                      : ''
+                  } d-flex justify-content-center align-items-center`}
                 >
                   <FaArrowLeft className={styles['btn-move-card-left-bo']} />
                 </div>
                 <div
                   id="swiper-prev-mahjong"
-                  className={`${styles['move-card-btn-right-box']} d-flex justify-content-center align-items-center`}
+                  className={`${styles['move-card-btn-right-box']}
+                   ${
+                     mahjongSwiperState.isFirstSlide
+                       ? styles['disabled-button']
+                       : ''
+                   } d-flex justify-content-center align-items-center`}
                 >
                   <FaArrowRight className={styles['btn-move-card-right-bo']} />
                 </div>
@@ -333,7 +359,6 @@ export default function Home() {
 
               {swiperReady && (
                 <Swiper
-                  // spaceBetween={28}
                   slidesPerView={'auto'} /* 根據內容自動調整寬度 */
                   navigation={{
                     prevEl: '#swiper-prev-mahjong',
@@ -353,8 +378,15 @@ export default function Home() {
                     },
                   }}
                   className={`${styles['swiper-container']}`} // 新增這一行
+                  onSlideChange={(swiper) => {
+                    // 更新狀態以判斷是否到達最後或第一張滑動
+                    setMahjongSwiperState({
+                      isLastSlide: swiper.isEnd,
+                      isFirstSlide: swiper.isBeginning,
+                    })
+                  }}
                 >
-                  {products.map((product) => (
+                  {mahjongProducts.map((product) => (
                     <SwiperSlide
                       key={product.id}
                       className={`${styles['swiper-slide']}`}
@@ -385,6 +417,10 @@ export default function Home() {
                       </Link>
                     </SwiperSlide>
                   ))}
+                  {/* 加入空白卡片 */}
+                  <SwiperSlide className={`${styles['swiper-slide']} `}>
+                    <div className={` ${styles['empty-slide']}`}></div>
+                  </SwiperSlide>
                 </Swiper>
               )}
             </div>
@@ -396,7 +432,7 @@ export default function Home() {
               className={`${styles['product-text-box-bo']} d-flex gap-5 flex-column`}
             >
               <div
-                className={`${styles['product-text-body-bo']} d-flex justify-content-between`}
+                className={`${styles['product-text-body-bo']}  gap-1 d-flex justify-content-between`}
               >
                 <div
                   className={`${styles['product-title-box-bo']} gap-3 d-flex flex-column justify-content-center align-items-start`}
@@ -417,7 +453,7 @@ export default function Home() {
                   className={`${styles['text-more-bo']} d-flex justify-content-center align-items-center`}
                 >
                   <p className="h6 d-none d-sm-block">查看更多桌遊商品</p>
-                  <p className="h6 d-block d-sm-none">查看更多</p>
+                  <p className="h6 d-block d-sm-none text-nowrap">查看更多</p>
                   <div
                     className={`${styles['btn-more-mini']} d-flex justify-content-center align-items-center`}
                   >
@@ -434,20 +470,32 @@ export default function Home() {
               >
                 <div
                   id="swiper-prev-boardGame"
-                  className={`${styles['move-card-btn-left-box']} d-flex justify-content-center align-items-center`}
+                  className={`${styles['move-card-btn-left-box']} ${
+                    styles['move-boardGame-btn-left-box']
+                  } ${
+                    boardGameSwiperState.isFirstSlide
+                      ? styles['disabled-button']
+                      : ''
+                  }  d-flex justify-content-center align-items-center`}
                 >
                   <FaArrowLeft className={styles['btn-move-card-left-bo']} />
                 </div>
                 <div
                   id="swiper-next-boardGame"
-                  className={`${styles['move-card-btn-right-box']} d-flex justify-content-center align-items-center`}
+                  className={`${styles['move-card-btn-right-box']}  ${
+                    styles['move-boardGame-btn-right-box']
+                  } ${
+                    boardGameSwiperState.isLastSlide
+                      ? styles['disabled-button']
+                      : ''
+                  } d-flex justify-content-center align-items-center`}
                 >
                   <FaArrowRight className={styles['btn-move-card-right-bo']} />
                 </div>
               </div>
-
               {swiperReady && (
                 <Swiper
+                  style={{ transform: 'scaleX(-1)' }} // 反轉滑動容器
                   slidesPerView={'auto'} /* 根據內容自動調整寬度 */
                   navigation={{
                     prevEl: '#swiper-prev-boardGame',
@@ -467,9 +515,17 @@ export default function Home() {
                     },
                   }}
                   className={`${styles['swiper-container']}`} // 新增這一行
+                  onSlideChange={(swiper) => {
+                    // 更新狀態以判斷是否到達最後或第一張滑動
+                    setBoardGameSwiperState({
+                      isLastSlide: swiper.isEnd,
+                      isFirstSlide: swiper.isBeginning,
+                    })
+                  }}
                 >
-                  {products.map((product) => (
+                  {boardGameProducts.map((product) => (
                     <SwiperSlide
+                      style={{ transform: 'scaleX(-1)' }} // 反轉滑動容器
                       key={product.id}
                       className={`${styles['swiper-slide']}`}
                     >
@@ -499,6 +555,10 @@ export default function Home() {
                       </Link>
                     </SwiperSlide>
                   ))}
+                  {/* 加入空白卡片 */}
+                  <SwiperSlide className={`${styles['swiper-slide']} `}>
+                    <div className={` ${styles['empty-slide']}`}></div>
+                  </SwiperSlide>
                 </Swiper>
               )}
             </div>
@@ -538,7 +598,7 @@ export default function Home() {
             </div>
           </div>
           <div
-            className={`${styles['guide-box-bo']} ${styles['course-box-bo']} container-xl d-flex flex-column justify-content-center`}
+            className={`${styles['guide-box-bo']} ${styles['course-box-bo']} container-fluid d-flex flex-column justify-content-center`}
           >
             <div
               className={`${styles['course-text-body-bo']} d-flex justify-content-between`}
@@ -552,126 +612,46 @@ export default function Home() {
                 </div>
               </div>
 
-              <div
+              <Link
+                href="/course/classList"
                 className={`${styles['text-more-bo']} d-flex justify-content-center align-items-center`}
               >
                 <p className="h6 d-none d-sm-block">查看更多線上課程</p>
-                <p className="h6 d-block d-sm-none">查看更多</p>
+                <p className="h6 d-block d-sm-none text-nowrap">查看更多</p>
 
                 <div
                   className={`${styles['btn-more-mini']} d-flex justify-content-center align-items-center`}
                 >
                   <FaArrowRight className={styles['more-mini-icon']} />
                 </div>
-              </div>
+              </Link>
             </div>
             <div
               className={`${styles['course-card-box-bo']} d-flex justify-content-center align-items-center`}
             >
-              <div
-                className={`${styles['course-card-bo']} justify-content-center align-items-center`}
-              >
+              {courses.map((course, index) => (
                 <div
-                  className={`${styles['course-card-front-bo']} d-flex flex-column justify-content-end`}
+                  key={index}
+                  className={`${styles['course-card-bo']} justify-content-center align-items-center`}
                 >
                   <div
-                    className={`${styles['course-card-body-bo']} d-flex flex-column gap-3`}
+                    className={`${styles['course-card-front-bo']} d-flex flex-column justify-content-end`}
                   >
-                    <h5>麻將</h5>
-                    <p>智慧與運氣的完美結合。</p>
                     <div
-                      className={`${styles['course-more']} d-flex justify-content-end align-items-center`}
+                      className={`${styles['course-card-body-bo']} d-flex flex-column gap-3`}
                     >
-                      <i className={`${styles['edit-icon']}`}></i>
+                      <h5>{course.title}</h5>
+                      <p>{course.description}</p>
+                      <div
+                        className={`${styles['course-more']} d-flex justify-content-end align-items-center`}
+                      >
+                        <i className={`${styles['edit-icon']}`}></i>
+                      </div>
                     </div>
                   </div>
+                  <div className={styles['course-card-back-bo']}></div>
                 </div>
-                <div className={styles['course-card-back-bo']}></div>
-              </div>
-
-              <div
-                className={`${styles['course-card-bo']} justify-content-center align-items-center`}
-              >
-                <div
-                  className={`${styles['course-card-front-bo']} d-flex flex-column justify-content-end`}
-                >
-                  <div
-                    className={`${styles['course-card-body-bo']} d-flex flex-column gap-3`}
-                  >
-                    <h5>西洋棋</h5>
-                    <p>策略與智力的精彩對決。</p>
-                    <div
-                      className={`${styles['course-more']} d-flex justify-content-end align-items-center`}
-                    >
-                      <i className={`${styles['edit-icon']}`}></i>
-                    </div>
-                  </div>
-                </div>
-                <div className={styles['course-card-back-bo']}></div>
-              </div>
-
-              <div
-                className={`${styles['course-card-bo']} justify-content-center align-items-center`}
-              >
-                <div
-                  className={`${styles['course-card-front-bo']} d-flex flex-column justify-content-end`}
-                >
-                  <div
-                    className={`${styles['course-card-body-bo']} d-flex flex-column gap-3`}
-                  >
-                    <h5>撲克牌</h5>
-                    <p>簡單易學，挑戰無限。</p>
-                    <div
-                      className={`${styles['course-more']} d-flex justify-content-end align-items-center`}
-                    >
-                      <i className={`${styles['edit-icon']}`}></i>
-                    </div>
-                  </div>
-                </div>
-                <div className={styles['course-card-back-bo']}></div>
-              </div>
-
-              <div
-                className={`${styles['course-card-bo']} justify-content-center align-items-center`}
-              >
-                <div
-                  className={`${styles['course-card-front-bo']} d-flex flex-column justify-content-end`}
-                >
-                  <div
-                    className={`${styles['course-card-body-bo']} d-flex flex-column gap-3`}
-                  >
-                    <h5>圍棋</h5>
-                    <p>黑白交錯，古老智慧。</p>
-                    <div
-                      className={`${styles['course-more']} d-flex justify-content-end align-items-center`}
-                    >
-                      <i className={`${styles['edit-icon']}`}></i>
-                    </div>
-                  </div>
-                </div>
-                <div className={styles['course-card-back-bo']}></div>
-              </div>
-
-              <div
-                className={`${styles['course-card-bo']} justify-content-center align-items-center`}
-              >
-                <div
-                  className={`${styles['course-card-front-bo']} d-flex flex-column justify-content-end`}
-                >
-                  <div
-                    className={`${styles['course-card-body-bo']} d-flex flex-column gap-3`}
-                  >
-                    <h5>象棋</h5>
-                    <p>車馬交鋒，運籌帷幄。</p>
-                    <div
-                      className={`${styles['course-more']} d-flex justify-content-end align-items-center`}
-                    >
-                      <i className={`${styles['edit-icon']}`}></i>
-                    </div>
-                  </div>
-                </div>
-                <div className={styles['course-card-back-bo']}></div>
-              </div>
+              ))}
 
               <div className="course-card-btn-bo d-block d-md-none d-flex gap-5">
                 <div

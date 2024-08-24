@@ -108,7 +108,10 @@ export default function Header() {
                 </Link>
               </li>
               <li>
-                <Link className={`h6 ${styles['nav-link-bo']}`} href="">
+                <Link
+                  href="/course/classList"
+                  className={`h6 ${styles['nav-link-bo']}`}
+                >
                   線上課程
                 </Link>
               </li>
@@ -203,7 +206,7 @@ export default function Header() {
                         </li>
                         <li className={styles['navigation-item-bo']}>
                           <Link
-                            href="#"
+                            href="/course/classList"
                             className={`h6 ${styles['navigation-link-bo']}`}
                             onClick={onLinkClick} // 監聽點擊事件
                           >

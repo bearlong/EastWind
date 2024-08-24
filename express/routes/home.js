@@ -28,7 +28,6 @@ app.use(express.json())
 // 撈取商品資料的API
 router.get('/products', async (req, res) => {
   try {
-    // 隨機選取 category_id 為 1 的 20 筆商品
     const queryCategory1 = `
       SELECT 
         product.id, 
@@ -36,7 +35,8 @@ router.get('/products', async (req, res) => {
         product.price, 
         product.img,
         product_category.name AS category_name, 
-        brand.name AS brand_name
+        brand.name AS brand_name,
+        product.category_id
       FROM 
         product 
       INNER JOIN 
@@ -49,7 +49,6 @@ router.get('/products', async (req, res) => {
       LIMIT 20
     `
 
-    // 隨機選取 category_id 為 5 的 20 筆商品
     const queryCategory5 = `
       SELECT 
         product.id, 
@@ -57,7 +56,8 @@ router.get('/products', async (req, res) => {
         product.price, 
         product.img,
         product_category.name AS category_name, 
-        brand.name AS brand_name
+        brand.name AS brand_name,
+        product.category_id
       FROM 
         product 
       INNER JOIN 
@@ -70,16 +70,13 @@ router.get('/products', async (req, res) => {
       LIMIT 20
     `
 
-    // 執行兩個查詢
     const [rowsCategory1] = await connection.execute(queryCategory1)
     const [rowsCategory5] = await connection.execute(queryCategory5)
 
-    // 合併結果
-    const products = [...rowsCategory1, ...rowsCategory5]
-
     res.json({
       status: 'success',
-      products: products,
+      mahjongProducts: rowsCategory1,
+      boardGameProducts: rowsCategory5,
     })
   } catch (error) {
     console.error('Error fetching products:', error)
