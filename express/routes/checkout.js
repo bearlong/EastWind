@@ -798,6 +798,7 @@ router.post('/:id', upload.none(), async (req, res, next) => {
       transporter.sendMail(mailOptions, (err, response) => {
         if (err) {
           // 失敗處理
+          console.log(err)
           return res.status(400).json({ status: 'error', message: err })
         } else {
           // 成功回覆的json
@@ -828,8 +829,8 @@ router.post('/:id', upload.none(), async (req, res, next) => {
       console.log('error')
     }
   } catch (err) {
-    res.status(400).json({ status: 'error', data: { message: err.message } })
     console.log(err.message)
+    res.status(400).json({ status: 'error', data: { message: err.message } })
   }
 
   // INSERT INTO `user_order` (`id`, `numerical_order`, `user_id`, `delivery_method`, `delivery_address`, `recipient`, `pay_method`, `pay_info`, `total`, `coupons_id`, `discount_info`, `remark`, `status_now`, `order_date`) VALUES (NULL, 'sss', '1', '', '11', '11', '111', '111', '111', '111', '111', '11', '111', '2024-08-01');

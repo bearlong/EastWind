@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react'
-import styles from '@/styles/boyu/header.module.scss'
+import styles from '@/styles/bearlong/headerAdmin.module.scss'
 import { IoHome } from 'react-icons/io5'
 import { FaUser, FaRightFromBracket } from 'react-icons/fa6'
 import { FaShoppingCart } from 'react-icons/fa'
@@ -60,7 +60,7 @@ export default function HeaderAdmin() {
         className={`${styles['header-bo']} fixed-top container-fluid sticky-top py-3`}
       >
         <div
-          className={`${styles['header-box-bo']}  container-fluid d-flex justify-content-between align-items-center ${styles['nav-bar-bo']}`}
+          className={`${styles['header-box-bo']}  container-fluid d-flex justify-content-between align-items-center `}
         >
           <div className={styles['logo-box-bo']}>
             <Link href="/admin">
@@ -71,7 +71,6 @@ export default function HeaderAdmin() {
               />
             </Link>
           </div>
-          <nav className={styles['nav-bar-bo']}></nav>
           <div className={styles['icon-box-bo']}>
             <ul
               className={`d-flex justify-content-center align-items-center ${styles['icon-list-bo']}`}
