@@ -1,9 +1,15 @@
 /* 卡片樣式 */
 .course-card-bo {
+  display: block;
+  color: var(--bg-text-color);
   position: relative;
   width: 30rem;
   height: 34rem;
   margin: 0 1.2rem;
+
+  opacity: 0; // 初始狀態為不可見
+
+  transition: opacity 2s ease, transform 2s ease; // 過渡效果
 
   @media (max-width: 768px) {
     width: 28rem;
@@ -12,12 +18,16 @@
   }
 }
 
+.course-card-bo.visible {
+  opacity: 1; // 當元素可見時變為不透明
+  transform: translateX(0); // 移動回原來位置
+}
+
 /* 前面的卡片樣式 */
 .course-card-front-bo {
   padding: 3.5rem;
   width: 30rem;
   height: 34rem;
-  background-image: url('/images/boyu/course-type/course-type-1.jpg');
 
   background-size: cover;
   position: relative;
@@ -104,11 +114,10 @@
 .course-card-back-bo {
   width: 30rem;
   height: 34rem;
-  background-image: url('/images/boyu/course-type/course-type-1.jpg'); /* 背面使用第一張照片 */
   background-size: cover;
-  position: absolute;
   top: 0;
   left: 0;
+  position: absolute;
   z-index: -1;
   pointer-events: none;
 
@@ -142,11 +151,95 @@
 }
 
 /* 階梯排列的卡片 */
-.course-card-bo:nth-child(1) {
+// .swiper-slide:nth-child(1) .course-card-bo {
+//   top: 0;
+//   .course-card-front-bo {
+//     background-image: url('/images/boyu/course-type/course-type-1.jpg');
+
+//     &:hover {
+//       background: var(--primary);
+//     }
+//   }
+//   .course-card-back-bo {
+//     background-image: url('/images/boyu/course-type/course-type-1.jpg');
+//   }
+// }
+
+// .swiper-slide:nth-child(2) .course-card-bo {
+//   top: -1.5rem;
+
+//   @media (max-width: 768px) {
+//     top: 0rem;
+//   }
+
+//   .course-card-front-bo {
+//     background-image: url('/images/boyu/course-type/course-type-2.jpg');
+
+//     &:hover {
+//       background: var(--primary);
+//     }
+//   }
+
+//   .course-card-back-bo {
+//     background-image: url('/images/boyu/course-type/course-type-2.jpg');
+//   }
+// }
+
+// .swiper-slide:nth-child(3) .course-card-bo {
+//   top: -3rem;
+//   @media (max-width: 768px) {
+//     top: 0rem;
+//   }
+//   .course-card-front-bo {
+//     background-image: url('/images/boyu/course-type/course-type-3.jpg');
+//     &:hover {
+//       background: var(--primary);
+//     }
+//   }
+//   .course-card-back-bo {
+//     background-image: url('/images/boyu/course-type/course-type-3.jpg');
+//   }
+// }
+
+// .swiper-slide:nth-child(4) .course-card-bo {
+//   top: -4.5rem;
+//   @media (max-width: 768px) {
+//     top: 0rem;
+//   }
+//   .course-card-front-bo {
+//     background-image: url('/images/boyu/course-type/course-type-4.jpg');
+
+//     &:hover {
+//       background: var(--primary);
+//     }
+//   }
+//   .course-card-back-bo {
+//     background-image: url('/images/boyu/course-type/course-type-4.jpg');
+//   }
+// }
+
+// .swiper-slide:nth-child(5) .course-card-bo {
+//   top: -6rem;
+//   @media (max-width: 768px) {
+//     margin-right: 30rem;
+//     top: 0rem;
+//   }
+//   .course-card-front-bo {
+//     background-image: url('/images/boyu/course-type/course-type-5.jpg');
+//     &:hover {
+//       background: var(--primary);
+//     }
+//   }
+//   .course-card-back-bo {
+//     background-image: url('/images/boyu/course-type/course-type-5.jpg');
+//   }
+// }
+
+/* 標識不同的 SwiperSlide */
+.swiper-slide.course-slide-1 .course-card-bo {
   top: 0;
   .course-card-front-bo {
     background-image: url('/images/boyu/course-type/course-type-1.jpg');
-
     &:hover {
       background: var(--primary);
     }
@@ -156,30 +249,32 @@
   }
 }
 
-.course-card-bo:nth-child(2) {
+.swiper-slide.course-slide-2 .course-card-bo {
   top: -1.5rem;
+
   @media (max-width: 768px) {
     top: 0rem;
   }
+
   .course-card-front-bo {
     background-image: url('/images/boyu/course-type/course-type-2.jpg');
     &:hover {
       background: var(--primary);
     }
   }
+
   .course-card-back-bo {
     background-image: url('/images/boyu/course-type/course-type-2.jpg');
   }
 }
 
-.course-card-bo:nth-child(3) {
+.swiper-slide.course-slide-3 .course-card-bo {
   top: -3rem;
   @media (max-width: 768px) {
     top: 0rem;
   }
   .course-card-front-bo {
     background-image: url('/images/boyu/course-type/course-type-3.jpg');
-
     &:hover {
       background: var(--primary);
     }
@@ -189,14 +284,13 @@
   }
 }
 
-.course-card-bo:nth-child(4) {
-  top: -4.5rem;
+.swiper-slide.course-slide-4 .course-card-bo {
+  top: -1.5rem;
   @media (max-width: 768px) {
     top: 0rem;
   }
   .course-card-front-bo {
     background-image: url('/images/boyu/course-type/course-type-4.jpg');
-
     &:hover {
       background: var(--primary);
     }
@@ -206,9 +300,10 @@
   }
 }
 
-.course-card-bo:nth-child(5) {
-  top: -6rem;
+.swiper-slide.course-slide-5 .course-card-bo {
+  top: 0rem;
   @media (max-width: 768px) {
+    margin-right: 30rem;
     top: 0rem;
   }
   .course-card-front-bo {

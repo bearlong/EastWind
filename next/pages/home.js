@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import styles from '@/styles/boyu/home.module.scss'
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 import Link from 'next/link'
@@ -20,6 +20,16 @@ export default function Home() {
     isLastSlide: false,
     isFirstSlide: true,
   })
+  const [mahjongVisible, setMahjongVisible] = useState(false)
+  const [boardGameVisible, setBoardGameVisible] = useState(false)
+  const [courseVisible, setCourseVisible] = useState(false)
+
+  const mahjongSectionRef = useRef(null) // 用於觀察麻將區域
+  const boardGameSectionRef = useRef(null) // 用於觀察桌遊區域
+
+  const courseRefs = useRef([]) // 儲存每個課程卡片的引用
+  const courseSectionRef = useRef(null) // 儲存線上課程區域的引用
+
   useEffect(() => {
     setIsClient(true) // 在客戶端渲染時設置為 true
   }, [])
@@ -98,6 +108,100 @@ export default function Home() {
 
   useEffect(() => {
     setSwiperReady(true) // Swiper 就緒後設置為 true
+  }, [])
+
+  // 添加一個課程卡片到引用列表
+  const addToRefs = (el) => {
+    if (el && !courseRefs.current.includes(el)) {
+      courseRefs.current.push(el)
+    }
+  }
+
+  // 設置 IntersectionObserver 觀察麻將和桌遊區域
+  useEffect(() => {
+    if (mahjongSectionRef.current) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setMahjongVisible(true)
+              observer.unobserve(entry.target)
+            }
+          })
+        },
+        {
+          threshold: 0.5,
+        }
+      )
+
+      observer.observe(mahjongSectionRef.current)
+
+      return () => {
+        if (mahjongSectionRef.current) {
+          observer.unobserve(mahjongSectionRef.current)
+        }
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (boardGameSectionRef.current) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setBoardGameVisible(true)
+              observer.unobserve(entry.target)
+            }
+          })
+        },
+        {
+          threshold: 0.5,
+        }
+      )
+
+      observer.observe(boardGameSectionRef.current)
+
+      return () => {
+        if (boardGameSectionRef.current) {
+          observer.unobserve(boardGameSectionRef.current)
+        }
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (courseSectionRef.current) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              console.log('Setting courseVisible to true')
+              setCourseVisible(true)
+              // 確保每個卡片的動畫 class 正確應用
+              courseRefs.current.forEach((ref, index) => {
+                setTimeout(() => {
+                  if (ref) {
+                    ref.classList.add(styles.visible)
+                    console.log(`Course card ${index + 1} is visible`)
+                  }
+                }, index * 500)
+              })
+              observer.unobserve(entry.target) // 停止觀察，避免重複觸發
+            }
+          })
+        },
+        { threshold: 0.5 }
+      )
+
+      observer.observe(courseSectionRef.current)
+
+      return () => {
+        if (courseSectionRef.current) {
+          observer.unobserve(courseSectionRef.current)
+        }
+      }
+    }
   }, [])
 
   return (
@@ -292,6 +396,7 @@ export default function Home() {
           </div>
           <div
             className={`${styles['guide-box-bo']} container-fluid d-flex flex-column justify-content-center`}
+            ref={mahjongSectionRef} // 設置引用
           >
             <div
               className={`${styles['product-text-box-bo']}   d-flex gap-5 flex-column`}
@@ -328,7 +433,11 @@ export default function Home() {
               </div>
             </div>
             <div
-              className={`${styles['mahjong-card-box-bo']} d-flex gap-5 justify-content-center align-items-center`}
+              className={`${
+                styles['mahjong-card-box-bo']
+              } d-flex gap-5 justify-content-center align-items-center  ${
+                mahjongVisible ? styles['mahjong-visible'] : ''
+              }`}
             >
               <div
                 className={`${styles['mahjong-card-btn-bo']} d-flex flex-row flex-sm-column gap-5 align-items-center`}
@@ -370,7 +479,7 @@ export default function Home() {
                   freeMode={true} // 允許自由滑動，不固定到某個點
                   breakpoints={{
                     768: {
-                      spaceBetween: 28,
+                      spaceBetween: 20,
                     },
 
                     0: {
@@ -389,7 +498,8 @@ export default function Home() {
                   {mahjongProducts.map((product) => (
                     <SwiperSlide
                       key={product.id}
-                      className={`${styles['swiper-slide']}`}
+                      className={`${styles['swiper-slide']}
+                      ${mahjongVisible ? styles['slide-in-right'] : ''}`}
                     >
                       <Link
                         href={`/product/${product.id}`}
@@ -426,6 +536,7 @@ export default function Home() {
             </div>
           </div>
           <div
+            ref={boardGameSectionRef} // 設置引用
             className={`${styles['guide-box-bo']} container-fluid d-flex flex-column justify-content-center`}
           >
             <div
@@ -463,7 +574,11 @@ export default function Home() {
               </div>
             </div>
             <div
-              className={`${styles['boardGame-card-box-bo']} d-flex gap-5 justify-content-center align-items-center`}
+              className={`${
+                styles['boardGame-card-box-bo']
+              } d-flex gap-5 justify-content-center align-items-center ${
+                boardGameVisible ? styles['boardGame-visible'] : ''
+              }`}
             >
               <div
                 className={`${styles['boardGame-card-btn-bo']} d-flex flex-row-reverse flex-sm-column align-items-center gap-5`}
@@ -527,7 +642,8 @@ export default function Home() {
                     <SwiperSlide
                       style={{ transform: 'scaleX(-1)' }} // 反轉滑動容器
                       key={product.id}
-                      className={`${styles['swiper-slide']}`}
+                      className={`${styles['swiper-slide']}
+                       ${boardGameVisible ? styles['slide-in-left'] : ''}`}
                     >
                       <Link
                         href={`/product/${product.id}`}
@@ -567,6 +683,7 @@ export default function Home() {
 
         {/* 線上課程 */}
         <section
+          ref={courseSectionRef} // 設置引用
           className={`${styles['course-section-bo']} ${styles['bg-front-photo-bo']} d-flex flex-column justify-content-center align-items-center`}
         >
           <div
@@ -627,46 +744,82 @@ export default function Home() {
               </Link>
             </div>
             <div
-              className={`${styles['course-card-box-bo']} d-flex justify-content-center align-items-center`}
+              className={`${
+                styles['course-card-box-bo']
+              } d-flex justify-content-center align-items-center  ${
+                courseVisible ? styles['course-visible'] : ''
+              }  `}
             >
-              {courses.map((course, index) => (
-                <div
-                  key={index}
-                  className={`${styles['course-card-bo']} justify-content-center align-items-center`}
+              {swiperReady && (
+                <Swiper
+                  slidesPerView={'auto'} /* 根據內容自動調整寬度 */
+                  navigation={{
+                    prevEl: '#swiper-prev-course', // 指定前一個按鈕
+                    nextEl: '#swiper-next-course', // 指定下一個按鈕
+                  }}
+                  autoHeight={true}
+                  modules={[Navigation]}
+                  loop={true}
+                  freeMode={true} // 允許自由滑動，不固定到某個點
+                  spaceBetween={10}
+                  className={`${styles['swiper-container']}`} // 新增這一行
                 >
-                  <div
-                    className={`${styles['course-card-front-bo']} d-flex flex-column justify-content-end`}
-                  >
-                    <div
-                      className={`${styles['course-card-body-bo']} d-flex flex-column gap-3`}
-                    >
-                      <h5>{course.title}</h5>
-                      <p>{course.description}</p>
-                      <div
-                        className={`${styles['course-more']} d-flex justify-content-end align-items-center`}
-                      >
-                        <i className={`${styles['edit-icon']}`}></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles['course-card-back-bo']}></div>
-                </div>
-              ))}
+                  {/* <SwiperSlide className={`${styles['swiper-slide']} `}>
+                    <div className={` ${styles['course-empty-slide']}`}></div>
+                  </SwiperSlide> */}
 
-              <div className="course-card-btn-bo d-block d-md-none d-flex gap-5">
-                <div
-                  className={`${styles['move-course-btn-box-left-bo']} ${styles['move-course-btn-box-bo']} d-flex justify-content-center align-items-center`}
-                >
-                  <FaArrowLeft className={styles['btn-course-move-left-bo']} />
-                </div>
-                <div
-                  className={`${styles['move-course-btn-box-right-bo']} ${styles['move-course-btn-box-bo']} d-flex justify-content-center align-items-center`}
-                >
-                  <FaArrowRight
-                    className={styles['btn-course-move-right-bo']}
-                  />
-                </div>
-              </div>
+                  {courses.map((course, index) => (
+                    <SwiperSlide
+                      key={index}
+                      className={`${styles['swiper-slide']} ${
+                        styles[`course-slide-${index + 1}`]
+                      }`}
+                    >
+                      <Link
+                        ref={addToRefs}
+                        href={`/course/classListCate?category_id=${index}`}
+                        className={`${styles['course-card-bo']} justify-content-center align-items-center`}
+                      >
+                        <div
+                          className={`${styles['course-card-front-bo']} d-flex flex-column justify-content-end`}
+                        >
+                          <div
+                            className={`${styles['course-card-body-bo']} d-flex flex-column gap-3`}
+                          >
+                            <h5>{course.title}</h5>
+                            <p>{course.description}</p>
+                            <div
+                              className={`${styles['course-more']} d-flex justify-content-end align-items-center`}
+                            >
+                              <i className={`${styles['edit-icon']}`}></i>
+                            </div>
+                          </div>
+                        </div>
+                        <div className={styles['course-card-back-bo']}></div>
+                      </Link>
+                    </SwiperSlide>
+                  ))}
+
+                  {/* 後面的空白卡片 */}
+                  {/* <SwiperSlide className={`${styles['swiper-slide']} `}>
+                    <div className={` ${styles['course-empty-slide']}`}></div>
+                  </SwiperSlide> */}
+                </Swiper>
+              )}
+            </div>
+          </div>
+          <div className=" d-flex gap-5">
+            <div
+              id="swiper-prev-course" // 指定為 swiper-prev-course
+              className={`${styles['move-course-btn-box-left-bo']} ${styles['move-course-btn-box-bo']} d-flex justify-content-center align-items-center`}
+            >
+              <FaArrowLeft className={styles['btn-course-move-left-bo']} />
+            </div>
+            <div
+              id="swiper-next-course" // 指定為 swiper-next-course
+              className={`${styles['move-course-btn-box-right-bo']} ${styles['move-course-btn-box-bo']} d-flex justify-content-center align-items-center`}
+            >
+              <FaArrowRight className={styles['btn-course-move-right-bo']} />
             </div>
           </div>
         </section>

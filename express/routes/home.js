@@ -46,8 +46,7 @@ router.get('/products', async (req, res) => {
       WHERE 
         product.category_id = 1
       ORDER BY RAND() 
-      LIMIT 20
-    `
+      LIMIT 15    `
 
     const queryCategory5 = `
       SELECT 
@@ -67,7 +66,7 @@ router.get('/products', async (req, res) => {
       WHERE 
         product.category_id = 5
       ORDER BY RAND() 
-      LIMIT 20
+      LIMIT 15
     `
 
     const [rowsCategory1] = await connection.execute(queryCategory1)
