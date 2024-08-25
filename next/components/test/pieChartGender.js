@@ -5,9 +5,9 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 // 註冊 Chart.js 的模組
 ChartJS.register(ArcElement, Tooltip, Legend)
 
-const PieChart2 = () => {
+const PieChartGender = () => {
   const data = {
-    labels: ['20歲以下', '21-35', '36-50', '51歲以上'],
+    labels: ['男', '女'],
     datasets: [
       {
         label: 'people',
@@ -39,4 +39,4 @@ const PieChart2 = () => {
   return <Pie data={data} options={options} />
 }
 
-export default PieChart2
+export default PieChartGender
