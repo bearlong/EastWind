@@ -510,7 +510,7 @@
 }
 
 .course-box-bo {
-  gap: 8rem;
+  gap: 14rem;
   position: relative;
   @media (max-width: 768px) {
     gap: 6.4rem;
@@ -650,14 +650,32 @@
 .course-empty-slide {
   height: 34rem; /* 設置與其他卡片一致的高度 */
   width: 28rem; /* 設置產品卡片的寬度 */
+
   visibility: hidden;
+
   @media (max-width: 768px) {
     height: 32rem; /* 針對768px寬度設置的高度 */
-    width: 23rem;
+    // width: 10rem;
   }
   @media (max-width: 576px) {
     height: 32rem; /* 針對576px寬度設置的高度 */
-    width: 20rem;
+    // width: 10rem;
+  }
+}
+
+.course-empty-slide-first {
+  height: 34rem; /* 設置與其他卡片一致的高度 */
+  // width: 28rem; /* 設置產品卡片的寬度 */
+
+  visibility: hidden;
+
+  @media (max-width: 768px) {
+    height: 32rem; /* 針對768px寬度設置的高度 */
+    // width: 23rem;
+  }
+  @media (max-width: 576px) {
+    height: 32rem; /* 針對576px寬度設置的高度 */
+    // width: 20rem;
   }
 }
 
@@ -688,20 +706,27 @@
 
 .course-visible {
   opacity: 1;
-  transform: translateX(0px); /* 滑動回到原來位置 */
+  transform: translateX(120px); /* 滑動回到原來位置 */
+
   @media (max-width: 1200px) {
-    transform: translateX(-75px); /* 保留 -75px 的偏移 */
+    transform: translateX(75px); /* 保留 -75px 的偏移 */
   }
 
   @media (max-width: 992px) {
-    transform: translateX(-60px); /* 保留 -60px 的偏移 */
+    transform: translateX(60px); /* 保留 -60px 的偏移 */
   }
 
   @media (max-width: 768px) {
-    transform: translateX(-50px); /* 保留 -50px 的偏移 */
+    transform: translateX(50px); /* 保留 -50px 的偏移 */
   }
 
   @media (max-width: 576px) {
-    transform: translateX(30px); /* 保留 -80px 的偏移 */
+    transform: translateX(90); /* 保留 -80px 的偏移 */
+  }
+}
+
+.hide-on-small {
+  @media (max-width: 768px) {
+    display: none !important;
   }
 }

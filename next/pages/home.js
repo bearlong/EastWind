@@ -759,14 +759,16 @@ export default function Home() {
                   }}
                   autoHeight={true}
                   modules={[Navigation]}
-                  loop={true}
+                  loop={false}
                   freeMode={true} // 允許自由滑動，不固定到某個點
                   spaceBetween={10}
                   className={`${styles['swiper-container']}`} // 新增這一行
                 >
-                  {/* <SwiperSlide className={`${styles['swiper-slide']} `}>
-                    <div className={` ${styles['course-empty-slide']}`}></div>
-                  </SwiperSlide> */}
+                  <SwiperSlide className={`${styles['swiper-slide']} `}>
+                    <div
+                      className={` ${styles['course-empty-slide-first']}`}
+                    ></div>
+                  </SwiperSlide>
 
                   {courses.map((course, index) => (
                     <SwiperSlide
@@ -799,11 +801,14 @@ export default function Home() {
                       </Link>
                     </SwiperSlide>
                   ))}
-
+                  {/* 
                   {/* 後面的空白卡片 */}
-                  {/* <SwiperSlide className={`${styles['swiper-slide']} `}>
+                  <SwiperSlide
+                    className={`${styles['swiper-slide']} ${styles['hide-on-small']}`}
+                  >
+                    {' '}
                     <div className={` ${styles['course-empty-slide']}`}></div>
-                  </SwiperSlide> */}
+                  </SwiperSlide>
                 </Swiper>
               )}
             </div>
