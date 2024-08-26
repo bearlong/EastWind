@@ -9,7 +9,7 @@ import ClassCard from '@/components/course/card'
 export default function ClassList() {
   // 注意1: 初始值至少要空陣列，初次render是用初始值
   // 注意2: 應用執行過程中，一定要保持狀態資料類型都是陣列
-  const [courses, setCourses] = useState([])
+  const [courses, setCourses] = useState({ list: [] })
   const router = useRouter()
   const [pages, setPages] = useState(1)
   const { category_id } = router.query
@@ -38,9 +38,9 @@ export default function ClassList() {
     getCourses()
   }, [])
 
-  const handleCardClick = (courseId) => {
-    router.push(`/course/classDetail/${courseId}`)
-  }
+  // const handleCardClick = (course_id) => {
+  //   router.push(`/course/classDetail/${course_id}`)
+  // }
 
   const handleLoadMore = () => {
     if (pages * 10 < courses.total) {
@@ -56,7 +56,7 @@ export default function ClassList() {
             <div className={styles['text2-aa']}>
               <h2>課程排行</h2>
             </div>
-            {/* <div className={styles['classCards-aa']}>
+            <div className={styles['classCards-aa']}>
               {Object.values(courses)
                 .flat()
                 .slice(0, 4)
@@ -67,24 +67,34 @@ export default function ClassList() {
                     rank={index + 1}
                   />
                 ))}
-            </div> */}
-
-            <div className={styles['classCards-aa']}>
-              {courses.slice(0, 4).map((classItem, index) => (
-                <ClassCard
-                  key={classItem.id}
-                  courseData={classItem}
-                  rank={index + 1}
-                />
-              ))}
             </div>
 
             {/* <div className={styles['classCards-aa']}>
-              {courses.list.map((course, i) => (
-                <Link href={`/course/classDetail/${course.id}`} key={course.id}>
-                  <ClassCard courseData={course} rank={i + 1} />
-                </Link>
-              ))}
+              {courses && courses.list && courses.list.length > 0 ? (
+                courses.list.map((course, i) => {
+                  return (
+                    <div key={course.id}>
+                      <Link href={`/course/classDetail/${course.id}`}>
+                        <ClassCard courseData={course} rank={i + 1} />
+                      </Link>
+                    </div>
+                  )
+                })
+              ) : (
+                <p>No courses available</p> // 或者可以顯示一個適當的提示或佔位符
+              )}
+            </div> */}
+
+            {/* <div className={styles['classCards-aa']}>
+              {courses.list.map((course, i) => {
+                return (
+                  <div key={course.id}>
+                    <Link href={`/course/classDetail/${course.id}`}>
+                      <ClassCard courseData={course} rank={i + 1} />
+                    </Link>
+                  </div>
+                )
+              })}
             </div> */}
 
             <div className={styles['line-aa']}>
