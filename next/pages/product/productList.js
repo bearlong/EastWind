@@ -543,13 +543,11 @@ export default function ProductList() {
             <div className={styles['products-bl']}>
               {products.list.map((product) => {
                 return (
-                  <>
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      handleFavToggle={handleFavToggle}
-                    />{' '}
-                  </>
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    handleFavToggle={handleFavToggle}
+                  />
                 )
               })}
             </div>

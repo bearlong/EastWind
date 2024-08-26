@@ -1,0 +1,19 @@
+.main {
+  width: 100%;
+  padding: 6.4rem;
+}
+
+.menber-info-box-bo {
+  width: 100%;
+  border: 2px solid var(--primary);
+  background: var(--form-bg);
+  padding: 2rem;
+}
+
+@media (max-width: 768px) {
+  .main {
+    padding: 0;
+  }
+  .menber-info-box-bo {
+  }
+}

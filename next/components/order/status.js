@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react'
 import styles from '@/styles/bearlong/orderDetail.module.scss'
-import { FaCheck } from 'react-icons/fa6'
+import { FaCheck, FaArrowRightLong } from 'react-icons/fa6'
 
 export default function OrderStatus({ status = [] }) {
   const getStatusUpdateAt = (statuses, targetStatus) => {
@@ -19,6 +19,10 @@ export default function OrderStatus({ status = [] }) {
   const [reviewStatus, setReviewStatus] = useState(
     getStatusUpdateAt(status, '已評論')
   )
+
+  const lastStatus = status.length > 0 ? status[status.length - 1].status : null
+
+  console.log(lastStatus)
 
   useEffect(() => {
     setPaymentStatus(getStatusUpdateAt(status, '付款完成'))
@@ -62,7 +66,7 @@ export default function OrderStatus({ status = [] }) {
           {shipmentStatus ? shipmentStatus : ''}
         </div>
         <div
-          className={`${styles['statusBox-bl']} text-center d-flex flex-column justify-content-between align-items-center`}
+          className={`${styles['statusBox-bl']} text-center d-md-flex d-none flex-column justify-content-between align-items-center`}
         >
           <div
             className={`${
@@ -77,7 +81,7 @@ export default function OrderStatus({ status = [] }) {
           {completionStatus ? completionStatus : ''}
         </div>
         <div
-          className={`${styles['statusBox-bl']} text-center d-flex flex-column justify-content-between align-items-center`}
+          className={`${styles['statusBox-bl']} text-center  flex-column justify-content-between align-items-center d-md-flex d-none`}
         >
           <div
             className={`${
@@ -91,9 +95,60 @@ export default function OrderStatus({ status = [] }) {
           <p>{reviewStatus ? '評論完成' : '尚未評論'}</p>
           {reviewStatus ? reviewStatus : ''}
         </div>
+        <div
+          className={`${styles['statusBox-bl']} text-center d-flex d-md-none flex-column justify-content-between align-items-center`}
+        >
+          <div
+            className={`${styles['checkStatus-bl']} d-flex justify-content-center align-items-center ${styles.active}`}
+          >
+            <FaCheck className={`p ${paymentStatus ? '' : 'd-none'}`} />
+          </div>
+          <p>
+            {lastStatus === '已評論'
+              ? '訂單完成'
+              : lastStatus === '已完成'
+              ? '訂單完成'
+              : lastStatus === '已出貨'
+              ? '已出貨'
+              : lastStatus === '付款完成'
+              ? '訂單成立'
+              : '尚未付款'}
+          </p>
+          {lastStatus === '已評論'
+            ? completionStatus
+            : getStatusUpdateAt(status, lastStatus)}
+        </div>
+        <div
+          className={`${styles['statusBox-bl']} text-center d-flex d-md-none flex-column justify-content-between align-items-center`}
+        >
+          <div
+            className={`${
+              styles['checkStatus-bl']
+            } d-flex justify-content-center align-items-center ${
+              lastStatus === '已評論' ? styles.active : ''
+            }`}
+          >
+            <FaCheck
+              className={`p ${lastStatus === '已評論' ? '' : 'd-none'}`}
+            />
+          </div>
+          <p>
+            {' '}
+            {lastStatus === '已評論'
+              ? '評論完成'
+              : lastStatus === '已完成'
+              ? '尚未評論'
+              : lastStatus === '已出貨'
+              ? '待收貨'
+              : lastStatus === '付款完成'
+              ? '待出貨'
+              : '尚未付款'}
+          </p>
+          {lastStatus === '已評論' ? getStatusUpdateAt(status, lastStatus) : ''}
+        </div>
         <div className={`${styles['line']} d-none d-md-block`} />
         <div className={`${styles['arrow']} d-grid d-md-none`}>
-          <i className="fa-solid fa-arrow-right h3" />
+          <FaArrowRightLong className="h3" />
         </div>
       </div>
     </>

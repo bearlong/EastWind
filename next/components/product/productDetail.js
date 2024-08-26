@@ -1,19 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import {
-  FaHeart,
-  FaStar,
-  FaRegStar,
-  FaChevronDown,
-  FaChevronUp,
-  FaPlus,
-  FaMinus,
-} from 'react-icons/fa6'
+import { FaHeart, FaStar, FaRegStar, FaPlus, FaMinus } from 'react-icons/fa6'
 import styles from '@/styles/bearlong/productDetail.module.scss'
 import { useCart } from '@/hooks/use-cart'
 import { AuthContext } from '@/context/AuthContext'
 import Swal from 'sweetalert2'
+import toast from 'react-hot-toast'
 
 export default function ProductDetail({
   data = {},
@@ -282,6 +275,19 @@ export default function ProductDetail({
                     notifyAndRemove()
                   } else {
                     handleAdd(data.product, 'product', quantity)
+                    toast.success(`商品已加入購物車!`, {
+                      style: {
+                        border: `1px solid #55c57a`,
+                        padding: '16px',
+                        fontSize: '16px',
+                        color: '#0e0e0e',
+                      },
+                      iconTheme: {
+                        primary: `#55c57a`,
+                        secondary: '#ffffff',
+                        fontSize: '16px',
+                      },
+                    })
                   }
                 }}
                 disabled={data.product.stock <= 0}

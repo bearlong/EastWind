@@ -5,13 +5,13 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 // 註冊 Chart.js 的模組
 ChartJS.register(ArcElement, Tooltip, Legend)
 
-const PieChartGender = () => {
+const PieChartGender = ({ statistics = [] }) => {
   const data = {
-    labels: ['男', '女'],
+    labels: ['女', '男'],
     datasets: [
       {
         label: 'people',
-        data: [85, 19],
+        data: statistics,
         backgroundColor: ['rgba(54, 162, 235, 0.5)', 'rgba(255, 99, 132, 0.5)'],
         borderColor: ['rgba(54, 162, 235, 0.5)', 'rgba(255, 99, 132, 0.5)'],
         borderWidth: 1,

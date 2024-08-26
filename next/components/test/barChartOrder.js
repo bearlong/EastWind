@@ -13,7 +13,7 @@ import {
 // 註冊 Chart.js 的模組
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
-const BarChartOrder = () => {
+const BarChartOrder = ({ statistics = [] }) => {
   const data = {
     labels: [
       'Jan',
@@ -32,7 +32,7 @@ const BarChartOrder = () => {
     datasets: [
       {
         label: 'Order',
-        data: [50, 40, 80, 70, 100, 150, 130, 200, 0, 0, 0, 0],
+        data: statistics,
         backgroundColor: '#2b4d37',
       },
     ],

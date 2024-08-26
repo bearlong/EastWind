@@ -5,13 +5,13 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 // 註冊 Chart.js 的模組
 ChartJS.register(ArcElement, Tooltip, Legend)
 
-const PieChartAge = () => {
+const PieChartAge = ({ statistics = [] }) => {
   const data = {
     labels: ['20歲以下', '21-35', '36-50', '51歲以上'],
     datasets: [
       {
         label: 'people',
-        data: [10, 19, 30, 25],
+        data: statistics,
         backgroundColor: ['#ffe9b1', '#b79347', '#76592a', '#3f2f16'],
         borderColor: ['#ffe9b1', '#b79347', '#76592a', '#3f2f16'],
         borderWidth: 1,

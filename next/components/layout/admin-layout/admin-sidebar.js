@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import { useRouter } from 'next/router'
 import styles from './admin-siderbar.module.scss'
 import { FaUserCircle, FaAddressCard } from 'react-icons/fa'
-import { FaChevronDown, FaChartLine, FaVideo } from 'react-icons/fa6'
+import { FaChevronDown, FaChartLine, FaVideo, FaTruck } from 'react-icons/fa6'
 import Link from 'next/link'
 import { AuthContext } from '@/context/AuthContext'
 
@@ -46,6 +46,9 @@ export default function AdminSidebar() {
       case 'chart':
         return <FaChartLine />
 
+      case 'arrival':
+        return <FaTruck />
+
       case 'uploadVideo':
         return <FaVideo />
 
@@ -61,9 +64,11 @@ export default function AdminSidebar() {
       case 'chart':
         return '數據分析'
 
+      case 'arrival':
+        return '出貨狀況'
+
       case 'uploadVideo':
         return '課程上傳'
-        return '優惠卷'
 
       default:
         return ''
@@ -116,6 +121,18 @@ export default function AdminSidebar() {
                 }`}
               >
                 <FaChartLine /> 數據分析
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/admin/arrival"
+                className={`${
+                  styles['user-sidebar-link-bo']
+                } h6 d-flex align-items-center gap-4 ${
+                  activeLink === 'arrival' ? styles['user-link-active'] : ''
+                }`}
+              >
+                <FaTruck /> 出貨狀況
               </Link>
             </li>
 

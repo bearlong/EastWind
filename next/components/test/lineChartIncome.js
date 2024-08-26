@@ -22,7 +22,7 @@ ChartJS.register(
   Legend
 )
 
-const LineChartIncome = () => {
+const LineChartIncome = ({ statistics = [] }) => {
   const data = {
     labels: [
       'Jan',
@@ -41,7 +41,7 @@ const LineChartIncome = () => {
     datasets: [
       {
         label: 'Monthly Revenue',
-        data: [3000, 5000, 4000, 7000, 6000, 8000, 9000, 7500, 8500, 0, 0, 0],
+        data: statistics,
         borderColor: 'rgba(75, 192, 192, 1)',
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         fill: true,

@@ -5,13 +5,13 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 // 註冊 Chart.js 的模組
 ChartJS.register(ArcElement, Tooltip, Legend)
 
-const PieChartComplete = () => {
+const PieChartComplete = ({ statistics = [] }) => {
   const data = {
     labels: ['成團', '流局'],
     datasets: [
       {
         label: 'party',
-        data: [76, 5],
+        data: statistics,
         backgroundColor: ['#0e0e0e', '#747474'],
         borderColor: ['#0e0e0e', '#747474'],
         borderWidth: 1,

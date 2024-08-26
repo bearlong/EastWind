@@ -13,7 +13,7 @@ import {
 // 註冊 Chart.js 的模組
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
-const BarChartRegistration = () => {
+const BarChartRegistration = ({ statistics = [] }) => {
   const data = {
     labels: [
       'Jan',
@@ -32,7 +32,7 @@ const BarChartRegistration = () => {
     datasets: [
       {
         label: 'People',
-        data: [300, 200, 500, 400, 600, 700, 300, 200, 500, 200, 900, 100],
+        data: statistics,
         backgroundColor: '#b79347',
       },
     ],
