@@ -3,9 +3,8 @@ import { useRouter } from 'next/router'
 import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
-import styles from '@/styles/aa/classList2.module.scss'
-import Footer from '@/components/layout/default-layout/footer'
-import Header from '@/components/layout/default-layout/header'
+import styles from '@/styles/aa/classListCate.module.scss'
+import ClassCard from '@/components/course/card'
 
 export default function ClassListCate() {
   const router = useRouter()
@@ -18,147 +17,12 @@ export default function ClassListCate() {
     <>
       <div className="container">
         <div className="desktop-list2-aa">
-          {/* <div className="class-header-aa">
-            <ul className="d-flex subBar-aa">
-              <li>
-                <a className="subNav" href="">
-                  <h6>西洋棋</h6>
-                </a>
-                <div className="subBarBody-aa d-none">
-                  <div className="d-flex">
-                    <div className="subBarDetail-aa">
-                      <h6 className="title">總覽</h6>
-                      <ul>
-                        <li>
-                          <a href="">啟蒙課程</a>
-                        </li>
-                        <li>
-                          <a href="">基礎課程</a>
-                        </li>
-                        <li>
-                          <a href="">進階課程</a>
-                        </li>
-                        <li>
-                          <a href="">高階課程</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li>
-                <a className="subNav" href="">
-                  <h6>麻將</h6>
-                </a>
-                <div className="subBarBody-aa d-none">
-                  <div className="d-flex">
-                    <div className="subBarDetail-aa">
-                      <h6 className="title">總覽</h6>
-                      <ul>
-                        <li>
-                          <a href="">啟蒙課程</a>
-                        </li>
-                        <li>
-                          <a href="">基礎課程</a>
-                        </li>
-                        <li>
-                          <a href="">進階課程</a>
-                        </li>
-                        <li>
-                          <a href="">高階課程</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li>
-                <a className="subNav" href="">
-                  <h6>圍棋</h6>
-                </a>
-                <div className="subBarBody-aa d-none">
-                  <div className="d-flex">
-                    <div className="subBarDetail-aa">
-                      <h6 className="title">總覽</h6>
-                      <ul>
-                        <li>
-                          <a href="">啟蒙課程</a>
-                        </li>
-                        <li>
-                          <a href="">基礎課程</a>
-                        </li>
-                        <li>
-                          <a href="">進階課程</a>
-                        </li>
-                        <li>
-                          <a href="">高階課程</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li>
-                <a className="subNav" href="">
-                  <h6>撲克</h6>
-                </a>
-                <div className="subBarBody-aa d-none">
-                  <div className="d-flex">
-                    <div className="subBarDetail-aa">
-                      <h6 className="title">總覽</h6>
-                      <ul>
-                        <li>
-                          <a href="">啟蒙課程</a>
-                        </li>
-                        <li>
-                          <a href="">基礎課程</a>
-                        </li>
-                        <li>
-                          <a href="">進階課程</a>
-                        </li>
-                        <li>
-                          <a href="">高階課程</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li>
-                <a className="subNav" href="">
-                  <h6>象棋</h6>
-                </a>
-                <div className="subBarBody-aa d-none">
-                  <div className="d-flex">
-                    <div className="subBarDetail-aa">
-                      <h6 className="title">總覽</h6>
-                      <ul>
-                        <li>
-                          <a href="">啟蒙課程</a>
-                        </li>
-                        <li>
-                          <a href="">基礎課程</a>
-                        </li>
-                        <li>
-                          <a href="">進階課程</a>
-                        </li>
-                        <li>
-                          <a href="">高階課程</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div> */}
-          <Header />
           <div className="sec1-aa">
             <div className="text12-aa">
               <h2>麻將 課程排行</h2>
             </div>
             <div className="classCards-aa">
-              <div className="classCard-aa">
+              {/* <div className="classCard-aa">
                 <div className="imgBox-aa">
                   <div className="rank1">1</div>
                   <img
@@ -173,46 +37,8 @@ export default function ClassListCate() {
                   </div>
                   <p>NT. 450</p>
                 </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <div className="rank2">2</div>
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <div className="rank3">3</div>
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <div className="rank4">4</div>
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
+              </div> */}
+              <ClassCard />
             </div>
             <div className="line-aa">
               <svg
@@ -301,204 +127,16 @@ export default function ClassListCate() {
             </div>
             <div className="cardgroup22-aa">
               <div className="classCards-aa">
-                <div className="classCard-aa">
-                  <div className="imgBox-aa">
-                    <img src="" alt="" />
-                  </div>
-                  <div className="cardBody-aa">
-                    <div className="className-aa">
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                    </div>
-                    <p>NT. 450</p>
-                  </div>
-                </div>
-                <div className="classCard-aa">
-                  <div className="imgBox-aa">
-                    <img src="" alt="" />
-                  </div>
-                  <div className="cardBody-aa">
-                    <div className="className-aa">
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                    </div>
-                    <p>NT. 450</p>
-                  </div>
-                </div>
-                <div className="classCard-aa">
-                  <div className="imgBox-aa">
-                    <img src="" alt="" />
-                  </div>
-                  <div className="cardBody-aa">
-                    <div className="className-aa">
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                    </div>
-                    <p>NT. 450</p>
-                  </div>
-                </div>
-                <div className="classCard-aa">
-                  <div className="imgBox-aa">
-                    <img src="" alt="" />
-                  </div>
-                  <div className="cardBody-aa">
-                    <div className="className-aa">
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                    </div>
-                    <p>NT. 450</p>
-                  </div>
-                </div>
+                <ClassCard />
               </div>
               <div className="classCards-aa">
-                <div className="classCard-aa">
-                  <div className="imgBox-aa">
-                    <img src="" alt="" />
-                  </div>
-                  <div className="cardBody-aa">
-                    <div className="className-aa">
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                    </div>
-                    <p>NT. 450</p>
-                  </div>
-                </div>
-                <div className="classCard-aa">
-                  <div className="imgBox-aa">
-                    <img src="" alt="" />
-                  </div>
-                  <div className="cardBody-aa">
-                    <div className="className-aa">
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                    </div>
-                    <p>NT. 450</p>
-                  </div>
-                </div>
-                <div className="classCard-aa">
-                  <div className="imgBox-aa">
-                    <img src="" alt="" />
-                  </div>
-                  <div className="cardBody-aa">
-                    <div className="className-aa">
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                    </div>
-                    <p>NT. 450</p>
-                  </div>
-                </div>
-                <div className="classCard-aa">
-                  <div className="imgBox-aa">
-                    <img src="" alt="" />
-                  </div>
-                  <div className="cardBody-aa">
-                    <div className="className-aa">
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                    </div>
-                    <p>NT. 450</p>
-                  </div>
-                </div>
+                <ClassCard />
               </div>
               <div className="classCards-aa">
-                <div className="classCard-aa">
-                  <div className="imgBox-aa">
-                    <img src="" alt="" />
-                  </div>
-                  <div className="cardBody-aa">
-                    <div className="className-aa">
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                    </div>
-                    <p>NT. 450</p>
-                  </div>
-                </div>
-                <div className="classCard-aa">
-                  <div className="imgBox-aa">
-                    <img src="" alt="" />
-                  </div>
-                  <div className="cardBody-aa">
-                    <div className="className-aa">
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                    </div>
-                    <p>NT. 450</p>
-                  </div>
-                </div>
-                <div className="classCard-aa">
-                  <div className="imgBox-aa">
-                    <img src="" alt="" />
-                  </div>
-                  <div className="cardBody-aa">
-                    <div className="className-aa">
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                    </div>
-                    <p>NT. 450</p>
-                  </div>
-                </div>
-                <div className="classCard-aa">
-                  <div className="imgBox-aa">
-                    <img src="" alt="" />
-                  </div>
-                  <div className="cardBody-aa">
-                    <div className="className-aa">
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                    </div>
-                    <p>NT. 450</p>
-                  </div>
-                </div>
+                <ClassCard />
               </div>
               <div className="classCards-aa">
-                <div className="classCard-aa">
-                  <div className="imgBox-aa">
-                    <img src="" alt="" />
-                  </div>
-                  <div className="cardBody-aa">
-                    <div className="className-aa">
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                    </div>
-                    <p>NT. 450</p>
-                  </div>
-                </div>
-                <div className="classCard-aa">
-                  <div className="imgBox-aa">
-                    <img src="" alt="" />
-                  </div>
-                  <div className="cardBody-aa">
-                    <div className="className-aa">
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                    </div>
-                    <p>NT. 450</p>
-                  </div>
-                </div>
-                <div className="classCard-aa">
-                  <div className="imgBox-aa">
-                    <img src="" alt="" />
-                  </div>
-                  <div className="cardBody-aa">
-                    <div className="className-aa">
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                    </div>
-                    <p>NT. 450</p>
-                  </div>
-                </div>
-                <div className="classCard-aa">
-                  <div className="imgBox-aa">
-                    <img src="" alt="" />
-                  </div>
-                  <div className="cardBody-aa">
-                    <div className="className-aa">
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                    </div>
-                    <p>NT. 450</p>
-                  </div>
-                </div>
+                <ClassCard />
               </div>
             </div>
           </div>
@@ -539,14 +177,36 @@ export default function ClassListCate() {
                   </svg>
                 </div>
               </div>
-              <div className="btn-more d-flex">
+              <div className={`${styles['btn-more']} d-flex`}>
                 <p>查看更多</p>
-                <i className="edit-icon" />
+                {/* <i class="edit-icon"></i> */}
+                <svg
+                  className={styles['btn-more1']}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={109}
+                  height={14}
+                  viewBox="0 0 109 14"
+                  fill="none"
+                >
+                  <path
+                    d="M43 11H83"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M82.8994 10.8995L72.9999 0.99998"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                </svg>
               </div>
+              <p>查看更多</p>
+              <i className="edit-icon" />
             </div>
           </div>
         </div>
-        <Footer />
       </div>
     </>
   )
