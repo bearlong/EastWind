@@ -194,9 +194,7 @@ export default function Header() {
                         &nbsp;
                       </span>
                     </label>
-                    <div className={styles['navigation-background-bo']}>
-                      &nbsp;
-                    </div>
+                    <div className={styles['navigation-background-bo']}></div>
                     <nav className={styles['navigation-nav-bo']}>
                       <ul className={styles['navigation-list-bo']}>
                         <li className={styles['navigation-item-bo']}>

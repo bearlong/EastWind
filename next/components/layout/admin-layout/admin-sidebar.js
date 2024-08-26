@@ -2,24 +2,14 @@ import React, { useState, useEffect, useContext } from 'react'
 import { useRouter } from 'next/router'
 import styles from './admin-siderbar.module.scss'
 import { FaUserCircle, FaAddressCard } from 'react-icons/fa'
-import { HiTicket } from 'react-icons/hi2'
-import {
-  FaChevronDown,
-  FaShop,
-  FaHeartCircleCheck,
-  FaUserGroup,
-  FaChartLine,
-  FaVideo,
-} from 'react-icons/fa6'
-import { ImBook } from 'react-icons/im'
-import { IoReceipt } from 'react-icons/io5'
+import { FaChevronDown, FaChartLine, FaVideo, FaTruck } from 'react-icons/fa6'
 import Link from 'next/link'
 import { AuthContext } from '@/context/AuthContext'
 
 export default function AdminSidebar() {
   const router = useRouter()
-  const [activeLink, setActiveLink] = useState('info') // 狀態：追蹤當前活躍的鏈接
-  const [firstLink, setFirstLink] = useState('info') // 初始化 firstLink 為 info
+  const [activeLink, setActiveLink] = useState('chart') // 狀態：追蹤當前活躍的鏈接
+  const [firstLink, setFirstLink] = useState('chart') // 初始化 firstLink 為 info
 
   // 從 AuthContext 中獲取 user 狀態
   const { user } = useContext(AuthContext)
@@ -33,13 +23,10 @@ export default function AdminSidebar() {
   useEffect(() => {
     const path = router.pathname.split('/').pop() // 獲取當前路徑的最後部分
 
-    if (router.pathname.startsWith('/user/user-center/order')) {
+    if (router.pathname.startsWith('/admin/chart')) {
       // 如果路徑是 /user/user-center/order 或 /user/user-center/order/[oid]
-      setActiveLink('order')
-      setFirstLink('order')
-    } else if (path === 'info-edit') {
-      setActiveLink('info')
-      setFirstLink('info')
+      setActiveLink('chart')
+      setFirstLink('chart')
     } else {
       setActiveLink(path)
       setFirstLink(path) // 確保 firstLink 也會更新為當前路徑
@@ -56,26 +43,14 @@ export default function AdminSidebar() {
 
   function getIcon(link) {
     switch (link) {
-      case 'info':
-        return <FaAddressCard />
+      case 'chart':
+        return <FaChartLine />
 
-      case 'booking':
-        return <FaShop />
+      case 'arrival':
+        return <FaTruck />
 
-      case 'party':
-        return <FaUserGroup />
-
-      case 'order':
-        return <IoReceipt />
-
-      case 'course':
-        return <ImBook />
-
-      case 'favorite':
-        return <FaHeartCircleCheck />
-
-      case 'coupon':
-        return <HiTicket />
+      case 'uploadVideo':
+        return <FaVideo />
 
       default:
         return null
@@ -86,26 +61,14 @@ export default function AdminSidebar() {
 
   function getLabel(link) {
     switch (link) {
-      case 'info':
-        return '個人資料'
+      case 'chart':
+        return '數據分析'
 
-      case 'booking':
-        return '訂桌紀錄'
+      case 'arrival':
+        return '出貨狀況'
 
-      case 'party':
-        return '揪團紀錄'
-
-      case 'order':
-        return '歷史訂單'
-
-      case 'course':
-        return '課程'
-
-      case 'favorite':
-        return '我的最愛'
-
-      case 'coupon':
-        return '優惠卷'
+      case 'uploadVideo':
+        return '課程上傳'
 
       default:
         return ''
@@ -150,25 +113,37 @@ export default function AdminSidebar() {
             {/* 選單項目：個人資料 */}
             <li>
               <Link
-                href="/user/user-center/info"
+                href="/admin/chart"
                 className={`${
                   styles['user-sidebar-link-bo']
                 } h6 d-flex align-items-center gap-4 ${
-                  activeLink === 'info' ? styles['user-link-active'] : ''
+                  activeLink === 'chart' ? styles['user-link-active'] : ''
                 }`}
               >
                 <FaChartLine /> 數據分析
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/admin/arrival"
+                className={`${
+                  styles['user-sidebar-link-bo']
+                } h6 d-flex align-items-center gap-4 ${
+                  activeLink === 'arrival' ? styles['user-link-active'] : ''
+                }`}
+              >
+                <FaTruck /> 出貨狀況
               </Link>
             </li>
 
             {/* 選單項目：訂桌紀錄 */}
             <li>
               <Link
-                href="/user/user-center/booking"
+                href="/admin/uploadVideo"
                 className={`${
                   styles['user-sidebar-link-bo']
                 } h6 d-flex align-items-center gap-4 ${
-                  activeLink === 'booking' ? styles['user-link-active'] : ''
+                  activeLink === 'uploadVideo' ? styles['user-link-active'] : ''
                 }`}
               >
                 <FaVideo />
@@ -208,7 +183,7 @@ export default function AdminSidebar() {
                 }`}
               >
                 <Link
-                  href={`/user/user-center/${firstLink}`}
+                  href={`/admin/${firstLink}`}
                   className={`h6 d-flex gap-4 justify-content-between align-items-center`}
                 >
                   {getIcon(firstLink)}
@@ -225,10 +200,10 @@ export default function AdminSidebar() {
                 className={`d-md-block ${styles['user-mobile-sidebar-submenu-bo']}`}
               >
                 {/* 手動渲染各個項目並檢查是否等於 firstLink */}
-                {firstLink !== 'info' && (
+                {firstLink !== 'chart' && (
                   <li>
                     <Link
-                      href="/user/user-center/info"
+                      href="/admin/chart"
                       onClick={() => updateActiveLink('info')}
                       className={`${
                         styles['user-sidebar-link-bo']
@@ -244,12 +219,12 @@ export default function AdminSidebar() {
                 {firstLink !== 'booking' && (
                   <li>
                     <Link
-                      href="/user/user-center/booking"
+                      href="/admin/uploadVideo"
                       onClick={() => updateActiveLink('booking')}
                       className={`${
                         styles['user-sidebar-link-bo']
                       } h6 d-flex align-items-center gap-4 ${
-                        activeLink === 'booking'
+                        activeLink === 'uploadVideo'
                           ? styles['user-link-active']
                           : ''
                       }`}

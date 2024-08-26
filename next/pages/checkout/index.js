@@ -312,6 +312,7 @@ export default function Checkout() {
 
     const url = `http://localhost:3005/api/checkout/${user.id}`
     const method = 'POST'
+    console.log(formData)
     try {
       const response = await fetch(url, {
         method: method,

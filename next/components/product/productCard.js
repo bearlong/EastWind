@@ -3,7 +3,6 @@ import Image from 'next/image'
 import { FaHeart, FaRegHeart, FaStar } from 'react-icons/fa6'
 import styles from '@/styles/bearlong/productList.module.scss'
 // Swiper
-import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
 import Link from 'next/link'
 import { AuthContext } from '@/context/AuthContext'
