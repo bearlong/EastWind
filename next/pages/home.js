@@ -8,11 +8,12 @@ import 'swiper/css/navigation'
 import { Navigation, Autoplay } from 'swiper/modules' // 引入 Autoplay 模塊
 
 export default function Home() {
-  const [swiperInstance, setSwiperInstance] = useState(false)
   const [mahjongProducts, setMahjongProducts] = useState([])
   const [boardGameProducts, setBoardGameProducts] = useState([])
   const [isClient, setIsClient] = useState(false)
   const [swiperReady, setSwiperReady] = useState(false) // 控制 Swiper 是否已經就緒
+  const [hoveredIndex, setHoveredIndex] = useState(null)
+
   const [mahjongSwiperState, setMahjongSwiperState] = useState({
     isLastSlide: false,
     isFirstSlide: true,
@@ -38,6 +39,8 @@ export default function Home() {
   const courseSectionRef = useRef(null) // 儲存線上課程區域的引用
 
   const [backgroundVideo, setBackgroundVideo] = useState('') // 初始背景影片
+
+  const isAnimating = useRef(false)
 
   useEffect(() => {
     setIsClient(true) // 在客戶端渲染時設置為 true
@@ -89,11 +92,41 @@ export default function Home() {
 
   // 課程資料數組
   const courses = [
-    { title: '麻將', description: '智慧與運氣的完美結合。' },
-    { title: '西洋棋', description: '策略與智力的精彩對決。' },
-    { title: '撲克牌', description: '簡單易學，挑戰無限。' },
-    { title: '圍棋', description: '黑白交錯，古老智慧。' },
-    { title: '象棋', description: '車馬交鋒，運籌帷幄。' },
+    {
+      title: '麻將',
+      description: '智慧與運氣的完美結合。',
+      hoverTitle: '麻將',
+      hoverDescription:
+        '四人對戰的智慧與運氣比拼。十六張牌，千變萬化的組合。運籌帷幄，笑聲與勝利齊飛。東南西北，牌桌上的江湖。抓牌、出牌，牌局隨時翻轉。在麻將中找到策略的樂趣。',
+    },
+    {
+      title: '西洋棋',
+      description: '策略與智力的精彩對決。',
+      hoverTitle: '西洋棋',
+      hoverDescription:
+        '策略與智力的終極對決。六種棋子，各有千秋。從開局到殘局，步步為營。黑白棋盤，世界的縮影。一招致勝，或步步為營。掌握棋局，掌握勝利的關鍵。',
+    },
+    {
+      title: '撲克牌',
+      description: '簡單易學，挑戰無限。',
+      hoverTitle: '撲克牌',
+      hoverDescription:
+        '隨時隨地的娛樂選擇。五十二張牌，無限可能。比大小，玩策略，樂趣無窮。從德州撲克到大老二。每一場遊戲都有驚喜。與朋友共享的最佳選擇。',
+    },
+    {
+      title: '圍棋',
+      description: '黑白交錯，古老智慧。',
+      hoverTitle: '圍棋',
+      hoverDescription:
+        '黑白棋子，簡單又深奧。天地之間，無窮的變化。每一手棋，都是智力的較量。角、邊、中央，圍棋的三要素。掌控全局，或局部突破。讓自己沉浸在古老智慧中。',
+    },
+    {
+      title: '象棋',
+      description: '車馬交鋒，運籌帷幄。',
+      hoverTitle: '象棋',
+      hoverDescription:
+        '東方智慧的象徵。九宮格內，百變的戰術。將帥一動，乾坤大挪移。車馬炮卒，各司其職。一步錯，全盤皆輸。簡單易學，樂趣無窮。',
+    },
   ]
 
   useEffect(() => {
@@ -212,6 +245,25 @@ export default function Home() {
       }
     }
   }, [])
+
+  // 新增 transitionEnd 事件的監聽函數
+  const onTransitionEnd = () => {
+    isAnimating.current = false
+  }
+
+  const onMouseEnter = (index) => {
+    if (!isAnimating.current) {
+      setHoveredIndex(index)
+      isAnimating.current = true
+    }
+  }
+
+  const onMouseLeave = () => {
+    if (!isAnimating.current) {
+      isAnimating.current = true
+      setHoveredIndex(null)
+    }
+  }
 
   return (
     <>
@@ -448,42 +500,11 @@ export default function Home() {
                 mahjongVisible ? styles['mahjong-visible'] : ''
               }`}
             >
-              {/* <div
-                className={`${styles['mahjong-card-btn-bo']} d-flex flex-row flex-sm-column gap-5 align-items-center`}
-              >
-                <div
-                  id="swiper-next-mahjong"
-                  className={`${styles['move-card-btn-left-box']}  
-                  ${
-                    mahjongSwiperState.isLastSlide
-                      ? styles['disabled-button']
-                      : ''
-                  } d-flex justify-content-center align-items-center`}
-                >
-                  <FaArrowLeft className={styles['btn-move-card-left-bo']} />
-                </div>
-                <div
-                  id="swiper-prev-mahjong"
-                  className={`${styles['move-card-btn-right-box']}
-                   ${
-                     mahjongSwiperState.isFirstSlide
-                       ? styles['disabled-button']
-                       : ''
-                   } d-flex justify-content-center align-items-center`}
-                >
-                  <FaArrowRight className={styles['btn-move-card-right-bo']} />
-                </div>
-              </div> */}
-
               {swiperReady && (
                 <Swiper
                   slidesPerView={'auto'} /* 根據內容自動調整寬度 */
-                  navigation={{
-                    prevEl: '#swiper-prev-mahjong',
-                    nextEl: '#swiper-next-mahjong',
-                  }}
                   autoHeight={true}
-                  modules={[Navigation, Autoplay]} // 添加 Autoplay 模塊
+                  modules={[Autoplay]} // 添加 Autoplay 模塊
                   loop={false} // 開啟無限循環
                   freeMode={true} // 允許自由滑動，不固定到某個點
                   autoplay={{
@@ -525,41 +546,6 @@ export default function Home() {
                       swiper.autoplay.start()
                     }
                   }}
-                  // onSwiper={(swiper) => {
-                  //   setSwiperInstance(swiper)
-
-                  //   const prevButton = document.querySelector(
-                  //     '#swiper-prev-mahjong'
-                  //   )
-                  //   const nextButton = document.querySelector(
-                  //     '#swiper-next-mahjong'
-                  //   )
-
-                  //   const handlePrevClick = () => {
-                  //     if (swiper) {
-                  //       swiper.autoplay.stop()
-                  //       swiper.params.autoplay.reverseDirection = false
-
-                  //       swiper.autoplay.start()
-                  //     }
-                  //   }
-
-                  //   const handleNextClick = () => {
-                  //     if (swiper) {
-                  //       swiper.autoplay.stop()
-                  //       swiper.params.autoplay.reverseDirection = true
-                  //       swiper.autoplay.start()
-                  //     }
-                  //   }
-
-                  //   prevButton.addEventListener('click', handlePrevClick)
-                  //   nextButton.addEventListener('click', handleNextClick)
-
-                  //   return () => {
-                  //     prevButton.removeEventListener('click', handlePrevClick)
-                  //     nextButton.removeEventListener('click', handleNextClick)
-                  //   }
-                  // }}
                 >
                   {mahjongProducts.map((product) => (
                     <SwiperSlide
@@ -646,44 +632,12 @@ export default function Home() {
                 boardGameVisible ? styles['boardGame-visible'] : ''
               }`}
             >
-              {/* <div
-                className={`${styles['boardGame-card-btn-bo']} d-flex flex-row-reverse flex-sm-column align-items-center gap-5`}
-              >
-                <div
-                  id="swiper-prev-boardGame"
-                  className={`${styles['move-card-btn-left-box']} ${
-                    styles['move-boardGame-btn-left-box']
-                  } ${
-                    boardGameSwiperState.isFirstSlide
-                      ? styles['disabled-button']
-                      : ''
-                  }  d-flex justify-content-center align-items-center`}
-                >
-                  <FaArrowLeft className={styles['btn-move-card-left-bo']} />
-                </div>
-                <div
-                  id="swiper-next-boardGame"
-                  className={`${styles['move-card-btn-right-box']}  ${
-                    styles['move-boardGame-btn-right-box']
-                  } ${
-                    boardGameSwiperState.isLastSlide
-                      ? styles['disabled-button']
-                      : ''
-                  } d-flex justify-content-center align-items-center`}
-                >
-                  <FaArrowRight className={styles['btn-move-card-right-bo']} />
-                </div>
-              </div> */}
               {swiperReady && (
                 <Swiper
                   style={{ transform: 'scaleX(-1)' }} // 反轉滑動容器
                   slidesPerView={'auto'} /* 根據內容自動調整寬度 */
-                  navigation={{
-                    prevEl: '#swiper-prev-boardGame',
-                    nextEl: '#swiper-next-boardGame',
-                  }}
                   autoHeight={true}
-                  modules={[Navigation, Autoplay]} // 添加 Autoplay 模塊
+                  modules={[Autoplay]} // 添加 Autoplay 模塊
                   loop={false}
                   freeMode={true} // 允許自由滑動，不固定到某個點
                   autoplay={{
@@ -711,7 +665,7 @@ export default function Home() {
                       !swiper.params.autoplay.reverseDirection
                     ) {
                       swiper.autoplay.stop()
-                      swiper.params.autoplay.reverseDirection = false
+                      swiper.params.autoplay.reverseDirection = true
                       swiper.autoplay.start()
                     }
 
@@ -720,43 +674,8 @@ export default function Home() {
                       swiper.params.autoplay.reverseDirection
                     ) {
                       swiper.autoplay.stop()
-                      swiper.params.autoplay.reverseDirection = true
+                      swiper.params.autoplay.reverseDirection = false
                       swiper.autoplay.start()
-                    }
-                  }}
-                  onSwiper={(swiper) => {
-                    setSwiperInstance(swiper)
-
-                    const prevButton = document.querySelector(
-                      '#swiper-prev-boardGame'
-                    )
-                    const nextButton = document.querySelector(
-                      '#swiper-next-boardGame'
-                    )
-
-                    const handlePrevClick = () => {
-                      if (swiper) {
-                        swiper.autoplay.stop()
-                        swiper.params.autoplay.reverseDirection = false
-
-                        swiper.autoplay.start()
-                      }
-                    }
-
-                    const handleNextClick = () => {
-                      if (swiper) {
-                        swiper.autoplay.stop()
-                        swiper.params.autoplay.reverseDirection = true
-                        swiper.autoplay.start()
-                      }
-                    }
-
-                    // prevButton.addEventListener('click', handlePrevClick)
-                    // nextButton.addEventListener('click', handleNextClick)
-
-                    return () => {
-                      prevButton.removeEventListener('click', handlePrevClick)
-                      nextButton.removeEventListener('click', handleNextClick)
                     }
                   }}
                 >
@@ -918,12 +837,17 @@ export default function Home() {
                         ref={addToRefs}
                         href={`/course/classListCate?category_id=${index}`}
                         className={`${styles['course-card-bo']} justify-content-center align-items-center`}
-                        onMouseEnter={() =>
+                        onMouseEnter={() => {
                           setBackgroundVideo(
                             `/video/course-type-${index + 1}.mp4`
                           )
-                        } // 更改背景影片
-                        onMouseLeave={() => setBackgroundVideo('')} // 恢復為預設背景影片
+                          setHoveredIndex(index)
+                        }} // 更改背景影片並設置 hover 狀態
+                        onMouseLeave={() => {
+                          setBackgroundVideo('')
+                          setHoveredIndex(null)
+                        }} // 恢復預設背景影片並取消 hover 狀態
+                        onTransitionEnd={onTransitionEnd()} // 新增 transitionEnd 事件的監聽
                       >
                         <div
                           className={`${styles['course-card-front-bo']} d-flex flex-column justify-content-end`}
@@ -931,8 +855,21 @@ export default function Home() {
                           <div
                             className={`${styles['course-card-body-bo']} d-flex flex-column gap-3`}
                           >
-                            <h5>{course.title}</h5>
-                            <p>{course.description}</p>
+                            <h5>
+                              {hoveredIndex === index
+                                ? course.hoverTitle
+                                : course.title}
+                            </h5>
+                            {hoveredIndex === index ? (
+                              course.hoverDescription
+                                .split('。')
+                                .map(
+                                  (line, i) =>
+                                    line.trim() && <p key={i}>{line}。</p>
+                                )
+                            ) : (
+                              <p>{course.description}</p>
+                            )}
                             <div
                               className={`${styles['course-more']} d-flex justify-content-end align-items-center`}
                             >

@@ -453,9 +453,8 @@
 /* course */
 .course-section-bo {
   z-index: 2; /* 內容在影片層之上 */
-  padding: 6.4rem 0 8rem;
+  padding: 6.4rem 0 16rem;
   color: var(--bg-text-color);
-  gap: 6.4rem;
 
   overflow: hidden;
   position: relative;
@@ -495,6 +494,7 @@
 }
 
 .course-title-box-bo {
+  margin-bottom: 6rem;
   z-index: 4;
   gap: 3rem;
   text-wrap: nowrap;
@@ -514,7 +514,7 @@
 
 .course-text-body-bo {
   padding: 0 14.2rem;
-
+  margin-bottom: 6rem;
   @media (max-width: 1200px) {
     padding: 0 8rem;
   }
@@ -721,6 +721,7 @@
 
 /* 初始化卡片容器位置，設置初始狀態為偏移100% */
 .course-card-box-bo {
+  padding-bottom: 5rem;
   opacity: 0;
   transform: translateX(100%); /* 初始位置：從右側滑入 */
   transition: transform 1.5s ease, opacity 1s ease;
