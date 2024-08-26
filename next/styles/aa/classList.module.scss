@@ -151,6 +151,10 @@
         height: 2.4em; // 預留兩行的高度
       }
 
+      &:hover {
+        -webkit-text-fill-color: var(--primary-dark);
+      }
+
       .classDescription-aa {
         min-height: calc(1.2em * 2);
         line-height: 1.2em;
@@ -163,6 +167,16 @@
         margin: 0;
       }
     }
+  }
+}
+
+.card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    text-decoration: none;
   }
 }
 

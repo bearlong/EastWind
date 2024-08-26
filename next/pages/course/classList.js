@@ -63,41 +63,15 @@ export default function ClassList() {
                 .flat()
                 .slice(0, 4)
                 .map((classItem, index) => (
-                  <Link href={`/course/classDetail/`} key={classItem.id}>
+                  <Link
+                    href={`/course/classDetail/`}
+                    key={classItem.id}
+                    className={styles['card-link']}
+                  >
                     <ClassCard courseData={classItem} rank={index + 1} />
                   </Link>
                 ))}
-
-              {/* <ClassGroup /> */}
             </div>
-
-            <div className={styles['classCards-aa']}>
-              {courses && courses && courses.length > 0 ? (
-                courses.slice(0, 4).map((course, i) => {
-                  return (
-                    <div key={course.id}>
-                      <Link href={`/course/classDetail/${course.id}`}>
-                        <ClassCard courseData={course} rank={i + 1} />
-                      </Link>
-                    </div>
-                  )
-                })
-              ) : (
-                <p>No courses available</p> // 或者可以顯示一個適當的提示或佔位符
-              )}
-            </div>
-
-            {/* <div className={styles['classCards-aa']}>
-              {courses.list.map((course, i) => {
-                return (
-                  <div key={course.id}>
-                    <Link href={`/course/classDetail/${course.id}`}>
-                      <ClassCard courseData={course} rank={i + 1} />
-                    </Link>
-                  </div>
-                )
-              })}
-            </div> */}
 
             <div className={styles['line-aa']}>
               <svg
