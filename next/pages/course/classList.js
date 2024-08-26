@@ -11,6 +11,8 @@ export default function ClassList() {
   // 注意2: 應用執行過程中，一定要保持狀態資料類型都是陣列
   const [courses, setCourses] = useState([])
   const router = useRouter()
+  const [pages, setPages] = useState(1)
+  const { category_id } = router.query
 
   // 向伺服器連線的程式碼；向伺服器fetch獲取資料
   const getCourses = async () => {
@@ -38,6 +40,12 @@ export default function ClassList() {
 
   const handleCardClick = (courseId) => {
     router.push(`/course/classDetail/${courseId}`)
+  }
+
+  const handleLoadMore = () => {
+    if (pages * 10 < courses.total) {
+      setPages((page) => page + 1)
+    }
   }
 
   return (
@@ -70,6 +78,15 @@ export default function ClassList() {
                 />
               ))}
             </div>
+
+            {/* <div className={styles['classCards-aa']}>
+              {courses.list.map((course, i) => (
+                <Link href={`/course/classDetail/${course.id}`} key={course.id}>
+                  <ClassCard courseData={course} rank={i + 1} />
+                </Link>
+              ))}
+            </div> */}
+
             <div className={styles['line-aa']}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"

@@ -37,6 +37,16 @@
 //     getCourses()
 //   }, [])
 
+//   const handleCardClick = (courseId) => {
+//     router.push(`/course/classDetail/${courseId}`)
+//   }
+
+//   const handleLoadMore = () => {
+//     if (pages * 8 < courses.total) {
+//       setPages((page) => page + 1)
+//     }
+//   }
+
 //   return (
 //     <>
 //       <div className="container">
@@ -149,7 +159,7 @@
 //             </div>
 //           </div>
 //           <div className={styles['sec23-aa']}>
-//             <div className={styles['loadMore-aa']}>
+//             <button className={styles['loadMore-aa']} onClick={handleLoadMore}>
 //               <div className={styles['text23-aa']}>
 //                 <h6>16/36</h6>
 //               </div>
@@ -212,7 +222,7 @@
 //               </div>
 //               <p>查看更多</p>
 //               <i className="edit-icon" />
-//             </div>
+//             </button>
 //           </div>
 //         </div>
 //       </div>
