@@ -16,31 +16,15 @@ export default function ClassListCate() {
   return (
     <>
       <div className="container">
-        <div className="desktop-list2-aa">
-          <div className="sec1-aa">
-            <div className="text12-aa">
+        <div className={styles['desktopList2-aa']}>
+          <div className={styles['sec1-aa']}>
+            <div className={styles['text12-aa']}>
               <h2>麻將 課程排行</h2>
             </div>
-            <div className="classCards-aa">
-              {/* <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <div className="rank1">1</div>
-                  <img
-                    src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                    alt=""
-                  />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div> */}
+            <div className={styles['classCards-aa']}>
               <ClassCard />
             </div>
-            <div className="line-aa">
+            <div className={styles['line-aa']}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width={1298}
@@ -68,17 +52,17 @@ export default function ClassListCate() {
               </svg>
             </div>
           </div>
-          <div className="texth22-aa">
+          <div className={styles['texth22-aa']}>
             <h2>麻將課程 列表</h2>
           </div>
-          <div className="sec2">
-            <div className="text2-aa">
-              <div className="navBarContent-aa">
+          <div className={styles['sec2']}>
+            <div className={styles['text2-aa']}>
+              <div className={styles['navBarContent-aa']}>
                 <h5>36 課程</h5>
-                <div className="iconGroup-aa">
-                  <div className="button22">
-                    <div className="button23-aa">
-                      <div className="Vector3-aa">
+                <div className={styles['iconGroup-aa']}>
+                  <div className={styles['button22']}>
+                    <div className={styles['button23-aa']}>
+                      <div className={styles['vector3-aa']}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width={14}
@@ -94,7 +78,7 @@ export default function ClassListCate() {
                       </div>
                     </div>
                   </div>
-                  <div className="vector">
+                  <div className={styles['vector']}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width={26}
@@ -108,7 +92,7 @@ export default function ClassListCate() {
                       />
                     </svg>
                   </div>
-                  <div className="vector">
+                  <div className={styles['vector']}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width={19}
@@ -125,28 +109,28 @@ export default function ClassListCate() {
                 </div>
               </div>
             </div>
-            <div className="cardgroup22-aa">
-              <div className="classCards-aa">
+            <div className={styles['cardgroup22-aa']}>
+              <div className={styles['classCards-aa']}>
                 <ClassCard />
               </div>
-              <div className="classCards-aa">
+              <div className={styles['classCards-aa']}>
                 <ClassCard />
               </div>
-              <div className="classCards-aa">
+              <div className={styles['classCards-aa']}>
                 <ClassCard />
               </div>
-              <div className="classCards-aa">
+              <div className={styles['classCards-aa']}>
                 <ClassCard />
               </div>
             </div>
           </div>
-          <div className="sec23-aa">
-            <div className="loadMore-aa">
-              <div className="text23-aa">
+          <div className={styles['sec23-aa']}>
+            <div className={styles['loadMore-aa']}>
+              <div className={styles['text23-aa']}>
                 <h6>16/36</h6>
               </div>
-              <div className="progressBar-aa">
-                <div className="Line-9">
+              <div className={styles['progressBar-aa']}>
+                <div className={styles['Line-9']}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width={256}
@@ -162,7 +146,7 @@ export default function ClassListCate() {
                     />
                   </svg>
                 </div>
-                <div className="Line-8">
+                <div className={styles['Line-8']}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width={38}
