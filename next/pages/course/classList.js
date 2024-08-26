@@ -10,6 +10,7 @@ export default function ClassList() {
   // 注意1: 初始值至少要空陣列，初次render是用初始值
   // 注意2: 應用執行過程中，一定要保持狀態資料類型都是陣列
   const [courses, setCourses] = useState([])
+  const router = useRouter()
 
   // 向伺服器連線的程式碼；向伺服器fetch獲取資料
   const getCourses = async () => {
@@ -35,42 +36,9 @@ export default function ClassList() {
     getCourses()
   }, [])
 
-  // 課程卡片組件
-  // const ClassCard = ({ courseData, rank }) => (
-  //   <div className={styles['classCard-aa']}>
-  //     <Link href={`/course/classDetail/${courseData.id}`}></Link>
-  //     <div className={styles['imgBox-aa']}>
-  //       {rank && <div className={styles[`rank${rank}`]}>{rank}</div>}
-  //       <Image
-  //         src={
-  //           `/images/aa/${courseData.images}` ||
-  //           'https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993'
-  //         }
-  //         alt={courseData.course_name || ''}
-  //         width={200}
-  //         height={200}
-  //         objectFit="cover"
-  //       />
-  //     </div>
-  //     <div className={styles['cardBody-aa']}>
-  //       <div className={styles['className-aa']}>
-  //         <p className={styles['courseName']}>{courseData.course_name}</p>
-  //         <p className={styles['classDescription-aa']}>
-  //           {courseData.course_category_id}
-  //         </p>
-  //       </div>
-  //       <p>NT. {courseData.price}</p>
-  //     </div>
-  //   </div>
-  // )
-
-  // const CoursesList = ({ courses }) => (
-  //   <div>
-  //     {courses.list.map((course, index) => (
-  //       <ClassCard key={course.id} courseData={course} rank={index + 1} />
-  //     ))}
-  //   </div>
-  // )
+  const handleCardClick = (courseId) => {
+    router.push(`/course/classDetail/${courseId}`)
+  }
 
   return (
     <>
