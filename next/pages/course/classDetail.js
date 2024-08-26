@@ -6,14 +6,50 @@ import Link from 'next/link'
 import styles from '@/styles/aa/classDetail.module.scss'
 
 export default function ClassDetail() {
+  const [courses, setCourses] = useState({ list: [] })
+  const router = useRouter()
+  const [pages, setPages] = useState(1)
+  const { category_id } = router.query
+
+  // 向伺服器連線的程式碼；向伺服器fetch獲取資料
+  const getCourses = async () => {
+    // const apiURL = `http://localhost:3005/api/course/::id`
+    const apiURL = `http://localhost:3005/api/course`
+    try {
+      const res = await fetch(apiURL)
+      const data = await res.json()
+
+      console.log(data.data.courses)
+
+      // 設定到狀態中 ==> 觸發re-render(進入update階段)
+      if (Array.isArray(data.data.courses)) {
+        setCourses(data.data.courses)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  // 樣式2: didMount
+  // 首次render之後(after)執行一次，之後不會再執行
+  useEffect(() => {
+    getCourses()
+  }, [])
+
   return (
     <>
       <div className={`${styles.container} ${styles['desktopdetail-aa']}`}>
         <div className={styles['detailsec1-aa']}>
           <div className={`${styles['text14-aa']} ${styles['text-hover']}`}>
             <h6>
-              <span>所有課程</span> &gt; <span>麻將</span> &gt;{' '}
-              <span>初級</span>
+              <Link href={`/course/classList`}>
+                <span>所有課程 </span>
+              </Link>
+              &gt;
+              <Link href={`/course/classListCate`}>
+                <span>麻將</span>
+              </Link>
+              &gt; <span>初級</span>
             </h6>
           </div>
           <div className={styles['desec1box-aa']}>
@@ -109,7 +145,7 @@ export default function ClassDetail() {
             </h6>
           </div>
         </div>
-        <div className={styles['detailpic-aa']}>
+        {/* <div className={styles['detailpic-aa']}>
           <div className={styles['detailpic1-aa']}>
             <div className={styles['depic1-aa']}>
               <Image
@@ -134,6 +170,37 @@ export default function ClassDetail() {
             </h6>
           </div>
 
+          <div className={styles['texth2detail4-aa']}>
+            <h6>
+              程式語言的學習，首重邏輯思考能力，面對未來快速變化的社會，若能培養運算思維（Computational
+              Thinking）結合工程的務實與效率、數理方面的抽象邏輯思考，將能更有效解決複雜的問題。
+            </h6>
+          </div>
+        </div> */}
+        <div className={styles['detailpic-aa']}>
+          <div className={styles['detailpic1-aa']}>
+            <div className={styles['depic1-aa']}>
+              <Image
+                src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
+                alt=""
+                width={640}
+                height={360}
+              />
+            </div>
+          </div>
+        </div>
+        <div className={styles['detextgroup-aa']}>
+          <div className={styles['texth2detail3-aa']}>
+            <div className={styles['texth2detail31-aa']}>
+              <h4>想學程式？推薦你從 麻將 開始！</h4>
+            </div>
+          </div>
+          <div className={styles['texth2detail4-aa']}>
+            <h6>
+              程式語言的學習，首重邏輯思考能力，面對未來快速變化的社會，若能培養運算思維（Computational
+              Thinking）結合工程的務實與效率、數理方面的抽象邏輯思考，將能更有效解決複雜的問題。
+            </h6>
+          </div>
           <div className={styles['texth2detail4-aa']}>
             <h6>
               程式語言的學習，首重邏輯思考能力，面對未來快速變化的社會，若能培養運算思維（Computational

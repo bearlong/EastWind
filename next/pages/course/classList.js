@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import styles from '@/styles/aa/classList.module.scss'
 import ClassCard from '@/components/course/card'
+import ClassGroup from '@/components/course/cards'
 
 export default function ClassList() {
   // 注意1: 初始值至少要空陣列，初次render是用初始值
@@ -26,6 +27,7 @@ export default function ClassList() {
       // 設定到狀態中 ==> 觸發re-render(進入update階段)
       if (Array.isArray(data.data.courses)) {
         setCourses(data.data.courses)
+        console.log(data.data.courses)
       }
     } catch (e) {
       console.error(e)
@@ -61,17 +63,17 @@ export default function ClassList() {
                 .flat()
                 .slice(0, 4)
                 .map((classItem, index) => (
-                  <ClassCard
-                    key={classItem.id}
-                    courseData={classItem}
-                    rank={index + 1}
-                  />
+                  <Link href={`/course/classDetail/`} key={classItem.id}>
+                    <ClassCard courseData={classItem} rank={index + 1} />
+                  </Link>
                 ))}
+
+              {/* <ClassGroup /> */}
             </div>
 
-            {/* <div className={styles['classCards-aa']}>
-              {courses && courses.list && courses.list.length > 0 ? (
-                courses.list.map((course, i) => {
+            <div className={styles['classCards-aa']}>
+              {courses && courses && courses.length > 0 ? (
+                courses.slice(0, 4).map((course, i) => {
                   return (
                     <div key={course.id}>
                       <Link href={`/course/classDetail/${course.id}`}>
@@ -83,7 +85,7 @@ export default function ClassList() {
               ) : (
                 <p>No courses available</p> // 或者可以顯示一個適當的提示或佔位符
               )}
-            </div> */}
+            </div>
 
             {/* <div className={styles['classCards-aa']}>
               {courses.list.map((course, i) => {
@@ -133,42 +135,44 @@ export default function ClassList() {
             <div className={styles['classCards-aa']}>
               {Object.values(courses)
                 .flat()
-                .slice(0, 4)
+                .slice(5, 9)
                 .map((classItem, index) => (
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
             </div>
-            <div className={`${styles['btn-more']} d-flex`}>
-              <p>查看更多</p>
-              <svg
-                className={styles['btn-more1']}
-                xmlns="http://www.w3.org/2000/svg"
-                width={109}
-                height={14}
-                viewBox="0 0 109 14"
-                fill="none"
-              >
-                <path
-                  d="M43 11H83"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M82.8994 10.8995L72.9999 0.99998"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
+            <Link href={`/course/classListCate/`}>
+              <div className={`${styles['btn-more']} d-flex`}>
+                <p>查看更多</p>
+                <svg
+                  className={styles['btn-more1']}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={109}
+                  height={14}
+                  viewBox="0 0 109 14"
+                  fill="none"
+                >
+                  <path
+                    d="M43 11H83"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M82.8994 10.8995L72.9999 0.99998"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+            </Link>
             <div className={styles['text2-aa']}>
               <h2>麻將</h2>
             </div>
             <div className={styles['classCards-aa']}>
               {Object.values(courses)
                 .flat()
-                .slice(0, 4)
+                .slice(10, 14)
                 .map((classItem, index) => (
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
@@ -204,7 +208,7 @@ export default function ClassList() {
             <div className={styles['classCards-aa']}>
               {Object.values(courses)
                 .flat()
-                .slice(0, 4)
+                .slice(15, 19)
                 .map((classItem, index) => (
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
@@ -240,7 +244,7 @@ export default function ClassList() {
             <div className={styles['classCards-aa']}>
               {Object.values(courses)
                 .flat()
-                .slice(0, 4)
+                .slice(20, 24)
                 .map((classItem, index) => (
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
@@ -276,7 +280,7 @@ export default function ClassList() {
             <div className={styles['classCards-aa']}>
               {Object.values(courses)
                 .flat()
-                .slice(0, 4)
+                .slice(25, 29)
                 .map((classItem, index) => (
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
