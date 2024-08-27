@@ -74,12 +74,17 @@
   }
 }
 
-.icon-mahjong-bo {
+.icon-mahjong-bo,
+.icon-mahjong-bo-intro,
+.icon-mahjong-bo-product,
+.icon-mahjong-bo-room,
+.icon-mahjong-bo-course {
   padding: 0.4rem;
   width: 4.8rem;
   height: 6rem;
   border: 3px solid var(--primary);
   border-radius: 5px;
+  opacity: 0;
 
   @media (max-width: 1400px) {
     width: 4rem;
@@ -100,6 +105,7 @@
 
 /* intro */
 .intro-section-bo {
+  overflow: hidden;
   padding: 6rem 0;
   height: 110vh;
   position: relative;
@@ -319,141 +325,10 @@
   text-wrap: nowrap;
 }
 
-.mahjong-card-btn-bo,
-.boardGame-card-btn-bo {
-  position: absolute;
-  bottom: 30%;
-  z-index: 4;
-}
-
-.mahjong-card-btn-bo {
-  gap: 3rem;
-  left: 26rem;
-  @media (max-width: 768px) {
-    left: 21rem;
-  }
-  @media (max-width: 576px) {
-    width: 30rem;
-    justify-content: space-between;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-}
-
-.boardGame-card-btn-bo {
-  gap: 3rem;
-  right: 33rem;
-  @media (max-width: 768px) {
-    right: 27rem;
-  }
-  @media (max-width: 576px) {
-    width: 30rem;
-    justify-content: space-between;
-    left: 50%;
-    transform: translateX(50%);
-  }
-}
-
-.move-card-btn-right-box,
-.move-card-btn-left-box {
-  position: absolute;
-  left: -0.5rem;
-
-  width: 8rem;
-  height: 8rem;
-  border-radius: 50%;
-  border: 3px solid var(--primary);
-  cursor: pointer;
-  transition: 0.3s;
-
-  &:hover {
-    color: var(--primary-dark);
-    border-color: var(--primary-dark);
-    background-color: rgba(250, 247, 240, 0.5);
-
-    & .btn-move-card-right-bo,
-    & .btn-move-card-left-bo {
-      color: var(--primary-dark);
-    }
-  }
-
-  @media (max-width: 768px) {
-    width: 6.4rem;
-    height: 6.4rem;
-    left: -0.3rem;
-  }
-}
-
-.move-card-btn-right-box {
-  top: -25rem;
-
-  @media (max-width: 768px) {
-    top: -21rem;
-  }
-
-  @media (max-width: 576px) {
-    top: -10rem;
-    left: 15rem;
-  }
-
-  &:hover {
-    transform: translateX(3px);
-  }
-}
-.move-card-btn-left-box {
-  top: -12rem;
-
-  @media (max-width: 768px) {
-    top: -11rem;
-  }
-  @media (max-width: 576px) {
-    top: -10rem;
-    left: -7rem;
-  }
-  &:hover {
-    transform: translateX(-3px);
-  }
-}
-
-.move-boardGame-btn-left-box {
-  @media (max-width: 576px) {
-    left: -21rem;
-  }
-}
-
-.move-boardGame-btn-right-box {
-  @media (max-width: 576px) {
-    left: 1rem;
-  }
-}
-
-.btn-move-card-left-bo,
-.btn-move-card-right-bo {
-  font-size: 3rem;
-  color: var(--primary);
-  transition: 0.3s;
-
-  @media (max-width: 576px) {
-    font-size: 2.4rem;
-  }
-}
-
-.btn-move-card-right-bo {
-  @media (max-width: 576px) {
-    left: 0;
-  }
-}
-
-.btn-move-card-left-bo {
-  @media (max-width: 576px) {
-    right: 0;
-  }
-}
-
 /* course */
 .course-section-bo {
   z-index: 2; /* 內容在影片層之上 */
-  padding: 6.4rem 0 16rem;
+  padding: 6.4rem 0 8rem;
   color: var(--bg-text-color);
 
   overflow: hidden;
@@ -498,6 +373,9 @@
   z-index: 4;
   gap: 3rem;
   text-wrap: nowrap;
+  @media (max-width: 768px) {
+    margin-bottom: 0rem;
+  }
   @media (max-width: 576px) {
     gap: 1rem;
   }
@@ -514,7 +392,7 @@
 
 .course-text-body-bo {
   padding: 0 14.2rem;
-  margin-bottom: 6rem;
+  margin-bottom: 3rem;
   @media (max-width: 1200px) {
     padding: 0 8rem;
   }
@@ -528,6 +406,8 @@
   }
 
   @media (max-width: 576px) {
+    margin-bottom: 1rem;
+
     padding: 0 2.4rem;
   }
 }
@@ -576,11 +456,29 @@
 }
 
 .move-course-btn-box-left-bo {
-  left: 30rem;
+  left: 43rem;
+  @media (max-width: 1200px) {
+    left: 38rem;
+  }
+  @media (max-width: 992px) {
+    left: 36rem;
+  }
+  @media (max-width: 768px) {
+    left: 5rem;
+  }
 }
 
 .move-course-btn-box-right-bo {
-  right: 30rem;
+  right: 36rem;
+  @media (max-width: 1200px) {
+    right: 41rem;
+  }
+  @media (max-width: 992px) {
+    right: 22rem;
+  }
+  @media (max-width: 768px) {
+    right: 5rem;
+  }
 }
 
 .mahjong-card-box-bo:not(.mahjong-visible) {
@@ -672,28 +570,15 @@
 
 .course-empty-slide {
   height: 34rem; /* 設置與其他卡片一致的高度 */
-  width: 35rem;
+  width: 40rem;
 
   @media (max-width: 768px) {
     height: 28rem; /* 設置與其他卡片一致的高度 */
   }
-}
+  @media (max-width: 576px) {
+    height: 34rem; /* 設置與其他卡片一致的高度 */
 
-// 當到達最後一張滑動時禁用按鈕
-.disabled-button {
-  opacity: 0.6; // 使按鈕半透明
-  background-color: rgba(117, 88, 41, 0.8);
-  border-color: var(--primary);
-
-  &:hover {
-    border-color: var(--primary);
-
-    background-color: rgba(117, 88, 41, 0.8);
-    transform: translateX(0);
-    & .btn-move-card-right-bo,
-    & .btn-move-card-left-bo {
-      color: var(--primary);
-    }
+    width: 22rem;
   }
 }
 
@@ -746,4 +631,23 @@
   @media (max-width: 576px) {
     transform: translateX(30px); /* 保留 -80px 的偏移 */
   }
+}
+
+.ml2 {
+  font-weight: 900;
+  font-size: 4.8rem;
+  white-space: nowrap; /* 預設不換行 */
+
+  @media screen and (max-width: 768px) {
+    font-size: 3.6rem;
+  }
+
+  @media screen and (max-width: 400px) {
+    white-space: pre-wrap; /* 允許換行 */
+  }
+}
+
+.ml2 .letter {
+  display: inline-block;
+  line-height: 1rem;
 }

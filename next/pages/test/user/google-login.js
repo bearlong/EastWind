@@ -1,5 +1,5 @@
-import useFirebase from '@/hooks/use-firebase'
-import { initUserData, useAuth } from '@/hooks/use-auth'
+import useFirebase from '@/hooks/use-firebase-bo'
+import { initUserData, useAuth } from '@/hooks/use-auth-bo'
 import {
   googleLogin,
   checkAuth,
@@ -9,12 +9,15 @@ import {
 } from '@/services/user'
 import toast, { Toaster } from 'react-hot-toast'
 import GoogleLogo from '@/components/icons/google-logo'
+import { AuthContext } from '@/context/AuthContext'
+import { useContext } from 'react'
 
 // 因瀏覽器安全限制，改用signInWithPopup，詳見以下討論
 // https://github.com/orgs/mfee-react/discussions/129
 export default function GoogleLoginPopup() {
   const { loginGoogle, logoutFirebase } = useFirebase()
   const { auth, setAuth } = useAuth()
+  const { user } = useContext(AuthContext)
 
   // 處理google登入後，要向伺服器進行登入動作
   const callbackGoogleLoginPopup = async (providerData) => {
