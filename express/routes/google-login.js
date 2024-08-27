@@ -1,24 +1,20 @@
 import express from 'express'
-import dbPromise from '##/configs/mysql-promise.js' // 引入資料庫連接池
+import dbPromise from '##/configs/mysql-promise.js'
 import jsonwebtoken from 'jsonwebtoken'
 import 'dotenv/config.js'
 
 const router = express.Router()
-const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET
+const secretKey = 'boyuboyuboyuIamBoyu' // 使用環境變數或預設值
 
-router.post('/', async function (req, res, next) {
-  console.log(JSON.stringify(req.body))
-
-  // 檢查從 react 來的資料
-  if (!req.body.providerId || !req.body.uid) {
-    return res.json({ status: 'error', message: '缺少 google 登入資料' })
-  }
-
-  const { displayName, email, uid, photoURL } = req.body
-  const google_uid = uid
+// 使用者 Google 登入
+router.post('/', async (req, res) => {
+  console.log('Received body:', JSON.stringify(req.body))
 
   try {
-    // 1. 先查詢資料庫是否有同 google_uid 的資料
+    // 假設 req.body 已經包含所有需要的使用者資訊
+    const { google_uid, email, displayName, photoURL } = req.body
+
+    // 查詢資料庫中是否存在該Google UID的使用者
     const [rows] = await dbPromise.execute(
       'SELECT COUNT(*) as total FROM user WHERE google_uid = ?',
       [google_uid]
@@ -27,58 +23,66 @@ router.post('/', async function (req, res, next) {
 
     let returnUser = {
       id: 0,
-      username: '',
+      google_name: '',
       google_uid: '',
       line_uid: '',
     }
 
     if (total > 0) {
-      // 2-1. 有存在 -> 從資料庫查詢會員資料
+      // 使用者已存在
       const [userRows] = await dbPromise.execute(
-        'SELECT id, username, google_uid, line_uid FROM user WHERE google_uid = ? LIMIT 1',
+        'SELECT id, google_name, google_uid FROM user WHERE google_uid = ? LIMIT 1',
         [google_uid]
       )
       const dbUser = userRows[0]
 
       returnUser = {
         id: dbUser.id,
-        username: dbUser.username,
+        google_name: dbUser.google_name,
         google_uid: dbUser.google_uid,
         line_uid: dbUser.line_uid,
       }
     } else {
-      // 2-2. 不存在 -> 建立一個新會員資料 (無帳號與密碼)，只有 google 來的資料 -> 執行登入工作
+      // 新建使用者
       const [result] = await dbPromise.execute(
-        'INSERT INTO user (username, email, google_uid, photo_url) VALUES (?, ?, ?, ?)',
+        'INSERT INTO user (google_name, email, google_uid, photo_url) VALUES (?, ?, ?, ?)',
         [displayName, email, google_uid, photoURL]
       )
 
       returnUser = {
         id: result.insertId,
-        username: displayName,
+        google_name: displayName,
         google_uid: google_uid,
         line_uid: '',
       }
     }
 
-    // 產生存取令牌 (access token)，其中包含會員資料
-    const accessToken = jsonwebtoken.sign(returnUser, accessTokenSecret, {
-      expiresIn: '3d',
+    // 生成accessToken和refreshToken
+    const accessToken = jsonwebtoken.sign(returnUser, secretKey, {
+      expiresIn: '30m',
     })
 
-    // 使用 httpOnly cookie 來讓瀏覽器端儲存 access token
-    res.cookie('accessToken', accessToken, { httpOnly: true })
+    const refreshToken = jsonwebtoken.sign(
+      { id: returnUser.id, google_name: returnUser.google_name },
+      secretKey,
+      { expiresIn: '7d' }
+    )
 
-    // 傳送 access token 回應 (react 可以儲存在 state 中使用)
+    console.log('Generated accessToken:', accessToken)
+    console.log('Generated refreshToken:', refreshToken)
+
     return res.json({
       status: 'success',
-      data: {
-        accessToken,
-      },
+      message: 'Google 登入成功',
+      accessToken,
+      refreshToken,
+      name: returnUser.google_name,
     })
   } catch (error) {
-    console.error('Database query error:', error)
-    return res.status(500).json({ status: 'error', message: '伺服器錯誤' })
+    console.error('Google 登入失敗:', error)
+    return res
+      .status(500)
+      .json({ status: 'fail', message: '伺服器錯誤，請稍後再試' })
   }
 })
 

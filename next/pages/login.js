@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import styles from '@/styles/boyu/login.module.scss'
 import { FaCheck } from 'react-icons/fa6'
 import useAuth from '@/hooks/user-auth-bo'
@@ -7,6 +7,7 @@ import Swal from 'sweetalert2'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import GoogleLogo from '@/components/icons/google-logo'
+import { AuthContext } from '@/context/AuthContext'
 
 export default function Login() {
   const router = useRouter()
@@ -16,9 +17,9 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [accountError, setAccountError] = useState('')
   const [passwordError, setPasswordError] = useState('')
-
-  const { login, user, loading } = useAuth() // 使用自定義的 useAuth 鉤子來處理登入邏輯
+  const { login } = useAuth() // 從 useAuth 中解構獲取 setToken 和 setUser
   const { loginGoogle } = useFirebase() // 使用 Google 登入功能
+  const { setToken, setUser } = useContext(AuthContext)
 
   // 從 localStorage 中讀取賬號並設置到狀態中
   useEffect(() => {
@@ -75,25 +76,53 @@ export default function Login() {
   }
 
   // 處理Google登入的回調邏輯
-  const onGoogleLoginSuccess = async (providerData) => {
+  const onGoogleLoginSuccess = async () => {
     try {
-      console.log('Provider Data:', providerData)
-      const result = await loginGoogle(providerData)
+      const providerData = await loginGoogle() // 確保 loginGoogle 返回的是完整的使用者資料
+      const { uid, email, displayName, photoURL } = providerData
+
+      const response = await fetch('http://localhost:3005/api/google-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          google_uid: uid,
+          email,
+          displayName,
+          photoURL,
+        }), // 發送使用者資訊到後端
+      })
+
+      const result = await response.json()
       console.log('Login Result:', result)
-      if (result.success) {
-        onLoginSuccess(result.name)
+
+      if (result.status === 'success') {
+        // 儲存 token 和用戶信息到 AuthContext 和 localStorage
+        localStorage.setItem('accessToken', result.accessToken)
+        localStorage.setItem('refreshToken', result.refreshToken)
+
+        setToken(result.accessToken)
+        setUser({
+          name: result.name,
+          email: email,
+          photoURL: photoURL,
+        })
+
+        // 進行成功後的操作，例如跳轉頁面
+        router.push('/home')
       } else {
+        // 處理失敗邏輯
         Swal.fire({
           title: 'Google 登入失敗',
-          text: '請稍後再試',
+          text: result.message || '請稍後再試',
           icon: 'error',
           confirmButtonText: '確認',
         })
       }
     } catch (error) {
       console.log('Login Error:', error)
+      // 錯誤處理
       Swal.fire({
-        title: 'Google 登入失敗',
+        title: '登入錯誤',
         text: '發生未知錯誤，請稍後再試',
         icon: 'error',
         confirmButtonText: '確認',
@@ -324,7 +353,7 @@ export default function Login() {
           <button
             type="button"
             className={`${styles['btn-google-login-bo']} btn h6 d-flex justify-content-between align-items-center`}
-            onClick={() => loginGoogle(onGoogleLoginSuccess)}
+            onClick={onGoogleLoginSuccess} // 直接調用 onGoogleLoginSuccess
           >
             <GoogleLogo /> Google 登入
           </button>

@@ -6,20 +6,9 @@ import useFirebase from './use-firebase-bo'
 const useAuth = () => {
   const { setUser, token, setToken } = useContext(AuthContext)
   const router = useRouter()
-  const { loginGoogle, loginGoogleRedirect, logoutFirebase, initApp } =
-    useFirebase()
-
-  if (!useContext) {
-    throw new Error('useAuth 必須在 AuthProvider 內使用')
-  }
+  const { logoutFirebase } = useFirebase()
 
   // 集中處理 localStorage 操作
-  const setLocalStorageTokens = (accessToken, refreshToken) => {
-    localStorage.setItem('accessToken', accessToken)
-    if (refreshToken) {
-      localStorage.setItem('refreshToken', refreshToken)
-    }
-  }
 
   const clearLocalStorageTokens = () => {
     localStorage.removeItem('accessToken')
@@ -27,7 +16,6 @@ const useAuth = () => {
   }
 
   const login = async (account, password) => {
-    // 如果你需要本地帳號和密碼的登入邏輯，保留這部分
     const url = 'http://localhost:3005/api/user/login'
     const data = { account, password }
 
@@ -56,27 +44,12 @@ const useAuth = () => {
     }
   }
 
-  const loginWithGoogle = async () => {
-    // 使用 Firebase 的 Google 登入
-    loginGoogle(async (user) => {
-      // 登入成功後，將使用者資訊傳送到你的後端
-      const response = await fetch('http://localhost:3005/api/google-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(user),
-      })
-
-      const result = await response.json()
-
-      if (result.status === 'success') {
-        const newAccessToken = result.data.accessToken
-        setToken(newAccessToken)
-        setLocalStorageTokens(newAccessToken)
-        setUser(user)
-      } else {
-        console.error('Failed to log in with Google:', result.message)
-      }
-    })
+  const setLocalStorageTokens = (accessToken, refreshToken) => {
+    console.log('Storing tokens:', { accessToken, refreshToken }) // 打印token到console
+    localStorage.setItem('accessToken', accessToken)
+    if (refreshToken) {
+      localStorage.setItem('refreshToken', refreshToken)
+    }
   }
 
   const logout = async () => {
@@ -109,11 +82,14 @@ const useAuth = () => {
     const storedRefreshToken = localStorage.getItem('refreshToken')
     if (!storedRefreshToken) return
     try {
-      const response = await fetch('http://localhost:3005/api/refresh-token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refreshToken: storedRefreshToken }),
-      })
+      const response = await fetch(
+        'http://localhost:3005/api/user/refresh-token',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken: storedRefreshToken }),
+        }
+      )
 
       const result = await response.json()
       if (result.status === 'success') {
@@ -134,7 +110,6 @@ const useAuth = () => {
     login,
     logout,
     refreshToken,
-    loginWithGoogle, // 新增的 Google 登入
   }
 }
 

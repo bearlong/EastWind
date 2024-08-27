@@ -16,7 +16,7 @@ const useFirebase = () => {
   }, [])
 
   // 使用 Google 進行彈窗登入
-  const loginGoogle = async (callback) => {
+  const loginGoogle = async () => {
     const provider = new GoogleAuthProvider()
     const auth = getAuth()
 
@@ -25,10 +25,8 @@ const useFirebase = () => {
       const user = result.user
       console.log(user)
 
-      // 在此處調用回調函數並將用戶資料傳遞回去
-      if (callback) {
-        callback(user.providerData[0])
-      }
+      // 返回 Google 登入成功的用戶資料
+      return user.providerData[0]
     } catch (error) {
       console.log('Google Sign-In Error:', error)
 
@@ -37,6 +35,8 @@ const useFirebase = () => {
       } else {
         alert('發生錯誤，請稍後再試。')
       }
+      // 返回錯誤以便處理
+      throw error
     }
   }
 
