@@ -40,14 +40,14 @@ export default function ClassDetail() {
     <>
       <div className={`${styles.container} ${styles['desktopdetail-aa']}`}>
         <div className={styles['detailsec1-aa']}>
-          <div className={`${styles['text14-aa']} ${styles['text-hover']}`}>
+          <div className={`${styles['text141-aa']} ${styles['text-hover']}`}>
             <h6>
               <Link href={`/course/classList`}>
                 <span>所有課程 </span>
               </Link>
               &gt;
               <Link href={`/course/classListCate`}>
-                <span>麻將</span>
+                <span> 麻將 </span>
               </Link>
               &gt; <span>初級</span>
             </h6>
@@ -145,38 +145,6 @@ export default function ClassDetail() {
             </h6>
           </div>
         </div>
-        {/* <div className={styles['detailpic-aa']}>
-          <div className={styles['detailpic1-aa']}>
-            <div className={styles['depic1-aa']}>
-              <Image
-                src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                alt=""
-                width={200}
-                height={200}
-              />
-            </div>
-          </div>
-        </div>
-        <div className={styles['detextgroup-aa']}>
-          <div className={styles['texth2detail3-aa']}>
-            <div className={styles['texth2detail31-aa']}>
-              <h4>想學程式？推薦你從 麻將 開始！</h4>
-            </div>
-          </div>
-          <div className={styles['texth2detail4-aa']}>
-            <h6>
-              程式語言的學習，首重邏輯思考能力，面對未來快速變化的社會，若能培養運算思維（Computational
-              Thinking）結合工程的務實與效率、數理方面的抽象邏輯思考，將能更有效解決複雜的問題。
-            </h6>
-          </div>
-
-          <div className={styles['texth2detail4-aa']}>
-            <h6>
-              程式語言的學習，首重邏輯思考能力，面對未來快速變化的社會，若能培養運算思維（Computational
-              Thinking）結合工程的務實與效率、數理方面的抽象邏輯思考，將能更有效解決複雜的問題。
-            </h6>
-          </div>
-        </div> */}
         <div className={styles['detailpic-aa']}>
           <div className={styles['detailpic1-aa']}>
             <div className={styles['depic1-aa']}>
@@ -189,7 +157,10 @@ export default function ClassDetail() {
             </div>
           </div>
         </div>
-        <div className={styles['detextgroup-aa']}>
+        <div
+          className={styles['detextgroup-aa']}
+          style={{ paddingBottom: '3rem' }}
+        >
           <div className={styles['texth2detail3-aa']}>
             <div className={styles['texth2detail31-aa']}>
               <h4>想學程式？推薦你從 麻將 開始！</h4>
@@ -232,25 +203,57 @@ export default function ClassDetail() {
                   本課程章節
                 </h6>
               </div>
-              <div className={styles['btnmore15-aa']}>
-                {/* <div class="Ellipse15-aa" style="stroke-width: 2px;
-stroke: var(--bg-text-color, #FAF7F0);">
-          <svg xmlns="http://www.w3.org/2000/svg" width="29" height="30" viewBox="0 0 29 30" fill="none">
-            <circle cx="14.5" cy="14.9116" r="13.5" transform="rotate(-90 14.5 14.9116)" stroke="#FAF7F0" stroke-width="2"/>
-          </svg>
-        </div>
-        <div class="Arrow15-aa" style="stroke-width: 2px;
-stroke: var(--bg-text-color, #FAF7F0);">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="13" viewBox="0 0 16 13" fill="none">
-            <path d="M7.00003 11.4034C6.9955 11.9557 7.43952 12.4071 7.99179 12.4116C8.54405 12.4161 8.99543 11.9721 8.99997 11.4198L7.00003 11.4034ZM8.79502 0.710683C8.40771 0.316964 7.77457 0.311764 7.38085 0.699068L0.96484 7.01055C0.571122 7.39785 0.565922 8.031 0.953226 8.42471C1.34053 8.81843 1.97367 8.82363 2.36739 8.43633L8.07051 2.82612L13.6807 8.52925C14.068 8.92296 14.7012 8.92817 15.0949 8.54086C15.4886 8.15356 15.4938 7.52041 15.1065 7.1267L8.79502 0.710683ZM8.99997 11.4198L9.08209 1.42017L7.08216 1.40375L7.00003 11.4034L8.99997 11.4198Z" fill="#FAF7F0"/>
-          </svg>
-        </div> */}
+              <div className={styles['btn-more15-aa']}>
+                <div
+                  className={styles['Ellipse15-aa']}
+                  style={{
+                    strokeWidth: 2,
+                    stroke: 'var(--bg-text-color, #FAF7F0)',
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width={29}
+                    height={30}
+                    viewBox="0 0 29 30"
+                    fill="none"
+                  >
+                    <circle
+                      cx="14.5"
+                      cy="14.9116"
+                      r="13.5"
+                      transform="rotate(-90 14.5 14.9116)"
+                      stroke="#FAF7F0"
+                      strokeWidth={2}
+                    />
+                  </svg>
+                </div>
+                <div
+                  className={styles['Arrow15-aa']}
+                  style={{
+                    strokeWidth: 2,
+                    stroke: 'var(--bg-text-color, #FAF7F0)',
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width={16}
+                    height={13}
+                    viewBox="0 0 16 13"
+                    fill="none"
+                  >
+                    <path
+                      d="M7.00003 11.4034C6.9955 11.9557 7.43952 12.4071 7.99179 12.4116C8.54405 12.4161 8.99543 11.9721 8.99997 11.4198L7.00003 11.4034ZM8.79502 0.710683C8.40771 0.316964 7.77457 0.311764 7.38085 0.699068L0.96484 7.01055C0.571122 7.39785 0.565922 8.031 0.953226 8.42471C1.34053 8.81843 1.97367 8.82363 2.36739 8.43633L8.07051 2.82612L13.6807 8.52925C14.068 8.92296 14.7012 8.92817 15.0949 8.54086C15.4886 8.15356 15.4938 7.52041 15.1065 7.1267L8.79502 0.710683ZM8.99997 11.4198L9.08209 1.42017L7.08216 1.40375L7.00003 11.4034L8.99997 11.4198Z"
+                      fill="#FAF7F0"
+                    />
+                  </svg>
+                </div>
                 {/*  style="background-color: #FAF7F0;"> */}
                 {/* <i class="fa-thin fa-circle-up"</i> */}
               </div>
             </div>
           </div>
-          <div className={styles['text14group-aa']}>
+          <div className={styles['text14-group-aa']}>
             <div className={styles['text14-1-aa']}>
               <h6>01</h6>
             </div>
@@ -261,7 +264,7 @@ stroke: var(--bg-text-color, #FAF7F0);">
               <h6>09:40</h6>
             </div>
           </div>
-          <div className={styles['text14group-aa']}>
+          <div className={styles['text14-group-aa']}>
             <div className={styles['text14-1-aa']}>
               <h6>02</h6>
             </div>
@@ -272,7 +275,7 @@ stroke: var(--bg-text-color, #FAF7F0);">
               <h6>16:26</h6>
             </div>
           </div>
-          <div className={styles['text14group-aa']}>
+          <div className={styles['text14-group-aa']}>
             <div className={styles['text14-1-aa']}>
               <h6>03</h6>
             </div>
@@ -283,7 +286,7 @@ stroke: var(--bg-text-color, #FAF7F0);">
               <h6>16:54</h6>
             </div>
           </div>
-          <div className={styles['text14group-aa']}>
+          <div className={styles['text14-group-aa']}>
             <div className={styles['text14-1-aa']}>
               <h6>04</h6>
             </div>
@@ -300,8 +303,8 @@ stroke: var(--bg-text-color, #FAF7F0);">
             <h2>推薦課程</h2>
           </div>
           <div className={styles['desec21-aa']}>
-            <div className={styles['btnmoremini-l-aa']}>
-              <div className={styles['ellipse-l-aa']}>
+            <div className={styles['btn-more-mini-l-aa']}>
+              <div className={styles['Ellipse-l-aa']}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width={50}
@@ -319,7 +322,7 @@ stroke: var(--bg-text-color, #FAF7F0);">
                   />
                 </svg>
               </div>
-              <div className="Arrow-l-aa">
+              <div className={styles['Arrow-l-aa']}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width={17}
@@ -335,105 +338,105 @@ stroke: var(--bg-text-color, #FAF7F0);">
               </div>
             </div>
             <div className={styles['sec2cardgroup-aa']}>
-              <div className={styles['sec2classtcard-aa']}>
-                <Image
-                  src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                  alt=""
-                  width={200}
-                  height={200}
-                  className={styles['sec2cardimg-aa']}
-                />
-                <div className={styles['sec2cardbody-aa']}>
-                  <div className={styles['declassname-aa']}>
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p>劉業揚＆楊元翰</p>
+              <Link href={`/course/classList`} className={styles['card-link']}>
+                <div className={styles['sec2classtCard-aa']}>
+                  <img
+                    src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
+                    alt=""
+                    className={styles['sec2CardImg-aa']}
+                  />
+                  <div className={styles['sec2cardBody-aa']}>
+                    <div className={styles['declassName-aa']}>
+                      <p>西洋棋國手教你下西洋棋</p>
+                      <p>劉業揚＆楊元翰</p>
+                    </div>
+                    <p
+                      style={{
+                        color: 'var(--text-color, #0e0e0e)',
+                        textAlign: 'center',
+                        alignSelf: 'stretch',
+                      }}
+                    >
+                      NT$450
+                    </p>
                   </div>
-                  <p
-                    style={{
-                      color: 'var(--text-color, #0e0e0e)',
-                      textAlign: 'center',
-                      alignSelf: 'stretch',
-                    }}
-                  >
-                    NT$450
-                  </p>
                 </div>
-              </div>
-              <div className={styles['sec2classtcard-aa']}>
-                <Image
-                  src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                  alt=""
-                  width={200}
-                  height={200}
-                  className={styles['sec2cardimg-aa']}
-                />
-                <div className={styles['sec2cardbody-aa']}>
-                  <div className={styles['declassname-aa']}>
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p>劉業揚＆楊元翰</p>
+              </Link>
+              <Link href={`/course/classList`} className={styles['card-link']}>
+                <div className={styles['sec2classtCard-aa']}>
+                  <img
+                    src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
+                    alt=""
+                    className={styles['sec2CardImg-aa']}
+                  />
+                  <div className={styles['sec2cardBody-aa']}>
+                    <div className={styles['declassName-aa']}>
+                      <p>西洋棋國手教你下西洋棋</p>
+                      <p>劉業揚＆楊元翰</p>
+                    </div>
+                    <p
+                      style={{
+                        color: 'var(--text-color, #0e0e0e)',
+                        textAlign: 'center',
+                        alignSelf: 'stretch',
+                      }}
+                    >
+                      NT$450
+                    </p>
                   </div>
-                  <p
-                    style={{
-                      color: 'var(--text-color, #0e0e0e)',
-                      textAlign: 'center',
-                      alignSelf: 'stretch',
-                    }}
-                  >
-                    NT$450
-                  </p>
                 </div>
-              </div>
-              <div className={styles['sec2classtcard-aa']}>
-                <Image
-                  src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                  alt=""
-                  width={200}
-                  height={200}
-                  className={styles['sec2cardimg-aa']}
-                />
-                <div className={styles['sec2cardbody-aa']}>
-                  <div className={styles['declassname-aa']}>
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p>劉業揚＆楊元翰</p>
+              </Link>
+              <Link href={`/course/classList`} className={styles['card-link']}>
+                <div className={styles['sec2classtCard-aa']}>
+                  <img
+                    src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
+                    alt=""
+                    className={styles['sec2CardImg-aa']}
+                  />
+                  <div className={styles['sec2cardBody-aa']}>
+                    <div className={styles['declassName-aa']}>
+                      <p>西洋棋國手教你下西洋棋</p>
+                      <p>劉業揚＆楊元翰</p>
+                    </div>
+                    <p
+                      style={{
+                        color: 'var(--text-color, #0e0e0e)',
+                        textAlign: 'center',
+                        alignSelf: 'stretch',
+                      }}
+                    >
+                      NT$450
+                    </p>
                   </div>
-                  <p
-                    style={{
-                      color: 'var(--text-color, #0e0e0e)',
-                      textAlign: 'center',
-                      alignSelf: 'stretch',
-                    }}
-                  >
-                    NT$450
-                  </p>
                 </div>
-              </div>
-              <div className={styles['sec2classtcard-aa']}>
-                <Image
-                  src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                  alt=""
-                  width={200}
-                  height={200}
-                  className={styles['sec2cardimg-aa']}
-                />
-                <div className={styles['sec2cardbody-aa']}>
-                  <div className={styles['declassname-aa']}>
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p>劉業揚＆楊元翰</p>
+              </Link>
+              <Link href={`/course/classList`} className={styles['card-link']}>
+                <div className={styles['sec2classtCard-aa']}>
+                  <img
+                    src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
+                    alt=""
+                    className={styles['sec2CardImg-aa']}
+                  />
+                  <div className={styles['sec2cardBody-aa']}>
+                    <div className={styles['declassName-aa']}>
+                      <p>西洋棋國手教你下西洋棋</p>
+                      <p>劉業揚＆楊元翰</p>
+                    </div>
+                    <p
+                      style={{
+                        color: 'var(--text-color, #0e0e0e)',
+                        textAlign: 'center',
+                        alignSelf: 'stretch',
+                      }}
+                    >
+                      NT$450
+                    </p>
                   </div>
-                  <p
-                    style={{
-                      color: 'var(--text-color, #0e0e0e)',
-                      textAlign: 'center',
-                      alignSelf: 'stretch',
-                    }}
-                  >
-                    NT$450
-                  </p>
                 </div>
-              </div>
+              </Link>
             </div>
-            <div className={styles['btnmoremini-r-aa']}>
-              <div className={styles['ellipse-r-aa']}>
+            <div className={styles['btn-more-mini-r-aa']}>
+              <div className={styles['Ellipse-r-aa']}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width={50}
@@ -450,7 +453,7 @@ stroke: var(--bg-text-color, #FAF7F0);">
                   />
                 </svg>
               </div>
-              <div className={styles['arrow-r-aa']}>
+              <div className={styles['Arrow-r-aa']}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width={17}
