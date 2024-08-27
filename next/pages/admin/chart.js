@@ -53,11 +53,15 @@ export default function Chart() {
           <div
             className={`${styles.chartBox} d-flex justify-content-around align-items-center mb-5`}
           >
-            <div className="d-flex justify-content-center align-items-center flex-column">
+            <div
+              className={`d-flex justify-content-center align-items-center flex-column ${styles.twoBox} `}
+            >
               <h5>男女比</h5>
               <PieChartGender statistics={data.genderArr} />
             </div>
-            <div className="d-flex justify-content-center align-items-center flex-column">
+            <div
+              className={`d-flex justify-content-center align-items-center flex-column ${styles.twoBox} `}
+            >
               <h5>年齡分布</h5>
               <PieChartAge statistics={data.ageArr} />
             </div>
@@ -66,7 +70,9 @@ export default function Chart() {
           <div
             className={`${styles.chartBox} d-flex justify-content-around align-items-center mb-3`}
           >
-            <div className="d-flex justify-content-center align-items-center flex-column">
+            <div
+              className={`d-flex justify-content-center align-items-center flex-column ${styles.twoBox} `}
+            >
               <h5>營收占比</h5>
               <PieChartPbCate statistics={data.pdCateArr} />
             </div>
@@ -109,11 +115,15 @@ export default function Chart() {
           <div
             className={`${styles.chartBox} d-flex justify-content-around align-items-center mb-3`}
           >
-            <div className="d-flex justify-content-center align-items-center flex-column">
+            <div
+              className={`d-flex justify-content-center align-items-center flex-column ${styles.twoBox} `}
+            >
               <h5>成團率</h5>
               <PieChartComplete statistics={data.completeArr} />
             </div>
-            <div className="d-flex justify-content-center align-items-center flex-column">
+            <div
+              className={`d-flex justify-content-center align-items-center flex-column ${styles.twoBox} `}
+            >
               <h5>訂桌熱區</h5>
               <PieChartArea statistics={data.areaArr} />
             </div>

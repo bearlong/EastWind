@@ -26,7 +26,7 @@ const PieChartAge = ({ statistics = [] }) => {
         position: 'top',
         labels: {
           font: {
-            size: 20, // 調整圖例文字的字體大小
+            size: 12, // 調整圖例文字的字體大小
           },
         },
       },

@@ -1,6 +1,6 @@
 .main {
   width: 100%;
-  padding: 6.4rem;
+  padding: 4rem;
 }
 
 .menber-info-box-bo {
@@ -18,6 +18,9 @@
     background: var(--white);
     border: 3px solid var(--primary);
     border-radius: 5px;
+  }
+  .twoBox {
+    width: 45%;
   }
 }
 

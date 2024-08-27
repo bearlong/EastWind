@@ -73,20 +73,23 @@ export default function Arrival() {
       })
       const result = await response.json()
       if (result.status === 'success') {
-        console.log(result.data)
-        // Swal.fire({
-        //   position: 'center',
-        //   icon: 'success',
-        //   title: '出��成功',
-        //   customClass: {
-        //     popup: `h6`,
-        //     title: `h4`,
-        //     content: `h1`,
-        //   },
-        //   showConfirmButton: false,
-        //   timer: 1500,
-        // })
-        // setCheck([])
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: '訂單已出貨!',
+          customClass: {
+            popup: `h6`,
+            title: `h4`,
+            content: `h1`,
+          },
+          showConfirmButton: false,
+          timer: 1500,
+        })
+        setCheck([])
+        const { arrival } = result.data
+        setData(arrival)
+        const dates = [...new Set(arrival.map((item) => item.order_date))]
+        setDates(dates)
       }
     } catch (err) {
       console.log(err)
@@ -128,17 +131,6 @@ export default function Arrival() {
     }).then((result) => {
       if (result.isConfirmed) {
         handleSumbit()
-        // Swal.fire({
-        //   title: 'Deleted!',
-        //   text: 'Your file has been deleted.',
-        //   icon: 'success',
-        //   customClass: {
-        //     popup: `h6`,
-        //     title: `h4`,
-        //     content: `h1`,
-        //     confirmButton: `p me-2`,
-        //   },
-        // })
       }
     })
   }
@@ -209,7 +201,7 @@ export default function Arrival() {
                 }}
               />
               <button
-                className="input-group-text p"
+                className={`input-group-text p ${styles.search}`}
                 id="inputGroup-sizing-default"
                 onClick={(e) => {
                   router.push(

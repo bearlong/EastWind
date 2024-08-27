@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
 
   try {
     const [arrival] = await dbPromise.execute(
-      'SELECT `id`,`numerical_order`, `delivery_method`, `order_date`, `recipient`  FROM `user_order` WHERE status_now = "付款完成" '
+      'SELECT `id`,`numerical_order`, `delivery_method`, `order_date`, `recipient`  FROM `user_order` WHERE status_now = "付款完成" ORDER BY `order_date` DESC'
     )
 
     res.status(200).json({
@@ -32,24 +32,42 @@ router.get('/', async (req, res) => {
 
 router.put('/', upload.none(), async (req, res) => {
   const { order_ids } = req.body
-  console.log(order_ids)
+  if (!order_ids) {
+    return res
+      .status(400)
+      .json({ status: 'error', data: { message: '沒有選擇訂單' } })
+  }
 
-  //   try {
-  //     const [arrival] = await dbPromise.execute(
-  //       'SELECT `id`,`numerical_order`, `delivery_method`, `order_date`, `recipient`  FROM `user_order` WHERE status_now = "付款完成" '
-  //     )
+  const now = moment().format('YYYY-MM-DD HH:mm:ss')
+  try {
+    for (const order_id of order_ids) {
+      const [result] = await dbPromise.execute(
+        'INSERT INTO `order_status` (`id`, `order_id`, `status`, `update_at`) VALUES (NULL, ?, ?, ?);',
+        [order_id, '已出貨', now]
+      )
 
-  //     res.status(200).json({
-  //       status: 'success',
-  //       data: {
-  //         message: '已取得資訊',
-  //         arrival,
-  //       },
-  //     })
-  //   } catch (err) {
-  //     res.status(400).json({ status: 'error', data: { message: err.message } })
-  //   }
-  res.status(200).json({ status: 'success', data: { message: order_ids } })
+      if (result.insertId) {
+        await dbPromise.execute(
+          'UPDATE `user_order` SET `status_now` = "已出貨" WHERE `id` =?',
+          [order_id]
+        )
+      }
+    }
+
+    const [arrival] = await dbPromise.execute(
+      'SELECT `id`,`numerical_order`, `delivery_method`, `order_date`, `recipient`  FROM `user_order` WHERE status_now = "付款完成" ORDER BY `order_date` DESC'
+    )
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        message: '修改完成',
+        arrival,
+      },
+    })
+  } catch (err) {
+    res.status(400).json({ status: 'error', data: { message: err.message } })
+  }
 })
 
 export default router
