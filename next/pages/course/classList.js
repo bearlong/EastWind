@@ -13,7 +13,7 @@ export default function ClassList() {
   const [courses, setCourses] = useState({ list: [] })
   const router = useRouter()
   const [pages, setPages] = useState(1)
-  const { category_id } = router.query
+  const { course_category_id } = router.query
 
   // 向伺服器連線的程式碼；向伺服器fetch獲取資料
   const getCourses = async () => {
@@ -109,7 +109,8 @@ export default function ClassList() {
             <div className={styles['classCards-aa']}>
               {Object.values(courses)
                 .flat()
-                .slice(5, 9)
+                .filter((course) => course.course_category_id === 4)
+                .slice(0, 4)
                 .map((classItem, index) => (
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
