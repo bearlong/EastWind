@@ -553,14 +553,14 @@ select:-moz-autofill {
 }
 
 .toTop {
-  width: 50px;
-  height: 50px;
+  width: 5rem;
+  height: 5rem;
   border-radius: 50%;
-  border: 1px solid var(--primary-dark);
-  background: var(--white);
-  color: var(--primary-dark);
+  border: 2px solid var(--primary);
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--primary);
   position: fixed;
-  bottom: 30px;
-  right: 30px;
-  z-index: 999;
+  bottom: 3rem;
+  right: 3rem;
+  z-index: 9999;
 }
