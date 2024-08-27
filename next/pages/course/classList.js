@@ -10,8 +10,9 @@ import ClassGroup from '@/components/course/cards'
 export default function ClassList() {
   // 注意1: 初始值至少要空陣列，初次render是用初始值
   // 注意2: 應用執行過程中，一定要保持狀態資料類型都是陣列
-  const [courses, setCourses] = useState({ list: [] })
+  const [courses, setCourses] = useState([])
   const router = useRouter()
+  const courseName = useState('')
   const [pages, setPages] = useState(1)
   const { course_category_id } = router.query
 
@@ -62,13 +63,13 @@ export default function ClassList() {
               {Object.values(courses)
                 .flat()
                 .slice(0, 4)
-                .map((classItem, index) => (
+                .map((courseData, index) => (
                   <Link
                     href={`/course/classDetail/`}
-                    key={classItem.id}
+                    key={courseData.id}
                     className={styles['card-link']}
                   >
-                    <ClassCard courseData={classItem} rank={index + 1} />
+                    <ClassCard courseData={courseData} rank={index + 1} />
                   </Link>
                 ))}
             </div>
@@ -147,7 +148,8 @@ export default function ClassList() {
             <div className={styles['classCards-aa']}>
               {Object.values(courses)
                 .flat()
-                .slice(10, 14)
+                .filter((course) => course.course_category_id === 2)
+                .slice(0, 4)
                 .map((classItem, index) => (
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
@@ -183,7 +185,8 @@ export default function ClassList() {
             <div className={styles['classCards-aa']}>
               {Object.values(courses)
                 .flat()
-                .slice(15, 19)
+                .filter((course) => course.course_category_id === 3)
+                .slice(0, 4)
                 .map((classItem, index) => (
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
@@ -219,7 +222,8 @@ export default function ClassList() {
             <div className={styles['classCards-aa']}>
               {Object.values(courses)
                 .flat()
-                .slice(20, 24)
+                .filter((course) => course.course_category_id === 1)
+                .slice(0, 4)
                 .map((classItem, index) => (
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
@@ -255,7 +259,8 @@ export default function ClassList() {
             <div className={styles['classCards-aa']}>
               {Object.values(courses)
                 .flat()
-                .slice(25, 29)
+                .filter((course) => course.course_category_id === 5)
+                .slice(0, 4)
                 .map((classItem, index) => (
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}

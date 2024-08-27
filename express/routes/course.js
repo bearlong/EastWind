@@ -14,7 +14,9 @@ const router = express.Router()
 // GET 獲得所有資料，加入分頁與搜尋字串功能，單一資料表處理
 router.get('/', async (req, res) => {
   try {
-    const [list] = await dbPromise.execute('SELECT * FROM course')
+    const [list] = await dbPromise.execute(
+      'SELECT `course`.*,`course_category`.`ch_name` FROM `course` JOIN `course_category` ON `course`.`course_category_id` = `course_category`.`course_id`;'
+    )
 
     if (!list || list.length === 0) {
       return res.status(404).json({
@@ -22,6 +24,37 @@ router.get('/', async (req, res) => {
         message: '沒有找到任何課程',
       })
     }
+
+    // const [courseName] = await dbPromise
+    //   .execute('SELECT `course_name` FROM `course` JOIN `course_category` ON ')
+    //   .catch((err) => {
+    //     if (err) {
+    //       console.error(err)
+    //       return []
+    //     }
+    //   })
+
+    const [courseName] = await dbPromise
+      .execute(
+        `
+      SELECT 
+        \`course\`.\`course_id\`, 
+        \`course\`.\`course_name\`,
+        \`course_category\`.\`ch_name\` 
+      FROM 
+        \`course\`
+      JOIN 
+        \`course_category\` 
+      ON 
+        \`course\`.\`course_category_id\` = \`course_category\`.\`course_id\`;
+    `
+      )
+      .catch((err) => {
+        if (err) {
+          console.error(err)
+          return []
+        }
+      })
 
     return res.status(200).json({
       status: 'success',

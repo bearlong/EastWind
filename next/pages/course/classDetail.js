@@ -9,7 +9,8 @@ export default function ClassDetail() {
   const [courses, setCourses] = useState({ list: [] })
   const router = useRouter()
   const [pages, setPages] = useState(1)
-  const { category_id } = router.query
+  const [category, setCategory] = useState([])
+  const { course_id, category_id } = router.query
 
   // 向伺服器連線的程式碼；向伺服器fetch獲取資料
   const getCourses = async () => {
@@ -30,10 +31,27 @@ export default function ClassDetail() {
     }
   }
 
+  const getCategory = async () => {
+    const apiURL = `http://localhost:3005/api/course`
+    try {
+      const res = await fetch(apiURL)
+      const data = await res.json()
+
+      console.log(data.data.courses)
+
+      // 設定到狀態中 ==> 觸發re-render(進入update階段)
+      if (Array.isArray(data.data.courses)) {
+        setCourses(data.data.courses)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   // 樣式2: didMount
   // 首次render之後(after)執行一次，之後不會再執行
   useEffect(() => {
-    getCourses()
+    getCourses(), getCategory()
   }, [])
 
   return (
@@ -46,8 +64,9 @@ export default function ClassDetail() {
                 <span>所有課程 </span>
               </Link>
               &gt;
-              <Link href={`/course/classListCate`}>
-                <span> 麻將 </span>
+              <Link href={`/course/classListCate/${category_id}`}>
+                {/* <span> 麻將 </span> */}
+                <span> {category.ch_name} </span>
               </Link>
               &gt; <span>初級</span>
             </h6>

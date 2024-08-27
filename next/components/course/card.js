@@ -22,9 +22,7 @@ const ClassCard = ({ courseData, rank }) => (
     <div className={styles['cardBody-aa']}>
       <div className={styles['className-aa']}>
         <p className={styles['courseName']}>{courseData.course_name}</p>
-        <p className={styles['classDescription-aa']}>
-          {courseData.course_category_id}
-        </p>
+        <p className={styles['classDescription-aa']}>{courseData.ch_name}</p>
       </div>
       <p>NT. {courseData.price}</p>
     </div>
