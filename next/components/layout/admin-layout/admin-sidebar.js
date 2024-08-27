@@ -216,7 +216,23 @@ export default function AdminSidebar() {
                     </Link>
                   </li>
                 )}
-                {firstLink !== 'booking' && (
+                {firstLink !== 'arrival' && (
+                  <li>
+                    <Link
+                      href="/admin/arrival"
+                      onClick={() => updateActiveLink('info')}
+                      className={`${
+                        styles['user-sidebar-link-bo']
+                      } h6 d-flex align-items-center gap-4 ${
+                        activeLink === 'info' ? styles['user-link-active'] : ''
+                      }`}
+                    >
+                      <FaTruck />
+                      出貨狀況
+                    </Link>
+                  </li>
+                )}
+                {firstLink !== 'uploadVideo' && (
                   <li>
                     <Link
                       href="/admin/uploadVideo"

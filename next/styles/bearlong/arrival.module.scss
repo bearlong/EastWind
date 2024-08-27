@@ -2,12 +2,26 @@
   width: 100%;
   padding: 6.4rem;
 }
+.confirmButton {
+  background: var(--primary);
+}
 
 .menber-info-box-bo {
   width: 100%;
   border: 2px solid var(--primary);
   background: var(--form-bg);
   padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  .sort {
+    background: transparent;
+    border: 0px;
+  }
+  .btn {
+    width: 70px;
+    color: var(--white);
+  }
 }
 
 @media (max-width: 768px) {
