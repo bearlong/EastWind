@@ -42,82 +42,124 @@ const wss = new WebSocketServer({
 })
 
 const clients = {}
-const userData = {}
+const userData = []
 
 wss.on('connection', (connection) => {
   console.log('新的使用者連線')
 
   connection.on('message', (message) => {
     const parsedMsg = JSON.parse(message)
-    console.log(parsedMsg)
+
     // WebSocket.OPEN
     if (parsedMsg.type === 'register') {
       const { userID, username, user_img } = parsedMsg
       clients[userID] = connection // 儲存 WebSocket 連接對象
-      userData[userID] = { username, user_img } // 儲存用戶資料
       connection.userID = userID
-      const otherClients = Object.values(clients)
-      const isUserIDIncluded = Object.keys(userData).some((id) => id === '62')
+      if (userID) {
+        const isUserIDExists = userData.some((user) => user.userID === userID)
+
+        // 如果 userID 不存在，才進行 push 操作
+        if (!isUserIDExists) {
+          userData.push({ userID, username, user_img }) // 儲存用戶資料
+        }
+      }
+
+      const isUserIDIncluded = userData.some((user) => user.userID === 62)
+      console.log(isUserIDIncluded)
       if (userID === 62) {
+        // 客服人員上線通知
+        if (clients[62] && clients[62].readyState === WebSocket.OPEN) {
+          clients[62].send(
+            JSON.stringify({ type: 'registered', userInfo: userData })
+          )
+        }
         wss.clients.forEach((client) => {
-          if (client.readyState === WebSocket.OPEN) {
+          if (client.readyState === WebSocket.OPEN && client !== connection) {
             client.send(
-              JSON.stringify({ type: 'message', message: '客服人員已上線' })
+              JSON.stringify({ type: 'registered', message: '客服人員已上線' })
             )
           }
         })
-      }
-
-      if (isUserIDIncluded) {
-        if (clients[userID] && clients[userID].readyState === WebSocket.OPEN) {
+      } else {
+        // 通知當前客戶是否客服上線
+        if (
+          userID !== 62 &&
+          clients[userID] &&
+          clients[userID].readyState === WebSocket.OPEN
+        ) {
           clients[userID].send(
             JSON.stringify({
               type: 'registered',
-              message: '客服人員目前已在線上',
+              message: isUserIDIncluded
+                ? '客服人員目前已在線上'
+                : '客服人員未上線',
             })
-          )
-        }
-      } else {
-        if (clients[userID] && clients[userID].readyState === WebSocket.OPEN) {
-          clients[userID].send(
-            JSON.stringify({ type: 'registered', message: '客服人員未上線' })
           )
         }
       }
     }
 
     if (parsedMsg.type === 'message') {
-      const { message } = parsedMsg
-      wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify({ type: 'message', message }))
+      const { userID, message } = parsedMsg
+      if (userID !== 62) {
+        if (
+          clients[62] &&
+          clients[userID] &&
+          clients[userID].readyState === WebSocket.OPEN &&
+          clients[62].readyState === WebSocket.OPEN
+        ) {
+          clients[62].send(
+            JSON.stringify({ type: 'message', fromID: userID, message })
+          )
+          clients[userID].send(
+            JSON.stringify({ type: 'message', fromID: 62, message })
+          )
         }
-      })
+      } else {
+        const { targetUserID } = parsedMsg
+        if (
+          clients[targetUserID] &&
+          clients[targetUserID].readyState === WebSocket.OPEN
+        ) {
+          clients[targetUserID].send(
+            JSON.stringify({ type: 'message', message })
+          )
+        }
+      }
     }
-    // wss.clients.forEach((client) => {
-    //   if (client.readyState === WebSocket.OPEN) {
-    //     client.send(message)
-    //   }
-    // })
   })
 
   connection.on('close', () => {
     console.log('使用者已經斷線')
-    Object.keys(clients).forEach((userID) => {
-      if (clients[userID] === connection) {
-        delete clients[userID]
-        delete userData[userID]
+    let dsID = connection.userID
+    console.log(dsID)
+    if (dsID) {
+      delete clients[dsID]
+      userData.splice(
+        0,
+        userData.length,
+        ...userData.filter((user) => user.userID !== dsID)
+      )
+      console.log(userData)
+      if (clients[62] && clients[62].readyState === WebSocket.OPEN) {
+        clients[62].send(
+          JSON.stringify({ type: 'disconnected', userInfo: userData })
+        )
       }
-    })
-    const isUserIDIncluded = Object.keys(userData).some((id) => id === '62')
-    if (!isUserIDIncluded) {
-      wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(
-            JSON.stringify({ type: 'message', message: '客服人員目前不在線上' })
-          )
-        }
-      })
+      if (dsID === 62) {
+        wss.clients.forEach((client) => {
+          if (client !== clients[62] && client.readyState === WebSocket.OPEN) {
+            client.send(
+              JSON.stringify({
+                type: 'disconnected',
+                message: '客服人員目前不在線上',
+              })
+            )
+          }
+        })
+      }
+
+      dsID = null
     }
   })
 })

@@ -6,7 +6,6 @@ export default function Chat() {
   const [ws, setWs] = useState(null)
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState([])
-  const [userInfo, setUserInfo] = useState([])
   const { user, loading } = useContext(AuthContext)
   const router = useRouter()
 
@@ -29,9 +28,6 @@ export default function Chat() {
         socket.onmessage = async (event) => {
           let result = JSON.parse(event.data)
           if (result.type === 'registered') {
-            if (result.userInfo) {
-              setUserInfo(result.userInfo)
-            }
             setMessages((prevMessages) => [...prevMessages, result.message])
           }
           if (result.type === 'message') {
@@ -59,8 +55,8 @@ export default function Chat() {
   const sendMessage = () => {
     let params = {
       type: 'message',
-      message: message,
       userID: user.id,
+      message: message,
     }
     if (ws) {
       ws.send(JSON.stringify(params))
@@ -70,7 +66,7 @@ export default function Chat() {
 
   return (
     <div>
-      <h1>多人連線測試</h1>
+      <h1>客服</h1>
       <div className="chatBox">
         {messages.map((msg, index) => (
           <div key={index}>{msg}</div>
