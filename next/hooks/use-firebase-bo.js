@@ -1,11 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import {
-  getAuth,
-  signInWithPopup,
-  signOut,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-} from 'firebase/auth'
+import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
 import { useEffect } from 'react'
 import { firebaseConfig } from './firebase-config'
 
@@ -26,7 +20,7 @@ const useFirebase = () => {
       console.log(user)
 
       // 返回 Google 登入成功的用戶資料
-      return user.providerData[0]
+      return user
     } catch (error) {
       console.log('Google Sign-In Error:', error)
 
@@ -40,22 +34,8 @@ const useFirebase = () => {
     }
   }
 
-  // 登出功能
-  const logoutFirebase = () => {
-    const auth = getAuth()
-
-    signOut(auth)
-      .then(() => {
-        console.log('已成功登出。')
-      })
-      .catch((error) => {
-        console.log('登出錯誤：', error)
-      })
-  }
-
   return {
     loginGoogle,
-    logoutFirebase,
   }
 }
 

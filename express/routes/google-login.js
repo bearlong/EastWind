@@ -4,17 +4,16 @@ import jsonwebtoken from 'jsonwebtoken'
 import 'dotenv/config.js'
 
 const router = express.Router()
-const secretKey = 'boyuboyuboyuIamBoyu' // 使用環境變數或預設值
+const secretKey = 'boyuboyuboyuIamBoyu'
 
 // 使用者 Google 登入
 router.post('/', async (req, res) => {
   console.log('Received body:', JSON.stringify(req.body))
 
   try {
-    // 假設 req.body 已經包含所有需要的使用者資訊
     const { google_uid, email, displayName, photoURL } = req.body
-
-    // 查詢資料庫中是否存在該Google UID的使用者
+    console.log(req.body, google_uid)
+    // 查詢資料庫中是否存在該 Google UID 的使用者
     const [rows] = await dbPromise.execute(
       'SELECT COUNT(*) as total FROM user WHERE google_uid = ?',
       [google_uid]
@@ -22,48 +21,52 @@ router.post('/', async (req, res) => {
     const total = rows[0].total
 
     let returnUser = {
-      id: 0,
-      google_name: '',
+      id: null,
+      username: '',
       google_uid: '',
-      line_uid: '',
     }
 
+    let isNewUser = false
+
     if (total > 0) {
-      // 使用者已存在
       const [userRows] = await dbPromise.execute(
-        'SELECT id, google_name, google_uid FROM user WHERE google_uid = ? LIMIT 1',
+        'SELECT id, username, google_uid FROM user WHERE google_uid = ? LIMIT 1',
         [google_uid]
       )
+      console.log('User from database:', userRows)
       const dbUser = userRows[0]
 
       returnUser = {
         id: dbUser.id,
-        google_name: dbUser.google_name,
+        username: dbUser.username,
         google_uid: dbUser.google_uid,
-        line_uid: dbUser.line_uid,
       }
     } else {
-      // 新建使用者
       const [result] = await dbPromise.execute(
-        'INSERT INTO user (google_name, email, google_uid, photo_url) VALUES (?, ?, ?, ?)',
+        'INSERT INTO user (username, email, google_uid, photo_url) VALUES (?, ?, ?, ?)',
         [displayName, email, google_uid, photoURL]
       )
+      console.log('Newly inserted user ID:', result.insertId)
 
       returnUser = {
         id: result.insertId,
-        google_name: displayName,
+        username: displayName,
         google_uid: google_uid,
-        line_uid: '',
       }
+      isNewUser = true
     }
 
-    // 生成accessToken和refreshToken
-    const accessToken = jsonwebtoken.sign(returnUser, secretKey, {
-      expiresIn: '30m',
-    })
+    // 生成 accessToken 和 refreshToken
+    const accessToken = jsonwebtoken.sign(
+      { id: returnUser.id, username: returnUser.username },
+      secretKey,
+      {
+        expiresIn: '30m',
+      }
+    )
 
     const refreshToken = jsonwebtoken.sign(
-      { id: returnUser.id, google_name: returnUser.google_name },
+      { id: returnUser.id, username: returnUser.username },
       secretKey,
       { expiresIn: '7d' }
     )
@@ -74,9 +77,11 @@ router.post('/', async (req, res) => {
     return res.json({
       status: 'success',
       message: 'Google 登入成功',
+      id: returnUser.id, // 確保這裡返回的是正確的 id
       accessToken,
       refreshToken,
-      name: returnUser.google_name,
+      name: returnUser.username,
+      isNewUser, // 返回是否為新會員的標記
     })
   } catch (error) {
     console.error('Google 登入失敗:', error)

@@ -1,14 +1,20 @@
 import { useContext } from 'react'
 import { useRouter } from 'next/router'
 import { AuthContext } from '@/context/AuthContext'
-import useFirebase from './use-firebase-bo'
 
 const useAuth = () => {
   const { setUser, token, setToken } = useContext(AuthContext)
   const router = useRouter()
-  const { logoutFirebase } = useFirebase()
 
   // 集中處理 localStorage 操作
+
+  const setLocalStorageTokens = (accessToken, refreshToken) => {
+    console.log('Storing tokens:', { accessToken, refreshToken }) // 打印token到console
+    localStorage.setItem('accessToken', accessToken)
+    if (refreshToken) {
+      localStorage.setItem('refreshToken', refreshToken)
+    }
+  }
 
   const clearLocalStorageTokens = () => {
     localStorage.removeItem('accessToken')
@@ -33,7 +39,9 @@ const useAuth = () => {
         const newRefreshToken = result.refreshToken
 
         setToken(newAccessToken)
+
         setLocalStorageTokens(newAccessToken, newRefreshToken)
+
         return { success: true, token: newAccessToken, name: result.name }
       } else {
         return { success: false, message: result.message }
@@ -41,14 +49,6 @@ const useAuth = () => {
     } catch (error) {
       console.error('Login error:', error)
       return { success: false, message: '無法連接伺服器，請稍後再試' }
-    }
-  }
-
-  const setLocalStorageTokens = (accessToken, refreshToken) => {
-    console.log('Storing tokens:', { accessToken, refreshToken }) // 打印token到console
-    localStorage.setItem('accessToken', accessToken)
-    if (refreshToken) {
-      localStorage.setItem('refreshToken', refreshToken)
     }
   }
 
@@ -62,9 +62,6 @@ const useAuth = () => {
           Authorization: `Bearer ${token}`,
         },
       })
-
-      // 同步登出 Firebase
-      await logoutFirebase()
 
       // 清除 token 和 user 狀態
       setToken(undefined)

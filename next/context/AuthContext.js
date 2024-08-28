@@ -94,11 +94,11 @@ export const AuthProvider = ({ children }) => {
 
   // 函數：檢查並驗證 token 的有效性
   const checkToken = async (token) => {
-    const secretKey = 'boyuboyuboyuIamBoyu'
-    const noReload = localStorage.getItem('noReload')
-    if (noReload) {
-      localStorage.removeItem('noReload')
-      return
+    const secretKey = 'boyuboyuboyuIamBoyu' // 請確保 secretKey 已經設置
+
+    if (!secretKey) {
+      console.error('Secret key is not defined!')
+      return null
     }
 
     try {
@@ -195,6 +195,7 @@ export const AuthProvider = ({ children }) => {
         updateUserImage,
         updateUserUsername,
         updateUserGender,
+
         loading,
         setLoading,
       }}

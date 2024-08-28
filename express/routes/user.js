@@ -6,11 +6,11 @@ import connection from '##/configs/mysql-promise.js'
 import 'dotenv/config.js'
 
 const router = express.Router()
-const secretKey = 'boyuboyuboyuIamBoyu' // 使用環境變數或預設值
+const secretKey = 'boyuboyuboyuIamBoyu'
 const upload = multer()
 
 // 設定 CORS 白名單和選項
-const whitelist = ['http://localhost:5500', 'http://localhost:3000']
+const whitelist = ['http://localhost:550  0', 'http://localhost:3000']
 const corsOptions = {
   credentials: true,
   origin(origin, callback) {
@@ -39,10 +39,6 @@ let users = []
   }
 })()
 
-router.get('/', (req, res) => {
-  res.send('這是首頁')
-})
-
 // 撈取所有會員資料
 router.get('/users', (req, res) => {
   if (users.length > 0) {
@@ -55,11 +51,13 @@ router.get('/users', (req, res) => {
 // 撈取個別會員資料
 router.get('/user/:id', async (req, res) => {
   const userId = req.params.id
+  console.log('User ID:', userId)
   try {
     const [user] = await connection.query(
       'SELECT * FROM `user` WHERE `id` = ? AND `valid` = 1 LIMIT 1',
       [userId]
     )
+    console.log('Query Result:', user)
     if (user.length === 0) {
       return res.status(404).json({ status: 'fail', message: '用戶不存在' })
     }
@@ -67,7 +65,9 @@ router.get('/user/:id', async (req, res) => {
       status: 'success',
       data: {
         id: user[0].id,
+        google_uid: user[0].google_uid,
         username: user[0].username,
+        google_name: user[0].google_name,
         account: user[0].account,
         password: user[0].password,
         city: user[0].city,
@@ -77,6 +77,7 @@ router.get('/user/:id', async (req, res) => {
         birth: user[0].birth,
         gender: user[0].gender,
         user_img: user[0].user_img,
+        photo_url: user[0].photo_url,
         created_at: user[0].created_at,
         updated_at: user[0].updated_at,
       },

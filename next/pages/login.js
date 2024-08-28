@@ -17,9 +17,9 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [accountError, setAccountError] = useState('')
   const [passwordError, setPasswordError] = useState('')
-  const { login } = useAuth() // 從 useAuth 中解構獲取 setToken 和 setUser
+  const { login } = useAuth() // 從 useAuth 中解構獲取  和 setUser
   const { loginGoogle } = useFirebase() // 使用 Google 登入功能
-  const { setToken, setUser } = useContext(AuthContext)
+  const { setUser } = useContext(AuthContext)
 
   // 從 localStorage 中讀取賬號並設置到狀態中
   useEffect(() => {
@@ -97,18 +97,39 @@ export default function Login() {
 
       if (result.status === 'success') {
         // 儲存 token 和用戶信息到 AuthContext 和 localStorage
-        localStorage.setItem('accessToken', result.accessToken)
         localStorage.setItem('refreshToken', result.refreshToken)
+        localStorage.setItem('accessToken', result.accessToken)
 
-        setToken(result.accessToken)
         setUser({
+          id: result.id, // 確保這裡的 `id` 是正確的
           name: result.name,
           email: email,
           photoURL: photoURL,
         })
 
-        // 進行成功後的操作，例如跳轉頁面
-        router.push('/home')
+        // 檢查是否是新會員
+        if (result.isNewUser) {
+          // 否則跳轉到首頁並重整
+          router.push('/home').then(() => {
+            window.location.reload() // 重整頁面
+          })
+          // 如果是新會員，跳轉到資料編輯頁面
+          Swal.fire({
+            title: '歡迎加入！',
+            text: '請先填寫會員資料。',
+            icon: 'info',
+            confirmButtonText: '確認',
+          }).then(() => {
+            router.push('/user/user-center/info-edit').then(() => {
+              window.location.reload() // 重整頁面
+            })
+          })
+        } else {
+          // 否則跳轉到首頁並重整
+          router.push('/home').then(() => {
+            window.location.reload() // 重整頁面
+          })
+        }
       } else {
         // 處理失敗邏輯
         Swal.fire({

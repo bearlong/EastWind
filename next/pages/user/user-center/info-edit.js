@@ -41,6 +41,30 @@ export default function UserInfoEdit() {
 
   const fileInputRef = useRef(null) // 用於參考文件輸入元素
 
+  const [imageSrc, setImageSrc] = useState('') // 使用狀態來保存圖片 URL
+
+  // 初始化用戶數據
+  useEffect(() => {
+    if (user && user.id) {
+      fetchUserData() // user 初始化後立刻獲取資料
+    }
+  }, [user]) // user 狀態變化時重新執行
+
+  useEffect(() => {
+    if (user) {
+      // 當 user 更新時，更新圖片 URL
+      const imgSrc = user.user_img
+        ? `/images/boyu/users/${user.user_img}.jpg?${new Date().getTime()}`
+        : user.photo_url
+        ? user.photo_url
+        : user.gender === '男'
+        ? '/images/boyu/users/user-male-default.svg'
+        : '/images/boyu/users/user-female-default.svg'
+
+      setImageSrc(imgSrc) // 設定圖片來源
+    }
+  }, [user])
+
   // 從伺服器獲取用戶資料
   const fetchUserData = async () => {
     if (!user || !user.id) {
@@ -57,6 +81,8 @@ export default function UserInfoEdit() {
       }
 
       const result = await response.json()
+      console.log(result) // 確認 API 回應是否有 created_at
+
       const updatedUser = result.data
 
       // 將生日拆分為年、月、日
@@ -86,13 +112,6 @@ export default function UserInfoEdit() {
       console.error('Failed to fetch user data:', error)
     }
   }
-
-  // 初始化用戶數據
-  useEffect(() => {
-    if (user && user.id) {
-      fetchUserData()
-    }
-  }, [user])
 
   // 處理表單輸入變更
   const onInputChange = (event) => {
@@ -184,23 +203,21 @@ export default function UserInfoEdit() {
     toggleCorrectClass('email', !newErrors.email)
 
     // 檢查並驗證帳號
-    if (account !== initialFormValues.account) {
-      if (!account || !accountPasswordRegex.test(account)) {
-        newErrors.account = '帳號應至少6碼，且包含英文字'
-      } else {
-        const { accountExists } = await checkUniqueValues(email, account)
-        if (accountExists) {
-          newErrors.account = '帳號已存在'
-        }
+    if (!account || !accountPasswordRegex.test(account)) {
+      newErrors.account = '帳號應至少6碼，且包含英文字'
+    } else if (account !== initialFormValues.account) {
+      const { accountExists } = await checkUniqueValues(email, account)
+      if (accountExists) {
+        newErrors.account = '帳號已存在'
       }
     }
     toggleCorrectClass('account', !newErrors.account)
 
     // 檢查並驗證密碼
-    if (isPasswordChanged) {
-      if (!password || !accountPasswordRegex.test(password)) {
-        newErrors.password = '密碼應至少6碼，且包含英文字'
-      } else if (password === initialFormValues.password) {
+    if (!password || !accountPasswordRegex.test(password)) {
+      newErrors.password = '密碼應至少6碼，且包含英文字'
+    } else if (isPasswordChanged) {
+      if (password === initialFormValues.password) {
         newErrors.password = '原密碼不需修改'
       } else if (password !== confirmPassword) {
         newErrors.confirmPassword = '兩次密碼輸入不一致'
@@ -210,7 +227,6 @@ export default function UserInfoEdit() {
       'password',
       !newErrors.password && !newErrors.confirmPassword
     )
-
     // 檢查並驗證姓名
     if (username !== initialFormValues.username) {
       if (!username) {
@@ -663,8 +679,10 @@ export default function UserInfoEdit() {
   }
 
   // 格式化日期
-  const createdAt = user.created_at.split(' ')[0].replace(/-/g, ' / ')
-  // 現在年份
+  const createdAt =
+    user && user.created_at
+      ? user.created_at.split(' ')[0].replace(/-/g, ' / ')
+      : '日期未定義' // 現在年份
   const currentYear = new Date().getFullYear()
   // 最早可選年份（年滿18歲的年份）
   const earliestYear = currentYear - 18
@@ -793,15 +811,7 @@ export default function UserInfoEdit() {
               <div className={styles['user-img-box-bo']}>
                 <img
                   className={`${styles['user-img-bo']}`}
-                  src={
-                    user && user.user_img
-                      ? `/images/boyu/users/${
-                          user.user_img
-                        }.jpg?${new Date().getTime()}`
-                      : user && user.gender === '男'
-                      ? '/images/boyu/users/user-male-default.svg'
-                      : '/images/boyu/users/user-female-default.svg'
-                  }
+                  src={imageSrc}
                   alt={user?.username || 'User'}
                 />
 
