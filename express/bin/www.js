@@ -70,7 +70,7 @@ wss.on('connection', (connection) => {
         // 客服人員上線通知
         if (clients[62] && clients[62].readyState === WebSocket.OPEN) {
           clients[62].send(
-            JSON.stringify({ type: 'registered', userInfo: userData })
+            JSON.stringify({ type: 'registered', message: '客服人員已上線' })
           )
         }
         wss.clients.forEach((client) => {
@@ -108,21 +108,47 @@ wss.on('connection', (connection) => {
           clients[userID].readyState === WebSocket.OPEN &&
           clients[62].readyState === WebSocket.OPEN
         ) {
+          const userInfo = userData.find((user) => user.userID === userID)
           clients[62].send(
-            JSON.stringify({ type: 'message', fromID: userID, message })
+            JSON.stringify({
+              type: 'message',
+              fromID: userID,
+              userInfo,
+              message,
+            })
           )
           clients[userID].send(
             JSON.stringify({ type: 'message', fromID: 62, message })
+          )
+        } else {
+          clients[userID].send(
+            JSON.stringify({
+              type: 'message',
+              fromID: 62,
+              message: '客服人員目前不在線上',
+            })
           )
         }
       } else {
         const { targetUserID } = parsedMsg
         if (
+          clients[62] &&
+          clients[62].readyState === WebSocket.OPEN &&
           clients[targetUserID] &&
           clients[targetUserID].readyState === WebSocket.OPEN
         ) {
+          const userInfo = userData.find((user) => user.userID === userID)
           clients[targetUserID].send(
-            JSON.stringify({ type: 'message', message })
+            JSON.stringify({ type: 'message', fromID: 62, message })
+          )
+          clients[62].send(
+            JSON.stringify({
+              type: 'message',
+              fromID: 62,
+              targetUserID,
+              userInfo,
+              message,
+            })
           )
         }
       }
