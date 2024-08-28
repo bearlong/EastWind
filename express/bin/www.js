@@ -8,6 +8,7 @@ import http from 'http'
 const debug = debugLib('node-express-es6:server')
 import { exit } from 'node:process'
 import WebSocket, { WebSocketServer } from 'ws'
+import moment from 'moment'
 
 // 導入dotenv 使用 .env 檔案中的設定值 process.env
 import 'dotenv/config.js'
@@ -101,6 +102,8 @@ wss.on('connection', (connection) => {
 
     if (parsedMsg.type === 'message') {
       const { userID, message } = parsedMsg
+      const time = moment().format('HH:mm')
+      const newMessage = message + '|' + time
       if (userID !== 62) {
         if (
           clients[62] &&
@@ -114,11 +117,15 @@ wss.on('connection', (connection) => {
               type: 'message',
               fromID: userID,
               userInfo,
-              message,
+              message: newMessage,
             })
           )
           clients[userID].send(
-            JSON.stringify({ type: 'message', fromID: 62, message })
+            JSON.stringify({
+              type: 'message',
+              fromID: userID,
+              message: newMessage,
+            })
           )
         } else {
           clients[userID].send(
@@ -139,7 +146,12 @@ wss.on('connection', (connection) => {
         ) {
           const userInfo = userData.find((user) => user.userID === userID)
           clients[targetUserID].send(
-            JSON.stringify({ type: 'message', fromID: 62, message })
+            JSON.stringify({
+              type: 'message',
+              fromID: 62,
+              targetUserID,
+              message: newMessage,
+            })
           )
           clients[62].send(
             JSON.stringify({
@@ -147,7 +159,7 @@ wss.on('connection', (connection) => {
               fromID: 62,
               targetUserID,
               userInfo,
-              message,
+              message: newMessage,
             })
           )
         }
@@ -166,10 +178,9 @@ wss.on('connection', (connection) => {
         userData.length,
         ...userData.filter((user) => user.userID !== dsID)
       )
-      console.log(userData)
       if (clients[62] && clients[62].readyState === WebSocket.OPEN) {
         clients[62].send(
-          JSON.stringify({ type: 'disconnected', userInfo: userData })
+          JSON.stringify({ type: 'disconnected', userInfo: userData, dsID })
         )
       }
       if (dsID === 62) {

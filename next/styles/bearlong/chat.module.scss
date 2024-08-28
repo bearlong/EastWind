@@ -15,12 +15,31 @@
   justify-content: space-between;
   .chatArea-bl {
     width: 70%;
+
     .chatBox {
-      min-height: calc(100vh - 431px);
+      height: 65svh;
+      overflow: auto;
       padding: 1rem;
       background: var(--white);
       border: 1px solid var(--primary);
       border-radius: 5px;
+      justify-content: flex-end;
+      .client-bl {
+        background: var(--primary-light);
+        border-radius: 25px;
+      }
+      .time {
+        color: var(--text-hover-color);
+        font-size: 1.2rem;
+      }
+      .client-bl {
+        background: var(--primary-light);
+        border-radius: 25px;
+      }
+      .admin-bl {
+        background: var(--bg-text-hover-color);
+        border-radius: 25px;
+      }
     }
     .chatInput-bl {
       width: 100%;
@@ -45,7 +64,13 @@
   }
   .memberInfo-bl {
     width: 25%;
+    .infoBox-bl {
+      max-height: 65svh;
+      overflow-y: auto;
+    }
     .infoCard-bl {
+      position: relative;
+      width: 100%;
       padding: 1rem;
       background: var(--white);
       border: 2px solid var(--primary);
@@ -53,6 +78,13 @@
       &:hover {
         border: 2px solid var(--primary);
         background: var(--primary-light);
+      }
+      .newMessage-bl {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        color: var(--error-color);
+        font-size: 1.2rem;
       }
     }
     .message {
