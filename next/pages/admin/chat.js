@@ -80,7 +80,7 @@ export default function Chat() {
 
   useEffect(() => {
     if (router.isReady && !loading) {
-      if (user) {
+      if (user && user.id === 62) {
         const socket = new WebSocket('ws://localhost:3005')
         setWs(socket)
         socket.onopen = (event) => {
@@ -129,6 +129,9 @@ export default function Chat() {
         return () => {
           socket.close()
         }
+      } else {
+        alert('請由正常管道進入')
+        router.push('/home')
       }
     }
   }, [router.isReady, user])

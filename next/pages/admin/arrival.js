@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import AdminCenterLayout from '@/components/layout/admin-layout'
 import styles from '@/styles/bearlong/arrival.module.scss'
 import { FaSort, FaMagnifyingGlass } from 'react-icons/fa6'
 import { useRouter } from 'next/router'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import { AuthContext } from '@/context/AuthContext'
 
 export default function Arrival() {
   const router = useRouter()
+  const { user, loading } = useContext(AuthContext)
   const { search, date, delivery_method } = router.query
   const [data, setData] = useState([{}])
   const [sort, setSort] = useState('order_date')
@@ -134,6 +136,15 @@ export default function Arrival() {
       }
     })
   }
+
+  useEffect(() => {
+    if (router.isReady && !loading) {
+      if (user.id !== 62 || (!user && loading === false)) {
+        alert('請由正常管道進入')
+        router.push('/home')
+      }
+    }
+  }, [router.isReady, user])
 
   useEffect(() => {
     let filtered = data

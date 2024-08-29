@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import BarChartRegistration from '@/components/test/barChartRegistration'
 import BarChartOrder from '@/components/test/barChartOrder'
 import BarChartPatry from '@/components/test/barChartParty'
@@ -12,8 +12,14 @@ import LineChartIncome from '@/components/test/lineChartIncome'
 import LineChartHour from '@/components/test/lineChartHour'
 import AdminCenterLayout from '@/components/layout/admin-layout'
 import styles from '@/styles/bearlong/chart.module.scss'
+import { useRouter } from 'next/router'
+import { AuthContext } from '@/context/AuthContext'
 
 export default function Chart() {
+  const router = useRouter()
+  const { user, loading } = useContext(AuthContext)
+
+  // 確認window(瀏覽器)開始運作
   const [data, setData] = useState([{}])
   const getData = async () => {
     try {
@@ -38,6 +44,15 @@ export default function Chart() {
 
     return () => clearInterval(intervalId)
   }, [])
+
+  useEffect(() => {
+    if (router.isReady && !loading) {
+      if (user.id !== 62 || (!user && loading === false)) {
+        alert('請由正常管道進入')
+        router.push('/home')
+      }
+    }
+  }, [router.isReady, user])
 
   return (
     <>
