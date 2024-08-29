@@ -4,12 +4,16 @@ import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
 import styles from '@/styles/aa/classDetail.module.scss'
+import CategoryLink from '@/components/course/category-link'
+import CourseInfo from '@/components/course/course-info'
+import Content from '@/components/course/content'
 
 export default function ClassDetail() {
-  const [courses, setCourses] = useState({ list: [] })
+  const [courses, setCourses] = useState([])
   const router = useRouter()
   const [pages, setPages] = useState(1)
-  const [category, setCategory] = useState([])
+  const [category, setCategory] = useState({})
+  const [videoUrl, setVideoUrl] = useState('')
   const { course_id, category_id } = router.query
 
   // 向伺服器連線的程式碼；向伺服器fetch獲取資料
@@ -25,6 +29,8 @@ export default function ClassDetail() {
       // 設定到狀態中 ==> 觸發re-render(進入update階段)
       if (Array.isArray(data.data.courses)) {
         setCourses(data.data.courses)
+        setCategory(data.data.courses)
+        setVideoUrl(`/video/go3.mp4`)
       }
     } catch (e) {
       console.error(e)
@@ -66,22 +72,27 @@ export default function ClassDetail() {
               &gt;
               <Link href={`/course/classListCate/${category_id}`}>
                 {/* <span> 麻將 </span> */}
-                <span> {category.ch_name} </span>
+                {/* <span> {courses.ch_name} </span> */}
+                <span>
+                  <CategoryLink courses={courses} categoryId={category_id} />
+                </span>
               </Link>
               &gt; <span>初級</span>
             </h6>
           </div>
           <div className={styles['desec1box-aa']}>
             <div className={styles['de1-ins-aa']}>
-              {/* <video
-                src="./video/chessvideo/2chess.mp4"
-                muted=""
-                loop=""
-                controls=""
-                controlslist="nodownload nofullscreen"
-                disablepictureinpicture=""
-                width="100%"
-              /> */}
+              {videoUrl && (
+                <video
+                  src={videoUrl}
+                  muted
+                  loop
+                  controls
+                  controlsList="nodownload nofullscreen"
+                  disablePictureInPicture
+                  width="100%"
+                />
+              )}
             </div>
             <div className={styles['detextright1-aa']}>
               <div className={styles['detextright2-aa']}>
@@ -103,7 +114,7 @@ export default function ClassDetail() {
                 </h5>
               </div>
               <div className={styles['detextright5-aa']}>
-                <h4>NT$2,480</h4>
+                <h4>NT$ 2,480</h4>
                 <div className={styles['chh6-aa']}>
                   <div className={styles['chh61-aa']}>
                     <h6 className={styles['chh62-aa']}>查看章節</h6>
@@ -126,6 +137,7 @@ export default function ClassDetail() {
                 </div>
               </div>
             </div>
+            {/* <CourseInfo /> */}
           </div>
         </div>
         <div className={styles['texth2detail2-aa']}>
@@ -133,7 +145,7 @@ export default function ClassDetail() {
             <h2>課程內容</h2>
           </div>
         </div>
-        <div className={styles['detailpic-aa']}>
+        {/* <div className={styles['detailpic-aa']}>
           <div className={styles['detailpic1-aa']}>
             <div className={styles['depic1-aa']}>
               <Image
@@ -163,7 +175,8 @@ export default function ClassDetail() {
               Thinking）結合工程的務實與效率、數理方面的抽象邏輯思考，將能更有效解決複雜的問題。
             </h6>
           </div>
-        </div>
+        </div> */}
+        <Content />
         <div className={styles['detailpic-aa']}>
           <div className={styles['detailpic1-aa']}>
             <div className={styles['depic1-aa']}>
