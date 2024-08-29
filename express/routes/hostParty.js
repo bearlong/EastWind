@@ -1,8 +1,6 @@
 import express from 'express'
 import 'dotenv/config.js'
 import connection from '##/configs/mysql-promise.js'
-
-import { v4 as uuidv4 } from 'uuid'
 import { customAlphabet } from 'nanoid'
 
 const router = express.Router()
@@ -13,6 +11,7 @@ const nanoid = customAlphabet(alphabet, 10)
 function generateShortId() {
   return nanoid()
 }
+
 router.post('/', async (req, res) => {
   const numerical_order = generateShortId()
   const {
@@ -61,7 +60,7 @@ router.post('/', async (req, res) => {
         playroom_type,
         notes || null,
         total_price,
-        'booked',
+        'waiting',
       ]
     )
 
