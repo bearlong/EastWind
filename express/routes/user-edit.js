@@ -221,11 +221,86 @@ router.post('/send-verification-email', async (req, res) => {
     const verifyUrl = `http://localhost:3005/api/user-edit/verify-email`
 
     // 設置郵件內容
+
     const mailOptions = {
       from: `"support"<${process.env.SMTP_TO_EMAIL}>`,
       to: email,
-      subject: '請驗證您的電子信箱',
-      text: `你好，請點擊下方連結以驗證您的電子信箱：\r\n\r\n${verifyUrl}\r\n\r\n如果您沒有修改此帳號資訊，請忽略此郵件。\r\n\r\n敬上\r\n東風開發團隊`,
+      subject: '只欠東風-修改電子信箱驗證',
+      html: `
+          <!DOCTYPE html>
+        <html lang="zh-TW">
+          <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+              }
+              .container {
+                width: 100%;
+                max-width: 550px;
+                margin: 0 auto;
+                background-color: #2b4d37;
+                padding: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+              }
+              .header {
+                text-align: center;
+                padding: 10px 0;
+                border-bottom: 1px solid #dddddd;
+              }
+              .header h1 {
+                color: #faf7f0;
+                margin: 0;
+                font-size: 24px;
+              }
+              .content {
+                margin: 20px 0;
+                line-height: 1.5;
+              }
+              .content p {
+                margin: 0 0 10px;
+              }
+              .content a {
+                display: inline-block;
+                padding: 10px 20px;
+                margin: 0 0 10px;
+                background-color: #b79347;
+                color: #faf7f0;
+                text-decoration: none;
+                border-radius: 5px;
+              }
+              p,
+              .p {
+                color: #faf7f0;
+                font-weight: 900;
+                font-size: 16px;
+                @media screen and (max-width: 768px) {
+                  font-size: 14px;
+                }
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>只欠東風 - 註冊電子信箱驗證</h1>
+              </div>
+              <div class="content">
+                <p>您好，</p>
+                <p>請點擊下方按鈕以驗證您的電子信箱：</p>
+                <a class="p" href="${verifyUrl}" target="_blank">驗證信箱</a>
+                <p>如果您沒有修改過此帳號，請忽略此郵件。</p>
+                <p>敬上，</p>
+                <p>東風開發團隊。</p>
+              </div>
+            </div>
+          </body>
+        </html>
+      `,
     }
 
     // 發送郵件

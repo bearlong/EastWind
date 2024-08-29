@@ -36,6 +36,45 @@ const ReturnURL = process.env.ECPAY_RETURN_URL
 const OrderResultURL = process.env.ECPAY_ORDER_RESULT_URL
 const ReactClientBackURL = process.env.ECPAY_ORDER_CALLBACK_URL
 
+async function processCart(cartArray, result, mailArr) {
+  for (const cartItem of cartArray) {
+    mailArr.push({
+      name: cartItem.item_name,
+      quantity: cartItem.quantity,
+      price: cartItem.price,
+      total: Number(cartItem.quantity) * Number(cartItem.price),
+    })
+
+    const { object_id, object_type, quantity, price, item_name } = cartItem
+
+    // 插入 order_detail 資料
+    await dbPromise.execute(
+      'INSERT INTO `order_detail` (`id`, `name`, `order_id`, `object_id`, `object_type`, `quantity`, `price`) VALUES (NULL,?,?,?,?,?,?)',
+      [item_name, result.insertId, object_id, object_type, quantity, price]
+    )
+
+    // 檢查庫存並減少庫存
+    if (object_type === 'product') {
+      const [productResult] = await dbPromise.execute(
+        'SELECT * FROM `product` WHERE `id` = ?',
+        [object_id]
+      )
+
+      const product = productResult[0]
+
+      if (product && product.stock > 0) {
+        await dbPromise.execute(
+          'UPDATE `product` SET `stock` = `stock` - ? WHERE `id` = ?',
+          [quantity, object_id]
+        )
+      } else {
+        console.log(`商品 ${object_id} 庫存不足，無法減少庫存`)
+        // 可以在這裡處理庫存不足的情況，例如通知用戶或記錄錯誤
+      }
+    }
+  }
+}
+
 // linepay
 router.get('/LinepayReserve', async (req, res) => {
   if (!req.query.orderId) {
@@ -130,7 +169,6 @@ router.get('/LinepayReserve', async (req, res) => {
 router.get('/confirm', async (req, res) => {
   // 網址上需要有transactionId
   const transactionId = req.query.transactionId
-  console.log(transactionId)
   // 從資料庫取得交易資料
   const [orderInfo] = await dbPromise.execute(
     'SELECT * FROM `user_order` WHERE `transaction_Id` = ?',
@@ -487,7 +525,6 @@ router.post('/:id', upload.none(), async (req, res, next) => {
   } = req.body
   let mailArr = []
 
-  console.log(req.body)
   const cartArray = JSON.parse(cart)
   const delivery_addressJson = JSON.parse(delivery_address)
   const payInfoJson = JSON.parse(payInfo)
@@ -575,22 +612,38 @@ router.post('/:id', upload.none(), async (req, res, next) => {
     )
     if (result.insertId) {
       const time = moment().format('YYYY-MM-DD HH:mm:ss')
-      cartArray.forEach((cartItem) => {
-        mailArr.push({
-          name: cartItem.item_name,
-          quantity: cartItem.quantity,
-          price: cartItem.price,
-          total: Number(cartItem.quantity) * Number(cartItem.price),
-        })
-        const { object_id, object_type, quantity, price, item_name } = cartItem
-        dbPromise.execute(
-          'INSERT INTO `order_detail` (`id`, `name`, `order_id`, `object_id`, `object_type`, `quantity`,`price`) VALUES (NULL,?,?,?,?,?,?)',
-          [item_name, result.insertId, object_id, object_type, quantity, price]
-        )
-      })
+      processCart(cartArray, result, mailArr)
+      // cartArray.forEach((cartItem) => {
+      //   mailArr.push({
+      //     name: cartItem.item_name,
+      //     quantity: cartItem.quantity,
+      //     price: cartItem.price,
+      //     total: Number(cartItem.quantity) * Number(cartItem.price),
+      //   })
+      //   const { object_id, object_type, quantity, price, item_name } = cartItem
+
+      //   dbPromise.execute(
+      //     'INSERT INTO `order_detail` (`id`, `name`, `order_id`, `object_id`, `object_type`, `quantity`,`price`) VALUES (NULL,?,?,?,?,?,?)',
+      //     [item_name, result.insertId, object_id, object_type, quantity, price]
+      //   )
+
+      //   if (object_type === 'product') {
+      //     const [product] = dbPromise.execute(
+      //       'SELECT * FROM `product` WHERE `id` = ?',
+      //       [object_id]
+      //     )
+
+      //     if (product[0].stock > 0) {
+      //       dbPromise.execute(
+      //         'UPDATE `product` SET `stock` = `stock` - ? WHERE `id` = ?',
+      //         [quantity, object_id]
+      //       )
+      //     }
+      //   }
+      // })
       let subTotal = 0
       const mailOptions = {
-        from: `"support"<${process.env.SMTP_TO_EMAIL}>`,
+        from: `"只欠東風股份有限公司"<${process.env.SMTP_TO_EMAIL}>`,
         to: 'a86774546@gmail.com',
         subject: '感謝購買只欠東風的產品',
         text: '感謝購買只欠東風的產品，您的訂單已成功建立。',
@@ -745,6 +798,7 @@ router.post('/:id', upload.none(), async (req, res, next) => {
       transporter.sendMail(mailOptions, (err, response) => {
         if (err) {
           // 失敗處理
+          console.log(err)
           return res.status(400).json({ status: 'error', message: err })
         } else {
           // 成功回覆的json
@@ -772,8 +826,10 @@ router.post('/:id', upload.none(), async (req, res, next) => {
       res
         .status(400)
         .json({ status: 'error', data: { message: '訂單建立失敗' } })
+      console.log('error')
     }
   } catch (err) {
+    console.log(err.message)
     res.status(400).json({ status: 'error', data: { message: err.message } })
   }
 
@@ -812,7 +868,6 @@ router.put('/:id', upload.none(), async (req, res, next) => {
       'UPDATE `user_order` SET `status_now` = ? WHERE `user_order`.`id` = ?',
       ['付款完成', id]
     )
-    console.log(result)
     if (result.changedRows >= 1) {
       const [resultStatus] = await dbPromise.execute(
         'INSERT INTO `order_status` (`id`, `order_id`, `status`, `update_at`) VALUES (NULL, ?, ?, ?);',

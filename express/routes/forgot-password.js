@@ -76,8 +76,82 @@ router.post('/forgot-password', async (req, res) => {
     const mailOptions = {
       from: `"support"<${process.env.SMTP_TO_EMAIL}>`,
       to: email,
-      subject: '重設密碼請求',
-      text: `你好，請點擊下方連結以重設您的密碼：\r\n\r\n${resetUrl}\r\n\r\n如果您沒有發起此請求，請忽略此郵件。\r\n\r\n敬上\r\n東風開發團隊`,
+      subject: '只欠東風-重設密碼請求',
+      html: `
+          <!DOCTYPE html>
+        <html lang="zh-TW">
+          <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+              }
+              .container {
+                width: 100%;
+                max-width: 550px;
+                margin: 0 auto;
+                background-color: #2b4d37;
+                padding: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+              }
+              .header {
+                text-align: center;
+                padding: 10px 0;
+                border-bottom: 1px solid #dddddd;
+              }
+              .header h1 {
+                color: #faf7f0;
+                margin: 0;
+                font-size: 24px;
+              }
+              .content {
+                margin: 20px 0;
+                line-height: 1.5;
+              }
+              .content p {
+                margin: 0 0 10px;
+              }
+              .content a {
+                display: inline-block;
+                padding: 10px 20px;
+                margin: 0 0 10px;
+                background-color: #b79347;
+                color: #faf7f0;
+                text-decoration: none;
+                border-radius: 5px;
+              }
+              p,
+              .p {
+                color: #faf7f0;
+                font-weight: 900;
+                font-size: 16px;
+                @media screen and (max-width: 768px) {
+                  font-size: 14px;
+                }
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>只欠東風 - 重設密碼請求</h1>
+              </div>
+              <div class="content">
+                <p>您好，</p>
+                <p>請點擊下方按鈕以重設您的密碼：</p>
+                <a class="p" href="${resetUrl}" target="_blank">重設密碼</a>
+                <p>如果您沒有發起此請求，請忽略此郵件。</p>
+                <p>敬上，</p>
+                <p>東風開發團隊。</p>
+              </div>
+            </div>
+          </body>
+        </html>
+      `,
     }
 
     transporter.sendMail(mailOptions, (err, response) => {

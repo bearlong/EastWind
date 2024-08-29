@@ -25,6 +25,9 @@ export default function UserParty() {
   const [role, setRole] = useState('主揪') // 新增角色狀態
   const [members, setMembers] = useState([])
 
+  const [searchQuery, setSearchQuery] = useState('') // 用來存儲用戶輸入值的狀態
+  const [searchKeyword, setSearchKeyword] = useState('') // 新增搜尋關鍵字狀態
+
   // 排序方式列表
   const sortOptions = [
     { label: '揪團編號從大到小', key: 'order_number', order: 'desc' },
@@ -78,6 +81,20 @@ export default function UserParty() {
 
   const formatTime = (time) => {
     return time.split(':').slice(0, 2).join(':')
+  }
+
+  const triggerSearch = () => {
+    setSearchKeyword(searchQuery) // 按下搜尋按鈕時，根據 `searchQuery` 設置 `searchKeyword`
+  }
+
+  // 當輸入框內容改變時執行的函數
+  const searchInputChange = (e) => {
+    const inputValue = e.target.value
+    setSearchQuery(inputValue)
+
+    if (inputValue === '') {
+      setSearchKeyword('') // 當輸入框為空時，設置 `searchKeyword` 為空，這樣會顯示全部結果
+    }
   }
 
   useEffect(() => {
@@ -145,20 +162,50 @@ export default function UserParty() {
   }, [selectedStatus, role, user])
 
   const filteredParty = party.filter((item) => {
+    const matchCompanyName = item.company_name.includes(searchKeyword)
+    const matchOrderNumber = item.order_number
+      .toString()
+      .includes(searchKeyword)
+
     if (role === '主揪') {
-      return item.main_username === user.username
+      return (
+        item.main_username === user.username &&
+        (matchCompanyName || matchOrderNumber)
+      )
     } else if (role === '參團') {
-      return [
-        item.join1_username,
-        item.join2_username,
-        item.join3_username,
-      ].includes(user.username)
+      return (
+        [
+          item.join1_username,
+          item.join2_username,
+          item.join3_username,
+        ].includes(user.username) &&
+        (matchCompanyName || matchOrderNumber)
+      )
     }
     return false
   })
 
   return (
     <div className={`${styles['user-party-box-bo']}   w-100`}>
+      <div
+        className={`${styles['search-box-bo']} d-flex flex-column flex-sm-row justify-content-center align-items-center gap-lg-4 gap-3 `}
+      >
+        <h6>搜尋</h6>
+        <input
+          type="text"
+          placeholder="請輸入店名或揪團編號"
+          className={`${styles['input-search-bo']} p`}
+          value={searchQuery} // 綁定搜尋關鍵字
+          onChange={searchInputChange} // 更新搜尋關鍵字並監聽輸入
+        />
+        <button
+          className={`${styles['btn-search']} h6 d-flex justify-content-between align-items-center`}
+          onClick={triggerSearch} // 點擊後觸發搜尋
+        >
+          <FaMagnifyingGlass />
+        </button>
+      </div>
+
       <div className={`${styles['party-list-box-bo']} flex-column d-flex`}>
         <div className={styles['party-list-head-bo']}>
           <ul
@@ -287,199 +334,39 @@ export default function UserParty() {
               <li className="p d-flex justify-content-center align-items-center text-center gap-3"></li>
             </ul>
           </div>
-          {filteredParty.map((item) => (
-            <div
-              className={styles['party-list-tb-bo']}
-              key={`${item.order_number}-${item.id}`}
-            >
+          {filteredParty.length === 0 ? (
+            <div className="h5 p-5">尚未有揪團紀錄</div>
+          ) : (
+            filteredParty.map((item) => (
               <div
-                className={`${styles['party-list-col-bo']} d-flex flex-column`}
+                className={styles['party-list-tb-bo']}
+                key={`${item.order_number}-${item.id}`}
               >
-                <div className="d-none d-md-block">
-                  <input
-                    type="checkbox"
-                    id={`showDetailDesktop${item.id}`}
-                    className={styles['show-detail-desktop-bo']}
-                  />
-                  <label
-                    className={`${styles['list-col-head-desktop-bo']} d-none d-md-grid gap-2 `}
-                    htmlFor={`showDetailDesktop${item.id}`}
-                  >
-                    <h6>{item.order_number}</h6>
-                    <h6>{item.company_name}</h6>
-                    <div
-                      className={`${styles['list-time-bo']} d-flex flex-column`}
+                <div
+                  className={`${styles['party-list-col-bo']} d-flex flex-column`}
+                >
+                  <div className="d-none d-md-block">
+                    <input
+                      type="checkbox"
+                      id={`showDetailDesktop${item.id}`}
+                      className={styles['show-detail-desktop-bo']}
+                    />
+                    <label
+                      className={`${styles['list-col-head-desktop-bo']} d-none d-md-grid gap-2 `}
+                      htmlFor={`showDetailDesktop${item.id}`}
                     >
-                      <h6>{item.date}</h6>
-                      <div className="d-flex flex-column flex-lg-row justify-content-center align-items-center text-start">
-                        <h6>{item.start_time}-</h6>
-                        <h6> {item.end_time}</h6>
-                      </div>
-                    </div>
-
-                    {selectedStatus === 'booked' && (
-                      <div
-                        className={`${styles['btn-party-bo']} btn h6 d-flex justify-content-center align-items-center gap-2`}
-                      >
-                        <FaUserGroup />
-                        <div
-                          className={`${styles['btn-party-text-bo']} d-flex justify-content-center align-items-center text-center`}
-                        >
-                          <p>參團</p>
-                          <p>詳情</p>
-                        </div>
-                      </div>
-                    )}
-                    {selectedStatus === 'completed' && (
-                      <div
-                        className={`${styles['state-text-bo']} h6 d-flex justify-content-center align-items-center gap-2`}
-                      >
-                        <FaCheck />
-                        已完成
-                      </div>
-                    )}
-                    {selectedStatus === 'cancelled' && (
-                      <div
-                        className={`${styles['state-text-bo']} h6 d-flex justify-content-center align-items-center gap-2`}
-                      >
-                        <FaXmark />
-                        已流團
-                      </div>
-                    )}
-
-                    <h6>
-                      <FaChevronDown
-                        className={` ${styles['btn-detail-bo']}`}
-                      />
-                    </h6>
-                  </label>
-                  <div
-                    className={`${styles['list-col-desktop-body-bo']} flex-column flex-xl-row justify-content-between align-items-center gap-4  gap-xl-2 `}
-                  >
-                    <div
-                      className={`${styles['shop-box-bo']} d-flex  justify-content-between align-items-center`}
-                    >
-                      <ul className="d-flex flex-column justify-content-between align-items-start gap-1">
-                        <li
-                          className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
-                        >
-                          <FaMapMarkerAlt
-                            className={` ${styles['col-icon-bo']} `}
-                          />
-                          {item.company_address}
-                        </li>
-                        <li
-                          className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
-                        >
-                          <FaPhone className={` ${styles['col-icon-bo']}`} />
-                          {item.company_tele}
-                        </li>
-                        {/* 只有當狀態為 'completed' 時才顯示桌子ID */}
-                        {selectedStatus === 'completed' && (
-                          <li
-                            className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
-                          >
-                            <FaShop className={` ${styles['col-icon-bo']}`} />
-                            {item.table_id !== '未指定'
-                              ? `${item.playroom_type} / ${item.table_number} 號桌`
-                              : '未指定桌號'}
-                          </li>
-                        )}
-
-                        <li
-                          className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
-                        >
-                          <FaMoneyBill className={`${styles['col-icon-bo']}`} />
-                          {item.price}
-                        </li>
-                      </ul>
-
-                      <div className="d-flex flex-column justify-content-between align-items-center gap-3">
-                        <Link
-                          href={`/lobby/Company/${item.id}`}
-                          className={`${styles['btn-shop-detail']} btn p d-flex justify-content-center align-items-center`}
-                        >
-                          <FaMagnifyingGlass
-                            className={` ${styles['btn-icon-bo']}`}
-                          />
-                          <div
-                            className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
-                          >
-                            <p>店家</p>
-                            <p>詳情</p>
-                          </div>
-                        </Link>
-
-                        <button
-                          className={`${styles['btn-rating']} btn p d-flex justify-content-center align-items-center`}
-                        >
-                          <FaStar className={` ${styles['icon-star-bo']}`} />
-
-                          <div
-                            className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
-                          >
-                            <p>評論</p>
-                            <p>店家</p>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className={styles['group-box-bo']}>
-                      {item.members.map((member, index) => (
-                        <div
-                          key={index}
-                          className={`${
-                            styles['group-member-box-bo']
-                          } d-flex justify-content-center align-items-center ${
-                            member.id === user.id
-                              ? styles['member-self-bo']
-                              : ''
-                          } gap-3`}
-                        >
-                          <img
-                            className={styles['member-img-bo']}
-                            src={`/images/boyu/users/user${member.id}.jpg`} // 動態生成圖片路徑
-                            alt={member.name}
-                          />
-                          <div
-                            className={`${styles['member-text-box']} d-flex`}
-                          >
-                            <p>{member.role}</p>
-                            <p>{member.name}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="d-block d-md-none">
-                  <input
-                    type="checkbox"
-                    id={`showDetailMobile${item.id}`}
-                    className={styles['show-detail-mobile-bo']}
-                  />
-                  <label
-                    className={`${styles['list-col-head-mobile-bo']} d-flex d-md-none justify-content-between align-items-center text-center`}
-                    htmlFor={`showDetailMobile${item.id}`}
-                  >
-                    <div className="d-flex flex-column justify-content-center align-items-start gap-2 text-start ">
-                      <div className="d-flex justify-content-between w-100">
-                        <h6>{item.order_number}</h6>
-                      </div>
+                      <h6>{item.order_number}</h6>
                       <h6>{item.company_name}</h6>
                       <div
-                        className={`${styles['list-time-bo']} d-flex text-start`}
+                        className={`${styles['list-time-bo']} d-flex flex-column`}
                       >
                         <h6>{item.date}</h6>
-                        <h6>
-                          {item.start_time} - {item.end_time}
-                        </h6>
+                        <div className="d-flex flex-column flex-lg-row justify-content-center align-items-center text-start">
+                          <h6>{item.start_time}-</h6>
+                          <h6> {item.end_time}</h6>
+                        </div>
                       </div>
-                    </div>
-                    <div></div>
-                    <div className="d-flex justify-content-center align-items-center gap-4">
+
                       {selectedStatus === 'booked' && (
                         <div
                           className={`${styles['btn-party-bo']} btn h6 d-flex justify-content-center align-items-center gap-2`}
@@ -509,116 +396,284 @@ export default function UserParty() {
                           已流團
                         </div>
                       )}
+
                       <h6>
                         <FaChevronDown
                           className={` ${styles['btn-detail-bo']}`}
                         />
                       </h6>
-                    </div>
-                  </label>
-                  <div
-                    className={`${styles['list-col-mobile-body-bo']} flex-column fle flex-xl-row justify-content-between align-items-center gap-4  gap-xl-2 `}
-                  >
+                    </label>
                     <div
-                      className={`${styles['shop-box-bo']} d-flex  flex-column flex-sm-row justify-content-between align-items-center`}
+                      className={`${styles['list-col-desktop-body-bo']} flex-column flex-xl-row justify-content-between align-items-center gap-4  gap-xl-2 `}
                     >
-                      <ul className="d-flex flex-column justify-content-between align-items-start gap-1">
-                        <li
-                          className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
-                        >
-                          <FaMapMarkerAlt
-                            className={` ${styles['col-icon-bo']} `}
-                          />
-                          {item.company_address}
-                        </li>
-                        <li
-                          className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
-                        >
-                          <FaPhone className={` ${styles['col-icon-bo']}`} />
-                          {item.company_tele}
-                        </li>
-                        {/* 只有當狀態為 'completed' 時才顯示桌子ID */}
-                        {selectedStatus === 'completed' && (
+                      <div
+                        className={`${styles['shop-box-bo']} d-flex  justify-content-between align-items-center`}
+                      >
+                        <ul className="d-flex flex-column justify-content-between align-items-start gap-1">
                           <li
                             className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
                           >
-                            <FaShop className={` ${styles['col-icon-bo']}`} />
-                            {item.table_id !== '未指定'
-                              ? `${item.playroom_type} / ${item.table_number} 號桌`
-                              : '未指定桌號'}
+                            <FaMapMarkerAlt
+                              className={` ${styles['col-icon-bo']} `}
+                            />
+                            {item.company_address}
                           </li>
-                        )}
-
-                        <li
-                          className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
-                        >
-                          <FaMoneyBill className={`${styles['col-icon-bo']}`} />
-                          {item.price}
-                        </li>
-                      </ul>
-
-                      <div className="d-flex flex-row flex-sm-column justify-content-between align-items-center gap-3">
-                        <Link
-                          href={`/lobby/Company/${item.id}`}
-                          className={`${styles['btn-shop-detail']} btn p d-flex justify-content-center align-items-center`}
-                        >
-                          <FaMagnifyingGlass
-                            className={` ${styles['btn-icon-bo']}`}
-                          />
-                          <div
-                            className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
+                          <li
+                            className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
                           >
-                            <p>店家</p>
-                            <p>詳情</p>
-                          </div>
-                        </Link>
+                            <FaPhone className={` ${styles['col-icon-bo']}`} />
+                            {item.company_tele}
+                          </li>
+                          {/* 只有當狀態為 'completed' 時才顯示桌子ID */}
+                          {selectedStatus === 'completed' && (
+                            <li
+                              className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
+                            >
+                              <FaShop className={` ${styles['col-icon-bo']}`} />
+                              {item.table_id !== '未指定'
+                                ? `${item.playroom_type} / ${item.table_number} 號桌`
+                                : '未指定桌號'}
+                            </li>
+                          )}
 
-                        <button
-                          className={`${styles['btn-rating']} btn p d-flex justify-content-center align-items-center`}
-                        >
-                          <FaStar className={` ${styles['icon-star-bo']}`} />
-
-                          <div
-                            className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
+                          <li
+                            className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
                           >
-                            <p>評論</p>
-                            <p>店家</p>
+                            <FaMoneyBill
+                              className={`${styles['col-icon-bo']}`}
+                            />
+                            {item.price}
+                          </li>
+                        </ul>
+
+                        <div className="d-flex flex-column justify-content-between align-items-center gap-3">
+                          <Link
+                            href={`/lobby/Company/${item.id}`}
+                            className={`${styles['btn-shop-detail']} btn p d-flex justify-content-center align-items-center`}
+                          >
+                            <FaMagnifyingGlass
+                              className={` ${styles['btn-icon-bo']}`}
+                            />
+                            <div
+                              className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
+                            >
+                              <p>店家</p>
+                              <p>詳情</p>
+                            </div>
+                          </Link>
+
+                          <button
+                            className={`${styles['btn-rating']} btn p d-flex justify-content-center align-items-center`}
+                          >
+                            <FaStar className={` ${styles['icon-star-bo']}`} />
+
+                            <div
+                              className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
+                            >
+                              <p>評論</p>
+                              <p>店家</p>
+                            </div>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className={styles['group-box-bo']}>
+                        {item.members.map((member, index) => (
+                          <div
+                            key={index}
+                            className={`${
+                              styles['group-member-box-bo']
+                            } d-flex justify-content-center align-items-center ${
+                              member.id === user.id
+                                ? styles['member-self-bo']
+                                : ''
+                            } gap-3`}
+                          >
+                            <img
+                              className={styles['member-img-bo']}
+                              src={`/images/boyu/users/user${member.id}.jpg`} // 動態生成圖片路徑
+                              alt={member.name}
+                            />
+                            <div
+                              className={`${styles['member-text-box']} d-flex`}
+                            >
+                              <p>{member.role}</p>
+                              <p>{member.name}</p>
+                            </div>
                           </div>
-                        </button>
+                        ))}
                       </div>
                     </div>
+                  </div>
 
-                    <div className={styles['group-box-bo']}>
-                      {item.members.map((member, index) => (
-                        <div
-                          key={index}
-                          className={`${
-                            styles['group-member-box-bo']
-                          } d-flex justify-content-center align-items-center ${
-                            member.id === user.id
-                              ? styles['member-self-bo']
-                              : ''
-                          } gap-3`}
-                        >
-                          <img
-                            className={styles['member-img-bo']}
-                            src={`/images/boyu/users/user${member.id}.jpg`} // 動態生成圖片路徑
-                            alt={member.name}
-                          />
-                          <div
-                            className={`${styles['member-text-box']} d-flex`}
-                          >
-                            <p>{member.role}</p>
-                            <p>{member.name}</p>
-                          </div>
+                  <div className="d-block d-md-none">
+                    <input
+                      type="checkbox"
+                      id={`showDetailMobile${item.id}`}
+                      className={styles['show-detail-mobile-bo']}
+                    />
+                    <label
+                      className={`${styles['list-col-head-mobile-bo']} d-flex d-md-none justify-content-between align-items-center text-center`}
+                      htmlFor={`showDetailMobile${item.id}`}
+                    >
+                      <div className="d-flex flex-column justify-content-center align-items-start gap-2 text-start ">
+                        <div className="d-flex justify-content-between w-100">
+                          <h6>{item.order_number}</h6>
                         </div>
-                      ))}
+                        <h6>{item.company_name}</h6>
+                        <div
+                          className={`${styles['list-time-bo']} d-flex text-start`}
+                        >
+                          <h6>{item.date}</h6>
+                          <h6>
+                            {item.start_time} - {item.end_time}
+                          </h6>
+                        </div>
+                      </div>
+                      <div></div>
+                      <div className="d-flex justify-content-center align-items-center gap-4">
+                        {selectedStatus === 'booked' && (
+                          <div
+                            className={`${styles['btn-party-bo']} btn h6 d-flex justify-content-center align-items-center gap-2`}
+                          >
+                            <FaUserGroup />
+                            <div
+                              className={`${styles['btn-party-text-bo']} d-flex justify-content-center align-items-center text-center`}
+                            >
+                              <p>參團</p>
+                              <p>詳情</p>
+                            </div>
+                          </div>
+                        )}
+                        {selectedStatus === 'completed' && (
+                          <div
+                            className={`${styles['state-text-bo']} h6 d-flex justify-content-center align-items-center gap-2`}
+                          >
+                            <FaCheck />
+                            已完成
+                          </div>
+                        )}
+                        {selectedStatus === 'cancelled' && (
+                          <div
+                            className={`${styles['state-text-bo']} h6 d-flex justify-content-center align-items-center gap-2`}
+                          >
+                            <FaXmark />
+                            已流團
+                          </div>
+                        )}
+                        <h6>
+                          <FaChevronDown
+                            className={` ${styles['btn-detail-bo']}`}
+                          />
+                        </h6>
+                      </div>
+                    </label>
+                    <div
+                      className={`${styles['list-col-mobile-body-bo']} flex-column fle flex-xl-row justify-content-between align-items-center gap-4  gap-xl-2 `}
+                    >
+                      <div
+                        className={`${styles['shop-box-bo']} d-flex  flex-column flex-sm-row justify-content-between align-items-center`}
+                      >
+                        <ul className="d-flex flex-column justify-content-between align-items-start gap-1">
+                          <li
+                            className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
+                          >
+                            <FaMapMarkerAlt
+                              className={` ${styles['col-icon-bo']} `}
+                            />
+                            {item.company_address}
+                          </li>
+                          <li
+                            className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
+                          >
+                            <FaPhone className={` ${styles['col-icon-bo']}`} />
+                            {item.company_tele}
+                          </li>
+                          {/* 只有當狀態為 'completed' 時才顯示桌子ID */}
+                          {selectedStatus === 'completed' && (
+                            <li
+                              className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
+                            >
+                              <FaShop className={` ${styles['col-icon-bo']}`} />
+                              {item.table_id !== '未指定'
+                                ? `${item.playroom_type} / ${item.table_number} 號桌`
+                                : '未指定桌號'}
+                            </li>
+                          )}
+
+                          <li
+                            className={`${styles['list-text-bo']} p d-flex justify-content-center align-items-center text-start`}
+                          >
+                            <FaMoneyBill
+                              className={`${styles['col-icon-bo']}`}
+                            />
+                            {item.price}
+                          </li>
+                        </ul>
+
+                        <div className="d-flex flex-row flex-sm-column justify-content-between align-items-center gap-3">
+                          <Link
+                            href={`/lobby/Company/${item.id}`}
+                            className={`${styles['btn-shop-detail']} btn p d-flex justify-content-center align-items-center`}
+                          >
+                            <FaMagnifyingGlass
+                              className={` ${styles['btn-icon-bo']}`}
+                            />
+                            <div
+                              className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
+                            >
+                              <p>店家</p>
+                              <p>詳情</p>
+                            </div>
+                          </Link>
+
+                          <button
+                            className={`${styles['btn-rating']} btn p d-flex justify-content-center align-items-center`}
+                          >
+                            <FaStar className={` ${styles['icon-star-bo']}`} />
+
+                            <div
+                              className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
+                            >
+                              <p>評論</p>
+                              <p>店家</p>
+                            </div>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className={styles['group-box-bo']}>
+                        {item.members.map((member, index) => (
+                          <div
+                            key={index}
+                            className={`${
+                              styles['group-member-box-bo']
+                            } d-flex justify-content-center align-items-center ${
+                              member.id === user.id
+                                ? styles['member-self-bo']
+                                : ''
+                            } gap-3`}
+                          >
+                            <img
+                              className={styles['member-img-bo']}
+                              src={`/images/boyu/users/user${member.id}.jpg`} // 動態生成圖片路徑
+                              alt={member.name}
+                            />
+                            <div
+                              className={`${styles['member-text-box']} d-flex`}
+                            >
+                              <p>{member.role}</p>
+                              <p>{member.name}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>

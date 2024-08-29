@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react'
-import Carousel from '@/components/product/carousel'
 import ProductNav from '@/components/product/product-nav'
 import Image from 'next/image'
 import Link from 'next/link'

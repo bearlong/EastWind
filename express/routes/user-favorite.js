@@ -62,9 +62,10 @@ router.get('/:userId', async (req, res) => {
   }
 })
 
-// 特定會員的最愛
+// 特定會員的最愛，並可根據關鍵字搜尋
 router.get('/:userId/:type', async (req, res) => {
   const { userId, type } = req.params
+  const { search } = req.query // 從查詢參數中獲取搜尋關鍵字
 
   if (!userId || !type) {
     return res
@@ -76,6 +77,7 @@ router.get('/:userId/:type', async (req, res) => {
     let query = ''
     let params = [userId] // 用戶ID
 
+    // 根據 activeTab 的不同構建不同的查詢語句
     switch (type) {
       case 'course':
         query = `
@@ -86,62 +88,71 @@ router.get('/:userId/:type', async (req, res) => {
               course.price, 
               course_category.ch_name AS category_name, 
               favorite.id AS favorite_id
-            FROM favorite
-            JOIN course ON favorite.object_id = course.id
-            JOIN course_category ON course.course_category_id = course_category.id
-            WHERE favorite.user_id = ? AND favorite.object_type = 'course'
-      `
-
+          FROM favorite
+          JOIN course ON favorite.object_id = course.id
+          JOIN course_category ON course.course_category_id = course_category.id
+          WHERE favorite.user_id = ? 
+          AND favorite.object_type = 'course'
+          ${search ? `AND (course.course_name LIKE ? OR course_category.ch_name LIKE ?)` : ''}
+        `
+        if (search) {
+          params.push(`%${search}%`, `%${search}%`)
+        }
         break
 
       case 'product':
         query = `
-      SELECT 
-          product.id , 
-          brand.name AS brand_name,   
-          product.img AS image, 
-          product.name AS name, 
-          product.price, 
-          favorite.id AS favorite_id
-      FROM 
-          favorite
-      JOIN 
-          product ON favorite.object_id = product.id
-      JOIN 
-          brand ON  product.brand_id = brand.id
-      WHERE 
-          favorite.user_id = ?
-          AND favorite.object_type = 'product';
+          SELECT 
+              product.id , 
+              brand.name AS brand_name,   
+              product.img AS image, 
+              product.name AS name, 
+              product.price, 
+              favorite.id AS favorite_id
+          FROM 
+              favorite
+          JOIN 
+              product ON favorite.object_id = product.id
+          JOIN 
+              brand ON  product.brand_id = brand.id
+          WHERE 
+              favorite.user_id = ?
+              AND favorite.object_type = 'product'
+              ${search ? `AND (product.name LIKE ? OR brand.name LIKE ?)` : ''}
         `
-
+        if (search) {
+          params.push(`%${search}%`, `%${search}%`)
+        }
         break
 
       case 'company':
         query = `
-      SELECT 
-          company.id , 
-          company.name AS name,
-          company.rating,
-          company.user_ratings_total AS user_rating_total,
-          company.address,
-          company.tele AS phone,
-          company.close_time,
-          MIN(company_photo.img) AS image, -- 只選擇第一張圖片
-          favorite.id AS favorite_id
-      FROM 
-          favorite
-      JOIN 
-          company ON favorite.object_id = company.id
-      LEFT JOIN 
-          company_photo ON company_photo.room_id = company.id
-      WHERE 
-          favorite.user_id = ?
-          AND favorite.object_type = 'company'
-      GROUP BY 
-          company.id; -- 按照公司 ID 分組，只返回每組的第一張圖片
-
-
+          SELECT 
+              company.id , 
+              company.name AS name,
+              company.rating,
+              company.user_ratings_total AS user_rating_total,
+              company.address,
+              company.tele AS phone,
+              company.close_time,
+              MIN(company_photo.img) AS image,
+              favorite.id AS favorite_id
+          FROM 
+              favorite
+          JOIN 
+              company ON favorite.object_id = company.id
+          LEFT JOIN 
+              company_photo ON company_photo.room_id = company.id
+          WHERE 
+              favorite.user_id = ?
+              AND favorite.object_type = 'company'
+              ${search ? `AND (company.name LIKE ? OR company.address LIKE ?)` : ''}
+          GROUP BY 
+              company.id;
         `
+        if (search) {
+          params.push(`%${search}%`, `%${search}%`)
+        }
         break
 
       default:
@@ -155,7 +166,7 @@ router.get('/:userId/:type', async (req, res) => {
       .status(200)
       .json({ status: 'success', data: { message: '已取得最愛', favorites } })
   } catch (err) {
-    console.error('Error:', err.message) // 更詳細的錯誤輸出
+    console.error('Error:', err.message)
     res.status(500).json({ status: 'error', message: err.message })
   }
 })

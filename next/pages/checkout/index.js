@@ -264,6 +264,7 @@ export default function Checkout() {
       })
       return
     }
+    setPayLoading(true)
 
     const formData = new FormData()
     let { firstname, lastname, ...newSendData } = sendForm
@@ -311,6 +312,7 @@ export default function Checkout() {
 
     const url = `http://localhost:3005/api/checkout/${user.id}`
     const method = 'POST'
+    console.log(formData)
     try {
       const response = await fetch(url, {
         method: method,
@@ -1304,7 +1306,6 @@ export default function Checkout() {
               className={`${styles['payment-button-bo']}  h5 d-flex justify-content-center align-items-center mb-5`}
               onClick={(e) => {
                 handleSubmit(e)
-                setPayLoading(true)
               }}
             >
               現在付款
