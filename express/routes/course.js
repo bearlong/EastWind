@@ -15,7 +15,7 @@ const router = express.Router()
 router.get('/', async (req, res) => {
   try {
     const [list] = await dbPromise.execute(
-      'SELECT `course`.*,`course_category`.`ch_name` FROM `course` JOIN `course_category` ON `course`.`course_category_id` = `course_category`.`course_id`;'
+      'SELECT `course`.*,`course_category`.`ch_name` FROM `course` JOIN `course_category` ON `course`.`category_id` = `course_category`.`course_id`;'
     )
 
     if (!list || list.length === 0) {
@@ -46,7 +46,7 @@ router.get('/', async (req, res) => {
       JOIN 
         \`course_category\` 
       ON 
-        \`course\`.\`course_category_id\` = \`course_category\`.\`course_id\`;
+        \`course\`.\`category_id\` = \`course_category\`.\`course_id\`;
     `
       )
       .catch((err) => {
@@ -169,7 +169,7 @@ router.get('/:id', async (req, res, next) => {
     const id = getIdParam(req)
 
     const [courses] = await dbPromise.execute(
-      'SELECT `course`.*, `course_category`.`name` AS `category_name` FROM course JOIN `course_category` ON `course_category`.`id` = `course`.`course_category_id` WHERE `course`.`id` = ?',
+      'SELECT `course`.*, `course_category`.`name` AS `category_name` FROM course JOIN `course_category` ON `course_category`.`id` = `course`.`category_id` WHERE `course`.`id` = ?',
       [id]
     )
 

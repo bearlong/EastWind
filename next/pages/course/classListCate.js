@@ -38,7 +38,7 @@ export default function ClassListCate() {
   }, [])
 
   const handleCardClick = (courseId) => {
-    router.push(`/course/classDetail/${courseId}`)
+    router.push(`/course/detail/${courseId}`)
   }
 
   const handleLoadMore = () => {

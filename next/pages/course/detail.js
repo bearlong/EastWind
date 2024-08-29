@@ -17,9 +17,10 @@ const override = {
   // borderColor: 'red',
 }
 
-export default function ClassDetail() {
+export default function Detail() {
   const [courses, setCourses] = useState([])
   const router = useRouter()
+  const [id, setId] = useState(null)
   const [pages, setPages] = useState(1)
   const [category, setCategory] = useState({})
   const [videoUrl, setVideoUrl] = useState('')
@@ -75,6 +76,11 @@ export default function ClassDetail() {
   // 首次render之後(after)執行一次，之後不會再執行
   useEffect(() => {
     getCourses(), getCategory()
+  }, [])
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    setId(parseInt(params.get('id'), 10)) // 獲取 id 查詢參數並轉換為數字
   }, [])
 
   // 滾動到 "章節" 的函數
@@ -228,7 +234,16 @@ export default function ClassDetail() {
             </h6>
           </div>
         </div> */}
-        <Content />
+
+        <div className={styles['classCards-aa']}>
+          {Object.values(courses)
+            .filter((course) => course.id === id)
+            .map((course) => (
+              <Content key={course.id} contentData={course} />
+            ))}
+        </div>
+
+        {/* <Content /> */}
         {/* <div className={styles['detailpic-aa']}>
           <div className={styles['detailpic1-aa']}>
             <div className={styles['depic1-aa']}>
@@ -263,7 +278,14 @@ export default function ClassDetail() {
             </h6>
           </div>
         </div> */}
-        <Content />
+        {/* <Content /> */}
+        <div className={styles['classCards-aa']}>
+          {Object.values(courses)
+            .filter((course) => course.id === id)
+            .map((course) => (
+              <Content key={course.id} contentData={course} />
+            ))}
+        </div>
         <div className={styles['texth2detail2-aa']}>
           <div className={styles['texth2detail21-aa']}>
             <h2 style={{ paddingTop: '3rem' }} ref={chapterRef}>
