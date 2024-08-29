@@ -7,8 +7,18 @@ import Swal from 'sweetalert2'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import GoogleLogo from '@/components/icons/google-logo'
+import LineLogo from '@/components/icons/line-logo'
 import GoogleLogoHover from '@/components/icons/google-logo-hover'
+import LineLogoHover from '@/components/icons/line-logo-hover' // 引入Line logo的hover狀態
 import { AuthContext } from '@/context/AuthContext'
+import axios from 'axios'
+import {
+  lineLoginRequest,
+  lineLogout,
+  lineLoginCallback,
+  getUserById,
+  parseJwt,
+} from '@/services/user'
 
 export default function Login() {
   const router = useRouter()
@@ -20,8 +30,10 @@ export default function Login() {
   const [passwordError, setPasswordError] = useState('')
   const { login } = useAuth() // 從 useAuth 中解構獲取  和 setUser
   const { loginGoogle } = useFirebase() // 使用 Google 登入功能
-  const { setUser, user, setToken } = useContext(AuthContext)
+  const { setUser, user, setToken, setAuth, initUserData } =
+    useContext(AuthContext)
   const [isHovered, setIsHovered] = useState(false)
+  const [isLineHovered, setIsLineHovered] = useState(false) // 定義 Line hover 狀態
 
   // 從 localStorage 中讀取賬號並設置到狀態中
   useEffect(() => {
@@ -158,6 +170,128 @@ export default function Login() {
       })
     }
   }
+
+  // 處理登出
+  // const handleLineLogout = async () => {
+  //   if (!auth.isAuth) return
+
+  //   const res = await lineLogout(auth.userData.line_uid)
+
+  //   console.log(res.data)
+
+  //   // 成功登出個回復初始會員狀態
+  //   if (res.data.status === 'success') {
+  //     toast.success('已成功登出')
+
+  //     setAuth({
+  //       isAuth: false,
+  //       userData: initUserData,
+  //     })
+  //   } else {
+  //     toast.error(`登出失敗`)
+  //   }
+  // }
+
+  // 處理line登入後，要向伺服器進行登入動作
+  const callbackLineLogin = async (query) => {
+    try {
+      // 從 localStorage 中取回保存的 `state` 和 `nonce`
+      const savedState = localStorage.getItem('lineLoginState')
+      const savedNonce = localStorage.getItem('lineLoginNonce')
+
+      console.log(query)
+      // 比對從 URL 中獲得的 `state` 和保存的是否相符
+      if (query.state !== savedState) {
+        throw new Error('Authorization failed. State does not match.')
+      }
+
+      // 清除 localStorage 中的 `state` 和 `nonce`
+      localStorage.removeItem('lineLoginState')
+      localStorage.removeItem('lineLoginNonce')
+
+      // 發送回調請求至後端
+      const res = await lineLoginCallback(query)
+
+      if (res.status === 'error') {
+        throw new Error(res.message || 'Authorization failed.')
+      }
+
+      // 處理回應邏輯
+      if (res.status === 'success' && res.data) {
+        const { accessToken, refreshToken } = res.data
+        localStorage.setItem('accessToken', accessToken)
+        localStorage.setItem('refreshToken', refreshToken)
+
+        // 進一步處理，例如設置用戶狀態
+        // ...
+      } else {
+        throw new Error('Line 登入失敗')
+      }
+    } catch (error) {
+      console.error('Line login callback error:', error)
+      Swal.fire({
+        title: '登入錯誤',
+        html: `<span class="p">${error.message || '發生未知錯誤'}</span>`,
+        icon: 'error',
+        confirmButtonText: '確認',
+      })
+    }
+  }
+
+  // 處理登入
+  const goLineLogin = async () => {
+    try {
+      const response = await fetch(
+        'http://localhost:3005/api/line-login/login',
+        {
+          credentials: 'include', // 確保請求攜帶憑證（如 cookies）
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      if (data.url) {
+        // 在重定向之前，將 `line_login_state` 和 `line_login_nonce` 保存到 localStorage
+        localStorage.setItem('lineLoginState', data.state)
+        localStorage.setItem('lineLoginNonce', data.nonce)
+
+        window.location.href = data.url
+      }
+    } catch (error) {
+      console.error('Login Error:', error)
+    }
+  }
+
+  useEffect(() => {
+    if (router.isReady) {
+      if (!router.query.code) return
+
+      callbackLineLogin(router.query)
+    }
+  }, [router.isReady, router.query])
+
+  // 從line登入畫面後回調到本頁面用
+  useEffect(() => {
+    // 水合作用(hydration)保護，以免得不到window全域物件
+    if (router.isReady) {
+      // 判斷是否有query.code(網址上沒有code是進登入頁的時候)
+      if (!router.query.code) return
+
+      const qs = new URLSearchParams({
+        ...router.query,
+      }).toString()
+
+      const cbUrl = `http://localhost:3000/login/callback?${qs}`
+
+      // 發送至後端伺服器得到line會員資料
+      callbackLineLogin(cbUrl)
+    }
+    // eslint-disable-next-line
+}, [router.isReady, router.query])
 
   // 成功登入後的處理邏輯
   const onLoginSuccess = (name) => {
@@ -371,6 +505,18 @@ export default function Login() {
                   onMouseLeave={() => setIsHovered(false)}
                 >
                   {isHovered ? <GoogleLogoHover /> : <GoogleLogo />}
+                </button>
+              </li>
+              <li>|</li>
+              <li>
+                <button
+                  type="button"
+                  className={` btn h6 d-flex  justify-content-center  align-items-center`}
+                  onClick={goLineLogin} // 直接調用 onGoogleLoginSuccess
+                  onMouseEnter={() => setIsLineHovered(true)} // Line hover 狀態邏輯
+                  onMouseLeave={() => setIsLineHovered(false)} // Line hover 狀態邏輯
+                >
+                  {isLineHovered ? <LineLogoHover /> : <LineLogo />}
                 </button>
               </li>
             </ul>

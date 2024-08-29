@@ -1,6 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, useContext } from 'react'
 import { useRouter } from 'next/router'
 import { initUserData, useAuth } from '@/hooks/use-auth'
+import { AuthContext } from '@/context/AuthContext'
 import LineLogo from '@/components/icons/line-logo'
 import {
   lineLoginRequest,
@@ -12,7 +13,8 @@ import {
 import toast, { Toaster } from 'react-hot-toast'
 
 export default function LineLogin() {
-  const { auth, setAuth } = useAuth()
+  const { setUser, user, setToken, auth, setAuth, initUserData } =
+    useContext(AuthContext)
   const router = useRouter()
 
   // 處理登出
