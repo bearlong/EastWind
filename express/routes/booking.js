@@ -1,18 +1,11 @@
 import express from 'express'
 import 'dotenv/config.js'
 import connection from '##/configs/mysql-promise.js'
-import { customAlphabet } from 'nanoid'
-
+import { generateBookingNumber } from '../utils/idGenerator.js'
 const router = express.Router()
 
-const alphabet =
-  '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
-const nanoid = customAlphabet(alphabet, 10)
-function generateShortId() {
-  return nanoid()
-}
 router.post('/', async (req, res) => {
-  const numerical_order = generateShortId()
+  const numerical_order = generateBookingNumber('DB') 
   const {
     date,
     start_time,
@@ -21,8 +14,9 @@ router.post('/', async (req, res) => {
     notes,
     total_price,
     company_id,
+    user_id, 
   } = req.body
-  const user_id = 1 // 假設用戶 ID 為 1，實際應該從認證中獲取
+
   console.log(
     date,
     start_time,
@@ -30,7 +24,8 @@ router.post('/', async (req, res) => {
     playroom_type,
     notes,
     total_price,
-    company_id
+    company_id,
+    user_id
   )
   console.log(req.body)
   if (
@@ -39,7 +34,8 @@ router.post('/', async (req, res) => {
     !end_time ||
     playroom_type === undefined ||
     total_price === undefined ||
-    !company_id
+    !company_id||
+    !user_id
   ) {
     return res.status(400).json({ error: '缺少必要的預訂信息' })
   }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import BarChartRegistration from '@/components/test/barChartRegistration'
 import BarChartOrder from '@/components/test/barChartOrder'
 import BarChartPatry from '@/components/test/barChartParty'
@@ -12,8 +12,14 @@ import LineChartIncome from '@/components/test/lineChartIncome'
 import LineChartHour from '@/components/test/lineChartHour'
 import AdminCenterLayout from '@/components/layout/admin-layout'
 import styles from '@/styles/bearlong/chart.module.scss'
+import { useRouter } from 'next/router'
+import { AuthContext } from '@/context/AuthContext'
 
 export default function Chart() {
+  const router = useRouter()
+  const { user, loading } = useContext(AuthContext)
+
+  // 確認window(瀏覽器)開始運作
   const [data, setData] = useState([{}])
   const getData = async () => {
     try {
@@ -39,6 +45,15 @@ export default function Chart() {
     return () => clearInterval(intervalId)
   }, [])
 
+  useEffect(() => {
+    if (router.isReady && !loading) {
+      if (user.id !== 62 || (!user && loading === false)) {
+        alert('請由正常管道進入')
+        router.push('/home')
+      }
+    }
+  }, [router.isReady, user])
+
   return (
     <>
       <div className={styles['main']}>
@@ -53,11 +68,15 @@ export default function Chart() {
           <div
             className={`${styles.chartBox} d-flex justify-content-around align-items-center mb-5`}
           >
-            <div className="d-flex justify-content-center align-items-center flex-column">
+            <div
+              className={`d-flex justify-content-center align-items-center flex-column ${styles.twoBox} `}
+            >
               <h5>男女比</h5>
               <PieChartGender statistics={data.genderArr} />
             </div>
-            <div className="d-flex justify-content-center align-items-center flex-column">
+            <div
+              className={`d-flex justify-content-center align-items-center flex-column ${styles.twoBox} `}
+            >
               <h5>年齡分布</h5>
               <PieChartAge statistics={data.ageArr} />
             </div>
@@ -66,7 +85,9 @@ export default function Chart() {
           <div
             className={`${styles.chartBox} d-flex justify-content-around align-items-center mb-3`}
           >
-            <div className="d-flex justify-content-center align-items-center flex-column">
+            <div
+              className={`d-flex justify-content-center align-items-center flex-column ${styles.twoBox} `}
+            >
               <h5>營收占比</h5>
               <PieChartPbCate statistics={data.pdCateArr} />
             </div>
@@ -109,11 +130,15 @@ export default function Chart() {
           <div
             className={`${styles.chartBox} d-flex justify-content-around align-items-center mb-3`}
           >
-            <div className="d-flex justify-content-center align-items-center flex-column">
+            <div
+              className={`d-flex justify-content-center align-items-center flex-column ${styles.twoBox} `}
+            >
               <h5>成團率</h5>
               <PieChartComplete statistics={data.completeArr} />
             </div>
-            <div className="d-flex justify-content-center align-items-center flex-column">
+            <div
+              className={`d-flex justify-content-center align-items-center flex-column ${styles.twoBox} `}
+            >
               <h5>訂桌熱區</h5>
               <PieChartArea statistics={data.areaArr} />
             </div>

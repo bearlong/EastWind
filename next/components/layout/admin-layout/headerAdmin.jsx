@@ -63,7 +63,7 @@ export default function HeaderAdmin() {
           className={`${styles['header-box-bo']}  container-fluid d-flex justify-content-between align-items-center `}
         >
           <div className={styles['logo-box-bo']}>
-            <Link href="/admin">
+            <Link href="/admin/chart">
               <img
                 src="/images/boyu/logo.svg"
                 alt=""
@@ -76,7 +76,7 @@ export default function HeaderAdmin() {
               className={`d-flex justify-content-center align-items-center ${styles['icon-list-bo']}`}
             >
               <li>
-                <Link href="/admin">
+                <Link href="/admin/chart">
                   <IoHome className={` ${styles['icon-bo']} me-4 me-md-5`} />
                 </Link>
               </li>

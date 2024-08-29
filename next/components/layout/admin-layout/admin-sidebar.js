@@ -5,6 +5,7 @@ import { FaUserCircle, FaAddressCard } from 'react-icons/fa'
 import { FaChevronDown, FaChartLine, FaVideo, FaTruck } from 'react-icons/fa6'
 import Link from 'next/link'
 import { AuthContext } from '@/context/AuthContext'
+import { BsChatDots } from 'react-icons/bs'
 
 export default function AdminSidebar() {
   const router = useRouter()
@@ -49,6 +50,9 @@ export default function AdminSidebar() {
       case 'arrival':
         return <FaTruck />
 
+      case 'chat':
+        return <BsChatDots />
+
       case 'uploadVideo':
         return <FaVideo />
 
@@ -66,6 +70,9 @@ export default function AdminSidebar() {
 
       case 'arrival':
         return '出貨狀況'
+
+      case 'chat':
+        return '客服中心'
 
       case 'uploadVideo':
         return '課程上傳'
@@ -133,6 +140,19 @@ export default function AdminSidebar() {
                 }`}
               >
                 <FaTruck /> 出貨狀況
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="/admin/chat"
+                className={`${
+                  styles['user-sidebar-link-bo']
+                } h6 d-flex align-items-center gap-4 ${
+                  activeLink === 'chat' ? styles['user-link-active'] : ''
+                }`}
+              >
+                <FaTruck /> 客服中心
               </Link>
             </li>
 
@@ -216,7 +236,39 @@ export default function AdminSidebar() {
                     </Link>
                   </li>
                 )}
-                {firstLink !== 'booking' && (
+                {firstLink !== 'arrival' && (
+                  <li>
+                    <Link
+                      href="/admin/arrival"
+                      onClick={() => updateActiveLink('info')}
+                      className={`${
+                        styles['user-sidebar-link-bo']
+                      } h6 d-flex align-items-center gap-4 ${
+                        activeLink === 'info' ? styles['user-link-active'] : ''
+                      }`}
+                    >
+                      <FaTruck />
+                      出貨狀況
+                    </Link>
+                  </li>
+                )}
+                {firstLink !== 'chat' && (
+                  <li>
+                    <Link
+                      href="/admin/chat"
+                      onClick={() => updateActiveLink('info')}
+                      className={`${
+                        styles['user-sidebar-link-bo']
+                      } h6 d-flex align-items-center gap-4 ${
+                        activeLink === 'info' ? styles['user-link-active'] : ''
+                      }`}
+                    >
+                      <BsChatDots />
+                      客服中心
+                    </Link>
+                  </li>
+                )}
+                {firstLink !== 'uploadVideo' && (
                   <li>
                     <Link
                       href="/admin/uploadVideo"
