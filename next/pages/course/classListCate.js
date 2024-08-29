@@ -56,7 +56,17 @@ export default function ClassListCate() {
               <h2>麻將 課程排行</h2>
             </div>
             <div className={styles['classCards-aa']}>
-              <ClassCard />
+              {courses &&
+                Object.values(courses)
+                  .flat()
+                  .slice(0, 4)
+                  .map((course, index) => (
+                    <ClassCard
+                      key={course.id}
+                      courseData={course}
+                      rank={index + 1}
+                    />
+                  ))}
             </div>
             <div className={styles['line-aa']}>
               <svg
@@ -145,6 +155,13 @@ export default function ClassListCate() {
             </div>
             <div className={styles['cardgroup22-aa']}>
               <div className={styles['classCards-aa']}>
+                {courses &&
+                  courses.length > 0 &&
+                  courses.map((course, index) => (
+                    <ClassCard key={course.id} courseData={course} />
+                  ))}
+              </div>
+              {/* <div className={styles['classCards-aa']}>
                 <ClassCard />
               </div>
               <div className={styles['classCards-aa']}>
@@ -152,10 +169,7 @@ export default function ClassListCate() {
               </div>
               <div className={styles['classCards-aa']}>
                 <ClassCard />
-              </div>
-              <div className={styles['classCards-aa']}>
-                <ClassCard />
-              </div>
+              </div> */}
             </div>
           </div>
           <div className={styles['sec23-aa']}>
@@ -220,8 +234,6 @@ export default function ClassListCate() {
                   />
                 </svg>
               </div>
-              <p>查看更多</p>
-              <i className="edit-icon" />
             </button>
           </div>
         </div>

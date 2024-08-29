@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import styles from '@/styles/aa/classDetail.module.scss'
 
 const CategoryLink = ({ courses, course_category_id }) => {
   const course = Array.isArray(courses)
@@ -7,8 +8,12 @@ const CategoryLink = ({ courses, course_category_id }) => {
     : courses
 
   return (
-    <Link href={`/course/classListCate/${course_category_id}`}>
-      <span> {course.course_category_id} </span>
+    <Link
+      className={styles['card-link-n']}
+      href={`/course/classListCate/${course_category_id}`}
+    >
+      {/* <span> {course.course_category_id} </span> */}
+      <span> 麻將 </span>
     </Link>
   )
 }

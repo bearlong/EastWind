@@ -1,13 +1,19 @@
-import React from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import styles from '@/styles/aa/classDetail.module.scss'
 
 const CourseInfo = ({ courses }) => {
+  const chapterRef = useRef(null)
+
+  const scrollToChapter = () => {
+    chapterRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
   return (
     <div className={styles['detextright1-aa']}>
       <div className={styles['detextright2-aa']}>
         <div className={styles['detextright1-aa']}>
-          {/* <h4>麻將入門特訓 - 基礎實作到證照攻略</h4> */}
-          <h4>{courses.course_name}</h4>
+          <h4>麻將入門特訓 - 基礎實作到證照攻略</h4>
+          {/* <h4>{courses.course_name}</h4> */}
         </div>
       </div>
       <div className={styles['detextright3-aa']}>
@@ -30,7 +36,9 @@ const CourseInfo = ({ courses }) => {
         {/* <h4>NT$ {courses.price}</h4> */}
         <div className={styles['chh6-aa']}>
           <div className={styles['chh61-aa']}>
-            <h6 className={styles['chh62-aa']}>查看章節</h6>
+            <button className={styles['chh62-aa']} onClick={scrollToChapter}>
+              <h6>查看章節</h6>
+            </button>
           </div>
           <h6 style={{ color: 'var(--text-hover, #747474)' }}>
             總時長 60 分鐘

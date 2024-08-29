@@ -154,31 +154,32 @@ export default function ClassList() {
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
             </div>
-            <div className={`${styles['btn-more']} d-flex`}>
-              <p>查看更多</p>
-              {/* <i class="edit-icon"></i> */}
-              <svg
-                className={styles['btn-more1']}
-                xmlns="http://www.w3.org/2000/svg"
-                width={109}
-                height={14}
-                viewBox="0 0 109 14"
-                fill="none"
-              >
-                <path
-                  d="M43 11H83"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M82.8994 10.8995L72.9999 0.99998"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
+            <Link href={`/course/classListCate/`}>
+              <div className={`${styles['btn-more']} d-flex`}>
+                <p>查看更多</p>
+                <svg
+                  className={styles['btn-more1']}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={109}
+                  height={14}
+                  viewBox="0 0 109 14"
+                  fill="none"
+                >
+                  <path
+                    d="M43 11H83"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M82.8994 10.8995L72.9999 0.99998"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+            </Link>
             <div className={styles['text2-aa']}>
               <h2>圍棋</h2>
             </div>
@@ -191,31 +192,32 @@ export default function ClassList() {
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
             </div>
-            <div className={`${styles['btn-more']} d-flex`}>
-              <p>查看更多</p>
-              {/* <i class="edit-icon"></i> */}
-              <svg
-                className={styles['btn-more1']}
-                xmlns="http://www.w3.org/2000/svg"
-                width={109}
-                height={14}
-                viewBox="0 0 109 14"
-                fill="none"
-              >
-                <path
-                  d="M43 11H83"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M82.8994 10.8995L72.9999 0.99998"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
+            <Link href={`/course/classListCate/`}>
+              <div className={`${styles['btn-more']} d-flex`}>
+                <p>查看更多</p>
+                <svg
+                  className={styles['btn-more1']}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={109}
+                  height={14}
+                  viewBox="0 0 109 14"
+                  fill="none"
+                >
+                  <path
+                    d="M43 11H83"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M82.8994 10.8995L72.9999 0.99998"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+            </Link>
             <div className={styles['text2-aa']}>
               <h2>撲克</h2>
             </div>
@@ -228,31 +230,32 @@ export default function ClassList() {
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
             </div>
-            <div className={`${styles['btn-more']} d-flex`}>
-              <p>查看更多</p>
-              {/* <i class="edit-icon"></i> */}
-              <svg
-                className={styles['btn-more1']}
-                xmlns="http://www.w3.org/2000/svg"
-                width={109}
-                height={14}
-                viewBox="0 0 109 14"
-                fill="none"
-              >
-                <path
-                  d="M43 11H83"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M82.8994 10.8995L72.9999 0.99998"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
+            <Link href={`/course/classListCate/`}>
+              <div className={`${styles['btn-more']} d-flex`}>
+                <p>查看更多</p>
+                <svg
+                  className={styles['btn-more1']}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={109}
+                  height={14}
+                  viewBox="0 0 109 14"
+                  fill="none"
+                >
+                  <path
+                    d="M43 11H83"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M82.8994 10.8995L72.9999 0.99998"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+            </Link>
             <div className={styles['text2-aa']}>
               <h2>象棋</h2>
             </div>
@@ -265,31 +268,32 @@ export default function ClassList() {
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
             </div>
-            <div className={`${styles['btn-more']} d-flex`}>
-              <p>查看更多</p>
-              {/* <i class="edit-icon"></i> */}
-              <svg
-                className={styles['btn-more1']}
-                xmlns="http://www.w3.org/2000/svg"
-                width={109}
-                height={14}
-                viewBox="0 0 109 14"
-                fill="none"
-              >
-                <path
-                  d="M43 11H83"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M82.8994 10.8995L72.9999 0.99998"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
+            <Link href={`/course/classListCate/`}>
+              <div className={`${styles['btn-more']} d-flex`}>
+                <p>查看更多</p>
+                <svg
+                  className={styles['btn-more1']}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={109}
+                  height={14}
+                  viewBox="0 0 109 14"
+                  fill="none"
+                >
+                  <path
+                    d="M43 11H83"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M82.8994 10.8995L72.9999 0.99998"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+            </Link>
           </div>
         </div>
       </div>

@@ -9,6 +9,7 @@ import CourseInfo from '@/components/course/course-info'
 import Content from '@/components/course/content'
 import Recommends from '@/components/course/recommends'
 import PacmanLoader from 'react-spinners/PacmanLoader'
+import VideoPlayer from '@/components/course/video'
 
 const override = {
   display: 'block',
@@ -22,11 +23,10 @@ export default function ClassDetail() {
   const [pages, setPages] = useState(1)
   const [category, setCategory] = useState({})
   const [videoUrl, setVideoUrl] = useState('')
+  const [isPaused, setIsPaused] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
   const [isCollapsed, setIsCollapsed] = useState(false) // 用於控制顯示/隱藏
   const { course_id, category_id } = router.query
-
-  // 用於定位 "章節" 的元素
   const chapterRef = useRef(null)
 
   // 向伺服器連線的程式碼；向伺服器fetch獲取資料
@@ -79,7 +79,14 @@ export default function ClassDetail() {
 
   // 滾動到 "章節" 的函數
   const scrollToChapter = () => {
-    chapterRef.current?.scrollIntoView({ behavior: 'smooth' })
+    // 檢查 chapterRef.current 是否存在
+    if (chapterRef.current) {
+      // 如果存在，則平滑滾動到該元素
+      chapterRef.current.scrollIntoView({ behavior: 'smooth' })
+    } else {
+      // 如果不存在，可以添加一些錯誤處理或日誌記錄
+      console.log('無法找到章節元素')
+    }
   }
 
   // 切換收縮狀態的函數
@@ -104,23 +111,24 @@ export default function ClassDetail() {
         <div className={styles['detailsec1-aa']}>
           <div className={`${styles['text141-aa']} ${styles['text-hover']}`}>
             <h6>
-              <Link href={`/course/classList`}>
+              <Link
+                className={styles['card-link-n']}
+                href={`/course/classList`}
+              >
                 <span>所有課程 </span>
               </Link>
               &gt;
-              <Link href={`/course/classListCate/${category_id}`}>
-                <span> 麻將 </span>
-                {/* <span> {courses.ch_name} </span> */}
-                {/* <span>
-                  <CategoryLink courses={courses} categoryId={category_id} />
-                </span> */}
-              </Link>
-              &gt; <span>初級</span>
+              {/* <Link href={`/course/classList`}> */}
+              {/* <span> 麻將 </span> */}
+              {/* </Link> */}
+              <CategoryLink />
+              &gt;
+              <span> 初級</span>
             </h6>
           </div>
           <div className={styles['desec1box-aa']}>
             <div className={styles['de1-ins-aa']}>
-              {videoUrl && (
+              {/* {videoUrl && (
                 <video
                   src={videoUrl}
                   muted
@@ -130,7 +138,8 @@ export default function ClassDetail() {
                   disablePictureInPicture
                   width="100%"
                 />
-              )}
+              )} */}
+              <VideoPlayer videoUrl={videoUrl} />
             </div>
             <div className={styles['detextright1-aa']}>
               <div className={styles['detextright2-aa']}>
