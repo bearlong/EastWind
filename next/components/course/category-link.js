@@ -1,14 +1,14 @@
 import React from 'react'
 import Link from 'next/link'
 
-const CategoryLink = ({ courses, categoryId }) => {
+const CategoryLink = ({ courses, course_category_id }) => {
   const course = Array.isArray(courses)
-    ? courses.find((c) => c.category_id === categoryId)
+    ? courses.find((c) => c.course_category_id === course_category_id)
     : courses
 
   return (
-    <Link href={`/course/classListCate/${categoryId}`}>
-      <span> {course?.ch_name || '載入中...'} </span>
+    <Link href={`/course/classListCate/${course_category_id}`}>
+      <span> {course.course_category_id} </span>
     </Link>
   )
 }

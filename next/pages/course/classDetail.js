@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 import Image from 'next/image'
@@ -7,6 +7,14 @@ import styles from '@/styles/aa/classDetail.module.scss'
 import CategoryLink from '@/components/course/category-link'
 import CourseInfo from '@/components/course/course-info'
 import Content from '@/components/course/content'
+import Recommends from '@/components/course/recommends'
+import PacmanLoader from 'react-spinners/PacmanLoader'
+
+const override = {
+  display: 'block',
+  margin: '0 auto',
+  // borderColor: 'red',
+}
 
 export default function ClassDetail() {
   const [courses, setCourses] = useState([])
@@ -14,7 +22,12 @@ export default function ClassDetail() {
   const [pages, setPages] = useState(1)
   const [category, setCategory] = useState({})
   const [videoUrl, setVideoUrl] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [isCollapsed, setIsCollapsed] = useState(false) // 用於控制顯示/隱藏
   const { course_id, category_id } = router.query
+
+  // 用於定位 "章節" 的元素
+  const chapterRef = useRef(null)
 
   // 向伺服器連線的程式碼；向伺服器fetch獲取資料
   const getCourses = async () => {
@@ -31,6 +44,10 @@ export default function ClassDetail() {
         setCourses(data.data.courses)
         setCategory(data.data.courses)
         setVideoUrl(`/video/go3.mp4`)
+
+        // setTimeout(() => {
+        //   setIsLoading(false)
+        // }, 1000)
       }
     } catch (e) {
       console.error(e)
@@ -60,6 +77,27 @@ export default function ClassDetail() {
     getCourses(), getCategory()
   }, [])
 
+  // 滾動到 "章節" 的函數
+  const scrollToChapter = () => {
+    chapterRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  // 切換收縮狀態的函數
+  const toggleCollapse = () => {
+    setIsCollapsed((prev) => !prev) // 切換狀態
+  }
+
+  const loader = (
+    <PacmanLoader
+      color="#ff6600"
+      loading={isLoading}
+      cssOverride={override}
+      size={30}
+      aria-label="Loading Spinner"
+      data-testid="loader"
+    />
+  )
+
   return (
     <>
       <div className={`${styles.container} ${styles['desktopdetail-aa']}`}>
@@ -71,11 +109,11 @@ export default function ClassDetail() {
               </Link>
               &gt;
               <Link href={`/course/classListCate/${category_id}`}>
-                {/* <span> 麻將 </span> */}
+                <span> 麻將 </span>
                 {/* <span> {courses.ch_name} </span> */}
-                <span>
+                {/* <span>
                   <CategoryLink courses={courses} categoryId={category_id} />
-                </span>
+                </span> */}
               </Link>
               &gt; <span>初級</span>
             </h6>
@@ -117,7 +155,12 @@ export default function ClassDetail() {
                 <h4>NT$ 2,480</h4>
                 <div className={styles['chh6-aa']}>
                   <div className={styles['chh61-aa']}>
-                    <h6 className={styles['chh62-aa']}>查看章節</h6>
+                    <button
+                      className={styles['chh62-aa']}
+                      onClick={scrollToChapter}
+                    >
+                      <h6>查看章節</h6>
+                    </button>
                   </div>
                   <h6 style={{ color: 'var(--text-hover, #747474)' }}>
                     總時長 60 分鐘
@@ -177,7 +220,7 @@ export default function ClassDetail() {
           </div>
         </div> */}
         <Content />
-        <div className={styles['detailpic-aa']}>
+        {/* <div className={styles['detailpic-aa']}>
           <div className={styles['detailpic1-aa']}>
             <div className={styles['depic1-aa']}>
               <Image
@@ -210,10 +253,13 @@ export default function ClassDetail() {
               Thinking）結合工程的務實與效率、數理方面的抽象邏輯思考，將能更有效解決複雜的問題。
             </h6>
           </div>
-        </div>
+        </div> */}
+        <Content />
         <div className={styles['texth2detail2-aa']}>
           <div className={styles['texth2detail21-aa']}>
-            <h2>章節</h2>
+            <h2 style={{ paddingTop: '3rem' }} ref={chapterRef}>
+              章節
+            </h2>
           </div>
         </div>
         <div className={styles['chap4detail-aa']}>
@@ -235,7 +281,14 @@ export default function ClassDetail() {
                   本課程章節
                 </h6>
               </div>
-              <div className={styles['btn-more15-aa']}>
+              <button
+                className={styles['btn-more15-aa']}
+                onClick={toggleCollapse}
+                style={{
+                  transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.3s',
+                }}
+              >
                 <div
                   className={styles['Ellipse15-aa']}
                   style={{
@@ -282,51 +335,60 @@ export default function ClassDetail() {
                 </div>
                 {/*  style="background-color: #FAF7F0;"> */}
                 {/* <i class="fa-thin fa-circle-up"</i> */}
+              </button>
+            </div>
+          </div>
+          <div
+            className={styles['text14-groups-aa']}
+            style={{
+              display: isCollapsed ? 'none' : 'block',
+              transition: 'max-height 0.5s',
+              overflow: 'hidden',
+            }}
+          >
+            <div className={styles['text14-group-aa']}>
+              <div className={styles['text14-1-aa']}>
+                <h6>01</h6>
+              </div>
+              <div className={styles['text14-2-aa']}>
+                <h6>如何排列西洋棋</h6>
+              </div>
+              <div className={styles['text14-3-aa']}>
+                <h6>09:40</h6>
               </div>
             </div>
-          </div>
-          <div className={styles['text14-group-aa']}>
-            <div className={styles['text14-1-aa']}>
-              <h6>01</h6>
+            <div className={styles['text14-group-aa']}>
+              <div className={styles['text14-1-aa']}>
+                <h6>02</h6>
+              </div>
+              <div className={styles['text14-2-aa']}>
+                <h6>棋子介紹與基本移動</h6>
+              </div>
+              <div className={styles['text14-3-aa']}>
+                <h6>16:26</h6>
+              </div>
             </div>
-            <div className={styles['text14-2-aa']}>
-              <h6>如何排列西洋棋</h6>
+            <div className={styles['text14-group-aa']}>
+              <div className={styles['text14-1-aa']}>
+                <h6>03</h6>
+              </div>
+              <div className={styles['text14-2-aa']}>
+                <h6>棋盤控制與中心控制</h6>
+              </div>
+              <div className={styles['text14-3-aa']}>
+                <h6>16:54</h6>
+              </div>
             </div>
-            <div className={styles['text14-3-aa']}>
-              <h6>09:40</h6>
-            </div>
-          </div>
-          <div className={styles['text14-group-aa']}>
-            <div className={styles['text14-1-aa']}>
-              <h6>02</h6>
-            </div>
-            <div className={styles['text14-2-aa']}>
-              <h6>棋子介紹與基本移動</h6>
-            </div>
-            <div className={styles['text14-3-aa']}>
-              <h6>16:26</h6>
-            </div>
-          </div>
-          <div className={styles['text14-group-aa']}>
-            <div className={styles['text14-1-aa']}>
-              <h6>03</h6>
-            </div>
-            <div className={styles['text14-2-aa']}>
-              <h6>棋盤控制與中心控制</h6>
-            </div>
-            <div className={styles['text14-3-aa']}>
-              <h6>16:54</h6>
-            </div>
-          </div>
-          <div className={styles['text14-group-aa']}>
-            <div className={styles['text14-1-aa']}>
-              <h6>04</h6>
-            </div>
-            <div className={styles['text14-2-aa']}>
-              <h6>開局策略與基本開局介紹</h6>
-            </div>
-            <div className={styles['text14-3-aa']}>
-              <h6>14:39</h6>
+            <div className={styles['text14-group-aa']}>
+              <div className={styles['text14-1-aa']}>
+                <h6>04</h6>
+              </div>
+              <div className={styles['text14-2-aa']}>
+                <h6>開局策略與基本開局介紹</h6>
+              </div>
+              <div className={styles['text14-3-aa']}>
+                <h6>14:39</h6>
+              </div>
             </div>
           </div>
         </div>
@@ -369,7 +431,7 @@ export default function ClassDetail() {
                 </svg>
               </div>
             </div>
-            <div className={styles['sec2cardgroup-aa']}>
+            {/* <div className={styles['sec2cardgroup-aa']}>
               <Link href={`/course/classList`} className={styles['card-link']}>
                 <div className={styles['sec2classtCard-aa']}>
                   <img
@@ -466,7 +528,8 @@ export default function ClassDetail() {
                   </div>
                 </div>
               </Link>
-            </div>
+            </div> */}
+            <Recommends />
             <div className={styles['btn-more-mini-r-aa']}>
               <div className={styles['Ellipse-r-aa']}>
                 <svg
