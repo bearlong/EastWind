@@ -181,16 +181,27 @@
   }
 }
 
+.room-image-swiper {
+  height: 100%;
+}
+
 .room-image-box-down-bo {
   @media (max-width: 768px) {
     display: none;
   }
 }
 
+.room-image-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 的比例 */
+}
+
 .room-image-bo {
   width: 100%;
   margin: 0 auto;
   aspect-ratio: 16 / 9;
+  object-fit: cover; /* 讓圖片保持比例並且填滿容器 */
 }
 
 .image-up-bo {
@@ -650,4 +661,32 @@
 .ml2 .letter {
   display: inline-block;
   line-height: 1rem;
+}
+
+.swal-btn-bo {
+  font-size: 1.4rem;
+  font-weight: 500;
+  background-color: #b79347;
+  color: var(--bg-text-color);
+  padding: 0.4rem 1rem;
+}
+
+.swal-popup-bo {
+  background-color: var(--form-bg);
+}
+
+.swal-icon-bo {
+  font-size: 1.6rem;
+
+  @media (max-width: 576px) {
+    font-size: 1.4rem;
+  }
+}
+
+.swal-btn-cancel-bo {
+  font-size: 1.4rem;
+  font-weight: 500;
+  background-color: var(--primary-dark);
+  color: var(--bg-text-color);
+  padding: 0.4rem 1rem;
 }

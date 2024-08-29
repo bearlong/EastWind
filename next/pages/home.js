@@ -7,8 +7,11 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 import { Navigation, Autoplay } from 'swiper/modules' // 引入 Autoplay 模塊
 import anime from 'animejs/lib/anime.min.js'
+import Swal from 'sweetalert2'
+import { useRouter } from 'next/router'
 
 export default function Home() {
+  const router = useRouter()
   const [mahjongProducts, setMahjongProducts] = useState([])
   const [boardGameProducts, setBoardGameProducts] = useState([])
   const [isClient, setIsClient] = useState(false)
@@ -356,6 +359,29 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
+    // 檢查是否需要顯示 SweetAlert
+    if (localStorage.getItem('showWelcomeAlert') === 'true') {
+      Swal.fire({
+        title: '歡迎加入！',
+        html: `<span class="p">請先填寫會員資料。</span>`,
+        icon: 'info',
+        confirmButtonText: '確認',
+        customClass: {
+          popup: `${styles['swal-popup-bo']}`,
+          title: 'h6',
+          icon: `${styles['swal-icon-bo']}`,
+          confirmButton: `${styles['swal-btn-bo']}`,
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          localStorage.removeItem('showWelcomeAlert') // 移除標記
+          router.push('/user/user-center/info-edit') // 跳轉到資料編輯頁面
+        }
+      })
+    }
+  }, [])
+
+  useEffect(() => {
     // 只選擇 intro 區域內的 h6 元素
     const introSection = document.querySelector(
       `.${styles['intro-section-bo']}`
@@ -537,12 +563,12 @@ export default function Home() {
             {' '}
             {roomImages.slice(0, 12).map((image, index) => (
               <img
-                key={index}
+                  key={index}
                 className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-                src={image}
+                        src={image}
                 alt={`Room Image ${index + 1}`}
-              />
-            ))}
+                      />
+                    ))}
           </div>
           <div
             className={`${styles['room-text-box-bo']} d-flex flex-column justify-content-center align-items-center`}
@@ -599,12 +625,12 @@ export default function Home() {
           >
             {roomImages.slice(12).map((image, index) => (
               <img
-                key={index}
+                  key={index}
                 className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-                src={image}
+                        src={image}
                 alt={`Room Image ${index + 13}`}
-              />
-            ))}
+                      />
+                    ))}
           </div>
         </section>
 

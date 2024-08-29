@@ -535,29 +535,85 @@ export default function UserInfoEdit() {
       (key) => formValues[key] !== initialFormValues[key]
     )
 
-    if (isFormChanged) {
+    // 檢查用戶是否為新會員
+    const isNewMember =
+      !initialFormValues.gender &&
+      !initialFormValues.year &&
+      !initialFormValues.month &&
+      !initialFormValues.day &&
+      !initialFormValues.city &&
+      !initialFormValues.address &&
+      !initialFormValues.phone
+
+    if (isNewMember) {
       Swal.fire({
-        title: '確定取消修改嗎？',
-        html: `<span class="p">您的變更尚未保存，確定要取消嗎？</span>`,
+        title: '無法取消修改',
+        html: `<span class="p">新會員在填寫資料時無法取消修改，請完成填寫。</span>`,
         icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: '取消修改',
-        cancelButtonText: '繼續修改',
+        confirmButtonText: '確定',
         customClass: {
           popup: `${styles['swal-popup-bo']}`,
           title: 'h6',
           icon: `${styles['swal-icon-bo']}`,
           confirmButton: `${styles['swal-btn-bo']}`,
-          cancelButton: `${styles['swal-btn-cancel-bo']}`,
         },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // 清理 localStorage
-          localStorage.removeItem('emailToVerify')
-          localStorage.removeItem('emailVerificationStatus')
-          router.push('/user/user-center/info')
-        }
       })
+      return // 直接返回，不執行後續代碼
+    }
+
+    // 檢查所有輸入框是否都填寫
+    const isAllFieldsFilled = Object.values(formValues).every(
+      (value) => value !== ''
+    )
+
+    if (isFormChanged) {
+      if (!isAllFieldsFilled) {
+        Swal.fire({
+          title: '未填寫所有資料',
+          html: `<span class="p">有些資料未填寫，您確定要取消修改嗎？</span>`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: '保持原資料',
+          cancelButtonText: '繼續修改',
+          customClass: {
+            popup: `${styles['swal-popup-bo']}`,
+            title: 'h6',
+            icon: `${styles['swal-icon-bo']}`,
+            confirmButton: `${styles['swal-btn-bo']}`,
+            cancelButton: `${styles['swal-btn-cancel-bo']}`,
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // 清理 localStorage，保持原資料
+            localStorage.removeItem('emailToVerify')
+            localStorage.removeItem('emailVerificationStatus')
+            router.push('/user/user-center/info')
+          }
+        })
+      } else {
+        Swal.fire({
+          title: '確定取消修改嗎？',
+          html: `<span class="p">您的變更尚未保存，確定要取消嗎？</span>`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: '取消修改',
+          cancelButtonText: '繼續修改',
+          customClass: {
+            popup: `${styles['swal-popup-bo']}`,
+            title: 'h6',
+            icon: `${styles['swal-icon-bo']}`,
+            confirmButton: `${styles['swal-btn-bo']}`,
+            cancelButton: `${styles['swal-btn-cancel-bo']}`,
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // 清理 localStorage
+            localStorage.removeItem('emailToVerify')
+            localStorage.removeItem('emailVerificationStatus')
+            router.push('/user/user-center/info')
+          }
+        })
+      }
     } else {
       // 清理 localStorage
       localStorage.removeItem('emailToVerify')

@@ -20,7 +20,7 @@ import Link from 'next/link'
 export default function UserParty() {
   const [activeSortIndex, setActiveSortIndex] = useState(0)
   const { user } = useContext(AuthContext)
-  const [selectedStatus, setSelectedStatus] = useState('booked')
+  const [selectedStatus, setSelectedStatus] = useState('waiting')
   const [party, setParty] = useState([])
   const [role, setRole] = useState('主揪') // 新增角色狀態
   const [members, setMembers] = useState([])
@@ -236,9 +236,9 @@ export default function UserParty() {
             className={`${styles['party-state-box-bo']} d-flex justify-content-around align-items-center text-center`}
           >
             <li
-              onClick={() => changeStatus('booked')}
+              onClick={() => changeStatus('waiting')}
               className={`${styles['party-state-bo']} h6 ${
-                selectedStatus === 'booked' ? styles['state-choose-bo'] : ''
+                selectedStatus === 'waiting' ? styles['state-choose-bo'] : ''
               }`}
             >
               等待中
@@ -254,7 +254,9 @@ export default function UserParty() {
             <li
               onClick={() => changeStatus('cancelled')}
               className={`${styles['party-state-bo']} h6 ${
-                selectedStatus === 'cancelled' ? styles['state-choose-bo'] : ''
+                selectedStatus === 'cancelled' || selectedStatus === 'failed'
+                  ? styles['state-choose-bo']
+                  : ''
               }`}
             >
               已流團
@@ -367,7 +369,7 @@ export default function UserParty() {
                         </div>
                       </div>
 
-                      {selectedStatus === 'booked' && (
+                      {selectedStatus === 'waiting' && (
                         <div
                           className={`${styles['btn-party-bo']} btn h6 d-flex justify-content-center align-items-center gap-2`}
                         >
@@ -388,7 +390,8 @@ export default function UserParty() {
                           已完成
                         </div>
                       )}
-                      {selectedStatus === 'cancelled' && (
+                      {(selectedStatus === 'cancelled' ||
+                        selectedStatus === 'failed') && (
                         <div
                           className={`${styles['state-text-bo']} h6 d-flex justify-content-center align-items-center gap-2`}
                         >
@@ -532,7 +535,7 @@ export default function UserParty() {
                       </div>
                       <div></div>
                       <div className="d-flex justify-content-center align-items-center gap-4">
-                        {selectedStatus === 'booked' && (
+                        {selectedStatus === 'waiting' && (
                           <div
                             className={`${styles['btn-party-bo']} btn h6 d-flex justify-content-center align-items-center gap-2`}
                           >
@@ -553,7 +556,8 @@ export default function UserParty() {
                             已完成
                           </div>
                         )}
-                        {selectedStatus === 'cancelled' && (
+                        {(selectedStatus === 'cancelled' ||
+                          selectedStatus === 'failed') && (
                           <div
                             className={`${styles['state-text-bo']} h6 d-flex justify-content-center align-items-center gap-2`}
                           >

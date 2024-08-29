@@ -109,34 +109,27 @@ export default function Login() {
 
         // 檢查是否是新會員
         if (result.isNewUser) {
-          // 否則跳轉到首頁並重整
-          router.push('/home').then(() => {
-            window.location.reload() // 重整頁面
-          })
-          // 如果是新會員，跳轉到資料編輯頁面
-          Swal.fire({
-            title: '歡迎加入！',
-            text: '請先填寫會員資料。',
-            icon: 'info',
-            confirmButtonText: '確認',
-          }).then(() => {
-            router.push('/user/user-center/info-edit').then(() => {
-              window.location.reload() // 重整頁面
-            })
-          })
+          // 設置一個標記，表示新會員需要顯示 SweetAlert
+          localStorage.setItem('showWelcomeAlert', 'true')
+          // 跳轉到首頁
+          window.location.href = '/home' // 可以直接導航而不需要 reload
         } else {
-          // 否則跳轉到首頁並重整
-          router.push('/home').then(() => {
-            window.location.reload() // 重整頁面
-          })
+          // 如果不是新會員，直接重整首頁
+          window.location.href = '/home' // 可以直接導航而不需要 reload
         }
       } else {
         // 處理失敗邏輯
         Swal.fire({
           title: 'Google 登入失敗',
-          text: result.message || '請稍後再試',
+          html: `<span class="p">請稍後再試</span>`,
           icon: 'error',
           confirmButtonText: '確認',
+          customClass: {
+            popup: `${styles['swal-popup-bo']}`,
+            title: 'h6',
+            icon: `${styles['swal-icon-bo']}`,
+            confirmButton: `${styles['swal-btn-bo']}`,
+          },
         })
       }
     } catch (error) {
@@ -144,9 +137,15 @@ export default function Login() {
       // 錯誤處理
       Swal.fire({
         title: '登入錯誤',
-        text: '發生未知錯誤，請稍後再試',
+        html: `<span class="p">發生未知錯誤，請稍後再試</span>`,
         icon: 'error',
         confirmButtonText: '確認',
+        customClass: {
+          popup: `${styles['swal-popup-bo']}`,
+          title: 'h6',
+          icon: `${styles['swal-icon-bo']}`,
+          confirmButton: `${styles['swal-btn-bo']}`,
+        },
       })
     }
   }
@@ -367,18 +366,19 @@ export default function Login() {
               <FaCheck />
             </button>
           </div>
-        </form>
-        <div
-          className={`${styles['user-login-google-bo']} d-flex justify-content-center align-items-center`}
-        >
-          <button
-            type="button"
-            className={`${styles['btn-google-login-bo']} btn h6 d-flex justify-content-between align-items-center`}
-            onClick={onGoogleLoginSuccess} // 直接調用 onGoogleLoginSuccess
+          <div></div>
+          <div
+            className={`${styles['user-login-google-bo']} d-flex justify-content-center align-items-center`}
           >
-            <GoogleLogo /> Google 登入
-          </button>
-        </div>
+            <button
+              type="button"
+              className={`${styles['btn-google-login-bo']} btn h6 d-flex justify-content-between align-items-center`}
+              onClick={onGoogleLoginSuccess} // 直接調用 onGoogleLoginSuccess
+            >
+              <GoogleLogo /> Google 登入
+            </button>
+          </div>
+        </form>
       </div>
 
       {/* 公司登入區域 */}
