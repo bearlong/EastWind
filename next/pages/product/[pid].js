@@ -55,7 +55,6 @@ export default function Detail() {
     2: 0,
     1: 0,
   })
-  const [imgMain, setImgMain] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const MySwal = withReactContent(Swal)
 
@@ -87,9 +86,15 @@ export default function Detail() {
       newData.specifications = specifications
       const paragraphs = newData.product.content.split('\r\n')
       newData.product.content = paragraphs
+      const mainImage = {
+        id: 'main',
+        product_id: newData.product.id, // 這裡假設只有一個 product
+        img: newData.product.img,
+      }
+      newData.img2.unshift(mainImage)
+      console.log(newData.img2)
       setData(newData)
       setComment(newData.comment)
-      setImgMain(product.img)
 
       const updatedStarCount = {
         5: 0,
@@ -116,9 +121,6 @@ export default function Detail() {
   const sortedStarCount = Object.entries(starCount).sort(
     ([starA], [starB]) => [starB] - [starA]
   )
-  const handleImgMain = (img) => {
-    setImgMain(img)
-  }
 
   const handleStarChange = (star) => {
     const nextContent = data.comment.content.filter(
@@ -195,12 +197,7 @@ export default function Detail() {
         loader
       ) : (
         <main className={styles['main']}>
-          <ProductDetail
-            data={data}
-            handleImgMain={handleImgMain}
-            imgMain={imgMain}
-            handleFavToggle={handleFavToggle}
-          />
+          <ProductDetail data={data} handleFavToggle={handleFavToggle} />
 
           <Toaster position="bottom-right" reverseOrder={false} />
           <div className={`${styles['productDetailSection2-bl']}  row`}>

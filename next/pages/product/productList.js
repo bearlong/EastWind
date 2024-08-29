@@ -26,6 +26,7 @@ import { FadeLoader } from 'react-spinners'
 import ProductCard from '@/components/product/productCard'
 import ToTheTop from '@/components/icons/to-the-top'
 import { Autoplay } from 'swiper/modules'
+import Carousel from '@/components/product/carousel'
 
 const override = {
   display: 'block',
@@ -405,10 +406,8 @@ export default function ProductList() {
     // 初始檢查
     handleResize()
 
-    // 當視窗大小改變時重新檢查
     window.addEventListener('resize', handleResize)
 
-    // 清除事件監聽器
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 

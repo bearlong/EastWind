@@ -33,11 +33,13 @@
     }
   }
   .imgSmallBox-bl {
-    width: 90px;
-    height: 90px;
-    border: 3px solid transparent;
-    &:hover {
-      border: 3px solid var(--primary);
+    width: 90px !important;
+    height: 90px !important;
+    img {
+      border: 3px solid transparent;
+      &:hover {
+        border: 3px solid var(--primary);
+      }
     }
   }
   .active {
@@ -452,8 +454,8 @@
       height: 315px;
     }
     .imgSmallBox-bl {
-      width: 60px;
-      height: 60px;
+      width: 60px !important;
+      height: 60px !important;
     }
     .productDetailContent-bl {
       padding-inline: 0;
