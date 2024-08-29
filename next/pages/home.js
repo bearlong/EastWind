@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useContext } from 'react'
 import styles from '@/styles/boyu/home.module.scss'
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 import Link from 'next/link'
@@ -9,9 +9,12 @@ import { Navigation, Autoplay } from 'swiper/modules' // 引入 Autoplay 模塊
 import anime from 'animejs/lib/anime.min.js'
 import Swal from 'sweetalert2'
 import { useRouter } from 'next/router'
+import { AuthContext } from '@/context/AuthContext'
 
 export default function Home() {
   const router = useRouter()
+
+  const { user } = useContext(AuthContext)
   const [mahjongProducts, setMahjongProducts] = useState([])
   const [boardGameProducts, setBoardGameProducts] = useState([])
   const [isClient, setIsClient] = useState(false)
@@ -381,6 +384,25 @@ export default function Home() {
     }
   }, [])
 
+  // 檢查用戶ID是否為62
+  useEffect(() => {
+    if (user && user.id === 62) {
+      router.push('http://localhost:3000/admin')
+      Swal.fire({
+        title: '登入成功！',
+        html: `<span class="p">管理員 歡迎回來！</span>`,
+        icon: 'success',
+        customClass: {
+          popup: `${styles['swal-popup-bo']}`,
+          title: 'h6',
+          icon: `${styles['swal-icon-bo']}`,
+          confirmButton: `${styles['swal-btn-bo']}`,
+        },
+        confirmButtonText: '確認',
+      })
+    }
+  }, [user])
+
   useEffect(() => {
     // 只選擇 intro 區域內的 h6 元素
     const introSection = document.querySelector(
@@ -563,12 +585,12 @@ export default function Home() {
             {' '}
             {roomImages.slice(0, 12).map((image, index) => (
               <img
-                  key={index}
+                key={index}
                 className={`${styles['room-image-bo']} ${styles['image-down-bo']}`}
-                        src={image}
+                src={image}
                 alt={`Room Image ${index + 1}`}
-                      />
-                    ))}
+              />
+            ))}
           </div>
           <div
             className={`${styles['room-text-box-bo']} d-flex flex-column justify-content-center align-items-center`}
@@ -625,12 +647,12 @@ export default function Home() {
           >
             {roomImages.slice(12).map((image, index) => (
               <img
-                  key={index}
+                key={index}
                 className={`${styles['room-image-bo']} ${styles['image-up-bo']}`}
-                        src={image}
+                src={image}
                 alt={`Room Image ${index + 13}`}
-                      />
-                    ))}
+              />
+            ))}
           </div>
         </section>
 

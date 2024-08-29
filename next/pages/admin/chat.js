@@ -130,7 +130,6 @@ export default function Chat() {
           socket.close()
         }
       } else {
-        alert('請由正常管道進入')
         router.push('/home')
       }
     }

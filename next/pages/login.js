@@ -7,6 +7,7 @@ import Swal from 'sweetalert2'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import GoogleLogo from '@/components/icons/google-logo'
+import GoogleLogoHover from '@/components/icons/google-logo-hover'
 import { AuthContext } from '@/context/AuthContext'
 
 export default function Login() {
@@ -19,7 +20,8 @@ export default function Login() {
   const [passwordError, setPasswordError] = useState('')
   const { login } = useAuth() // 從 useAuth 中解構獲取  和 setUser
   const { loginGoogle } = useFirebase() // 使用 Google 登入功能
-  const { setUser } = useContext(AuthContext)
+  const { setUser, user, setToken } = useContext(AuthContext)
+  const [isHovered, setIsHovered] = useState(false)
 
   // 從 localStorage 中讀取賬號並設置到狀態中
   useEffect(() => {
@@ -95,26 +97,33 @@ export default function Login() {
       const result = await response.json()
       console.log('Login Result:', result)
 
+      // 儲存 token 和用戶信息到 AuthContext 和 localStorage
+
       if (result.status === 'success') {
-        // 儲存 token 和用戶信息到 AuthContext 和 localStorage
         localStorage.setItem('refreshToken', result.refreshToken)
         localStorage.setItem('accessToken', result.accessToken)
+        // 設置Token到Context
 
         setUser({
-          id: result.id, // 確保這裡的 `id` 是正確的
+          id: result.id,
           name: result.name,
           email: email,
           photoURL: photoURL,
         })
 
         // 檢查是否是新會員
+
         if (result.isNewUser) {
           // 設置一個標記，表示新會員需要顯示 SweetAlert
           localStorage.setItem('showWelcomeAlert', 'true')
           // 跳轉到首頁
+          localStorage.setItem('refreshToken', result.refreshToken)
+          localStorage.setItem('accessToken', result.accessToken)
           window.location.href = '/home' // 可以直接導航而不需要 reload
         } else {
           // 如果不是新會員，直接重整首頁
+          localStorage.setItem('refreshToken', result.refreshToken)
+          localStorage.setItem('accessToken', result.accessToken)
           window.location.href = '/home' // 可以直接導航而不需要 reload
         }
       } else {
@@ -342,15 +351,27 @@ export default function Login() {
             </div>
           </div>
           <div
-            className={`${styles['user-login-option-bo']} d-flex justify-content-center align-items-center h6`}
+            className={`${styles['user-login-option-bo']} d-flex justify-content-center align-items-center h6 mb-5`}
           >
-            <ul className="d-flex gap-3">
+            <ul className="d-flex gap-3  justify-content-center align-items-center">
               <li>
                 <Link href="/user/forgot-password">忘記密碼</Link>
               </li>
               <li>|</li>
               <li>
                 <Link href="/user/register">立即註冊</Link>
+              </li>
+              <li>|</li>
+              <li>
+                <button
+                  type="button"
+                  className={` btn h6 d-flex  justify-content-center  align-items-center`}
+                  onClick={onGoogleLoginSuccess} // 直接調用 onGoogleLoginSuccess
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                >
+                  {isHovered ? <GoogleLogoHover /> : <GoogleLogo />}
+                </button>
               </li>
             </ul>
           </div>
@@ -364,18 +385,6 @@ export default function Login() {
             >
               登入
               <FaCheck />
-            </button>
-          </div>
-          <div></div>
-          <div
-            className={`${styles['user-login-google-bo']} d-flex justify-content-center align-items-center`}
-          >
-            <button
-              type="button"
-              className={`${styles['btn-google-login-bo']} btn h6 d-flex justify-content-between align-items-center`}
-              onClick={onGoogleLoginSuccess} // 直接調用 onGoogleLoginSuccess
-            >
-              <GoogleLogo /> Google 登入
             </button>
           </div>
         </form>
@@ -401,17 +410,33 @@ export default function Login() {
           >
             <div className={styles['form-group-bo']}>
               <input
+                name="account"
                 type="text"
                 className={`h6 ${styles['form-input-bo']}`}
                 placeholder="帳號"
+                value={account}
+                onChange={(e) => setAccount(e.target.value)}
               />
+              {accountError && (
+                <div className={`p ${styles['text-error-bo']}`}>
+                  {accountError}
+                </div>
+              )}
             </div>
             <div className={styles['form-group-bo']}>
               <input
+                name="password"
                 type="password"
                 className={`h6 ${styles['form-input-bo']}`}
                 placeholder="密碼"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
+              {passwordError && (
+                <div className={`p ${styles['text-error-bo']}`}>
+                  {passwordError}
+                </div>
+              )}
             </div>
           </div>
           <div
@@ -432,7 +457,8 @@ export default function Login() {
           >
             <button
               type="button"
-              className={`${styles['btn-company-login-bo']} btn h6 d-flex justify-content-between align-items-center`}
+              className={`${styles['btn-user-login-bo']}  btn h6 d-flex justify-content-between align-items-center`}
+              onClick={onLogin}
             >
               登入
               <FaCheck />
