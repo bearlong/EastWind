@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from 'react'
 import styles from '@/styles/boyu/login.module.scss'
 import { FaCheck } from 'react-icons/fa6'
-import useAuth from '@/hooks/user-auth-bo'
+import useAuth from '@/hooks/use-auth-bo'
 import useFirebase from '@/hooks/use-firebase-bo'
 import Swal from 'sweetalert2'
 import Link from 'next/link'
@@ -97,12 +97,9 @@ export default function Login() {
       const result = await response.json()
       console.log('Login Result:', result)
 
-      // 儲存 token 和用戶信息到 AuthContext 和 localStorage
-
       if (result.status === 'success') {
         localStorage.setItem('refreshToken', result.refreshToken)
         localStorage.setItem('accessToken', result.accessToken)
-        // 設置Token到Context
 
         setUser({
           id: result.id,
@@ -111,23 +108,27 @@ export default function Login() {
           photoURL: photoURL,
         })
 
-        // 檢查是否是新會員
-
         if (result.isNewUser) {
-          // 設置一個標記，表示新會員需要顯示 SweetAlert
           localStorage.setItem('showWelcomeAlert', 'true')
-          // 跳轉到首頁
-          localStorage.setItem('refreshToken', result.refreshToken)
-          localStorage.setItem('accessToken', result.accessToken)
-          window.location.href = '/home' // 可以直接導航而不需要 reload
+          window.location.href = '/home'
         } else {
-          // 如果不是新會員，直接重整首頁
-          localStorage.setItem('refreshToken', result.refreshToken)
-          localStorage.setItem('accessToken', result.accessToken)
-          window.location.href = '/home' // 可以直接導航而不需要 reload
+          // 新增歡迎回來的 SweetAlert
+          Swal.fire({
+            title: '登入成功！',
+            html: `<span class="p">${result.name} 歡迎回來！</span>`,
+            icon: 'success',
+            customClass: {
+              popup: `${styles['swal-popup-bo']}`,
+              title: 'h6',
+              icon: `${styles['swal-icon-bo']}`,
+              confirmButton: `${styles['swal-btn-bo']}`,
+            },
+            confirmButtonText: '確認',
+          }).then(() => {
+            window.location.href = '/home'
+          })
         }
       } else {
-        // 處理失敗邏輯
         Swal.fire({
           title: 'Google 登入失敗',
           html: `<span class="p">請稍後再試</span>`,
@@ -143,7 +144,6 @@ export default function Login() {
       }
     } catch (error) {
       console.log('Login Error:', error)
-      // 錯誤處理
       Swal.fire({
         title: '登入錯誤',
         html: `<span class="p">發生未知錯誤，請稍後再試</span>`,

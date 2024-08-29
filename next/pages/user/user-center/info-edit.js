@@ -227,6 +227,7 @@ export default function UserInfoEdit() {
       'password',
       !newErrors.password && !newErrors.confirmPassword
     )
+
     // 檢查並驗證姓名
     if (username !== initialFormValues.username) {
       if (!username) {
@@ -235,18 +236,10 @@ export default function UserInfoEdit() {
     }
     toggleCorrectClass('username', !newErrors.username)
 
-    // 檢查並驗證 username
-    if (!username) {
-      newErrors.username = '姓名不能為空'
-    }
-    toggleCorrectClass('username', !newErrors.username)
-
     // 檢查並驗證性別
-
     if (!gender) {
       newErrors.gender = '請選擇性別'
     }
-
     toggleCorrectClass('gender', !newErrors.gender)
 
     // 檢查並驗證生日
@@ -287,26 +280,14 @@ export default function UserInfoEdit() {
     return Object.keys(newErrors).length === 0
   }
 
-  // 動態添加或移除 info-correct-bo 類的輔助函數
   const toggleCorrectClass = (fieldName, isValid) => {
     const element = document.querySelector(`[name="${fieldName}"]`)
 
     if (element) {
-      // 檢查是否為 `select` 元素
-      if (element.tagName.toLowerCase() === 'select') {
-        // 檢查並強制應用背景色
-        if (isValid && element.value !== '') {
-          element.style.backgroundColor = 'rgba(183, 148, 71, 0.2)'
-        } else {
-          element.style.backgroundColor = '' // 清除內聯樣式
-        }
+      if (isValid) {
+        element.classList.add(styles['info-correct-bo'])
       } else {
-        // 處理其他類型的元素（如`input`）
-        if (isValid) {
-          element.style.backgroundColor = 'rgba(183, 148, 71, 0.2)'
-        } else {
-          element.style.backgroundColor = '' // 清除內聯樣式
-        }
+        element.classList.remove(styles['info-correct-bo'])
       }
     } else {
       console.log(`Element with name "${fieldName}" not found.`)
@@ -314,7 +295,7 @@ export default function UserInfoEdit() {
   }
 
   // 發送驗證郵件
-  const sendVerificationEmail = () => {
+  const sendVerificationEmail = async () => {
     // 如果 email 與初始 email 相同，則不需驗證
     if (formValues.email === initialFormValues.email) {
       Swal.fire({
@@ -332,8 +313,14 @@ export default function UserInfoEdit() {
       return
     }
 
+    // 檢查 email 是否已被使用
+    const { emailExists } = await checkUniqueValues(
+      formValues.email,
+      formValues.account
+    )
+
     // 如果 email 已經存在，禁用驗證按鈕
-    if (errors.email) {
+    if (emailExists) {
       Swal.fire({
         title: '電子信箱已被使用',
         html: `<span class="p">此電子信箱已被使用，請選擇其他電子信箱。</span>`,
@@ -374,6 +361,8 @@ export default function UserInfoEdit() {
               confirmButton: `${styles['swal-btn-bo']}`, // 添加自定義按鈕 class
             },
             confirmButtonText: '確認', // 修改按鈕文字
+          }).then(() => {
+            router.push('/user/user-center/info') // 驗證成功後跳回到 user-info 頁面
           })
         } else {
           Swal.fire({
@@ -816,7 +805,7 @@ export default function UserInfoEdit() {
                 >
                   <h6 className={`${styles['info-name-bo']} h6`}>密碼</h6>
                   <input
-                    type="text" // 改成 text 顯示密碼
+                    type="password" // 使用 type="password" 隱藏密碼
                     className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
                     value={formValues.password || ''} // 確保 value 有預設值
                     onChange={onInputChange}
@@ -838,7 +827,7 @@ export default function UserInfoEdit() {
                     >
                       <h6 className={`${styles['info-name-bo']} h6`}>確認</h6>
                       <input
-                        type="text" // 這裡改成 text 顯示原密碼
+                        type="password" // 這裡改成 text 顯示原密碼
                         className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
                         value={formValues.confirmPassword || ''} // 確保 value 有預設值
                         onChange={onInputChange}
