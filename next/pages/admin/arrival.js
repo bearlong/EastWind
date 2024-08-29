@@ -139,13 +139,16 @@ export default function Arrival() {
 
   useEffect(() => {
     if (router.isReady && !loading) {
-      if (user.id !== 62 || (!user && loading === false)) {
-        alert('請由正常管道進入')
+      if (user) {
+        if (user.id !== 62 || (!user && loading === false)) {
+          alert('請由正常管道進入')
+          router.push('/home')
+        }
+      } else {
         router.push('/home')
       }
     }
   }, [router.isReady, user])
-
   useEffect(() => {
     let filtered = data
 

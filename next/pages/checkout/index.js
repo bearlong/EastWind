@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
 import styles from '@/styles/bearlong/checkout.module.scss'
-import Link from 'next/link'
 import Image from 'next/image'
 import { useCart } from '@/hooks/use-cart'
 import { useRouter } from 'next/router'
