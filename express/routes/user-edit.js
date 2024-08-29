@@ -103,7 +103,6 @@ router.put('/update-user/:userId', async (req, res) => {
   } = req.body
 
   try {
-    // 檢查用戶是否已經完成了第一次修改
     const [user] = await connection.execute(
       'SELECT first_edit_completed FROM user WHERE id = ?',
       [userId]
@@ -111,7 +110,6 @@ router.put('/update-user/:userId', async (req, res) => {
 
     const firstEditCompleted = user[0].first_edit_completed
 
-    // 更新用戶資料
     const [result] = await connection.execute(
       `UPDATE user SET 
           email = ?, 
@@ -135,19 +133,17 @@ router.put('/update-user/:userId', async (req, res) => {
         city,
         address,
         phone,
-        true, // 將 first_edit_completed 設為 true
+        true,
         userId,
       ]
     )
 
-    // 如果更新成功
     if (result.affectedRows > 0) {
-      let isFirstEdit = false // 預設不是第一次修改
+      let isFirstEdit = false
       let message = '用戶資料已成功更新。'
 
-      // 如果這是第一次修改，發送優惠券
       if (!firstEditCompleted) {
-        isFirstEdit = true // 標記為第一次修改
+        isFirstEdit = true
         try {
           const couponResponse = await fetch(
             `http://localhost:3005/api/coupons/send-welcome-coupon/${userId}`,
@@ -167,10 +163,17 @@ router.put('/update-user/:userId', async (req, res) => {
         }
       }
 
+      // 確保更新的 `username` 和 `photo_url` 回傳給前端
+      const [updatedUser] = await connection.execute(
+        'SELECT username, photo_url FROM user WHERE id = ?',
+        [userId]
+      )
+
       res.status(200).json({
         status: 'success',
         message,
-        isFirstEdit, // 將是否為第一次修改的狀態返回前端
+        isFirstEdit,
+        data: updatedUser[0], // 回傳更新的資料
       })
     } else {
       res.status(404).json({
@@ -417,10 +420,17 @@ router.post(
       )
 
       if (result.affectedRows > 0) {
+        // 回傳更新後的 user_img 和 username
+
+        const [updatedUser] = await connection.execute(
+          'SELECT user_img, username FROM user WHERE id = ?',
+          [userId]
+        )
         res.status(200).json({
           status: 'success',
           message: '頭像已更新',
           filename: avatarFilename,
+          data: updatedUser[0], // 回傳更新的資料     data: updatedUser[0], // 回傳更新的資料
         })
       } else {
         await fs.unlink(

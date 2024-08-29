@@ -1,10 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import styles from '@/styles/boyu/login.module.scss'
 import { FaCheck } from 'react-icons/fa6'
 import useAuth from '@/hooks/user-auth-bo'
+import useFirebase from '@/hooks/use-firebase-bo'
 import Swal from 'sweetalert2'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import GoogleLogo from '@/components/icons/google-logo'
+import { AuthContext } from '@/context/AuthContext'
 
 export default function Login() {
   const router = useRouter()
@@ -14,8 +17,9 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [accountError, setAccountError] = useState('')
   const [passwordError, setPasswordError] = useState('')
-
-  const { login } = useAuth() // 使用自定義的 useAuth 鉤子來處理登入邏輯
+  const { login } = useAuth() // 從 useAuth 中解構獲取  和 setUser
+  const { loginGoogle } = useFirebase() // 使用 Google 登入功能
+  const { setUser } = useContext(AuthContext)
 
   // 從 localStorage 中讀取賬號並設置到狀態中
   useEffect(() => {
@@ -56,42 +60,7 @@ export default function Login() {
       const result = await login(account, password) // 等待登入結果
 
       if (result.success) {
-        // 檢查是否為新註冊會員
-        const registeredAccount = localStorage.getItem('registeredAccount')
-
-        if (registeredAccount && registeredAccount === account) {
-          localStorage.removeItem('registeredAccount') // 清除儲存的帳號
-          localStorage.removeItem('registeredPassword') // 清除儲存的密碼
-
-          // 顯示 SweetAlert 提示新會員需要填寫資料
-          Swal.fire({
-            title: '註冊成功！',
-            html: `<span class="p">歡迎加入！請先填寫會員資料。</span>`,
-            icon: 'info',
-            customClass: {
-              popup: `${styles['swal-popup-bo']}`, // 自訂整個彈出視窗的 class
-              title: 'h6',
-              icon: `${styles['swal-icon-bo']}`, // 添加自定義 class
-              confirmButton: `${styles['swal-btn-bo']}`, // 添加自定義按鈕 class
-            },
-            confirmButtonText: '確認',
-          }).then(() => {
-            router.push('/user/user-center/info-edit') // 跳轉到會員資訊修改頁面
-          })
-        } else {
-          Swal.fire({
-            title: '登入成功！',
-            html: `<span class="p">${result.name} 歡迎回來！</span>`,
-            icon: 'success',
-            customClass: {
-              popup: `${styles['swal-popup-bo']}`, // 自訂整個彈出視窗的 class
-              title: 'h6',
-              icon: `${styles['swal-icon-bo']}`, // 添加自定義 class
-              confirmButton: `${styles['swal-btn-bo']}`, // 添加自定義按鈕 class
-            },
-            confirmButtonText: '確認',
-          })
-        }
+        onLoginSuccess(result.name)
       } else {
         // 根據返回的錯誤訊息設置相應的錯誤狀態
         if (result.message.includes('帳號')) {
@@ -103,6 +72,117 @@ export default function Login() {
       }
     } catch (error) {
       setAccountError('發生未知錯誤，請稍後再試')
+    }
+  }
+
+  // 處理Google登入的回調邏輯
+  const onGoogleLoginSuccess = async () => {
+    try {
+      const providerData = await loginGoogle() // 確保 loginGoogle 返回的是完整的使用者資料
+      const { uid, email, displayName, photoURL } = providerData
+
+      const response = await fetch('http://localhost:3005/api/google-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          google_uid: uid,
+          email,
+          displayName,
+          photoURL,
+        }), // 發送使用者資訊到後端
+      })
+
+      const result = await response.json()
+      console.log('Login Result:', result)
+
+      if (result.status === 'success') {
+        // 儲存 token 和用戶信息到 AuthContext 和 localStorage
+        localStorage.setItem('refreshToken', result.refreshToken)
+        localStorage.setItem('accessToken', result.accessToken)
+
+        setUser({
+          id: result.id, // 確保這裡的 `id` 是正確的
+          name: result.name,
+          email: email,
+          photoURL: photoURL,
+        })
+
+        // 檢查是否是新會員
+        if (result.isNewUser) {
+          // 設置一個標記，表示新會員需要顯示 SweetAlert
+          localStorage.setItem('showWelcomeAlert', 'true')
+          // 跳轉到首頁
+          window.location.href = '/home' // 可以直接導航而不需要 reload
+        } else {
+          // 如果不是新會員，直接重整首頁
+          window.location.href = '/home' // 可以直接導航而不需要 reload
+        }
+      } else {
+        // 處理失敗邏輯
+        Swal.fire({
+          title: 'Google 登入失敗',
+          html: `<span class="p">請稍後再試</span>`,
+          icon: 'error',
+          confirmButtonText: '確認',
+          customClass: {
+            popup: `${styles['swal-popup-bo']}`,
+            title: 'h6',
+            icon: `${styles['swal-icon-bo']}`,
+            confirmButton: `${styles['swal-btn-bo']}`,
+          },
+        })
+      }
+    } catch (error) {
+      console.log('Login Error:', error)
+      // 錯誤處理
+      Swal.fire({
+        title: '登入錯誤',
+        html: `<span class="p">發生未知錯誤，請稍後再試</span>`,
+        icon: 'error',
+        confirmButtonText: '確認',
+        customClass: {
+          popup: `${styles['swal-popup-bo']}`,
+          title: 'h6',
+          icon: `${styles['swal-icon-bo']}`,
+          confirmButton: `${styles['swal-btn-bo']}`,
+        },
+      })
+    }
+  }
+
+  // 成功登入後的處理邏輯
+  const onLoginSuccess = (name) => {
+    const registeredAccount = localStorage.getItem('registeredAccount')
+    if (registeredAccount && registeredAccount === account) {
+      localStorage.removeItem('registeredAccount')
+      localStorage.removeItem('registeredPassword')
+      Swal.fire({
+        title: '註冊成功！',
+        html: `<span class="p">歡迎加入！請先填寫會員資料。</span>`,
+        icon: 'info',
+        customClass: {
+          popup: `${styles['swal-popup-bo']}`,
+          title: 'h6',
+          icon: `${styles['swal-icon-bo']}`,
+          confirmButton: `${styles['swal-btn-bo']}`,
+        },
+        confirmButtonText: '確認',
+      }).then(() => {
+        router.push('/user/user-center/info-edit')
+      })
+    } else {
+      Swal.fire({
+        title: '登入成功！',
+        html: `<span class="p">${name} 歡迎回來！</span>`,
+        icon: 'success',
+        customClass: {
+          popup: `${styles['swal-popup-bo']}`,
+          title: 'h6',
+          icon: `${styles['swal-icon-bo']}`,
+          confirmButton: `${styles['swal-btn-bo']}`,
+        },
+        confirmButtonText: '確認',
+      })
     }
   }
 
@@ -284,6 +364,18 @@ export default function Login() {
             >
               登入
               <FaCheck />
+            </button>
+          </div>
+          <div></div>
+          <div
+            className={`${styles['user-login-google-bo']} d-flex justify-content-center align-items-center`}
+          >
+            <button
+              type="button"
+              className={`${styles['btn-google-login-bo']} btn h6 d-flex justify-content-between align-items-center`}
+              onClick={onGoogleLoginSuccess} // 直接調用 onGoogleLoginSuccess
+            >
+              <GoogleLogo /> Google 登入
             </button>
           </div>
         </form>
