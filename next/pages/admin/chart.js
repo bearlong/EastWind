@@ -47,9 +47,12 @@ export default function Chart() {
 
   useEffect(() => {
     if (router.isReady && !loading) {
-      // 先確認 user 是否存在，再判斷 user.id
-      if (!user || user.id !== 62) {
-        // alert('請由正常管道進入')
+      if (user) {
+        if (user.id !== 62 || (!user && loading === false)) {
+          alert('請由正常管道進入')
+          router.push('/home')
+        }
+      } else {
         router.push('/home')
       }
     }
