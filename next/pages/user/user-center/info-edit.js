@@ -41,6 +41,30 @@ export default function UserInfoEdit() {
 
   const fileInputRef = useRef(null) // 用於參考文件輸入元素
 
+  const [imageSrc, setImageSrc] = useState('') // 使用狀態來保存圖片 URL
+
+  // 初始化用戶數據
+  useEffect(() => {
+    if (user && user.id) {
+      fetchUserData() // user 初始化後立刻獲取資料
+    }
+  }, [user]) // user 狀態變化時重新執行
+
+  useEffect(() => {
+    if (user) {
+      // 當 user 更新時，更新圖片 URL
+      const imgSrc = user.user_img
+        ? `/images/boyu/users/${user.user_img}.jpg?${new Date().getTime()}`
+        : user.photo_url
+        ? user.photo_url
+        : user.gender === '男'
+        ? '/images/boyu/users/user-male-default.svg'
+        : '/images/boyu/users/user-female-default.svg'
+
+      setImageSrc(imgSrc) // 設定圖片來源
+    }
+  }, [user])
+
   // 從伺服器獲取用戶資料
   const fetchUserData = async () => {
     if (!user || !user.id) {
@@ -57,6 +81,8 @@ export default function UserInfoEdit() {
       }
 
       const result = await response.json()
+      console.log(result) // 確認 API 回應是否有 created_at
+
       const updatedUser = result.data
 
       // 將生日拆分為年、月、日
@@ -86,13 +112,6 @@ export default function UserInfoEdit() {
       console.error('Failed to fetch user data:', error)
     }
   }
-
-  // 初始化用戶數據
-  useEffect(() => {
-    if (user && user.id) {
-      fetchUserData()
-    }
-  }, [user])
 
   // 處理表單輸入變更
   const onInputChange = (event) => {
@@ -184,23 +203,21 @@ export default function UserInfoEdit() {
     toggleCorrectClass('email', !newErrors.email)
 
     // 檢查並驗證帳號
-    if (account !== initialFormValues.account) {
-      if (!account || !accountPasswordRegex.test(account)) {
-        newErrors.account = '帳號應至少6碼，且包含英文字'
-      } else {
-        const { accountExists } = await checkUniqueValues(email, account)
-        if (accountExists) {
-          newErrors.account = '帳號已存在'
-        }
+    if (!account || !accountPasswordRegex.test(account)) {
+      newErrors.account = '帳號應至少6碼，且包含英文字'
+    } else if (account !== initialFormValues.account) {
+      const { accountExists } = await checkUniqueValues(email, account)
+      if (accountExists) {
+        newErrors.account = '帳號已存在'
       }
     }
     toggleCorrectClass('account', !newErrors.account)
 
     // 檢查並驗證密碼
-    if (isPasswordChanged) {
-      if (!password || !accountPasswordRegex.test(password)) {
-        newErrors.password = '密碼應至少6碼，且包含英文字'
-      } else if (password === initialFormValues.password) {
+    if (!password || !accountPasswordRegex.test(password)) {
+      newErrors.password = '密碼應至少6碼，且包含英文字'
+    } else if (isPasswordChanged) {
+      if (password === initialFormValues.password) {
         newErrors.password = '原密碼不需修改'
       } else if (password !== confirmPassword) {
         newErrors.confirmPassword = '兩次密碼輸入不一致'
@@ -219,18 +236,10 @@ export default function UserInfoEdit() {
     }
     toggleCorrectClass('username', !newErrors.username)
 
-    // 檢查並驗證 username
-    if (!username) {
-      newErrors.username = '姓名不能為空'
-    }
-    toggleCorrectClass('username', !newErrors.username)
-
     // 檢查並驗證性別
-
     if (!gender) {
       newErrors.gender = '請選擇性別'
     }
-
     toggleCorrectClass('gender', !newErrors.gender)
 
     // 檢查並驗證生日
@@ -271,26 +280,14 @@ export default function UserInfoEdit() {
     return Object.keys(newErrors).length === 0
   }
 
-  // 動態添加或移除 info-correct-bo 類的輔助函數
   const toggleCorrectClass = (fieldName, isValid) => {
     const element = document.querySelector(`[name="${fieldName}"]`)
 
     if (element) {
-      // 檢查是否為 `select` 元素
-      if (element.tagName.toLowerCase() === 'select') {
-        // 檢查並強制應用背景色
-        if (isValid && element.value !== '') {
-          element.style.backgroundColor = 'rgba(183, 148, 71, 0.2)'
-        } else {
-          element.style.backgroundColor = '' // 清除內聯樣式
-        }
+      if (isValid) {
+        element.classList.add(styles['info-correct-bo'])
       } else {
-        // 處理其他類型的元素（如`input`）
-        if (isValid) {
-          element.style.backgroundColor = 'rgba(183, 148, 71, 0.2)'
-        } else {
-          element.style.backgroundColor = '' // 清除內聯樣式
-        }
+        element.classList.remove(styles['info-correct-bo'])
       }
     } else {
       console.log(`Element with name "${fieldName}" not found.`)
@@ -298,7 +295,7 @@ export default function UserInfoEdit() {
   }
 
   // 發送驗證郵件
-  const sendVerificationEmail = () => {
+  const sendVerificationEmail = async () => {
     // 如果 email 與初始 email 相同，則不需驗證
     if (formValues.email === initialFormValues.email) {
       Swal.fire({
@@ -316,8 +313,14 @@ export default function UserInfoEdit() {
       return
     }
 
+    // 檢查 email 是否已被使用
+    const { emailExists } = await checkUniqueValues(
+      formValues.email,
+      formValues.account
+    )
+
     // 如果 email 已經存在，禁用驗證按鈕
-    if (errors.email) {
+    if (emailExists) {
       Swal.fire({
         title: '電子信箱已被使用',
         html: `<span class="p">此電子信箱已被使用，請選擇其他電子信箱。</span>`,
@@ -358,6 +361,8 @@ export default function UserInfoEdit() {
               confirmButton: `${styles['swal-btn-bo']}`, // 添加自定義按鈕 class
             },
             confirmButtonText: '確認', // 修改按鈕文字
+          }).then(() => {
+            router.push('/user/user-center/info') // 驗證成功後跳回到 user-info 頁面
           })
         } else {
           Swal.fire({
@@ -519,29 +524,85 @@ export default function UserInfoEdit() {
       (key) => formValues[key] !== initialFormValues[key]
     )
 
-    if (isFormChanged) {
+    // 檢查用戶是否為新會員
+    const isNewMember =
+      !initialFormValues.gender &&
+      !initialFormValues.year &&
+      !initialFormValues.month &&
+      !initialFormValues.day &&
+      !initialFormValues.city &&
+      !initialFormValues.address &&
+      !initialFormValues.phone
+
+    if (isNewMember) {
       Swal.fire({
-        title: '確定取消修改嗎？',
-        html: `<span class="p">您的變更尚未保存，確定要取消嗎？</span>`,
+        title: '無法取消修改',
+        html: `<span class="p">新會員在填寫資料時無法取消修改，請完成填寫。</span>`,
         icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: '取消修改',
-        cancelButtonText: '繼續修改',
+        confirmButtonText: '確定',
         customClass: {
           popup: `${styles['swal-popup-bo']}`,
           title: 'h6',
           icon: `${styles['swal-icon-bo']}`,
           confirmButton: `${styles['swal-btn-bo']}`,
-          cancelButton: `${styles['swal-btn-cancel-bo']}`,
         },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // 清理 localStorage
-          localStorage.removeItem('emailToVerify')
-          localStorage.removeItem('emailVerificationStatus')
-          router.push('/user/user-center/info')
-        }
       })
+      return // 直接返回，不執行後續代碼
+    }
+
+    // 檢查所有輸入框是否都填寫
+    const isAllFieldsFilled = Object.values(formValues).every(
+      (value) => value !== ''
+    )
+
+    if (isFormChanged) {
+      if (!isAllFieldsFilled) {
+        Swal.fire({
+          title: '未填寫所有資料',
+          html: `<span class="p">有些資料未填寫，您確定要取消修改嗎？</span>`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: '保持原資料',
+          cancelButtonText: '繼續修改',
+          customClass: {
+            popup: `${styles['swal-popup-bo']}`,
+            title: 'h6',
+            icon: `${styles['swal-icon-bo']}`,
+            confirmButton: `${styles['swal-btn-bo']}`,
+            cancelButton: `${styles['swal-btn-cancel-bo']}`,
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // 清理 localStorage，保持原資料
+            localStorage.removeItem('emailToVerify')
+            localStorage.removeItem('emailVerificationStatus')
+            router.push('/user/user-center/info')
+          }
+        })
+      } else {
+        Swal.fire({
+          title: '確定取消修改嗎？',
+          html: `<span class="p">您的變更尚未保存，確定要取消嗎？</span>`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: '取消修改',
+          cancelButtonText: '繼續修改',
+          customClass: {
+            popup: `${styles['swal-popup-bo']}`,
+            title: 'h6',
+            icon: `${styles['swal-icon-bo']}`,
+            confirmButton: `${styles['swal-btn-bo']}`,
+            cancelButton: `${styles['swal-btn-cancel-bo']}`,
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // 清理 localStorage
+            localStorage.removeItem('emailToVerify')
+            localStorage.removeItem('emailVerificationStatus')
+            router.push('/user/user-center/info')
+          }
+        })
+      }
     } else {
       // 清理 localStorage
       localStorage.removeItem('emailToVerify')
@@ -663,8 +724,10 @@ export default function UserInfoEdit() {
   }
 
   // 格式化日期
-  const createdAt = user.created_at.split(' ')[0].replace(/-/g, ' / ')
-  // 現在年份
+  const createdAt =
+    user && user.created_at
+      ? user.created_at.split(' ')[0].replace(/-/g, ' / ')
+      : '日期未定義' // 現在年份
   const currentYear = new Date().getFullYear()
   // 最早可選年份（年滿18歲的年份）
   const earliestYear = currentYear - 18
@@ -742,7 +805,7 @@ export default function UserInfoEdit() {
                 >
                   <h6 className={`${styles['info-name-bo']} h6`}>密碼</h6>
                   <input
-                    type="text" // 改成 text 顯示密碼
+                    type="password" // 使用 type="password" 隱藏密碼
                     className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
                     value={formValues.password || ''} // 確保 value 有預設值
                     onChange={onInputChange}
@@ -764,7 +827,7 @@ export default function UserInfoEdit() {
                     >
                       <h6 className={`${styles['info-name-bo']} h6`}>確認</h6>
                       <input
-                        type="text" // 這裡改成 text 顯示原密碼
+                        type="password" // 這裡改成 text 顯示原密碼
                         className={`${styles['info-text-bo']} h6 d-flex align-items-center`}
                         value={formValues.confirmPassword || ''} // 確保 value 有預設值
                         onChange={onInputChange}
@@ -793,15 +856,7 @@ export default function UserInfoEdit() {
               <div className={styles['user-img-box-bo']}>
                 <img
                   className={`${styles['user-img-bo']}`}
-                  src={
-                    user && user.user_img
-                      ? `/images/boyu/users/${
-                          user.user_img
-                        }.jpg?${new Date().getTime()}`
-                      : user && user.gender === '男'
-                      ? '/images/boyu/users/user-male-default.svg'
-                      : '/images/boyu/users/user-female-default.svg'
-                  }
+                  src={imageSrc}
                   alt={user?.username || 'User'}
                 />
 

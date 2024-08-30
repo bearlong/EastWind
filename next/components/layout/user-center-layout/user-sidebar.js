@@ -27,6 +27,18 @@ export default function UserSidebar() {
     setActiveLink((prev) => prev)
   }, [user])
 
+  const userImgSrc = () => {
+    if (user && user.user_img) {
+      return `/images/boyu/users/${user.user_img}.jpg?${new Date().getTime()}`
+    } else if (user && user.photo_url) {
+      return user.photo_url
+    } else if (user && user.gender === '男') {
+      return '/images/boyu/users/user-male-default.svg'
+    } else {
+      return '/images/boyu/users/user-female-default.svg'
+    }
+  }
+
   // 當路徑發生變化時，更新 activeLink 和 firstLink 的狀態
   useEffect(() => {
     const path = router.pathname.split('/').pop() // 獲取當前路徑的最後部分
@@ -128,15 +140,7 @@ export default function UserSidebar() {
             {/* 使用來自 Context 的 user.user_img 來顯示用戶照片 */}
             <img
               className={`${styles['user-img-bo']}`}
-              src={
-                user && user.user_img
-                  ? `/images/boyu/users/${
-                      user.user_img
-                    }.jpg?${new Date().getTime()}`
-                  : user && user.gender === '男'
-                  ? '/images/boyu/users/user-male-default.svg'
-                  : '/images/boyu/users/user-female-default.svg'
-              }
+              src={userImgSrc()}
               alt={user?.username || 'User'}
             />
           </div>

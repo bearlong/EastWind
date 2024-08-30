@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useContext } from 'react'
 import styles from '@/styles/boyu/home.module.scss'
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 import Link from 'next/link'
@@ -6,8 +6,15 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import { Navigation, Autoplay } from 'swiper/modules' // 引入 Autoplay 模塊
+import anime from 'animejs/lib/anime.min.js'
+import Swal from 'sweetalert2'
+import { useRouter } from 'next/router'
+import { AuthContext } from '@/context/AuthContext'
 
 export default function Home() {
+  const router = useRouter()
+
+  const { user } = useContext(AuthContext)
   const [mahjongProducts, setMahjongProducts] = useState([])
   const [boardGameProducts, setBoardGameProducts] = useState([])
   const [isClient, setIsClient] = useState(false)
@@ -32,15 +39,24 @@ export default function Home() {
   const [boardGameVisible, setBoardGameVisible] = useState(false)
   const [courseVisible, setCourseVisible] = useState(false)
 
+  const [mahjongIconsIntroVisible, setMahjongIconsIntroVisible] =
+    useState(false)
+  const [mahjongIconsRoomVisible, setMahjongIconsRoomVisible] = useState(false)
+  const [mahjongIconsProductVisible, setMahjongIconsProductVisible] =
+    useState(false)
+  const [mahjongIconsCourseVisible, setMahjongIconsCourseVisible] =
+    useState(false)
+
+  const courseRefs = useRef([]) // 儲存每個課程卡片的引用
   const mahjongSectionRef = useRef(null) // 用於觀察麻將區域
   const boardGameSectionRef = useRef(null) // 用於觀察桌遊區域
 
-  const courseRefs = useRef([]) // 儲存每個課程卡片的引用
   const courseSectionRef = useRef(null) // 儲存線上課程區域的引用
+  const introSectionRef = useRef(null)
+  const roomSectionRef = useRef(null)
+  const productSectionRef = useRef(null)
 
   const [backgroundVideo, setBackgroundVideo] = useState('') // 初始背景影片
-
-  const isAnimating = useRef(false)
 
   useEffect(() => {
     setIsClient(true) // 在客戶端渲染時設置為 true
@@ -48,40 +64,115 @@ export default function Home() {
 
   // 定義所有的Mahjong icon圖片
   const mahjongIconsIntro = [
-    { src: '/images/boyu/mahjong/Man1.svg', hidden: 'd-none d-md-block' },
-    { src: '/images/boyu/mahjong/Man2.svg', hidden: 'd-none d-md-block' },
-    { src: '/images/boyu/mahjong/Man3.svg', hidden: 'd-none d-md-block' },
-    { src: '/images/boyu/mahjong/Pin1.svg', hidden: 'd-none d-md-block' },
-    { src: '/images/boyu/mahjong/Pin2.svg', hidden: 'd-none d-md-block' },
-    { src: '/images/boyu/mahjong/Pin3.svg', hidden: 'd-none d-md-block' },
-    { src: '/images/boyu/mahjong/Sou1.svg', hidden: 'd-none d-md-block' },
-    { src: '/images/boyu/mahjong/Sou2.svg', hidden: 'd-none d-md-block' },
-    { src: '/images/boyu/mahjong/Sou3.svg', hidden: 'd-none d-md-block' },
-    { src: '/images/boyu/mahjong/Ton.svg', hidden: '' },
-    { src: '/images/boyu/mahjong/Nan.svg', hidden: '' },
-    { src: '/images/boyu/mahjong/Shaa.svg', hidden: '' },
-    { src: '/images/boyu/mahjong/Pei.svg', hidden: '' },
-    { src: '/images/boyu/mahjong/Chun.svg', hidden: '' },
-    { src: '/images/boyu/mahjong/Hatsu.svg', hidden: '' },
-    { src: '/images/boyu/mahjong/Haku.svg', hidden: '' },
+    {
+      src: '/images/boyu/mahjong/Man1.svg',
+      hidden: 'd-none d-md-block',
+    },
+    {
+      src: '/images/boyu/mahjong/Man2.svg',
+      hidden: 'd-none d-md-block',
+    },
+    {
+      src: '/images/boyu/mahjong/Man3.svg',
+      hidden: 'd-none d-md-block',
+    },
+    {
+      src: '/images/boyu/mahjong/Pin1.svg',
+      hidden: 'd-none d-md-block',
+    },
+    {
+      src: '/images/boyu/mahjong/Pin2.svg',
+      hidden: 'd-none d-md-block',
+    },
+    {
+      src: '/images/boyu/mahjong/Pin3.svg',
+      hidden: 'd-none d-md-block',
+    },
+    {
+      src: '/images/boyu/mahjong/Sou1.svg',
+      hidden: 'd-none d-md-block',
+    },
+    {
+      src: '/images/boyu/mahjong/Sou2.svg',
+      hidden: 'd-none d-md-block',
+    },
+    {
+      src: '/images/boyu/mahjong/Sou3.svg',
+      hidden: 'd-none d-md-block',
+    },
+    {
+      src: '/images/boyu/mahjong/Ton.svg',
+      hidden: '',
+    },
+    {
+      src: '/images/boyu/mahjong/Nan.svg',
+      hidden: '',
+    },
+    {
+      src: '/images/boyu/mahjong/Shaa.svg',
+      hidden: '',
+    },
+    {
+      src: '/images/boyu/mahjong/Pei.svg',
+      hidden: '',
+    },
+    {
+      src: '/images/boyu/mahjong/Chun.svg',
+      hidden: '',
+    },
+    {
+      src: '/images/boyu/mahjong/Hatsu.svg',
+      hidden: '',
+    },
+    {
+      src: '/images/boyu/mahjong/Haku.svg',
+      hidden: '',
+    },
   ]
 
   const mahjongIconsRoom = [
-    { src: '/images/boyu/mahjong/Man1.svg', hidden: '' },
-    { src: '/images/boyu/mahjong/Man2.svg', hidden: '' },
-    { src: '/images/boyu/mahjong/Man3.svg', hidden: 'd-none d-sm-block' },
+    {
+      src: '/images/boyu/mahjong/Man1.svg',
+      hidden: '',
+    },
+    {
+      src: '/images/boyu/mahjong/Man2.svg',
+      hidden: '',
+    },
+    {
+      src: '/images/boyu/mahjong/Man3.svg',
+      hidden: 'd-none d-sm-block',
+    },
   ]
 
   const mahjongIconsProduct = [
-    { src: '/images/boyu/mahjong/Pin1.svg', hidden: '' },
-    { src: '/images/boyu/mahjong/Pin2.svg', hidden: '' },
-    { src: '/images/boyu/mahjong/Pin3.svg', hidden: 'd-none d-sm-block' },
+    {
+      src: '/images/boyu/mahjong/Pin1.svg',
+      hidden: '',
+    },
+    {
+      src: '/images/boyu/mahjong/Pin2.svg',
+      hidden: '',
+    },
+    {
+      src: '/images/boyu/mahjong/Pin3.svg',
+      hidden: 'd-none d-sm-block',
+    },
   ]
 
   const mahjongIconsCourse = [
-    { src: '/images/boyu/mahjong/Sou1.svg', hidden: '' },
-    { src: '/images/boyu/mahjong/Sou2.svg', hidden: '' },
-    { src: '/images/boyu/mahjong/Sou3.svg', hidden: 'd-none d-sm-block' },
+    {
+      src: '/images/boyu/mahjong/Sou1.svg',
+      hidden: '',
+    },
+    {
+      src: '/images/boyu/mahjong/Sou2.svg',
+      hidden: '',
+    },
+    {
+      src: '/images/boyu/mahjong/Sou3.svg',
+      hidden: 'd-none d-sm-block',
+    },
   ]
 
   // 定義所有的棋牌室圖片
@@ -246,24 +337,158 @@ export default function Home() {
     }
   }, [])
 
-  // 新增 transitionEnd 事件的監聽函數
-  const onTransitionEnd = () => {
-    isAnimating.current = false
-  }
+  useEffect(() => {
+    setTimeout(() => {
+      const textWrapper = document.querySelector(
+        `.${styles.ml2} .${styles.letters}`
+      )
+      if (textWrapper) {
+        textWrapper.innerHTML = textWrapper.textContent.replace(
+          /\S/g,
+          "<span class='letter'>$&</span>"
+        )
 
-  const onMouseEnter = (index) => {
-    if (!isAnimating.current) {
-      setHoveredIndex(index)
-      isAnimating.current = true
-    }
-  }
+        anime.timeline({ loop: false }).add({
+          targets: '.letter',
+          scale: [5, 1],
+          opacity: [0, 1],
+          translateZ: 0,
+          easing: 'easeOutExpo',
+          duration: 3000,
+          delay: (el, i) => 100 * i,
+        })
+      }
+    }, 0) // 當前 `0` 延遲只是為了保證 DOM 構建完成
+  }, [])
 
-  const onMouseLeave = () => {
-    if (!isAnimating.current) {
-      isAnimating.current = true
-      setHoveredIndex(null)
+  useEffect(() => {
+    // 檢查是否需要顯示 SweetAlert
+    if (localStorage.getItem('showWelcomeAlert') === 'true') {
+      Swal.fire({
+        title: '歡迎加入！',
+        html: `<span class="p">請先填寫會員資料。</span>`,
+        icon: 'info',
+        confirmButtonText: '確認',
+        customClass: {
+          popup: `${styles['swal-popup-bo']}`,
+          title: 'h6',
+          icon: `${styles['swal-icon-bo']}`,
+          confirmButton: `${styles['swal-btn-bo']}`,
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          localStorage.removeItem('showWelcomeAlert') // 移除標記
+          router.push('/user/user-center/info-edit') // 跳轉到資料編輯頁面
+        }
+      })
     }
-  }
+  }, [])
+
+  // 檢查用戶ID是否為62
+  useEffect(() => {
+    if (user && user.id === 62) {
+      router.push('http://localhost:3000/admin')
+      Swal.fire({
+        title: '登入成功！',
+        html: `<span class="p">管理員 歡迎回來！</span>`,
+        icon: 'success',
+        customClass: {
+          popup: `${styles['swal-popup-bo']}`,
+          title: 'h6',
+          icon: `${styles['swal-icon-bo']}`,
+          confirmButton: `${styles['swal-btn-bo']}`,
+        },
+        confirmButtonText: '確認',
+      })
+    }
+  }, [user])
+
+  useEffect(() => {
+    // 只選擇 intro 區域內的 h6 元素
+    const introSection = document.querySelector(
+      `.${styles['intro-section-bo']}`
+    )
+    const textElements = introSection.querySelectorAll('h6')
+
+    textElements.forEach((element) => {
+      const textContent = element.textContent
+      element.innerHTML = textContent.replace(
+        /\S/g,
+        "<span class='letter'>$&</span>"
+      )
+
+      anime.timeline({ loop: false }).add({
+        targets: element.querySelectorAll('.letter'),
+        scale: [5, 1],
+        opacity: [0, 1],
+        translateZ: 0,
+        easing: 'easeOutExpo',
+        duration: 500, // 將動畫持續時間縮短到500毫秒
+        delay: (el, i) => 2 * i, // 根據需要調整延遲時間
+      })
+    })
+  }, [])
+
+  useEffect(() => {
+    const animateIcons = (selector) => {
+      const mahjongIcons = document.querySelectorAll(selector)
+      anime({
+        targets: mahjongIcons,
+        opacity: [0, 1],
+        translateY: [-20, 0],
+        easing: 'easeOutExpo',
+        delay: anime.stagger(200),
+        duration: 800,
+      })
+    }
+
+    const handleObserver = (entry, observer, setVisible, selector) => {
+      if (entry.isIntersecting) {
+        setVisible(true)
+        animateIcons(selector)
+        observer.unobserve(entry.target) // 停止觀察，保證只觸發一次
+      }
+    }
+
+    const createObserver = (ref, setVisible, selector) => {
+      if (ref.current) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              handleObserver(entry, observer, setVisible, selector)
+            })
+          },
+          { threshold: 0.5 }
+        )
+
+        observer.observe(ref.current)
+
+        return () => observer.disconnect()
+      }
+    }
+
+    // 分別創建各自的觀察器
+    createObserver(
+      introSectionRef,
+      setMahjongIconsIntroVisible,
+      `.${styles['icon-mahjong-bo-intro']}`
+    )
+    createObserver(
+      roomSectionRef,
+      setMahjongIconsRoomVisible,
+      `.${styles['icon-mahjong-bo-room']}`
+    )
+    createObserver(
+      productSectionRef,
+      setMahjongIconsProductVisible,
+      `.${styles['icon-mahjong-bo-product']}`
+    )
+    createObserver(
+      courseSectionRef,
+      setMahjongIconsCourseVisible,
+      `.${styles['icon-mahjong-bo-course']}`
+    )
+  }, [])
 
   return (
     <>
@@ -285,13 +510,17 @@ export default function Home() {
           className={`${styles['hero-section-bo']} text-center d-flex justify-content-center align-items-center`}
         >
           <div className="d-flex flex-column flex-sm-row">
-            <h2>萬事俱備，</h2>
-            <h2>只欠東風。</h2>
+            <h1 className={`${styles['ml2']} `}>
+              <span className={`${styles['letters']} `}>
+                萬事俱備，只欠東風。
+              </span>
+            </h1>
           </div>
         </section>
 
         {/* intro */}
         <section
+          ref={introSectionRef} // 設置引用
           className={`${styles['intro-section-bo']} text-center d-flex flex-column justify-content-center align-items-center`}
         >
           <div
@@ -300,7 +529,7 @@ export default function Home() {
             {mahjongIconsIntro.map((icon, index) => (
               <img
                 key={index}
-                className={`${styles['icon-mahjong-bo']} ${icon.hidden}`}
+                className={`${styles['icon-mahjong-bo-intro']} ${icon.hidden}`}
                 src={icon.src}
                 alt={`Mahjong Icon ${index + 1}`}
               />
@@ -337,7 +566,7 @@ export default function Home() {
             {mahjongIconsIntro.map((icon, index) => (
               <img
                 key={index}
-                className={`${styles['icon-mahjong-bo']} ${icon.hidden}`}
+                className={`${styles['icon-mahjong-bo-intro']} ${icon.hidden}`}
                 src={icon.src}
                 alt={`Mahjong Icon ${index + 1}`}
               />
@@ -347,6 +576,7 @@ export default function Home() {
 
         {/* 棋牌室 */}
         <section
+          ref={roomSectionRef} // 設置引用
           className={`${styles['room-section-bo']} gap-3 ${styles['bg-front-photo-bo']} d-flex flex-column flex-md-row justify-content-between align-items-center`}
         >
           <div
@@ -372,7 +602,7 @@ export default function Home() {
                 {mahjongIconsRoom.map((icon, index) => (
                   <img
                     key={index}
-                    className={`${styles['icon-mahjong-bo']} ${icon.hidden}`}
+                    className={`${styles['icon-mahjong-bo-room']} ${icon.hidden}`}
                     src={icon.src}
                     alt={`Mahjong Icon ${index + 1}`}
                   />
@@ -383,7 +613,7 @@ export default function Home() {
                 {mahjongIconsRoom.map((icon, index) => (
                   <img
                     key={index}
-                    className={`${styles['icon-mahjong-bo']} ${icon.hidden}`}
+                    className={`${styles['icon-mahjong-bo-room']} ${icon.hidden}`}
                     src={icon.src}
                     alt={`Mahjong Icon ${index + 1}`}
                   />
@@ -431,13 +661,14 @@ export default function Home() {
           className={`${styles['product-section-bo']} ${styles['bg-front-photo-bo']} d-flex flex-column justify-content-center align-items-center`}
         >
           <div
+            ref={productSectionRef} // 設置引用
             className={`${styles['product-text-title-bo']} gap-5 d-flex justify-content-center align-items-center`}
           >
             <div className="d-flex gap-2">
               {mahjongIconsProduct.map((icon, index) => (
                 <img
                   key={index}
-                  className={`${styles['icon-mahjong-bo']} ${icon.hidden}`}
+                  className={`${styles['icon-mahjong-bo-product']} ${icon.hidden}`}
                   src={icon.src}
                   alt={`Mahjong Icon ${index + 1}`}
                 />
@@ -448,7 +679,7 @@ export default function Home() {
               {mahjongIconsProduct.map((icon, index) => (
                 <img
                   key={index}
-                  className={`${styles['icon-mahjong-bo']} ${icon.hidden}`}
+                  className={`${styles['icon-mahjong-bo-product']} ${icon.hidden}`}
                   src={icon.src}
                   alt={`Mahjong Icon ${index + 1}`}
                 />
@@ -747,7 +978,7 @@ export default function Home() {
               {mahjongIconsCourse.map((icon, index) => (
                 <img
                   key={index}
-                  className={`${styles['icon-mahjong-bo']} ${icon.hidden}`}
+                  className={`${styles['icon-mahjong-bo-course']} ${icon.hidden}`}
                   src={icon.src}
                   alt={`Mahjong Icon ${index + 1}`}
                 />
@@ -761,7 +992,7 @@ export default function Home() {
               {mahjongIconsCourse.map((icon, index) => (
                 <img
                   key={index}
-                  className={`${styles['icon-mahjong-bo']} ${icon.hidden}`}
+                  className={`${styles['icon-mahjong-bo-course']} ${icon.hidden}`}
                   src={icon.src}
                   alt={`Mahjong Icon ${index + 1}`}
                 />
@@ -815,7 +1046,7 @@ export default function Home() {
                   modules={[Navigation]}
                   loop={false}
                   freeMode={false}
-                  spaceBetween={10}
+                  spaceBetween={15}
                   touchReleaseOnEdges={true}
                   onSlideChange={(swiper) => {
                     // 根據 swiper 的狀態來更新 courseSwiperState
@@ -847,7 +1078,6 @@ export default function Home() {
                           setBackgroundVideo('')
                           setHoveredIndex(null)
                         }} // 恢復預設背景影片並取消 hover 狀態
-                        onTransitionEnd={onTransitionEnd()} // 新增 transitionEnd 事件的監聽
                       >
                         <div
                           className={`${styles['course-card-front-bo']} d-flex flex-column justify-content-end`}

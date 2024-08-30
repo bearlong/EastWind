@@ -3,7 +3,7 @@ import styles from '@/styles/bearlong/headerAdmin.module.scss'
 import { IoHome } from 'react-icons/io5'
 import { FaUser, FaRightFromBracket } from 'react-icons/fa6'
 import { FaShoppingCart } from 'react-icons/fa'
-import useAuth from '@/hooks/user-auth-bo'
+import useAuth from '@/hooks/use-auth-bo'
 import Link from 'next/link'
 import { AuthContext } from '@/context/AuthContext'
 import Swal from 'sweetalert2'
@@ -71,6 +71,20 @@ export default function HeaderAdmin() {
               />
             </Link>
           </div>
+          <nav className={`${styles['nav-bar-bo']}  `}>
+            <ul
+              className={`d-flex justify-content-center align-items-center ${styles['nav-list-bo']}`}
+            >
+              <li>
+                <Link
+                  className={`h6 ${styles['nav-link-bo']}`}
+                  href="/admin/chart"
+                >
+                  企業後台
+                </Link>
+              </li>
+            </ul>
+          </nav>
           <div className={styles['icon-box-bo']}>
             <ul
               className={`d-flex justify-content-center align-items-center ${styles['icon-list-bo']}`}

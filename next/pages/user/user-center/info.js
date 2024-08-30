@@ -16,6 +16,22 @@ export default function UserInfo() {
   const { user } = useContext(AuthContext)
   const [userData, setUserData] = useState(null) // 使用 useState 管理用戶資料
   const [cards, setCards] = useState([])
+  const [imageSrc, setImageSrc] = useState('')
+
+  useEffect(() => {
+    if (userData) {
+      // 當 userData 更新時，更新圖片 URL
+      const imgSrc = userData.user_img
+        ? `/images/boyu/users/${userData.user_img}.jpg?${new Date().getTime()}`
+        : userData.photo_url
+        ? userData.photo_url
+        : userData.gender === '男'
+        ? '/images/boyu/users/user-male-default.svg'
+        : '/images/boyu/users/user-female-default.svg'
+
+      setImageSrc(imgSrc)
+    }
+  }, [userData])
 
   useEffect(() => {
     const updateSuccess = sessionStorage.getItem('updateSuccess')
@@ -124,7 +140,7 @@ export default function UserInfo() {
                   {userData.account}
                 </div>
               </div>
-              <div
+              {/* <div
                 className={`${styles['info-col-bo']} d-flex justify-content-center flex-column flex-sm-row`}
               >
                 <h6 className={`${styles['info-name-bo']} h6`}>密碼</h6>
@@ -133,7 +149,7 @@ export default function UserInfo() {
                 >
                   {'●'.repeat(userData.password.length)}
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -144,13 +160,7 @@ export default function UserInfo() {
             <div className={styles['user-img-box-bo']}>
               <img
                 className={`${styles['user-img-bo']}`}
-                src={
-                  userData && userData.user_img
-                    ? `/images/boyu/users/${userData.user_img}.jpg`
-                    : userData && userData.gender === '男'
-                    ? '/images/boyu/users/user-male-default.svg'
-                    : '/images/boyu/users/user-female-default.svg'
-                }
+                src={imageSrc}
                 alt={userData?.username || 'User'}
               />
             </div>

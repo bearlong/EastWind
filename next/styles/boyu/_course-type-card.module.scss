@@ -157,7 +157,7 @@
   .course-card-front-bo {
     background-image: url('/images/boyu/course-type/course-type-1.jpg');
     &:hover {
-      background: var(--primary);
+      background: var(--primary-dark);
     }
   }
   .course-card-back-bo {
@@ -166,16 +166,10 @@
 }
 
 .swiper-slide.course-slide-2 .course-card-bo {
-  top: -1.5rem;
-
-  @media (max-width: 768px) {
-    top: 0rem;
-  }
-
   .course-card-front-bo {
     background-image: url('/images/boyu/course-type/course-type-2.jpg');
     &:hover {
-      background: var(--primary);
+      background: var(--primary-dark);
     }
   }
 
@@ -185,14 +179,10 @@
 }
 
 .swiper-slide.course-slide-3 .course-card-bo {
-  top: -3rem;
-  @media (max-width: 768px) {
-    top: 0rem;
-  }
   .course-card-front-bo {
     background-image: url('/images/boyu/course-type/course-type-3.jpg');
     &:hover {
-      background: var(--primary);
+      background: var(--primary-dark);
     }
   }
   .course-card-back-bo {
@@ -201,14 +191,10 @@
 }
 
 .swiper-slide.course-slide-4 .course-card-bo {
-  top: -4.5rem;
-  @media (max-width: 768px) {
-    top: 0rem;
-  }
   .course-card-front-bo {
     background-image: url('/images/boyu/course-type/course-type-4.jpg');
     &:hover {
-      background: var(--primary);
+      background: var(--primary-dark);
     }
   }
   .course-card-back-bo {
@@ -217,15 +203,10 @@
 }
 
 .swiper-slide.course-slide-5 .course-card-bo {
-  top: -6rem;
-  @media (max-width: 768px) {
-    margin-right: 30rem;
-    top: 0rem;
-  }
   .course-card-front-bo {
     background-image: url('/images/boyu/course-type/course-type-5.jpg');
     &:hover {
-      background: var(--primary);
+      background: var(--primary-dark);
     }
   }
   .course-card-back-bo {

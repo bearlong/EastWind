@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useRef } from 'react'
 import { useRouter } from 'next/router'
 import { AuthContext } from '@/context/AuthContext'
 import styles from '@/styles/bearlong/customerService.module.scss'
-import { BsChatLeftTextFill } from 'react-icons/bs'
+import { BsChatDots } from 'react-icons/bs'
 import { FaXmark } from 'react-icons/fa6'
 import Image from 'next/image'
 
@@ -14,7 +14,45 @@ export default function Chat() {
   const [status, setStatus] = useState([])
   const [checkChat, setCheckChat] = useState(false)
   const { user, loading } = useContext(AuthContext)
+  const [showDiv, setShowDiv] = useState(true)
   const router = useRouter()
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY
+      const viewHeight = window.innerHeight
+      if (scrollPosition > 1.5 * viewHeight) {
+        setShowDiv(true)
+      } else {
+        setShowDiv(false)
+      }
+    }
+
+    const handleRouteChange = (url) => {
+      if (url === '/home') {
+        setShowDiv(false)
+        window.addEventListener('scroll', handleScroll)
+      } else {
+        setShowDiv(true)
+        window.removeEventListener('scroll', handleScroll)
+      }
+    }
+
+    // 初始化時檢查路徑
+    if (router.pathname === '/home') {
+      window.addEventListener('scroll', handleScroll)
+    }
+
+    // 監聽路由變化
+    router.events.on('routeChangeComplete', handleRouteChange)
+
+    // 清理事件監聽器
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      router.events.off('routeChangeComplete', handleRouteChange)
+    }
+  }, [router.pathname])
+
   useEffect(() => {
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight
@@ -94,9 +132,9 @@ export default function Chat() {
         htmlFor="checkChat"
         className={`${styles['checkChatLabel-bl']} ${
           checkChat ? 'd-none' : ''
-        }`}
+        } ${showDiv ? '' : 'd-none'}`}
       >
-        <BsChatLeftTextFill size={50} className={styles.msgIcon} />
+        <BsChatDots size={30} className={styles.msgIcon} />
       </label>
       <div className={`${styles['chatArea-bl']} p`}>
         {status[status.length - 1]}

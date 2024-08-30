@@ -92,7 +92,7 @@ class LineLogin {
       req.session.line_login_nonce = nonce
       console.log(req.session)
       console.log(url)
-      return res.json({ url })
+      return res.json({ url, state, nonce })
     }
   }
 
@@ -164,8 +164,8 @@ class LineLogin {
               f_(new Error('Verification of id token failed.'))
             }
           }
-          delete req.session.line_login_state
-          delete req.session.line_login_nonce
+          // delete req.session.line_login_state
+          // delete req.session.line_login_nonce
           s(req, res, next, token_response)
         })
         .catch((error) => {

@@ -7,17 +7,27 @@ import { useCart } from '@/hooks/use-cart'
 import { AuthContext } from '@/context/AuthContext'
 import Swal from 'sweetalert2'
 import toast from 'react-hot-toast'
+import { Swiper, SwiperSlide } from 'swiper/react'
+
+// Import Swiper styles
+import 'swiper/css'
+import 'swiper/css/free-mode'
+import 'swiper/css/navigation'
+import 'swiper/css/thumbs'
+
+// import required modules
+import { Autoplay, FreeMode, Navigation, Thumbs } from 'swiper/modules'
 
 export default function ProductDetail({
   data = {},
-  imgMain = '',
-  handleImgMain = () => {},
   handleFavToggle = () => {},
 }) {
   const { user } = useContext(AuthContext)
+  const [thumbsSwiper, setThumbsSwiper] = useState(null)
 
   const [quantity, setQuantity] = useState(1)
   const { handleAdd = () => {}, handleShow = () => {} } = useCart()
+
   const handleIncrease = () => {
     setQuantity(quantity + 1)
   }
@@ -69,53 +79,73 @@ export default function ProductDetail({
             className={`d-flex flex-column-reverse flex-lg-row me-0 me-lg-3`}
           >
             <div
-              className={`${styles['imgSmall-bl']}  mx-lg-5 d-flex flex-lg-column mt-3 mt-lg-0 justify-content-between justify-content-lg-start`}
+              className={`mx-lg-5 d-flex flex-lg-column mt-3 mt-lg-0 justify-content-between justify-content-lg-start`}
             >
-              <button
-                className={`${styles['imgSmallBox-bl']} mb-3  ${
-                  data.product.img === imgMain ? styles['active'] : ''
-                } `}
-                onClick={() => {
-                  handleImgMain(data.product.img)
+              <Swiper
+                onSwiper={setThumbsSwiper}
+                direction="horizontal"
+                spaceBetween={20}
+                slidesPerView={4}
+                freeMode={true}
+                watchSlidesProgress={true}
+                breakpoints={{
+                  992: {
+                    slidesPerView: 4,
+                    spaceBetween: 10,
+                    direction: 'vertical',
+                  },
                 }}
+                modules={[FreeMode, Navigation, Thumbs]}
+                className="mySwiper justify-content-between justify-content-lg-start"
               >
-                <Image
-                  src={`../../images/product/${data.product.img}`}
-                  width={280}
-                  height={280}
-                  alt=""
-                />
-              </button>
-              {data.img2.map((v) => {
-                return (
-                  <button
-                    key={v.id}
-                    className={`${styles['imgSmallBox-bl']} mb-3 ${
-                      v.img === imgMain ? styles['active'] : ''
-                    } `}
-                    onClick={() => {
-                      handleImgMain(v.img)
-                    }}
-                  >
-                    <Image
-                      src={`../../images/product/${v.img}`}
-                      width={280}
-                      height={280}
-                      alt=""
-                    />
-                  </button>
-                )
-              })}
+                {data.img2.map((v) => {
+                  return (
+                    <SwiperSlide
+                      key={v.id}
+                      className={`${styles['imgSmallBox-bl']}`}
+                    >
+                      <Image
+                        src={`../../images/product/${v.img}`}
+                        width={280}
+                        height={280}
+                        alt=""
+                      />
+                    </SwiperSlide>
+                  )
+                })}
+              </Swiper>
             </div>
             <div
               className={`${styles['imgMain-bl']} align-self-center align-self-md-stretch`}
             >
-              <Image
-                src={`../../images/product/${imgMain}`}
-                width={280}
-                height={280}
-                alt=""
-              />
+              <Swiper
+                style={{
+                  '--swiper-navigation-color': '#fff',
+                  '--swiper-pagination-color': '#fff',
+                }}
+                autoplay={{
+                  delay: 2500,
+                  disableOnInteraction: false,
+                }}
+                spaceBetween={10}
+                navigation={true}
+                thumbs={{ swiper: thumbsSwiper }}
+                modules={[Autoplay, FreeMode, Navigation, Thumbs]}
+                className={`${styles['imgMain-bl']}`}
+              >
+                {data.img2.map((v) => {
+                  return (
+                    <SwiperSlide key={v.id}>
+                      <Image
+                        src={`../../images/product/${v.img}`}
+                        width={280}
+                        height={280}
+                        alt=""
+                      />
+                    </SwiperSlide>
+                  )
+                })}
+              </Swiper>
             </div>
           </div>
           <div

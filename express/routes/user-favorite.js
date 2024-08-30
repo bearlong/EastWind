@@ -90,7 +90,7 @@ router.get('/:userId/:type', async (req, res) => {
               favorite.id AS favorite_id
           FROM favorite
           JOIN course ON favorite.object_id = course.id
-          JOIN course_category ON course.course_category_id = course_category.id
+          JOIN course_category ON course.category_id = course_category.id
           WHERE favorite.user_id = ? 
           AND favorite.object_type = 'course'
           ${search ? `AND (course.course_name LIKE ? OR course_category.ch_name LIKE ?)` : ''}
