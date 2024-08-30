@@ -186,7 +186,7 @@ export default function UserFavorite() {
                   {favorites.map((favorite, index) => (
                     <Link
                       key={index}
-                      href={`  /course/classDetail?id=${favorite.id}`}
+                      href={`  /course/detail?id=${favorite.id}`}
                       className={`w-100`}
                     >
                       <div

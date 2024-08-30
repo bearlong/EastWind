@@ -190,14 +190,14 @@ export default function UserInfoEdit() {
     }
 
     // 檢查並驗證 email
-    if (email !== initialFormValues.email) {
-      if (!email || !emailRegex.test(email)) {
-        newErrors.email = '請輸入有效的電子信箱'
-      } else {
-        const { emailExists } = await checkUniqueValues(email, account)
-        if (emailExists) {
-          newErrors.email = '電子信箱已被使用'
-        }
+    if (!email) {
+      newErrors.email = '請輸入電子信箱'
+    } else if (!emailRegex.test(email)) {
+      newErrors.email = '請輸入有效的電子信箱'
+    } else if (email !== initialFormValues.email) {
+      const { emailExists } = await checkUniqueValues(email, account)
+      if (emailExists) {
+        newErrors.email = '電子信箱已被使用'
       }
     }
     toggleCorrectClass('email', !newErrors.email)
@@ -296,6 +296,23 @@ export default function UserInfoEdit() {
 
   // 發送驗證郵件
   const sendVerificationEmail = async () => {
+    // 檢查 email 是否為空
+    if (!formValues.email) {
+      Swal.fire({
+        title: '電子信箱為空',
+        html: `<span class="p">尚未填入電子信箱，請先輸入您的電子信箱。</span>`,
+        icon: 'error',
+        customClass: {
+          popup: `${styles['swal-popup-bo']}`, // 自訂整個彈出視窗的 class
+          title: 'h6',
+          icon: `${styles['swal-icon-bo']}`, // 添加自定義 class
+          confirmButton: `${styles['swal-btn-bo']}`, // 添加自定義按鈕 class
+        },
+        confirmButtonText: '確認', // 修改按鈕文字
+      })
+      return
+    }
+
     // 如果 email 與初始 email 相同，則不需驗證
     if (formValues.email === initialFormValues.email) {
       Swal.fire({

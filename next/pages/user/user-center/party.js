@@ -23,7 +23,6 @@ export default function UserParty() {
   const [selectedStatus, setSelectedStatus] = useState('waiting')
   const [party, setParty] = useState([])
   const [role, setRole] = useState('主揪') // 新增角色狀態
-  const [members, setMembers] = useState([])
 
   const [searchQuery, setSearchQuery] = useState('') // 用來存儲用戶輸入值的狀態
   const [searchKeyword, setSearchKeyword] = useState('') // 新增搜尋關鍵字狀態
@@ -39,7 +38,11 @@ export default function UserParty() {
   ]
 
   const changeStatus = (status) => {
-    setSelectedStatus(status)
+    if (status === 'cancelled') {
+      setSelectedStatus(['cancelled', 'failed'])
+    } else {
+      setSelectedStatus([status])
+    }
   }
 
   const changeRole = (newRole) => {
@@ -370,7 +373,8 @@ export default function UserParty() {
                       </div>
 
                       {selectedStatus === 'waiting' && (
-                        <div
+                        <Link
+                          href={`/lobby/Party/${item.id}`}
                           className={`${styles['btn-party-bo']} btn h6 d-flex justify-content-center align-items-center gap-2`}
                         >
                           <FaUserGroup />
@@ -380,7 +384,7 @@ export default function UserParty() {
                             <p>參團</p>
                             <p>詳情</p>
                           </div>
-                        </div>
+                        </Link>
                       )}
                       {selectedStatus === 'completed' && (
                         <div
@@ -396,7 +400,7 @@ export default function UserParty() {
                           className={`${styles['state-text-bo']} h6 d-flex justify-content-center align-items-center gap-2`}
                         >
                           <FaXmark />
-                          已流團
+                          {selectedStatus === 'cancelled' ? '已取消' : '已流團'}
                         </div>
                       )}
 
@@ -533,7 +537,7 @@ export default function UserParty() {
                           </h6>
                         </div>
                       </div>
-                      <div></div>
+                      <div></div>failed
                       <div className="d-flex justify-content-center align-items-center gap-4">
                         {selectedStatus === 'waiting' && (
                           <div
@@ -562,9 +566,12 @@ export default function UserParty() {
                             className={`${styles['state-text-bo']} h6 d-flex justify-content-center align-items-center gap-2`}
                           >
                             <FaXmark />
-                            已流團
+                            {selectedStatus === 'cancelled'
+                              ? '已取消'
+                              : '已流團'}
                           </div>
                         )}
+
                         <h6>
                           <FaChevronDown
                             className={` ${styles['btn-detail-bo']}`}

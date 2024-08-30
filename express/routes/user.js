@@ -158,6 +158,8 @@ router.post('/login', upload.none(), async (req, res) => {
 // 使用者登出
 router.get('/logout', checkToken, (req, res) => {
   const { account } = req.decoded
+  res.clearCookie('accessToken', { httpOnly: true, path: '/' })
+  res.clearCookie('SESSION_ID', { httpOnly: true, path: '/' })
   if (account) {
     const token = jwt.sign({ id: undefined, account: undefined }, secretKey, {
       expiresIn: '-1s',
