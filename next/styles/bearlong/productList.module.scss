@@ -37,6 +37,7 @@
   background: var(--background);
   position: absolute;
   z-index: 99;
+
   &:hover {
     display: block;
   }
@@ -70,6 +71,10 @@
       }
     }
   }
+}
+.last-bl {
+  right: 0;
+  left: auto;
 }
 
 @media (max-width: 1440px) {
@@ -173,6 +178,16 @@
       opacity: 1;
     }
   }
+}
+
+.boxActive {
+  opacity: 1;
+  transition: 1;
+}
+
+.boxHidden {
+  opacity: 0;
+  transition: 1;
 }
 
 .top {
@@ -442,6 +457,11 @@
   .product-header-bl {
     .subBar-bl {
       padding: 2rem 0;
+      .subNav {
+        &:hover + .subBarBody-bl {
+          display: none;
+        }
+      }
     }
   }
 

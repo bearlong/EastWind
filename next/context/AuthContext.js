@@ -20,7 +20,12 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       if (typeof window !== 'undefined') {
-        const savedUser = JSON.parse(localStorage.getItem('user')) // 從 localStorage 中獲取保存的 user 資料
+        const savedUser = JSON.parse(localStorage.getItem('user'))
+        const noReload = localStorage.getItem('noReload')
+        if (noReload) {
+          localStorage.removeItem('noReload')
+          return
+        } // 從 localStorage 中獲取保存的 user 資料
         if (savedUser) {
           setUser(savedUser) // 如果有保存的用戶資料，設置 user 狀態
         } else {
@@ -38,12 +43,12 @@ export const AuthProvider = ({ children }) => {
                 setToken(newAccessToken) // 更新 token 狀態
                 localStorage.setItem('accessToken', newAccessToken) // 存儲新的 accessToken 到 localStorage
               } else {
-                localStorage.removeItem('accessToken') // 刪除無效的 accessToken
-                localStorage.removeItem('refreshToken') // 刪除無效的 refreshToken
+                // localStorage.removeItem('accessToken') // 刪除無效的 accessToken
+                // localStorage.removeItem('refreshToken') // 刪除無效的 refreshToken
                 router.push(loginRoute) // 重定向到登入頁面
               }
             } else {
-              localStorage.removeItem('accessToken') // 如果沒有 refreshToken，刪除舊的 accessToken
+              // localStorage.removeItem('accessToken') // 如果沒有 refreshToken，刪除舊的 accessToken
               router.push(loginRoute) // 重定向到登入頁面
             }
           }
@@ -66,7 +71,7 @@ export const AuthProvider = ({ children }) => {
         } else {
           setToken(undefined) // 如果 token 無效，清除 token 狀態
 
-          localStorage.removeItem('accessToken') // 刪除無效的 accessToken
+          // localStorage.removeItem('accessToken') // 刪除無效的 accessToken
           router.push(loginRoute) // 重定向到登入頁面
         }
         setLoading(false)
@@ -89,7 +94,13 @@ export const AuthProvider = ({ children }) => {
 
   // 函數：檢查並驗證 token 的有效性
   const checkToken = async (token) => {
-    const secretKey = 'boyuboyuboyuIamBoyu'
+    const secretKey = 'boyuboyuboyuIamBoyu' // 請確保 secretKey 已經設置
+
+    if (!secretKey) {
+      console.error('Secret key is not defined!')
+      return null
+    }
+
     try {
       const decoded = jwt.verify(token, secretKey)
       if (decoded && decoded.id) {
@@ -117,8 +128,8 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('accessToken', newAccessToken) // 存儲新的 accessToken 到 localStorage
             return checkToken(newAccessToken) // 再次驗證新的 token
           } else {
-            localStorage.removeItem('accessToken') // 刪除無效的 accessToken
-            localStorage.removeItem('refreshToken') // 刪除無效的 refreshToken
+            // localStorage.removeItem('accessToken') // 刪除無效的 accessToken
+            // localStorage.removeItem('refreshToken') // 刪除無效的 refreshToken
           }
         }
         router.push('/login') // 重定向到登入頁面
@@ -157,6 +168,22 @@ export const AuthProvider = ({ children }) => {
     }))
   }
 
+  // 函數：更新用戶名字
+  const updateUserUsername = (newUsername) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      username: newUsername,
+    }))
+  }
+
+  // 更新用戶性別
+  const updateUserGender = (newGender) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      gender: newGender,
+    }))
+  }
+
   // 返回 AuthContext.Provider，提供 user、setUser、token 和 setToken 的上下文
   return (
     <AuthContext.Provider
@@ -166,6 +193,9 @@ export const AuthProvider = ({ children }) => {
         token,
         setToken,
         updateUserImage,
+        updateUserUsername,
+        updateUserGender,
+
         loading,
         setLoading,
       }}

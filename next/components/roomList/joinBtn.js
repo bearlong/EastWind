@@ -12,7 +12,7 @@ export default function JoinBTN({ activeView, onViewChange }) {
         主揪/揪團
       </button>
       <button 
-        className={`${styles.partyBtn} ${activeView === 'join' ? styles.activeGw : ''} ${activeView === 'join' ? styles.highlightedJoin : ''}`}
+        className={`${styles.partyBtn} ${activeView === 'join' ? styles.activeGw : ''}`}
         onClick={() => onViewChange('join')}
         type="button"
       >

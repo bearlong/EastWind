@@ -7,13 +7,18 @@ import moment from 'moment'
 // 檢查空物件, 轉換req.params為數字
 import { getIdParam } from '#db-helpers/db-tool.js'
 const upload = multer()
-
+let total = 0
+const cartTotal = (cart) => {
+  cart.forEach((cartItem) => {
+    total += cartItem.quantity * cartItem.price
+  })
+}
 // 得到userID 為 ID 的購物車
 router.get('/:id', async (req, res) => {
   const id = getIdParam(req)
   try {
     const [cart] = await dbPromise.execute(
-      'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
+      'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
       [id]
     )
     const [top] = await dbPromise.execute(
@@ -34,7 +39,6 @@ router.post('/:id/product/:oid', upload.none(), async (req, res) => {
   const oid = req.params.oid
   const { quantity, price } = req.body
   const today = moment().format('YYYY-MM-DD HH:mm:ss.SSS')
-
   try {
     const [existingItem] = await dbPromise.execute(
       'SELECT * FROM `cart` WHERE `user_id` = ? AND `object_id` = ? AND `object_type` = "product"',
@@ -54,12 +58,15 @@ router.post('/:id/product/:oid', upload.none(), async (req, res) => {
 
     if (result.insertId) {
       const [cart] = await dbPromise.execute(
-        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
+        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
         [id]
       )
+      let total = 0
+
+      cartTotal(cart)
       res
         .status(201)
-        .json({ status: 'success', data: { message: '新增成功', cart } })
+        .json({ status: 'success', data: { message: '新增成功', cart, total } })
     } else {
       res.status(400).json({ status: 'error', data: { message: '新增失敗' } })
     }
@@ -95,12 +102,16 @@ router.post('/:id/course/:oid', upload.none(), async (req, res) => {
 
     if (result.insertId) {
       const [cart] = await dbPromise.execute(
-        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
+        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
         [id]
       )
+      let total = 0
+
+      cartTotal(cart)
+
       res
         .status(201)
-        .json({ status: 'success', data: { message: '新增成功', cart } })
+        .json({ status: 'success', data: { message: '新增成功', cart, total } })
     } else {
       res.status(400).json({ status: 'error', data: { message: '新增失敗' } })
     }
@@ -136,12 +147,15 @@ router.put('/:id/product/:oid', upload.none(), async (req, res) => {
     console.log(result)
     if (result.changedRows >= 1) {
       const [cart] = await dbPromise.execute(
-        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
+        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
         [id]
       )
+      total = 0
+      cartTotal(cart)
+
       res
         .status(200)
-        .json({ status: 'success', data: { message: '更新成功', cart } })
+        .json({ status: 'success', data: { message: '更新成功', cart, total } })
     } else {
       res.status(400).json({
         status: 'error',
@@ -180,12 +194,16 @@ router.put('/:id/course/:oid', upload.none(), async (req, res) => {
 
     if (result.changedRows >= 1) {
       const [cart] = await dbPromise.execute(
-        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
+        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
         [id]
       )
+      let total = 0
+
+      cartTotal(cart)
+
       res
         .status(200)
-        .json({ status: 'success', data: { message: '更新成功', cart } })
+        .json({ status: 'success', data: { message: '更新成功', cart, total } })
     } else {
       res.status(400).json({
         status: 'error',
@@ -223,12 +241,16 @@ router.delete('/:id/product/:oid', upload.none(), async (req, res) => {
 
     if (result.affectedRows >= 1) {
       const [cart] = await dbPromise.execute(
-        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
+        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
         [id]
       )
+      let total = 0
+
+      cartTotal(cart)
+
       res
         .status(200)
-        .json({ status: 'success', data: { message: '刪除成功', cart } })
+        .json({ status: 'success', data: { message: '刪除成功', cart, total } })
     } else {
       res.status(400).json({
         status: 'error',
@@ -266,12 +288,16 @@ router.delete('/:id/course/:oid', upload.none(), async (req, res) => {
 
     if (result.affectedRows >= 1) {
       const [cart] = await dbPromise.execute(
-        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
+        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
         [id]
       )
+      let total = 0
+
+      cartTotal(cart)
+
       res
         .status(200)
-        .json({ status: 'success', data: { message: '刪除成功', cart } })
+        .json({ status: 'success', data: { message: '刪除成功', cart, total } })
     } else {
       res.status(400).json({
         status: 'error',

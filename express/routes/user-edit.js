@@ -103,7 +103,13 @@ router.put('/update-user/:userId', async (req, res) => {
   } = req.body
 
   try {
-    // 執行SQL更新操作，更新用戶資訊
+    const [user] = await connection.execute(
+      'SELECT first_edit_completed FROM user WHERE id = ?',
+      [userId]
+    )
+
+    const firstEditCompleted = user[0].first_edit_completed
+
     const [result] = await connection.execute(
       `UPDATE user SET 
           email = ?, 
@@ -114,7 +120,8 @@ router.put('/update-user/:userId', async (req, res) => {
           birth = ?, 
           city= ?, 
           address = ?, 
-          phone = ? 
+          phone = ?, 
+          first_edit_completed = ? 
         WHERE id = ?`,
       [
         email,
@@ -126,19 +133,60 @@ router.put('/update-user/:userId', async (req, res) => {
         city,
         address,
         phone,
+        true,
         userId,
       ]
     )
 
-    // 檢查是否成功更新
     if (result.affectedRows > 0) {
-      res.status(200).json({ status: 'success', message: '用戶資料已更新' })
+      let isFirstEdit = false
+      let message = '用戶資料已成功更新。'
+
+      if (!firstEditCompleted) {
+        isFirstEdit = true
+        try {
+          const couponResponse = await fetch(
+            `http://localhost:3005/api/coupons/send-welcome-coupon/${userId}`,
+            { method: 'POST' }
+          )
+
+          const couponData = await couponResponse.json()
+
+          if (couponData.status === 'success') {
+            message = '用戶資料填寫成功。'
+          } else {
+            message = '用戶資料已更新，但優惠券發送失敗。'
+          }
+        } catch (error) {
+          console.error('Error sending coupon:', error)
+          message = '用戶資料已更新，但優惠券發送失敗。'
+        }
+      }
+
+      // 確保更新的 `username` 和 `photo_url` 回傳給前端
+      const [updatedUser] = await connection.execute(
+        'SELECT username, photo_url FROM user WHERE id = ?',
+        [userId]
+      )
+
+      res.status(200).json({
+        status: 'success',
+        message,
+        isFirstEdit,
+        data: updatedUser[0], // 回傳更新的資料
+      })
     } else {
-      res.status(404).json({ status: 'fail', message: '找不到此用戶' })
+      res.status(404).json({
+        status: 'fail',
+        message: '找不到此用戶',
+      })
     }
   } catch (error) {
     console.error('Error updating user information:', error)
-    res.status(500).json({ status: 'error', message: '伺服器錯誤' })
+    res.status(500).json({
+      status: 'error',
+      message: '伺服器錯誤',
+    })
   }
 })
 
@@ -176,11 +224,86 @@ router.post('/send-verification-email', async (req, res) => {
     const verifyUrl = `http://localhost:3005/api/user-edit/verify-email`
 
     // 設置郵件內容
+
     const mailOptions = {
       from: `"support"<${process.env.SMTP_TO_EMAIL}>`,
       to: email,
-      subject: '請驗證您的電子信箱',
-      text: `你好，請點擊下方連結以驗證您的電子信箱：\r\n\r\n${verifyUrl}\r\n\r\n如果您沒有修改此帳號資訊，請忽略此郵件。\r\n\r\n敬上\r\n東風開發團隊`,
+      subject: '只欠東風-修改電子信箱驗證',
+      html: `
+          <!DOCTYPE html>
+        <html lang="zh-TW">
+          <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+              }
+              .container {
+                width: 100%;
+                max-width: 550px;
+                margin: 0 auto;
+                background-color: #2b4d37;
+                padding: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+              }
+              .header {
+                text-align: center;
+                padding: 10px 0;
+                border-bottom: 1px solid #dddddd;
+              }
+              .header h1 {
+                color: #faf7f0;
+                margin: 0;
+                font-size: 24px;
+              }
+              .content {
+                margin: 20px 0;
+                line-height: 1.5;
+              }
+              .content p {
+                margin: 0 0 10px;
+              }
+              .content a {
+                display: inline-block;
+                padding: 10px 20px;
+                margin: 0 0 10px;
+                background-color: #b79347;
+                color: #faf7f0;
+                text-decoration: none;
+                border-radius: 5px;
+              }
+              p,
+              .p {
+                color: #faf7f0;
+                font-weight: 900;
+                font-size: 16px;
+                @media screen and (max-width: 768px) {
+                  font-size: 14px;
+                }
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>只欠東風 - 註冊電子信箱驗證</h1>
+              </div>
+              <div class="content">
+                <p>您好，</p>
+                <p>請點擊下方按鈕以驗證您的電子信箱：</p>
+                <a class="p" href="${verifyUrl}" target="_blank">驗證信箱</a>
+                <p>如果您沒有修改過此帳號，請忽略此郵件。</p>
+                <p>敬上，</p>
+                <p>東風開發團隊。</p>
+              </div>
+            </div>
+          </body>
+        </html>
+      `,
     }
 
     // 發送郵件
@@ -297,10 +420,17 @@ router.post(
       )
 
       if (result.affectedRows > 0) {
+        // 回傳更新後的 user_img 和 username
+
+        const [updatedUser] = await connection.execute(
+          'SELECT user_img, username FROM user WHERE id = ?',
+          [userId]
+        )
         res.status(200).json({
           status: 'success',
           message: '頭像已更新',
           filename: avatarFilename,
+          data: updatedUser[0], // 回傳更新的資料     data: updatedUser[0], // 回傳更新的資料
         })
       } else {
         await fs.unlink(

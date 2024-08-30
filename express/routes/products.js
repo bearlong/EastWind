@@ -157,9 +157,9 @@ router.get('/', async (req, res) => {
 
   const [list] = await dbPromise
     .execute(
-      'SELECT `product`.`id`, `product`.`name`, `product`.`price`, `product`.`create_at`, `product`.`img`, `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`, `product_specifications`.*,  MAX(`product_images`.`img`) AS `img2`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` FROM `product` JOIN `product_specifications` ON `product_specifications`.`product_id` = `product`.`id` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `product_images` ON `product_images`.`product_id` = `product`.`id` LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product"' +
+      'SELECT `product`.`id`, `product`.`name`, `product`.`price`, `product`.`stock`, `product`.`create_at`, `product`.`img`, `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`, `product_specifications`.*,  MAX(`product_images`.`img`) AS `img2`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` FROM `product` JOIN `product_specifications` ON `product_specifications`.`product_id` = `product`.`id` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `product_images` ON `product_images`.`product_id` = `product`.`id` LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product"' +
         `${filter ? filter : ''}` +
-        ' GROUP BY `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name`, `brand`.`name`' +
+        ' GROUP BY `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product`.`stock`, `product_category`.`name`, `brand`.`name`' +
         `${orderCondition ? orderCondition : ''}` +
         sqlPage
     )
@@ -532,6 +532,7 @@ router.get('/:id', async (req, res, next) => {
       )
     )
   })
+  console.log(starCount)
 
   return res.json({
     status: 'success',

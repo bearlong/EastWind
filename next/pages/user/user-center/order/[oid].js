@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useContext } from 'react'
-import OrderList from '@/components/order/orderList'
 import { useRouter } from 'next/router'
-import { useCart } from '@/hooks/use-cart'
 import { AuthContext } from '@/context/AuthContext'
 import UserCenterLayout from '@/components/layout/user-center-layout'
 import styles from '@/styles/bearlong/orderDetail.module.scss'
-import { FaChevronLeft, FaCircle, FaCheck, FaStar } from 'react-icons/fa6'
+import { FaChevronLeft, FaCircle, FaStar } from 'react-icons/fa6'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import OrderStatus from '@/components/order/status'
+import OrderInfo from '@/components/order/orderInfo'
 
 export default function OrderDetail() {
   const { user, loading } = useContext(AuthContext)
@@ -53,16 +53,6 @@ export default function OrderDetail() {
     displayText: '未知狀態',
     color: 'var(--default-color)',
   }
-  let subtotal = 0
-  const getStatusUpdateAt = (statuses, targetStatus) => {
-    const statusObj = statuses.find((status) => status.status === targetStatus)
-    return statusObj ? statusObj.update_at : null
-  }
-
-  let paymentStatus = getStatusUpdateAt(status, '付款完成')
-  let shipmentStatus = getStatusUpdateAt(status, '已出貨')
-  let completionStatus = getStatusUpdateAt(status, '已完成')
-  let reviewStatus = getStatusUpdateAt(status, '已評論')
 
   const notifyAndRemove = () => {
     Swal.fire({
@@ -76,29 +66,6 @@ export default function OrderDetail() {
       title: `評論已完成!`,
       showConfirmButton: false,
       timer: 2000,
-    })
-  }
-
-  const notifyAndReceipt = () => {
-    Swal.fire({
-      title: '確認收貨?',
-      text: '確定商品品項及數量都正確!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#b79347',
-      cancelButtonColor: '#747474',
-      confirmButtonText: '完成訂單',
-      cancelButtonText: '取消',
-      customClass: {
-        popup: `h5`,
-        title: `h4`,
-        confirmButton: `p me-3`,
-        cancelButton: `p`,
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        handleChangeStatus()
-      }
     })
   }
 
@@ -126,49 +93,6 @@ export default function OrderDetail() {
       ...prevHoverRatings,
       [name]: value,
     }))
-  }
-
-  const handleChangeStatus = async () => {
-    try {
-      const url = `http://localhost:3005/api/order/${oid}`
-      const response = await fetch(url, {
-        method: 'PUT',
-      })
-      const result = await response.json()
-      if (result.status === 'success') {
-        setStatus(result.data.status)
-        Swal.fire({
-          position: 'center',
-          icon: 'success',
-          customClass: {
-            popup: `h6`,
-            title: `h4`,
-            content: `h1`,
-          },
-          title: `確認收貨!`,
-          showConfirmButton: false,
-          timer: 1500,
-        })
-        setTimeout(() => {
-          setCommentShow(true)
-        }, 1500)
-      }
-    } catch (error) {
-      console.log(error)
-      toast.error(`收貨失敗，請洽客服人員`, {
-        style: {
-          border: '1px solid #d71515',
-          padding: '20px',
-          fontSize: '20px',
-          color: '#d71515',
-        },
-        iconTheme: {
-          primary: '#d71515',
-          secondary: '#ffffff',
-          fontSize: '20px',
-        },
-      })
-    }
   }
 
   const handleCommentSubmit = async (e) => {
@@ -256,6 +180,7 @@ export default function OrderDetail() {
             }
             setOrderInfo(updatedOrderInfo)
             setStatus(result.data.status)
+            console.log(result.data.status)
             setOrderDetail(result.data.orderDetails)
             setExistingComments(result.data.comment)
           }
@@ -273,12 +198,6 @@ export default function OrderDetail() {
     }
   }, [router.isReady, oid, user, loading])
 
-  useEffect(() => {
-    paymentStatus = getStatusUpdateAt(status, '付款完成')
-    shipmentStatus = getStatusUpdateAt(status, '已出貨')
-    completionStatus = getStatusUpdateAt(status, '已完成')
-    reviewStatus = getStatusUpdateAt(status, '已評論')
-  }, [status])
   return (
     <>
       <div className={`${styles.main}`}>
@@ -307,264 +226,13 @@ export default function OrderDetail() {
               </span>
             </div>
           </div>
-          <div
-            className={`${styles['status-bl']} d-flex justify-content-between align-items-start`}
-          >
-            <div
-              className={`${styles['statusBox-bl']} text-center d-md-flex flex-column justify-content-between align-items-center d-none`}
-            >
-              <div
-                className={`${
-                  styles['checkStatus-bl']
-                } d-flex justify-content-center align-items-center ${
-                  paymentStatus ? styles.active : ''
-                }`}
-              >
-                <FaCheck className={`p ${paymentStatus ? '' : 'd-none'}`} />
-              </div>
-              <p>{paymentStatus ? '訂單成立' : '尚未付款'}</p>
-              {paymentStatus ? paymentStatus : ''}
-            </div>
-            <div
-              className={`${styles['statusBox-bl']} text-center d-md-flex flex-column justify-content-between align-items-center d-none`}
-            >
-              <div
-                className={`${
-                  styles['checkStatus-bl']
-                } d-flex justify-content-center align-items-center ${
-                  shipmentStatus ? styles.active : ''
-                }`}
-              >
-                <FaCheck className={`p ${shipmentStatus ? '' : 'd-none'}`} />
-              </div>
-              <p>{shipmentStatus ? '已出貨' : '待出貨'}</p>
-              {shipmentStatus ? shipmentStatus : ''}
-            </div>
-            <div
-              className={`${styles['statusBox-bl']} text-center d-flex flex-column justify-content-between align-items-center`}
-            >
-              <div
-                className={`${
-                  styles['checkStatus-bl']
-                } d-flex justify-content-center align-items-center ${
-                  completionStatus ? styles.active : ''
-                }`}
-              >
-                <FaCheck className={`p ${completionStatus ? '' : 'd-none'}`} />
-              </div>
-              <p>{completionStatus ? '訂單完成' : '待收貨'}</p>
-              {completionStatus ? completionStatus : ''}
-            </div>
-            <div
-              className={`${styles['statusBox-bl']} text-center d-flex flex-column justify-content-between align-items-center`}
-            >
-              <div
-                className={`${
-                  styles['checkStatus-bl']
-                } d-flex justify-content-center align-items-center ${
-                  reviewStatus ? styles.active : ''
-                }`}
-              >
-                <FaCheck className={`p ${reviewStatus ? '' : 'd-none'}`} />
-              </div>
-              <p>{reviewStatus ? '評論完成' : '尚未評論'}</p>
-              {reviewStatus ? reviewStatus : ''}
-            </div>
-            <div className={`${styles['line']} d-none d-md-block`} />
-            <div className={`${styles['arrow']} d-grid d-md-none`}>
-              <i className="fa-solid fa-arrow-right h3" />
-            </div>
-          </div>
-          <div className={`${styles['orderInfo-bl']} d-flex`}>
-            <div className={`${styles['leftArea-bl']}`}>
-              <div className={`${styles['infoBox-bl']} mb-4`}>
-                <div className={`${styles['infoTitle-bl']}`}>
-                  <h6>收件人資訊</h6>
-                </div>
-                <div className={`${styles['infoBody-bl']}`}>
-                  <div className={`${styles['receiver']} d-flex mb-4`}>
-                    <span className={`${styles['title']} p me-3`}>收件人</span>
-                    <p>{orderInfo.recipient}</p>
-                  </div>
-                  <div className={`${styles['address']} d-flex mb-4`}>
-                    <span className={`${styles['title']} p me-3`}>寄送</span>
-                    <p>
-                      {orderInfo.delivery_method === '宅配' ||
-                      orderInfo.delivery_method === '7-11店到店'
-                        ? `${orderInfo.delivery_address.city} ${orderInfo.delivery_address.address}`
-                        : '自取'}
-                    </p>
-                  </div>
-                  <div className={`${styles['receiverPhone']} d-flex mb-4`}>
-                    <span className={`${styles['title']} p me-3`}>
-                      收件人電話
-                    </span>
-                    <p>{orderInfo.phone}</p>
-                  </div>
-                </div>
-              </div>
-              <div className={`${styles['infoBox-bl']}`}>
-                <div className={`${styles['infoTitle-bl']}`}>
-                  <h6>訂單內容</h6>
-                </div>
-                <div className={`${styles['infoBody-bl']}`}>
-                  {orderDetail.map((v, i) => {
-                    subtotal += v.price
-                    return (
-                      <div
-                        key={i}
-                        className={`${styles['orderItem-bl']} d-flex mb-5`}
-                      >
-                        <div className={`${styles['itemContent-bl']}`}>
-                          <div className={`${styles['itemImg-bl']}`}>
-                            <Image
-                              src={`/images/${v.object_type}/${v.img}`}
-                              width={200}
-                              height={200}
-                              alt=""
-                              className={`${styles.img}`}
-                            />
-                          </div>
-                          <div className={`${styles['itemTitle-bl']}  ms-3`}>
-                            <p>{v.name}</p>
-                          </div>
-                        </div>
-                        <div
-                          className={`${styles['itemAmount-bl']}  d-flex justify-content-center align-items-center p-0`}
-                        >
-                          <p className={`${styles['amount']}`}>
-                            x <span>{v.quantity}</span>
-                          </p>
-                        </div>
-                        <div
-                          className={`${styles['itemPrice-bl']} d-flex justify-content-end align-items-center p-0`}
-                        >
-                          <p>NT$ {v.price}</p>
-                        </div>
-                      </div>
-                    )
-                  })}
-
-                  <div className={`${styles['orderprice-bl']}`}>
-                    <div
-                      className={`${styles['subtotal-price-box-bl']} d-flex justify-content-between justify-content-md-end align-items-center my-3`}
-                    >
-                      <p>小計</p>
-                      <div className={`${styles['num-bl']}`}>
-                        <p>NT$ {subtotal}</p>
-                      </div>
-                    </div>
-                    <div
-                      className={`${styles['discount-price-box-bl']} d-flex justify-content-between justify-content-md-end align-items-center mb-3`}
-                    >
-                      <p>折扣</p>
-                      <div
-                        className={`${styles['num-bl']} ${styles['discount-bl']}`}
-                      >
-                        <p>
-                          {orderInfo.total === subtotal
-                            ? ''
-                            : `-NT$ ${subtotal - orderInfo.total}`}
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      className={`${styles['delivery-price-box-bl']} d-flex justify-content-between justify-content-md-end align-items-center mb-3`}
-                    >
-                      <p>運費</p>
-                      <div className={`${styles['num-bl']}`}>
-                        <p>
-                          NT$ {orderInfo.delivery_method === '宅配' ? 60 : 0}
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      className={`${styles['total-price-box-bl']} d-flex justify-content-between justify-content-md-end align-items-center`}
-                    >
-                      <p>總計</p>
-                      <div
-                        className={`${styles['num-bl']} ${styles['totle-bl']}`}
-                      >
-                        <h6>NT$ {orderInfo.total}</h6>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className={`${styles['rightArea-bl']} px-md-3`}>
-              <div className={`${styles['infoBox-bl']} mb-4`}>
-                <div className={`${styles['infoTitle-bl']}`}>
-                  <h6>付款資訊</h6>
-                </div>
-                <div className={`${styles['infoBody-bl']}`}>
-                  <div className={`${styles['payType-bl']} d-flex mb-4`}>
-                    <span className={`${styles['title']} p me-3`}>
-                      付款方式
-                    </span>
-                    <p>
-                      {orderInfo.pay_method === 'credit'
-                        ? '信用卡'
-                        : orderInfo.pay_method}
-                    </p>
-                  </div>
-                  <div
-                    className={`${styles['cardNumber-bl']} d-flex justify-content-start align-items-center mb-4`}
-                  >
-                    <span className={`${styles['title']} p me-3`}>
-                      卡號末碼
-                    </span>
-                    <p>
-                      {orderInfo.pay_info.creditNum4
-                        ? orderInfo.pay_info.creditNum4
-                        : ''}
-                    </p>
-                  </div>
-                  <div className={`${styles['payTime-bl']} d-flex mb-4`}>
-                    <span className={`${styles['title']} p me-3`}>
-                      交易時間
-                    </span>
-                    <p>{orderInfo.order_date}</p>
-                  </div>
-                </div>
-              </div>
-              <div className={`${styles['infoBox-bl']} mb-4`}>
-                <div className={`${styles['infoTitle-bl']}`}>
-                  <h6>訂單備註</h6>
-                </div>
-                <div className={`${styles['infoBody-bl']}`}>
-                  <div className={`${styles['payType-bl']} d-flex p`}>
-                    {orderInfo.remark}
-                  </div>
-                </div>
-              </div>
-              <div
-                className={`${styles['btnGroup-bl']} d-flex flex-column flex-lg-row justify-content-center align-items-center`}
-              >
-                <button
-                  className={`${styles['openFull-bl']} ${styles['btnOrder-bl']} ${styles['btnComment-bl']} me-0 me-lg-3 mb-lg-0 mb-3`}
-                  onClick={() => {
-                    if (orderInfo.status_now !== '已出貨') {
-                      handleCommentShow()
-                    } else {
-                      notifyAndReceipt()
-                    }
-                  }}
-                  disabled={orderInfo.status_now === '付款完成'}
-                >
-                  {orderInfo.status_now === '已出貨' ||
-                  orderInfo.status_now === '付款完成'
-                    ? '確認收貨'
-                    : '商品評論'}
-                </button>
-                <button
-                  className={`${styles['btnOrder-bl']} ${styles['btnRefund-bl']}`}
-                >
-                  退貨退款
-                </button>
-              </div>
-            </div>
-          </div>
+          <OrderStatus status={status} />
+          <OrderInfo
+            orderInfo={orderInfo}
+            orderDetail={orderDetail}
+            oid={oid}
+            handleCommentShow={handleCommentShow}
+          />
         </div>
         <div
           className={`${styles['fullscreenblack-bl']} ${

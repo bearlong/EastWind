@@ -43,23 +43,19 @@ router.post('/register', async (req, res) => {
   }
 
   // 檢查帳號是否有效
+  const accountRegex = /^(?=.*[a-zA-Z]).{6,}$/
   if (!account) {
     errors.account = '請填入帳號'
-  } else {
-    const accountRegex = /^(?=.*[a-zA-Z]).{6,}$/
-    if (!accountRegex.test(account)) {
-      errors.account = '帳號應至少6碼，需包含英文字'
-    }
+  } else if (!accountRegex.test(account)) {
+    errors.account = '帳號應至少6碼，包含至少一個英文字'
   }
 
   // 檢查密碼是否有效
+  const passwordRegex = /^(?=.*[a-zA-Z]).{6,}$/
   if (!password) {
     errors.password = '請填入密碼'
-  } else {
-    const passwordRegex = /^(?=.*[a-zA-Z]).{6,}$/
-    if (!passwordRegex.test(password)) {
-      errors.password = '帳號應至少6碼，需包含英文字'
-    }
+  } else if (!passwordRegex.test(password)) {
+    errors.password = '密碼應至少6碼，包含至少一個英文字'
   }
 
   // 如果有任何驗證錯誤，返回錯誤響應
@@ -158,11 +154,86 @@ router.post('/send-verification', async (req, res) => {
     const verifyUrl = `http://localhost:3005/api/register/verify-email?token=${verifyToken}`
 
     // 配置電子郵件內容
+
     const mailOptions = {
       from: `"support"<${process.env.SMTP_TO_EMAIL}>`,
       to: email,
-      subject: '請驗證您的電子信箱',
-      text: `你好，請點擊下方連結以驗證您的電子信箱：\r\n\r\n${verifyUrl}\r\n\r\n如果您沒有註冊過此帳號，請忽略此郵件。\r\n\r\n敬上\r\n東風開發團隊`,
+      subject: '只欠東風-註冊電子信箱驗證',
+      html: `
+          <!DOCTYPE html>
+        <html lang="zh-TW">
+          <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+              }
+              .container {
+                width: 100%;
+                max-width: 550px;
+                margin: 0 auto;
+                background-color: #2b4d37;
+                padding: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+              }
+              .header {
+                text-align: center;
+                padding: 10px 0;
+                border-bottom: 1px solid #dddddd;
+              }
+              .header h1 {
+                color: #faf7f0;
+                margin: 0;
+                font-size: 24px;
+              }
+              .content {
+                margin: 20px 0;
+                line-height: 1.5;
+              }
+              .content p {
+                margin: 0 0 10px;
+              }
+              .content a {
+                display: inline-block;
+                padding: 10px 20px;
+                margin: 0 0 10px;
+                background-color: #b79347;
+                color: #faf7f0;
+                text-decoration: none;
+                border-radius: 5px;
+              }
+              p,
+              .p {
+                color: #faf7f0;
+                font-weight: 900;
+                font-size: 16px;
+                @media screen and (max-width: 768px) {
+                  font-size: 14px;
+                }
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>只欠東風 - 註冊電子信箱驗證</h1>
+              </div>
+              <div class="content">
+                <p>您好，</p>
+                <p>請點擊下方按鈕以驗證您的電子信箱：</p>
+                <a class="p" href="${verifyUrl}" target="_blank">驗證信箱</a>
+                <p>如果您沒有註冊過此帳號，請忽略此郵件。</p>
+                <p>敬上，</p>
+                <p>東風開發團隊。</p>
+              </div>
+            </div>
+          </body>
+        </html>
+      `,
     }
 
     // 發送驗證郵件
@@ -186,6 +257,31 @@ router.post('/send-verification', async (req, res) => {
       status: 'error',
       message: '伺服器錯誤，請稍後再試',
     })
+  }
+})
+
+// 檢查帳號與email唯一性
+router.post('/check-unique', async (req, res) => {
+  const { email, account, userId } = req.body
+
+  try {
+    const [emailResult] = await connection.execute(
+      'SELECT id FROM user WHERE email = ? AND id != ?',
+      [email, userId || 0] // 用 0 代替 null，防止 SQL 出錯
+    )
+
+    const [accountResult] = await connection.execute(
+      'SELECT id FROM user WHERE account = ? AND id != ?',
+      [account, userId || 0]
+    )
+
+    const emailExists = emailResult.length > 0
+    const accountExists = accountResult.length > 0
+
+    res.status(200).json({ emailExists, accountExists })
+  } catch (error) {
+    console.error('Error checking uniqueness:', error)
+    res.status(500).json({ status: 'error', message: '伺服器錯誤' })
   }
 })
 

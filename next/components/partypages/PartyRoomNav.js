@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import styles from '@/styles/gw/_PartyRoomNav.module.scss'
 
 const navItems = [
-  { href: '#party', label: '揪團' },
+  // { href: '#party', label: '揪團' },
   { href: '#roomInfo', label: '店家資訊' },
   { href: '#photo', label: '相片' },
   { href: '#toKnow', label: '注意事項' },

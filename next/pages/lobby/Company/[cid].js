@@ -1,8 +1,9 @@
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState,useContext } from 'react';
 import BookingLeftArea from '@/components/BookingPage/BookingLeftArea';
 import BookingRightArea from '@/components/BookingPage/BookingRightArea';
 import styles from '@/styles/gw/_partypage.module.scss'
+import { AuthContext } from '@/context/AuthContext';
 
 
 export default function CompanyPage() {
@@ -10,8 +11,9 @@ export default function CompanyPage() {
   const [companyData, setCompanyData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+const {user} = useContext(AuthContext)
+  console.log(user)
 
-  
   useEffect(() => {
     if (!router.isReady) return;
 
@@ -50,8 +52,8 @@ export default function CompanyPage() {
 
   return (
     <div className={styles.main}>
-      <BookingLeftArea companyData={companyData} />
-      <BookingRightArea companyData={companyData} />
+      <BookingLeftArea user = {user} companyData={companyData} />
+      <BookingRightArea  user = {user} companyData={companyData} />
     </div>
   );
 }

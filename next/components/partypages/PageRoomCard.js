@@ -1,15 +1,17 @@
 import styles from '@/styles/gw/_RoomCard.module.scss'
 import cardStyles from '@/styles/gw/_card.module.sass'
-import { TiStarFullOutline } from 'react-icons/ti'
 
+import { TiStarFullOutline } from 'react-icons/ti'
 import { FaAngleDown } from 'react-icons/fa'
 
 import Server from '../serverIcon/server'
-// partyData={partyData}
+
 export default function RoomCard({ companyData, partyData }) {
   console.log(partyData)
   const data = companyData || partyData
   console.log(data)
+  // console.log(companyData.services);
+  const services = data.services || []
   return (
     <div className={cardStyles.Card} id="roomInfo">
       <div className={styles.roomTitle}>
@@ -26,7 +28,7 @@ export default function RoomCard({ companyData, partyData }) {
               {[...Array(5)].map((_, i) => (
                 <TiStarFullOutline key={i} className={styles.starIcon} />
               ))}
-              {`${data.name ? data.rating : data.partyData.rating}`}
+              {`${data.name ? data.rating : data.rating}`}
             </div>
             <div className="gap-5">
               <i className="fa-regular fa-heart faSz mx-2" />
@@ -35,7 +37,7 @@ export default function RoomCard({ companyData, partyData }) {
           </div>
           <div className="title">
             <h3 className="title">{`${
-              data.name ? data.name : data.partyData.company_name
+              data.name ? data.name : data.company_name
             }`}</h3>
           </div>
         </div>
@@ -68,17 +70,15 @@ export default function RoomCard({ companyData, partyData }) {
               }`}
               <FaAngleDown />
             </a>
-            {/* <div className="collapse" id="collapseExample">
-              <div className="p">周一:8:00到22:00</div>
-            </div> */}
           </div>
         </div>
       </div>
 
       <div className={styles.serverBox}>
-        <Server />
+        {services.map((service, index) => (
+          <Server key={index} service={service} />
+        ))}
       </div>
-
       <div className={styles.roomIntroduction}>
         <div className={styles.title}>
           <h6>店家簡介</h6>
@@ -93,7 +93,6 @@ export default function RoomCard({ companyData, partyData }) {
           <p>全館嚴格禁菸，定時清潔。</p>
         </div>
       </div>
-
       <div className={styles.roomPrice}>
         <div className={styles.title}>
           <h6>費用</h6>

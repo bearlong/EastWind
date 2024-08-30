@@ -5,8 +5,12 @@ import PageNext from '@/components/roomList/PageNext'
 import RoomCard from '@/components/roomList/RoomCard'
 import CompanyCard from '@/components/roomList/CompanyCard'
 import RoomSearch from '@/components/roomList/RoomSearch'
-import styles from '@/styles/gw/_roomList.module.sass'
+import styles from '@/styles/gw/_Lobby.module.scss'
 import { useRouter } from 'next/router'
+
+
+
+
 
 export default function Lobby() {
   const [data, setData] = useState([])
@@ -100,30 +104,26 @@ const renderedCards = data.map(item =>
 
   return (
     <div className="container">
-      <div className={styles.topBar}>
-        <JoinBTN activeView={activeView} onViewChange={handleViewChange} />
-
-        <RoomSearch onSearch={handleSearch} />
-        <BTNGroup onAreaChange={handleAreaChange} selectedArea={selectedArea}/>
-        <div className={styles.totalCount}>
-          共{totalItems}個{activeView === 'join' ? '團' : '店家'}
-        </div>
+    <div className={styles.topBar}>
+      <JoinBTN activeView={activeView} onViewChange={handleViewChange} />
+      <RoomSearch onSearch={handleSearch} />
+      <BTNGroup onAreaChange={handleAreaChange} selectedArea={selectedArea}/>
+      <div className={styles.totalCount}>
+        共 <span className={styles.numberContainer}>{totalItems}</span> 個{activeView === 'join' ? '揪團' : '店家'}
       </div>
-
-      <div className={styles.cardArea}>
-        {/* {loading && <div>載入中...</div>}
-      {error && <div>{error}</div>}
-      {!loading && !error && renderedCards} */}
-        {renderedCards}
-      </div>
-
-      <PageNext
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-        totalItems={totalItems}
-        itemsPerPage={itemsPerPage}
-      />
     </div>
+  
+    <div className={styles.cardArea}>
+      {renderedCards}
+    </div>
+  
+    <PageNext
+      currentPage={currentPage}
+      totalPages={totalPages}
+      onPageChange={handlePageChange}
+      totalItems={totalItems}
+      itemsPerPage={itemsPerPage}
+    />
+  </div>
   )
 }

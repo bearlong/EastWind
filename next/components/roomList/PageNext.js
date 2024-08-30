@@ -31,7 +31,7 @@ const PageNext = ({
         />
       </div>
 
-      <div className={styles.paginationControls}>
+      <div className={`${styles.paginationControls} mb-3`}>
         <button 
           onClick={() => handlePageChange(currentPage - 1)} 
           disabled={currentPage === 1}
@@ -51,9 +51,9 @@ const PageNext = ({
         </button>
       </div>
 
-      <div className={styles.itemCount}>
+      {/* <div className={styles.itemCount}>
         顯示 {startItem} - {endItem} 項，共 {totalItems} 項
-      </div>
+      </div> */}
     </div>
   );
 };

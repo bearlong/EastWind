@@ -4,16 +4,21 @@ import PartyRightArea from '@/components/partypages/PartyRightArea'
 import styles from '@/styles/gw/_partypage.module.scss'
 
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
+
+import { AuthContext } from '@/context/AuthContext'
 
 export default function Party() {
   const router = useRouter()
   const [partyData, setPartyData] = useState(null)
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  const { user } = useContext(AuthContext)
+  console.log(user)
 
   useEffect(() => {
-    if (!router.isReady) return;
+    if (!router.isReady) return
 
     const { partyid } = router.query
     console.log(partyid)
@@ -24,7 +29,7 @@ export default function Party() {
           if (!response.ok) {
             throw new Error('Network response was not ok')
           }
-          return response.json();
+          return response.json()
         })
         .then((data) => {
           if (data) {
@@ -43,9 +48,9 @@ export default function Party() {
     }
   }, [router.isReady])
 
-  if (!router.isReady || loading) return <div>載入中...</div>;
-  if (error) return <div>錯誤：{error}</div>;
-  if (!partyData) return <div>找不到派對資料</div>;
+  if (!router.isReady || loading) return <div>載入中...</div>
+  if (error) return <div>錯誤：{error}</div>
+  if (!partyData) return <div>找不到派對資料</div>
 
   return (
     <>
@@ -53,7 +58,7 @@ export default function Party() {
         <BreadCrumb />
         <div className={styles.main}>
           <PartyLeftArea partyData={partyData} />
-          <PartyRightArea partyData={partyData}/>
+          <PartyRightArea user={user} partyData={partyData} />
         </div>
       </div>
     </>
