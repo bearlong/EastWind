@@ -299,7 +299,7 @@ router.post('/:id/join', async (req, res) => {
   try {
     // 檢查派對是否存在且有空位
     const [party] = await connection.execute(
-      'SELECT * FROM party WHERE id = ? AND date >= CURDATE() AND status IN ("booked", "full") AND (userID_join1 = 0 OR userID_join2 = 0 OR userID_join3 = 0)',
+      'SELECT * FROM party WHERE id = ? AND date >= CURDATE() AND status IN ("waiting", "full") AND (userID_join1 = 0 OR userID_join2 = 0 OR userID_join3 = 0)',
       [id]
     )
 
@@ -336,7 +336,7 @@ router.post('/:id/leave', async (req, res) => {
   try {
     // 首先，獲取派對信息
     const [party] = await connection.execute(
-      'SELECT * FROM party WHERE id = ? AND status IN ("booked", "full")',
+      'SELECT * FROM party WHERE id = ? AND status IN ("waiting", "full")',
       [id]
     )
 

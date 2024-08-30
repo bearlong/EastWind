@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 
-export default function RoomCard({ party }) {
+export default function RoomCard({ party=[] }) {
   const formatDate = (dateTimeString) => {
     if (!dateTimeString) return '時間未知'
     const dateTime = new Date(dateTimeString)
