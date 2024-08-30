@@ -43,12 +43,12 @@ export const AuthProvider = ({ children }) => {
                 setToken(newAccessToken) // 更新 token 狀態
                 localStorage.setItem('accessToken', newAccessToken) // 存儲新的 accessToken 到 localStorage
               } else {
-                localStorage.removeItem('accessToken') // 刪除無效的 accessToken
-                localStorage.removeItem('refreshToken') // 刪除無效的 refreshToken
+                // localStorage.removeItem('accessToken') // 刪除無效的 accessToken
+                // localStorage.removeItem('refreshToken') // 刪除無效的 refreshToken
                 router.push(loginRoute) // 重定向到登入頁面
               }
             } else {
-              localStorage.removeItem('accessToken') // 如果沒有 refreshToken，刪除舊的 accessToken
+              // localStorage.removeItem('accessToken') // 如果沒有 refreshToken，刪除舊的 accessToken
               router.push(loginRoute) // 重定向到登入頁面
             }
           }
@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
         } else {
           setToken(undefined) // 如果 token 無效，清除 token 狀態
 
-          localStorage.removeItem('accessToken') // 刪除無效的 accessToken
+          // localStorage.removeItem('accessToken') // 刪除無效的 accessToken
           router.push(loginRoute) // 重定向到登入頁面
         }
         setLoading(false)
@@ -128,8 +128,8 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('accessToken', newAccessToken) // 存儲新的 accessToken 到 localStorage
             return checkToken(newAccessToken) // 再次驗證新的 token
           } else {
-            localStorage.removeItem('accessToken') // 刪除無效的 accessToken
-            localStorage.removeItem('refreshToken') // 刪除無效的 refreshToken
+            // localStorage.removeItem('accessToken') // 刪除無效的 accessToken
+            // localStorage.removeItem('refreshToken') // 刪除無效的 refreshToken
           }
         }
         router.push('/login') // 重定向到登入頁面

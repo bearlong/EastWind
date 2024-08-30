@@ -10,7 +10,7 @@ export default function LineLogo({ size = '36', className }) {
       className={className} // 如果有額外的 className 可以傳入
     >
       <defs>
-        <style>{`.cls-1{fill:#06c755;}.cls-2{fill:#fff;}`}</style>
+        <style>{`.cls-1{fill:#048b3b;}.cls-2{fill:#b3b3b3;}`}</style>
       </defs>
       <g id="Layer_2" data-name="Layer 2">
         <g id="LINE_LOGO" data-name="LINE LOGO">

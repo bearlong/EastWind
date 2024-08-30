@@ -140,7 +140,7 @@ export default function UserInfo() {
                   {userData.account}
                 </div>
               </div>
-              <div
+              {/* <div
                 className={`${styles['info-col-bo']} d-flex justify-content-center flex-column flex-sm-row`}
               >
                 <h6 className={`${styles['info-name-bo']} h6`}>密碼</h6>
@@ -149,7 +149,7 @@ export default function UserInfo() {
                 >
                   {'●'.repeat(userData.password.length)}
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 
