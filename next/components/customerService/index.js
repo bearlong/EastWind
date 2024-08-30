@@ -5,7 +5,7 @@ import styles from '@/styles/bearlong/customerService.module.scss'
 import { BsChatDots } from 'react-icons/bs'
 import { FaXmark } from 'react-icons/fa6'
 import Image from 'next/image'
-
+import { FaCommentDots } from 'react-icons/fa6'
 export default function Chat() {
   const chatBoxRef = useRef(null)
   const [ws, setWs] = useState(null)
@@ -40,6 +40,8 @@ export default function Chat() {
 
     // 初始化時檢查路徑
     if (router.pathname === '/home') {
+      setShowDiv(false)
+
       window.addEventListener('scroll', handleScroll)
     }
 
@@ -134,7 +136,7 @@ export default function Chat() {
           checkChat ? 'd-none' : ''
         } ${showDiv ? '' : 'd-none'}`}
       >
-        <BsChatDots size={30} className={styles.msgIcon} />
+        <FaCommentDots size={30} className={styles.msgIcon} />
       </label>
       <div className={`${styles['chatArea-bl']} p`}>
         {status[status.length - 1]}
