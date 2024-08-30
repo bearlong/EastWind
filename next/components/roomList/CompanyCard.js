@@ -57,7 +57,7 @@ export default function CompanyCard({ company }) {
               onError={handleImageError}
             />
           ) : (
-            <div className={styles.logoFallback} >{company.name[0]}</div>
+            <div className={styles.logoFallback} >{company.name?company.name[0]:""}</div>
           )}
         </div>
         <h6 className={styles.companyName}>{company.name}</h6>
