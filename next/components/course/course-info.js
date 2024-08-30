@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import styles from '@/styles/aa/classDetail.module.scss'
 
-const CourseInfo = ({ courses }) => {
+const CourseInfo = ({ courses ={} }) => {
   const chapterRef = useRef(null)
 
   const scrollToChapter = () => {
@@ -12,8 +12,8 @@ const CourseInfo = ({ courses }) => {
     <div className={styles['detextright1-aa']}>
       <div className={styles['detextright2-aa']}>
         <div className={styles['detextright1-aa']}>
-          <h4>麻將入門特訓 - 基礎實作到證照攻略</h4>
-          {/* <h4>{courses.course_name}</h4> */}
+          {/* <h4>麻將入門特訓 - 基礎實作到證照攻略</h4> */}
+          <h4>{courses.course_name}</h4>
         </div>
       </div>
       <div className={styles['detextright3-aa']}>

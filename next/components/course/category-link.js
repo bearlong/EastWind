@@ -10,7 +10,8 @@ const CategoryLink = ({ courses, course_category_id }) => {
   return (
     <Link
       className={styles['card-link-n']}
-      href={`/course/classListCate/${course_category_id}`}
+      // href={`/course/classListCate/${course_category_id}`}
+      href={`/course/classListCate/`}
     >
       {/* <span> {course.course_category_id} </span> */}
       <span> 麻將 </span>
