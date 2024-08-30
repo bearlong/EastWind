@@ -134,67 +134,63 @@ export default function Detail() {
           </div>
           <div className={styles['desec1box-aa']}>
             <div className={styles['de1-ins-aa']}>
-              {/* {videoUrl && (
-                <video
-                  src={videoUrl}
-                  muted
-                  loop
-                  controls
-                  controlsList="nodownload nofullscreen"
-                  disablePictureInPicture
-                  width="100%"
-                />
-              )} */}
               <VideoPlayer videoUrl={videoUrl} />
             </div>
-            <div className={styles['detextright1-aa']}>
-              <div className={styles['detextright2-aa']}>
-                <div className={styles['detextright1-aa']}>
-                  <h4>麻將入門特訓 - 基礎實作到證照攻略</h4>
-                </div>
-              </div>
-              <div className={styles['detextright3-aa']}>
-                <div className={styles['textrighth51-aa']}>
-                  <h5>徐乃麟</h5>
-                </div>
-                <div className={styles['textrighth52-aa']}>
-                  <h5>類別：麻將</h5>
-                </div>
-              </div>
-              <div className={styles['detextright4-aa']}>
-                <h5>
-                  麻將證照攻略課程，教你麻將的程式語法與麻將證照攻略，循序漸進學習麻將開發環境的建置..
-                </h5>
-              </div>
-              <div className={styles['detextright5-aa']}>
-                <h4>NT$ 2,480</h4>
-                <div className={styles['chh6-aa']}>
-                  <div className={styles['chh61-aa']}>
-                    <button
-                      className={styles['chh62-aa']}
-                      onClick={scrollToChapter}
-                    >
-                      <h6>查看章節</h6>
-                    </button>
+
+            {Object.values(courses)
+              .filter((course) => course.id === id)
+              .map((course) => (
+                <div className={styles['detextright1-aa']} key={course.id}>
+                  <div className={styles['detextright2-aa']}>
+                    <div className={styles['detextright1-aa']}>
+                      <h4>{course.course_name}</h4>
+                    </div>
                   </div>
-                  <h6 style={{ color: 'var(--text-hover, #747474)' }}>
-                    總時長 60 分鐘
-                  </h6>
-                </div>
-              </div>
-              <div className={styles['detextright6-aa']}>
-                <div className={styles['BTNde1-aa']}>
-                  <div className={styles['BUTTONde1-aa']}>
-                    <h5>立即購買</h5>
+                  <div className={styles['detextright3-aa']}>
+                    <div className={styles['textrighth51-aa']}>
+                      <h5>徐乃麟</h5>
+                    </div>
+                    <div className={styles['textrighth52-aa']}>
+                      <h5>類別：{course.ch_name}</h5>
+                    </div>
+                  </div>
+                  <div className={styles['detextright4-aa']}>
+                    {/* <h5>
+                      麻將證照攻略課程，教你麻將的程式語法與麻將證照攻略，循序漸進學習麻將開發環境的建置..
+                    </h5> */}
+                    <h5>{course.content}</h5>
+                  </div>
+                  <div className={styles['detextright5-aa']}>
+                    <h4>NT$ {course.price}</h4>
+                    <div className={styles['chh6-aa']}>
+                      <div className={styles['chh61-aa']}>
+                        <button
+                          className={styles['chh62-aa']}
+                          onClick={scrollToChapter}
+                        >
+                          <h6>查看章節</h6>
+                        </button>
+                      </div>
+                      <h6 style={{ color: 'var(--text-hover, #747474)' }}>
+                        總時長 60 分鐘
+                      </h6>
+                    </div>
+                  </div>
+                  <div className={styles['detextright6-aa']}>
+                    <div className={styles['BTNde1-aa']}>
+                      <div className={styles['BUTTONde1-aa']}>
+                        <h5>立即購買</h5>
+                      </div>
+                    </div>
+                    <div className={styles['BTNde2-aa']}>
+                      <div className={styles['BUTTONde2-aa']}>
+                        <h5>加入購物車</h5>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className={styles['BTNde2-aa']}>
-                  <div className={styles['BUTTONde2-aa']}>
-                    <h5>加入購物車</h5>
-                  </div>
-                </div>
-              </div>
-            </div>
+              ))}
+
             {/* <CourseInfo /> */}
           </div>
         </div>
@@ -203,37 +199,6 @@ export default function Detail() {
             <h2>課程內容</h2>
           </div>
         </div>
-        {/* <div className={styles['detailpic-aa']}>
-          <div className={styles['detailpic1-aa']}>
-            <div className={styles['depic1-aa']}>
-              <Image
-                src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                alt=""
-                width={640}
-                height={360}
-              />
-            </div>
-          </div>
-        </div>
-        <div className={styles['detextgroup-aa']}>
-          <div className={styles['texth2detail3-aa']}>
-            <div className={styles['texth2detail31-aa']}>
-              <h4>想學程式？推薦你從 麻將 開始！</h4>
-            </div>
-          </div>
-          <div className={styles['texth2detail4-aa']}>
-            <h6>
-              程式語言的學習，首重邏輯思考能力，面對未來快速變化的社會，若能培養運算思維（Computational
-              Thinking）結合工程的務實與效率、數理方面的抽象邏輯思考，將能更有效解決複雜的問題。
-            </h6>
-          </div>
-          <div className={styles['texth2detail4-aa']}>
-            <h6>
-              程式語言的學習，首重邏輯思考能力，面對未來快速變化的社會，若能培養運算思維（Computational
-              Thinking）結合工程的務實與效率、數理方面的抽象邏輯思考，將能更有效解決複雜的問題。
-            </h6>
-          </div>
-        </div> */}
 
         <div className={styles['classCards-aa']}>
           {Object.values(courses)
@@ -242,50 +207,13 @@ export default function Detail() {
               <Content key={course.id} contentData={course} />
             ))}
         </div>
-
-        {/* <Content /> */}
-        {/* <div className={styles['detailpic-aa']}>
-          <div className={styles['detailpic1-aa']}>
-            <div className={styles['depic1-aa']}>
-              <Image
-                src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                alt=""
-                width={640}
-                height={360}
-              />
-            </div>
-          </div>
-        </div>
-        <div
-          className={styles['detextgroup-aa']}
-          style={{ paddingBottom: '3rem' }}
-        >
-          <div className={styles['texth2detail3-aa']}>
-            <div className={styles['texth2detail31-aa']}>
-              <h4>想學程式？推薦你從 麻將 開始！</h4>
-            </div>
-          </div>
-          <div className={styles['texth2detail4-aa']}>
-            <h6>
-              程式語言的學習，首重邏輯思考能力，面對未來快速變化的社會，若能培養運算思維（Computational
-              Thinking）結合工程的務實與效率、數理方面的抽象邏輯思考，將能更有效解決複雜的問題。
-            </h6>
-          </div>
-          <div className={styles['texth2detail4-aa']}>
-            <h6>
-              程式語言的學習，首重邏輯思考能力，面對未來快速變化的社會，若能培養運算思維（Computational
-              Thinking）結合工程的務實與效率、數理方面的抽象邏輯思考，將能更有效解決複雜的問題。
-            </h6>
-          </div>
-        </div> */}
-        {/* <Content /> */}
-        <div className={styles['classCards-aa']}>
+        {/* <div className={styles['classCards-aa']}>
           {Object.values(courses)
             .filter((course) => course.id === id)
             .map((course) => (
               <Content key={course.id} contentData={course} />
             ))}
-        </div>
+        </div> */}
         <div className={styles['texth2detail2-aa']}>
           <div className={styles['texth2detail21-aa']}>
             <h2 style={{ paddingTop: '3rem' }} ref={chapterRef}>

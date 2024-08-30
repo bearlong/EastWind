@@ -37,9 +37,9 @@ export default function ClassListCate() {
     getCourses()
   }, [])
 
-  const handleCardClick = (courseId) => {
-    router.push(`/course/detail/${courseId}`)
-  }
+  // const handleCardClick = (courseId) => {
+  //   router.push(`/course/detail/${courseId}`)
+  // }
 
   const handleLoadMore = () => {
     if (pages * 8 < courses.total) {
@@ -162,14 +162,7 @@ export default function ClassListCate() {
                   ))}
               </div>
               {/* <div className={styles['classCards-aa']}>
-                <ClassCard />
-              </div>
-              <div className={styles['classCards-aa']}>
-                <ClassCard />
-              </div>
-              <div className={styles['classCards-aa']}>
-                <ClassCard />
-              </div> */}
+                <ClassCard /> */}
             </div>
           </div>
           <div className={styles['sec23-aa']}>
