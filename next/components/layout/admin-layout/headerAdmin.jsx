@@ -71,6 +71,20 @@ export default function HeaderAdmin() {
               />
             </Link>
           </div>
+          <nav className={`${styles['nav-bar-bo']}  `}>
+            <ul
+              className={`d-flex justify-content-center align-items-center ${styles['nav-list-bo']}`}
+            >
+              <li>
+                <Link
+                  className={`h6 ${styles['nav-link-bo']}`}
+                  href="/admin/chart"
+                >
+                  企業後台
+                </Link>
+              </li>
+            </ul>
+          </nav>
           <div className={styles['icon-box-bo']}>
             <ul
               className={`d-flex justify-content-center align-items-center ${styles['icon-list-bo']}`}

@@ -91,24 +91,10 @@ export default function AdminSidebar() {
           className={`${styles['user-sidebar-head-bo']} d-flex flex-column justify-content-center align-items-center`}
         >
           <div
-            className={`d-none d-md-flex ${styles['user-sidebar-title-bo']} d-flex justify-content-center align-items-center h6  gap-3`}
-          >
-            <FaUserCircle />
-            企業後臺
-          </div>
-          <div className={styles['user-img-box-bo']}>
-            {/* 使用來自 Context 的 user.user_img 來顯示用戶照片 */}
-            <img
-              className={`${styles['user-img-bo']}`}
-              src={'/images/boyu/users/user-male-default.svg'}
-              alt={user?.username || 'User'}
-            />
-          </div>
-          <div
             className={`${styles['user-welcome-box-bo']} h6 d-none d-md-block`}
           >
             {/* 使用來自 Context 的 user.username 來顯示用戶名稱 */}
-            歡迎，Admin
+            歡迎，管理員
           </div>
         </div>
         <div

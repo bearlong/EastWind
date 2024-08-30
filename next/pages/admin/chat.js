@@ -81,7 +81,56 @@ export default function Chat() {
   useEffect(() => {
     if (router.isReady && !loading) {
       if (user) {
-        if (user.id !== 62 || (!user && loading === false)) {
+        if (user && user.id === 62) {
+          const socket = new WebSocket('ws://localhost:3005')
+          setWs(socket)
+          socket.onopen = (event) => {
+            console.log('WebSocket 連線已建立')
+            let params = {
+              type: 'register',
+              userID: user.id,
+              username: user.username,
+              user_img: user.user_img,
+            }
+            socket.send(JSON.stringify(params))
+          }
+
+          socket.onmessage = async (event) => {
+            let result = JSON.parse(event.data)
+            if (result.type === 'registered') {
+              if (result.userInfo) {
+                setUserInfo(result.userInfo)
+              }
+            }
+            if (result.type === 'message') {
+              if (result.userInfo) {
+                setUserInfo([...userInfo, result.userInfo])
+              }
+
+              if (result.fromID === 62) {
+                handleResponse(result.targetUserID, result.message)
+                return
+              }
+              handleNewMessage(result.fromID, result.userInfo, result.message)
+              console.log(result.userInfo)
+            }
+
+            if (result.type === 'disconnected') {
+              if (result.userInfo) {
+                setUserInfo(result.userInfo)
+              }
+              handleRemoveMessages(result.dsID)
+            }
+          }
+
+          socket.onclose = () => {
+            console.log('WebSocket 連線已關閉')
+          }
+
+          return () => {
+            socket.close()
+          }
+        } else {
           alert('請由正常管道進入')
           router.push('/home')
         }
