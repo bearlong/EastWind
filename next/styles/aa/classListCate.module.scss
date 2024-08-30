@@ -18,13 +18,18 @@
   border: 2px solid var(--primary, #b79347);
   .edit-icon {
     text-align: start;
-    background-image: url('./images/web/btnMore.svg');
+    background-image: url('../../public/images/web/btnMore.svg');
     background-repeat: no-repeat;
     background-size: cover;
     width: 50px;
     height: 12px;
     transition: 0.3s;
   }
+}
+
+.btn-more1 {
+  height: 1rem;
+  flex: 1 0 0;
 }
 
 .class-header-aa {
@@ -358,6 +363,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  background: transparent;
+  border: 0px;
   gap: 20px;
 }
 
