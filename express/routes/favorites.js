@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
 })
 
 router.post('/:id', upload.none(), async (req, res, next) => {
-  const oid = getIdParam(req)
+  const oid = req.params.id
   const { uid, type } = req.body
   try {
     const [existingItem] = await dbPromise.execute(
@@ -64,7 +64,7 @@ router.post('/:id', upload.none(), async (req, res, next) => {
 })
 
 router.delete('/:id', upload.none(), async (req, res, next) => {
-  const oid = getIdParam(req)
+  const oid = req.params.id
   const { uid, type } = req.body
   try {
     const [existingItem] = await dbPromise.execute(

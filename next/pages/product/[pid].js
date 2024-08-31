@@ -60,6 +60,7 @@ export default function Detail() {
 
   const getProduct = async (id) => {
     let newData, error
+    console.log(id)
     const url =
       'http://localhost:3005/api/products/' +
       id +

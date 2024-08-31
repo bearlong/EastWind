@@ -1,5 +1,5 @@
 import React from 'react'
-import Image from 'next/image' // 假設使用 Next.js 的 Image 元件
+import Image from 'next/image'
 import styles from '@/styles/aa/classDetail.module.scss'
 
 const Content = ({ contentData = {}, i }) => {

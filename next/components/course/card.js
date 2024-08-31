@@ -7,7 +7,7 @@ const ClassCard = ({ courseData, rank }) => (
   <div className={styles['classCard-aa']}>
     <Link
       className={styles['card-link']}
-      href={`/course/classDetail/${courseData.id}`}
+      href={`/course/detail/?id=${courseData.id}`}
     >
       <div className={styles['imgBox-aa']}>
         {rank && <div className={styles[`rank${rank}`]}>{rank}</div>}

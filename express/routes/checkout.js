@@ -441,7 +441,7 @@ router.get('/ecpaypayment', async (req, res, next) => {
 })
 
 router.get('/:id', async (req, res) => {
-  const id = getIdParam(req)
+  const id = req.params.id
   try {
     const [userInfo] = await dbPromise.execute(
       'SELECT `username`, `city`, `address` FROM `user` WHERE `id` = ?',
@@ -508,7 +508,7 @@ router.post('/result', async (req, res, next) => {
 })
 
 router.post('/:id', upload.none(), async (req, res, next) => {
-  const user_id = getIdParam(req)
+  const user_id = req.params.id
   const uuid = uuidv4()
   const today = moment().format('YYYY-MM-DD')
   const {
@@ -858,7 +858,7 @@ router.post('/:id', upload.none(), async (req, res, next) => {
 })
 
 router.put('/:id', upload.none(), async (req, res, next) => {
-  const user_id = getIdParam(req)
+  const user_id = req.params.id
   const { id, numerical_order } = req.body
   const time = moment().format('YYYY-MM-DD HH:mm:ss')
   console.log(id, numerical_order)

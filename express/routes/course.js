@@ -25,15 +25,6 @@ router.get('/', async (req, res) => {
       })
     }
 
-    // const [courseName] = await dbPromise
-    //   .execute('SELECT `course_name` FROM `course` JOIN `course_category` ON ')
-    //   .catch((err) => {
-    //     if (err) {
-    //       console.error(err)
-    //       return []
-    //     }
-    //   })
-
     const [courseName] = await dbPromise
       .execute(
         `

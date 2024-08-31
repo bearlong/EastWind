@@ -1,5 +1,6 @@
 import React from 'react'
-import Link from 'next/link' // 假設使用 Next.js 的 Link 元件
+import Link from 'next/link'
+import Image from 'next/image'
 import styles from '@/styles/aa/classDetail.module.scss'
 
 // 隨機生成 ID 的函數
@@ -8,7 +9,7 @@ const generateRandomId = () => {
 }
 
 // 單個卡片組件
-const CourseCard = ({ id }) => {
+const CourseCard = ({ recommendData = {}, id }) => {
   return (
     <Link
       href={`/course/classDetail/`}
@@ -16,15 +17,26 @@ const CourseCard = ({ id }) => {
       key={id}
     >
       <div className={styles['sec2classtCard-aa']}>
-        <img
+        {/* <img
           src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
           alt="課程圖片"
           className={styles['sec2CardImg-aa']}
+        /> */}
+
+        <Image
+          src={`/images/aa/${id.images}` || ''}
+          alt={id.course_name || ''}
+          className={styles['sec2CardImg-aa']}
+          width={280}
+          height={175}
         />
+
         <div className={styles['sec2cardBody-aa']}>
           <div className={styles['declassName-aa']}>
-            <p>西洋棋國手教你下西洋棋</p>
-            <p>劉業揚＆楊元翰</p>
+            {/* <p>西洋棋國手教你下西洋棋</p>
+            <p>劉業揚＆楊元翰</p> */}
+            <p>{id.course_name}</p>
+            <p>{id.ch_name}</p>
           </div>
           <p
             style={{
@@ -33,7 +45,8 @@ const CourseCard = ({ id }) => {
               alignSelf: 'stretch',
             }}
           >
-            NT$450
+            {/* NT$450 */}
+            {id.price}
           </p>
         </div>
       </div>
