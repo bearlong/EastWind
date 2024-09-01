@@ -11,7 +11,6 @@ import LineLogo from '@/components/icons/line-logo'
 import GoogleLogoHover from '@/components/icons/google-logo-hover'
 import LineLogoHover from '@/components/icons/line-logo-hover' // 引入Line logo的hover狀態
 import { AuthContext } from '@/context/AuthContext'
-import axios from 'axios'
 import { lineLoginCallback } from '@/services/user'
 
 export default function Login() {
@@ -440,7 +439,7 @@ export default function Login() {
             </div>
           </div>
           <div
-            className={`${styles['user-login-option-bo']} d-flex justify-content-center align-items-center h6 mb-5`}
+            className={`${styles['user-login-option-bo']} d-flex justify-content-center align-items-center h6 `}
           >
             <ul className="d-flex gap-3  justify-content-center align-items-center">
               <li>
@@ -450,34 +449,10 @@ export default function Login() {
               <li>
                 <Link href="/user/register">立即註冊</Link>
               </li>
-              <li>|</li>
-              <li>
-                <button
-                  type="button"
-                  className={` btn h6 d-flex  justify-content-center  align-items-center`}
-                  onClick={onGoogleLoginSuccess} // 直接調用 onGoogleLoginSuccess
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
-                >
-                  {isHovered ? <GoogleLogoHover /> : <GoogleLogo />}
-                </button>
-              </li>
-              <li>|</li>
-              <li>
-                <button
-                  type="button"
-                  className={` btn h6 d-flex  justify-content-center  align-items-center`}
-                  onClick={goLineLogin} // 直接調用 onGoogleLoginSuccess
-                  onMouseEnter={() => setIsLineHovered(true)} // Line hover 狀態邏輯
-                  onMouseLeave={() => setIsLineHovered(false)} // Line hover 狀態邏輯
-                >
-                  {isLineHovered ? <LineLogoHover /> : <LineLogo />}
-                </button>
-              </li>
             </ul>
           </div>
           <div
-            className={`${styles['user-login-btn-bo']} d-flex justify-content-center align-items-center`}
+            className={`${styles['user-login-btn-bo']} d-flex justify-content-center align-items-center mb-4`}
           >
             <button
               type="button"
@@ -488,6 +463,39 @@ export default function Login() {
               <FaCheck />
             </button>
           </div>
+          <div
+            className={`${styles['divider']}  d-flex justify-content-center align-items-center h6 `}
+          >
+            <span className="">快速登入</span>
+          </div>
+
+          <ul
+            className={`${styles['user-fast-login-bo']} d-flex gap-3  justify-content-center align-items-center h6`}
+          >
+            <li>
+              <button
+                type="button"
+                className={` btn h6 d-flex  justify-content-center  align-items-center`}
+                onClick={onGoogleLoginSuccess} // 直接調用 onGoogleLoginSuccess
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              >
+                {isHovered ? <GoogleLogoHover /> : <GoogleLogo />}
+              </button>
+            </li>
+            <li>|</li>
+            <li>
+              <button
+                type="button"
+                className={` btn h6 d-flex  justify-content-center  align-items-center`}
+                onClick={goLineLogin} // 直接調用 onGoogleLoginSuccess
+                onMouseEnter={() => setIsLineHovered(true)} // Line hover 狀態邏輯
+                onMouseLeave={() => setIsLineHovered(false)} // Line hover 狀態邏輯
+              >
+                {isLineHovered ? <LineLogoHover /> : <LineLogo />}
+              </button>
+            </li>
+          </ul>
         </form>
       </div>
 

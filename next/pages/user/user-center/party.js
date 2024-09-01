@@ -2,10 +2,10 @@ import React, { useState, useContext, useEffect } from 'react'
 import UserCenterLayout from '@/components/layout/user-center-layout'
 import { AuthContext } from '@/context/AuthContext'
 import styles from '@/styles/boyu/user-party.module.scss'
+import { useRouter } from 'next/router'
 import {
   FaSort,
   FaXmark,
-  FaCommentDots,
   FaMagnifyingGlass,
   FaMoneyBill,
   FaPhone,
@@ -13,19 +13,28 @@ import {
   FaShop,
   FaUserGroup,
 } from 'react-icons/fa6'
-import { FaStar, FaMapMarkerAlt, FaChevronDown } from 'react-icons/fa'
+import { FaMapMarkerAlt, FaChevronDown } from 'react-icons/fa'
 
 import Link from 'next/link'
 
 export default function UserParty() {
-  const [activeSortIndex, setActiveSortIndex] = useState(0)
+  const router = useRouter()
   const { user } = useContext(AuthContext)
+
+  const [activeSortIndex, setActiveSortIndex] = useState(0)
   const [selectedStatus, setSelectedStatus] = useState('waiting')
   const [party, setParty] = useState([])
   const [role, setRole] = useState('主揪') // 新增角色狀態
 
   const [searchQuery, setSearchQuery] = useState('') // 用來存儲用戶輸入值的狀態
   const [searchKeyword, setSearchKeyword] = useState('') // 新增搜尋關鍵字狀態
+
+  // 如果 `user` 不存在，提前返回 `null`，避免後續渲染發生錯誤
+  useEffect(() => {
+    if (!user || !user.username) {
+      router.push('/home')
+    }
+  }, [])
 
   // 排序方式列表
   const sortOptions = [
@@ -38,11 +47,7 @@ export default function UserParty() {
   ]
 
   const changeStatus = (status) => {
-    if (status === 'cancelled') {
-      setSelectedStatus(['cancelled', 'failed'])
-    } else {
-      setSelectedStatus([status])
-    }
+    setSelectedStatus(status)
   }
 
   const changeRole = (newRole) => {
@@ -165,6 +170,8 @@ export default function UserParty() {
   }, [selectedStatus, role, user])
 
   const filteredParty = party.filter((item) => {
+    if (!user) return false
+
     const matchCompanyName = item.company_name.includes(searchKeyword)
     const matchOrderNumber = item.order_number
       .toString()
@@ -257,9 +264,15 @@ export default function UserParty() {
             <li
               onClick={() => changeStatus('cancelled')}
               className={`${styles['party-state-bo']} h6 ${
-                selectedStatus === 'cancelled' || selectedStatus === 'failed'
-                  ? styles['state-choose-bo']
-                  : ''
+                selectedStatus === 'cancelled' ? styles['state-choose-bo'] : ''
+              }`}
+            >
+              已取消
+            </li>
+            <li
+              onClick={() => changeStatus('failed')}
+              className={`${styles['party-state-bo']} h6 ${
+                selectedStatus === 'failed' ? styles['state-choose-bo'] : ''
               }`}
             >
               已流團
@@ -394,16 +407,22 @@ export default function UserParty() {
                           已完成
                         </div>
                       )}
-                      {(selectedStatus === 'cancelled' ||
-                        selectedStatus === 'failed') && (
+                      {selectedStatus === 'cancelled' && (
                         <div
                           className={`${styles['state-text-bo']} h6 d-flex justify-content-center align-items-center gap-2`}
                         >
                           <FaXmark />
-                          {selectedStatus === 'cancelled' ? '已取消' : '已流團'}
+                          已取消
                         </div>
                       )}
-
+                      {selectedStatus === 'failed' && (
+                        <div
+                          className={`${styles['state-text-bo']} h6 d-flex justify-content-center align-items-center gap-2`}
+                        >
+                          <FaXmark />
+                          已流團
+                        </div>
+                      )}
                       <h6>
                         <FaChevronDown
                           className={` ${styles['btn-detail-bo']}`}
@@ -455,7 +474,7 @@ export default function UserParty() {
 
                         <div className="d-flex flex-column justify-content-between align-items-center gap-3">
                           <Link
-                            href={`/lobby/Company/${item.id}`}
+                            href={`/lobby/Company/${item.company_id}`}
                             className={`${styles['btn-shop-detail']} btn p d-flex justify-content-center align-items-center`}
                           >
                             <FaMagnifyingGlass
@@ -468,19 +487,6 @@ export default function UserParty() {
                               <p>詳情</p>
                             </div>
                           </Link>
-
-                          <button
-                            className={`${styles['btn-rating']} btn p d-flex justify-content-center align-items-center`}
-                          >
-                            <FaStar className={` ${styles['icon-star-bo']}`} />
-
-                            <div
-                              className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
-                            >
-                              <p>評論</p>
-                              <p>店家</p>
-                            </div>
-                          </button>
                         </div>
                       </div>
 
@@ -537,10 +543,11 @@ export default function UserParty() {
                           </h6>
                         </div>
                       </div>
-                      <div></div>failed
+                      <div></div>
                       <div className="d-flex justify-content-center align-items-center gap-4">
                         {selectedStatus === 'waiting' && (
-                          <div
+                          <Link
+                            href={`/lobby/Party/${item.id}`}
                             className={`${styles['btn-party-bo']} btn h6 d-flex justify-content-center align-items-center gap-2`}
                           >
                             <FaUserGroup />
@@ -550,7 +557,7 @@ export default function UserParty() {
                               <p>參團</p>
                               <p>詳情</p>
                             </div>
-                          </div>
+                          </Link>
                         )}
                         {selectedStatus === 'completed' && (
                           <div
@@ -560,18 +567,22 @@ export default function UserParty() {
                             已完成
                           </div>
                         )}
-                        {(selectedStatus === 'cancelled' ||
-                          selectedStatus === 'failed') && (
+                        {selectedStatus === 'cancelled' && (
                           <div
                             className={`${styles['state-text-bo']} h6 d-flex justify-content-center align-items-center gap-2`}
                           >
                             <FaXmark />
-                            {selectedStatus === 'cancelled'
-                              ? '已取消'
-                              : '已流團'}
+                            已取消
                           </div>
                         )}
-
+                        {selectedStatus === 'failed' && (
+                          <div
+                            className={`${styles['state-text-bo']} h6 d-flex justify-content-center align-items-center gap-2`}
+                          >
+                            <FaXmark />
+                            已流團
+                          </div>
+                        )}
                         <h6>
                           <FaChevronDown
                             className={` ${styles['btn-detail-bo']}`}
@@ -624,7 +635,7 @@ export default function UserParty() {
 
                         <div className="d-flex flex-row flex-sm-column justify-content-between align-items-center gap-3">
                           <Link
-                            href={`/lobby/Company/${item.id}`}
+                            href={`/lobby/Company/${item.company_id}`}
                             className={`${styles['btn-shop-detail']} btn p d-flex justify-content-center align-items-center`}
                           >
                             <FaMagnifyingGlass
@@ -637,19 +648,6 @@ export default function UserParty() {
                               <p>詳情</p>
                             </div>
                           </Link>
-
-                          <button
-                            className={`${styles['btn-rating']} btn p d-flex justify-content-center align-items-center`}
-                          >
-                            <FaStar className={` ${styles['icon-star-bo']}`} />
-
-                            <div
-                              className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
-                            >
-                              <p>評論</p>
-                              <p>店家</p>
-                            </div>
-                          </button>
                         </div>
                       </div>
 

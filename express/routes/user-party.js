@@ -74,11 +74,7 @@ router.get('/:userId/:status', async (req, res) => {
         user AS user_join3 ON party.userID_join3 = user_join3.id
       WHERE 
         (party.userID_main = ? OR party.userID_join1 = ? OR party.userID_join2 = ? OR party.userID_join3 = ?)
-        AND (
-          party.status = ? 
-          OR (party.status = 'cancelled' AND ? = 'failed')
-          OR (party.status = 'failed' AND ? = 'cancelled')
-        )
+        AND party.status = ?
       ORDER BY 
         party.date DESC,
         party.start_at DESC;
@@ -88,8 +84,6 @@ router.get('/:userId/:status', async (req, res) => {
       userId,
       userId,
       userId,
-      status,
-      status,
       status,
     ])
     res.status(200).json({ status: 'success', data: { partys } })
@@ -149,11 +143,7 @@ router.get('/join/:userId/:status', async (req, res) => {
         user AS user_join3 ON party.userID_join3 = user_join3.id
       WHERE 
         (party.userID_main = ? OR party.userID_join1 = ? OR party.userID_join2 = ? OR party.userID_join3 = ?)
-        AND (
-          party.status = ? 
-          OR (party.status = 'cancelled' AND ? = 'failed')
-          OR (party.status = 'failed' AND ? = 'cancelled')
-        )
+        AND party.status = ?
       ORDER BY 
         party.date DESC,
         party.start_at DESC;
@@ -163,8 +153,6 @@ router.get('/join/:userId/:status', async (req, res) => {
       userId,
       userId,
       userId,
-      status,
-      status,
       status,
     ])
     res.status(200).json({ status: 'success', data: { partys } })
