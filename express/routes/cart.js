@@ -144,7 +144,6 @@ router.put('/:id/product/:oid', upload.none(), async (req, res) => {
       'UPDATE `cart` SET `quantity` = ? WHERE `user_id` = ? AND `object_id` = ? AND `object_type` = "product"',
       [quantity, id, oid]
     )
-    console.log(result)
     if (result.changedRows >= 1) {
       const [cart] = await dbPromise.execute(
         'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',

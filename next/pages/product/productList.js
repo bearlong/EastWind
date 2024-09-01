@@ -382,10 +382,9 @@ export default function ProductList() {
   useEffect(() => {
     if (user) {
       getFavorite()
-    } else {
-      setFavorite([])
     }
   }, [user])
+
   const [autoplay, setAutoplay] = useState({
     delay: 2500,
     disableOnInteraction: false,
