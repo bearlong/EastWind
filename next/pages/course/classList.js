@@ -116,7 +116,7 @@ export default function ClassList() {
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
             </div>
-            <Link href={`/course/classListCate?category_id=1`}>
+            <Link href={`/course/classListCate?category_id=4`}>
               <div className={`${styles['btn-more']} d-flex`}>
                 <p>查看更多</p>
                 <svg
@@ -154,7 +154,7 @@ export default function ClassList() {
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
             </div>
-            <Link href={`/course/classListCate?category_id=1`}>
+            <Link href={`/course/classListCate?category_id=2`}>
               <div className={`${styles['btn-more']} d-flex`}>
                 <p>查看更多</p>
                 <svg
@@ -192,7 +192,7 @@ export default function ClassList() {
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
             </div>
-            <Link href={`/course/classListCate?category_id=1`}>
+            <Link href={`/course/classListCate?category_id=3`}>
               <div className={`${styles['btn-more']} d-flex`}>
                 <p>查看更多</p>
                 <svg
@@ -268,7 +268,7 @@ export default function ClassList() {
                   <ClassCard key={classItem.id} courseData={classItem} />
                 ))}
             </div>
-            <Link href={`/course/classListCate?category_id=1`}>
+            <Link href={`/course/classListCate?category_id=5`}>
               <div className={`${styles['btn-more']} d-flex`}>
                 <p>查看更多</p>
                 <svg
