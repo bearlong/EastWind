@@ -1,13 +1,13 @@
 import Head from 'next/head'
-import { useLoader } from '@/hooks/use-loader'
+import Loading from '@/components/user/loading' // 引入 Loading 元件
 import ToTheTop from '@/components/icons/to-the-top'
 import HeaderAdmin from './headerAdmin.jsx'
 import Footer from '../default-layout/footer.jsx'
 import AdminSidebar from './admin-sidebar.js'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 
 export default function AdminCenterLayout({ title = '只欠東風', children }) {
-  const { loader } = useLoader()
-
   return (
     <>
       <HeaderAdmin>
@@ -19,8 +19,6 @@ export default function AdminCenterLayout({ title = '只欠東風', children }) 
           <AdminSidebar />
           <ToTheTop />
           {children}
-          {/* 全域的載入動畫指示器 */}
-          {loader()}
         </section>
       </main>
       <Footer />

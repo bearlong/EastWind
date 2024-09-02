@@ -17,23 +17,24 @@ export default function Login() {
   const router = useRouter()
 
   // 定義狀態來管理表單輸入值和錯誤訊息
-  const [account, setAccount] = useState('')
-  const [password, setPassword] = useState('')
-  const [accountError, setAccountError] = useState('')
-  const [passwordError, setPasswordError] = useState('')
+  const [account, setAccount] = useState('') // 保存帳號的狀態
+  const [password, setPassword] = useState('') // 保存密碼的狀態
+  const [accountError, setAccountError] = useState('') // 保存帳號錯誤訊息的狀態
+  const [passwordError, setPasswordError] = useState('') // 保存密碼錯誤訊息的狀態
   const { login } = useAuth() // 從 useAuth 中解構獲取  和 setUser
   const { loginGoogle } = useFirebase() // 使用 Google 登入功能
   const { setUser, user, setToken, setAuth, initUserData } =
-    useContext(AuthContext)
-  const [isHovered, setIsHovered] = useState(false)
-  const [isLineHovered, setIsLineHovered] = useState(false) // 定義 Line hover 狀態
+    useContext(AuthContext) // 獲取 AuthContext 中的上下文資料
+  const [isHovered, setIsHovered] = useState(false) // 定義 Google logo 的 hover 狀態
+  const [isLineHovered, setIsLineHovered] = useState(false) // 定義 Line logo 的 hover 狀態
 
   // 從 localStorage 中讀取賬號並設置到狀態中
   useEffect(() => {
-    const storedAccount = localStorage.getItem('savedAccount') || ''
+    const storedAccount = localStorage.getItem('savedAccount') || '' // 從 localStorage 取得已保存的帳號
     setAccount(storedAccount)
   }, [])
 
+  // 如果已註冊過帳號，從 localStorage 讀取帳號和密碼
   useEffect(() => {
     const storedAccount = localStorage.getItem('registeredAccount') || ''
     const storedPassword = localStorage.getItem('registeredPassword') || ''
@@ -67,7 +68,7 @@ export default function Login() {
       const result = await login(account, password) // 等待登入結果
 
       if (result.success) {
-        onLoginSuccess(result.name)
+        onLoginSuccess(result.name) // 如果登錄成功，調s用 onLoginSuccess 處理後續邏輯
       } else {
         // 根據返回的錯誤訊息設置相應的錯誤狀態
         if (result.message.includes('帳號')) {
@@ -78,7 +79,7 @@ export default function Login() {
         }
       }
     } catch (error) {
-      setAccountError('發生未知錯誤，請稍後再試')
+      setAccountError('發生未知錯誤，請稍後再試') // 捕獲異常並設置錯誤訊息
     }
   }
 
@@ -103,9 +104,11 @@ export default function Login() {
       console.log('Login Result:', result)
 
       if (result.status === 'success') {
+        // 保存登錄的 Token
         localStorage.setItem('refreshToken', result.refreshToken)
         localStorage.setItem('accessToken', result.accessToken)
 
+        // 設置用戶資料
         setUser({
           id: result.id,
           name: result.name,
@@ -114,6 +117,7 @@ export default function Login() {
         })
 
         if (result.isNewUser) {
+          // 如果是新用戶，顯示歡迎提示並跳轉到主頁
           localStorage.setItem('showWelcomeAlert', 'true')
           window.location.href = '/home'
         } else {
@@ -134,6 +138,7 @@ export default function Login() {
           })
         }
       } else {
+        // 顯示 Google 登入失敗提示
         Swal.fire({
           title: 'Google 登入失敗',
           html: `<span class="p">請稍後再試</span>`,
@@ -164,7 +169,7 @@ export default function Login() {
     }
   }
 
-  // 處理登入
+  // 處理 Line 登入邏輯
   const goLineLogin = async () => {
     try {
       const response = await fetch(
@@ -181,14 +186,14 @@ export default function Login() {
       const data = await response.json()
 
       if (data.url) {
-        window.location.href = data.url
+        window.location.href = data.url // 重定向至 Line 登錄頁面
       }
     } catch (error) {
       console.error('Login Error:', error)
     }
   }
 
-  // 處理line登入後，要向伺服器進行登入動作
+  // 處理 Line 登入後的回調邏輯，將用戶信息傳遞至後端
   const callbackLineLogin = async (query) => {
     try {
       const res = await lineLoginCallback(query)
@@ -199,6 +204,7 @@ export default function Login() {
         localStorage.setItem('accessToken', accessToken)
         localStorage.setItem('refreshToken', refreshToken)
 
+        // 設置用戶資料
         setUser({
           id: returnUser.id,
           name: returnUser.username,
@@ -208,9 +214,11 @@ export default function Login() {
         })
 
         if (isNewUser) {
+          // 如果是新用戶，顯示歡迎提示並跳轉到主頁
           localStorage.setItem('showWelcomeAlert', 'true')
           window.location.href = '/home'
         } else {
+          // 顯示歡迎回來提示
           Swal.fire({
             title: '登入成功！',
             html: `<span class="p">${returnUser.username} 歡迎回來！</span>`,
@@ -235,22 +243,21 @@ export default function Login() {
     }
   }
 
-  // 從line登入畫面後回調到本頁面用
+  // 從 line 登入畫面後回調到本頁面用
   useEffect(() => {
-    // 水合作用(hydration)保護，以免得不到window全域物件
     if (router.isReady) {
-      // 判斷是否有query.code(網址上沒有code是進登入頁的時候)
+      // 判斷是否有 query.code，若無則不處理
       if (!router.query.code) return
-      // 發送至後端伺服器得到line會員資料
+      // 發送至後端伺服器得到 line 會員資料
       callbackLineLogin(router.query)
     }
-    // eslint-disable-next-line
   }, [router.isReady, router.query])
 
   // 成功登入後的處理邏輯
   const onLoginSuccess = (name) => {
     const registeredAccount = localStorage.getItem('registeredAccount')
     if (registeredAccount && registeredAccount === account) {
+      // 如果是剛註冊的帳號，移除 localStorage 中的臨時帳號和密碼
       localStorage.removeItem('registeredAccount')
       localStorage.removeItem('registeredPassword')
       Swal.fire({
@@ -265,7 +272,7 @@ export default function Login() {
         },
         confirmButtonText: '確認',
       }).then(() => {
-        router.push('/user/user-center/info-edit')
+        router.push('/user/user-center/info-edit') // 引導用戶到資料編輯頁面
       })
     } else {
       Swal.fire({
@@ -296,25 +303,25 @@ export default function Login() {
 
     const toggleFormActive = (event) => {
       if (!userForm.contains(event.target)) {
-        userForm.classList.toggle(styles.active)
+        userForm.classList.toggle(styles.active) // 點擊時切換表單的 active 樣式
       }
     }
 
     const deactivateForm = () => {
       if (!userForm.classList.contains(styles['form-focused'])) {
-        userForm.classList.remove(styles.active)
+        userForm.classList.remove(styles.active) // 當表單未聚焦時，移除 active 樣式
       }
     }
 
     const focusInput = () => {
       userBox.classList.add(styles.hover)
-      userForm.classList.add(styles['form-focused'])
+      userForm.classList.add(styles['form-focused']) // 當輸入框獲得焦點時添加 focused 樣式
     }
 
     const blurInput = () => {
       userForm.classList.remove(styles['form-focused'])
       if (!userForm.contains(document.activeElement)) {
-        userBox.classList.remove(styles.hover)
+        userBox.classList.remove(styles.hover) // 當輸入框失去焦點且不在表單內時移除 hover 樣式
       }
     }
 
@@ -344,25 +351,25 @@ export default function Login() {
 
     const toggleFormActive = (event) => {
       if (!companyForm.contains(event.target)) {
-        companyForm.classList.toggle(styles.active)
+        companyForm.classList.toggle(styles.active) // 點擊時切換表單的 active 樣式
       }
     }
 
     const deactivateForm = () => {
       if (!companyForm.classList.contains(styles['form-focused'])) {
-        companyForm.classList.remove(styles.active)
+        companyForm.classList.remove(styles.active) // 當表單未聚焦時，移除 active 樣式
       }
     }
 
     const focusInput = () => {
       companyBox.classList.add(styles.hover)
-      companyForm.classList.add(styles['form-focused'])
+      companyForm.classList.add(styles['form-focused']) // 當輸入框獲得焦點時添加 focused 樣式
     }
 
     const blurInput = () => {
       companyForm.classList.remove(styles['form-focused'])
       if (!companyForm.contains(document.activeElement)) {
-        companyBox.classList.remove(styles.hover)
+        companyBox.classList.remove(styles.hover) // 當輸入框失去焦點且不在表單內時移除 hover 樣式
       }
     }
 
@@ -488,7 +495,7 @@ export default function Login() {
               <button
                 type="button"
                 className={` btn h6 d-flex  justify-content-center  align-items-center`}
-                onClick={goLineLogin} // 直接調用 onGoogleLoginSuccess
+                onClick={goLineLogin} // 直接調用 Line 登錄邏輯
                 onMouseEnter={() => setIsLineHovered(true)} // Line hover 狀態邏輯
                 onMouseLeave={() => setIsLineHovered(false)} // Line hover 狀態邏輯
               >
