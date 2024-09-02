@@ -6,6 +6,8 @@ import { FaStar, FaHeart, FaMapMarkerAlt, FaClock } from 'react-icons/fa'
 import { AuthContext } from '@/context/AuthContext'
 import Link from 'next/link'
 import Swal from 'sweetalert2'
+import SearchBar from '@/components/user-favorite/SearchBar'
+import FavoriteTabs from '@/components/user-favorite/FavoriteTabs'
 
 export default function UserFavorite() {
   const [activeTab, setActiveTab] = useState('product') // 預設顯示 "課程"
@@ -127,62 +129,14 @@ export default function UserFavorite() {
 
   return (
     <div className={`${styles['user-favorite-box-bo']} w-100`}>
-      <div
-        className={`${styles['search-box-bo']} d-flex flex-column flex-sm-row justify-content-center align-items-center gap-lg-4 gap-3 `}
-      >
-        <h6>搜尋最愛</h6>
-        <input
-          type="text"
-          placeholder="請輸入關鍵字"
-          className={`${styles['input-search-bo']} p`}
-          value={searchQuery} // 綁定搜尋關鍵字
-          onChange={searchInputChange} // 更新搜尋關鍵字並監聽輸入
-        />
-        <button
-          className={`${styles['btn-search']} h6 d-flex justify-content-between align-items-center`}
-          onClick={triggerSearch} // 點擊後觸發搜尋
-        >
-          <FaMagnifyingGlass />
-        </button>
-      </div>
+      <SearchBar
+        searchQuery={searchQuery}
+        onSearchInputChange={searchInputChange}
+        onTriggerSearch={triggerSearch}
+      />
 
       <div className={`${styles['favorite-list-box-bo']} flex-column d-flex`}>
-        <div className={styles['favorite-list-head-bo']}>
-          <ul
-            className={`${styles['favorite-state-box-bo']} d-flex justify-content-around align-items-center text-center`}
-          >
-            <li>
-              <button
-                onClick={() => setActiveTab('product')}
-                className={`${styles['favorite-state-bo']} h5 ${
-                  activeTab === 'product' ? styles['state-choose-bo'] : ''
-                }`}
-              >
-                商品
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => setActiveTab('company')}
-                className={`${styles['favorite-state-bo']} h5 ${
-                  activeTab === 'company' ? styles['state-choose-bo'] : ''
-                }`}
-              >
-                棋牌室
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => setActiveTab('course')}
-                className={`${styles['favorite-state-bo']} h5 ${
-                  activeTab === 'course' ? styles['state-choose-bo'] : ''
-                }`}
-              >
-                課程
-              </button>
-            </li>
-          </ul>
-        </div>
+        <FavoriteTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
         <div
           className={`${styles['favorite-list-body-bo']} d-flex flex-column justify-content-center align-items-center gap-5`}
@@ -201,7 +155,6 @@ export default function UserFavorite() {
                     <Link
                       key={index}
                       href={`  /course/detail?id=${favorite.id}`}
-                      className={`w-100`}
                     >
                       <div
                         className={`${styles['courseCard']} d-flex flex-column justify-content-center align-items-center`}
@@ -275,11 +228,7 @@ export default function UserFavorite() {
               {activeTab === 'product' && (
                 <div className={styles['favorite-product-box-bo']}>
                   {favorites.slice(0, visibleCount).map((favorite, index) => (
-                    <Link
-                      key={index}
-                      href={`/product/${favorite.id}`}
-                      className={`w-100`}
-                    >
+                    <Link key={index} href={`/product/${favorite.id}`}>
                       <div
                         className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
                       >

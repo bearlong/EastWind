@@ -18,7 +18,7 @@ export default function CourseSection() {
     isLastSlide: false,
     isFirstSlide: true,
   })
-  const [hoveredIndex, setHoveredIndex] = useState(null)
+  const [hoveredIndex, setHoveredIndex] = useState(null) // 用於管理滑鼠懸停的索引
 
   const mahjongIconsCourse = [
     {

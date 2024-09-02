@@ -4,15 +4,123 @@ import Link from 'next/link'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Autoplay } from 'swiper/modules'
 import 'swiper/css'
+import anime from 'animejs/lib/anime.min.js'
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 
-export default function ProductSection({ mahjongProducts }) {
+export default function ProductSection() {
   const mahjongSectionRef = useRef(null) // 用於觀察麻將區域
-  const [mahjongVisible, setMahjongVisible] = useState(false) // Mahjong Icons 的可見狀態
+  const boardGameSectionRef = useRef(null) // 用於觀察桌遊區域
   const [swiperReady, setSwiperReady] = useState(false) // Swiper 初始化狀態
+  const productSectionRef = useRef(null) // 引用 product 區域
+
+  const [mahjongProducts, setMahjongProducts] = useState([]) // 麻將產品
+  const [boardGameProducts, setBoardGameProducts] = useState([]) // 桌遊產品
+
+  // 各種可見狀態
+  const [mahjongVisible, setMahjongVisible] = useState(false)
+  const [boardGameVisible, setBoardGameVisible] = useState(false)
+
+  // Mahjong, BoardGame 和 Course Swiper 狀態管理
+  const [mahjongSwiperState, setMahjongSwiperState] = useState({
+    isLastSlide: false,
+    isFirstSlide: true,
+  })
+  const [boardGameSwiperState, setBoardGameSwiperState] = useState({
+    isLastSlide: false,
+    isFirstSlide: true,
+  })
+
+  const mahjongIconsProduct = [
+    {
+      src: '/images/boyu/mahjong/Pin1.svg',
+      hidden: '',
+    },
+    {
+      src: '/images/boyu/mahjong/Pin2.svg',
+      hidden: '',
+    },
+    {
+      src: '/images/boyu/mahjong/Pin3.svg',
+      hidden: 'd-none d-sm-block',
+    },
+  ]
 
   // 設置 Swiper 準備狀態
   useEffect(() => {
     setSwiperReady(true)
+  }, [])
+
+  // 獲取產品資料
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('http://localhost:3005/api/home/products')
+        const data = await response.json()
+        if (response.ok) {
+          setMahjongProducts(data.mahjongProducts)
+          setBoardGameProducts(data.boardGameProducts)
+        } else {
+          console.error('Failed to fetch products:', data.message)
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error)
+      }
+    }
+
+    fetchProducts()
+  }, [])
+
+  // 使用 IntersectionObserver 觀察麻將區域
+  useEffect(() => {
+    if (mahjongSectionRef.current) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setMahjongVisible(true)
+              observer.unobserve(entry.target)
+            }
+          })
+        },
+        {
+          threshold: 0.5,
+        }
+      )
+
+      observer.observe(mahjongSectionRef.current)
+
+      return () => {
+        if (mahjongSectionRef.current) {
+          observer.unobserve(mahjongSectionRef.current)
+        }
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (boardGameSectionRef.current) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setBoardGameVisible(true)
+              observer.unobserve(entry.target)
+            }
+          })
+        },
+        {
+          threshold: 0.5,
+        }
+      )
+
+      observer.observe(boardGameSectionRef.current)
+
+      return () => {
+        if (boardGameSectionRef.current) {
+          observer.unobserve(boardGameSectionRef.current)
+        }
+      }
+    }
   }, [])
 
   useEffect(() => {
@@ -20,7 +128,14 @@ export default function ProductSection({ mahjongProducts }) {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setMahjongVisible(true)
+            anime({
+              targets: `.${styles['icon-mahjong-bo-product']}`,
+              opacity: [0, 1],
+              translateY: [-20, 0],
+              easing: 'easeOutExpo',
+              delay: anime.stagger(200),
+              duration: 800,
+            })
             observer.unobserve(entry.target)
           }
         })
@@ -28,8 +143,8 @@ export default function ProductSection({ mahjongProducts }) {
       { threshold: 0.5 }
     )
 
-    if (mahjongSectionRef.current) {
-      observer.observe(mahjongSectionRef.current)
+    if (productSectionRef.current) {
+      observer.observe(productSectionRef.current)
     }
 
     return () => observer.disconnect()
