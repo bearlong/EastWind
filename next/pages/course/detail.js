@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useContext } from 'react'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 import Image from 'next/image'
@@ -10,6 +10,9 @@ import Content from '@/components/course/content'
 import Recommends from '@/components/course/recommends'
 import PacmanLoader from 'react-spinners/PacmanLoader'
 import VideoPlayer from '@/components/course/video'
+import { Button } from 'react-bootstrap'
+import { AuthContext } from '@/context/AuthContext'
+import { useCart } from '@/hooks/use-cart'
 
 const override = {
   display: 'block',
@@ -18,6 +21,8 @@ const override = {
 }
 
 export default function Detail() {
+  const { handleAdd = () => {}, handleShow = () => {} } = useCart()
+  const { user } = useContext(AuthContext)
   const [courses, setCourses] = useState([])
   const router = useRouter()
   const [id, setId] = useState(null)
@@ -29,6 +34,8 @@ export default function Detail() {
   const [isCollapsed, setIsCollapsed] = useState(false) // 用於控制顯示/隱藏
   const { course_id, category_id } = router.query
   const chapterRef = useRef(null)
+
+  console.log(user)
 
   // 向伺服器連線的程式碼；向伺服器fetch獲取資料
   const getCourses = async () => {
@@ -138,7 +145,7 @@ export default function Detail() {
             </div>
 
             {Object.values(courses)
-              .filter((course) => course.id === id)
+              .filter((course) => course.id === Number(id))
               .map((course) => (
                 <div className={styles['detextright1-aa']} key={course.id}>
                   <div className={styles['detextright2-aa']}>
@@ -177,21 +184,22 @@ export default function Detail() {
                     </div>
                   </div>
                   <div className={styles['detextright6-aa']}>
-                    <div className={styles['BTNde1-aa']}>
+                    <button className={styles['BTNde1-aa']}>
                       <div className={styles['BUTTONde1-aa']}>
                         <h5>立即購買</h5>
                       </div>
-                    </div>
-                    <div className={styles['BTNde2-aa']}>
+                    </button>
+                    <button
+                      className={styles['BTNde2-aa']}
+                      //  onClick={}
+                    >
                       <div className={styles['BUTTONde2-aa']}>
                         <h5>加入購物車</h5>
                       </div>
-                    </div>
+                    </button>
                   </div>
                 </div>
               ))}
-
-            {/* <CourseInfo /> */}
           </div>
         </div>
         <div className={styles['texth2detail2-aa']}>
@@ -207,13 +215,6 @@ export default function Detail() {
               <Content key={course.id} contentData={course} />
             ))}
         </div>
-        {/* <div className={styles['classCards-aa']}>
-          {Object.values(courses)
-            .filter((course) => course.id === id)
-            .map((course) => (
-              <Content key={course.id} contentData={course} />
-            ))}
-        </div> */}
         <div className={styles['texth2detail2-aa']}>
           <div className={styles['texth2detail21-aa']}>
             <h2 style={{ paddingTop: '3rem' }} ref={chapterRef}>
@@ -390,104 +391,6 @@ export default function Detail() {
                 </svg>
               </div>
             </div>
-            {/* <div className={styles['sec2cardgroup-aa']}>
-              <Link href={`/course/classList`} className={styles['card-link']}>
-                <div className={styles['sec2classtCard-aa']}>
-                  <img
-                    src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                    alt=""
-                    className={styles['sec2CardImg-aa']}
-                  />
-                  <div className={styles['sec2cardBody-aa']}>
-                    <div className={styles['declassName-aa']}>
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p>劉業揚＆楊元翰</p>
-                    </div>
-                    <p
-                      style={{
-                        color: 'var(--text-color, #0e0e0e)',
-                        textAlign: 'center',
-                        alignSelf: 'stretch',
-                      }}
-                    >
-                      NT$450
-                    </p>
-                  </div>
-                </div>
-              </Link>
-              <Link href={`/course/classList`} className={styles['card-link']}>
-                <div className={styles['sec2classtCard-aa']}>
-                  <img
-                    src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                    alt=""
-                    className={styles['sec2CardImg-aa']}
-                  />
-                  <div className={styles['sec2cardBody-aa']}>
-                    <div className={styles['declassName-aa']}>
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p>劉業揚＆楊元翰</p>
-                    </div>
-                    <p
-                      style={{
-                        color: 'var(--text-color, #0e0e0e)',
-                        textAlign: 'center',
-                        alignSelf: 'stretch',
-                      }}
-                    >
-                      NT$450
-                    </p>
-                  </div>
-                </div>
-              </Link>
-              <Link href={`/course/classList`} className={styles['card-link']}>
-                <div className={styles['sec2classtCard-aa']}>
-                  <img
-                    src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                    alt=""
-                    className={styles['sec2CardImg-aa']}
-                  />
-                  <div className={styles['sec2cardBody-aa']}>
-                    <div className={styles['declassName-aa']}>
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p>劉業揚＆楊元翰</p>
-                    </div>
-                    <p
-                      style={{
-                        color: 'var(--text-color, #0e0e0e)',
-                        textAlign: 'center',
-                        alignSelf: 'stretch',
-                      }}
-                    >
-                      NT$450
-                    </p>
-                  </div>
-                </div>
-              </Link>
-              <Link href={`/course/classList`} className={styles['card-link']}>
-                <div className={styles['sec2classtCard-aa']}>
-                  <img
-                    src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                    alt=""
-                    className={styles['sec2CardImg-aa']}
-                  />
-                  <div className={styles['sec2cardBody-aa']}>
-                    <div className={styles['declassName-aa']}>
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p>劉業揚＆楊元翰</p>
-                    </div>
-                    <p
-                      style={{
-                        color: 'var(--text-color, #0e0e0e)',
-                        textAlign: 'center',
-                        alignSelf: 'stretch',
-                      }}
-                    >
-                      NT$450
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            </div> */}
             <Recommends />
             <div className={styles['btn-more-mini-r-aa']}>
               <div className={styles['Ellipse-r-aa']}>

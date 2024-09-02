@@ -5,9 +5,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 import styles from '@/styles/aa/classListCate.module.scss'
 import ClassCard from '@/components/course/card'
+import { useLocation } from 'react-router-dom'
 
 export default function ClassListCate() {
   const router = useRouter()
+  const [id, setId] = useState(null)
+  // const [category_id, setCategory_id] = useState(null)
   const { category_id } = router.query
   const [courses, setCourses] = useState({ list: [] })
   const [pages, setPages] = useState()
@@ -37,6 +40,11 @@ export default function ClassListCate() {
     getCourses()
   }, [])
 
+  // useEffect(() => {
+  //   const params = new URLSearchParams(window.location.search)
+  //   setId(parseInt(params.get('category_id'), 10))
+  // }, [])
+
   // const handleCardClick = (courseId) => {
   //   router.push(`/course/detail/${courseId}`)
   // }
@@ -46,19 +54,23 @@ export default function ClassListCate() {
       setPages((page) => page + 1)
     }
   }
-
+  console.log(Object.values(courses), category_id)
   return (
     <>
       <div className="container">
         <div className={styles['desktopList2-aa']}>
           <div className={styles['sec1-aa']}>
             <div className={styles['text12-aa']}>
-              <h2>麻將 課程排行</h2>
+              {/* <h2>麻將 課程排行</h2> */}
+              <h2>{courses.ch_name} 課程排行</h2>
             </div>
             <div className={styles['classCards-aa']}>
               {courses &&
                 Object.values(courses)
                   .flat()
+                  .filter(
+                    (course) => course.category_id === Number(category_id)
+                  )
                   .slice(0, 4)
                   .map((course, index) => (
                     <ClassCard
@@ -98,11 +110,13 @@ export default function ClassListCate() {
           </div>
           <div className={styles['texth22-aa']}>
             <h2>麻將課程 列表</h2>
+            {/* <h2>{courses.ch_name}課程 列表</h2> */}
           </div>
           <div className={styles['sec2']}>
             <div className={styles['text2-aa']}>
               <div className={styles['navBarContent-aa']}>
                 <h5>36 課程</h5>
+                {/* <h5>{courses.total} 課程</h5> */}
                 <div className={styles['iconGroup-aa']}>
                   <div className={styles['button22']}>
                     <div className={styles['button23-aa']}>
@@ -156,13 +170,23 @@ export default function ClassListCate() {
             <div className={styles['cardgroup22-aa']}>
               <div className={styles['classCards-aa']}>
                 {courses &&
-                  courses.length > 0 &&
-                  courses.map((course, index) => (
-                    <ClassCard key={course.id} courseData={course} />
-                  ))}
+                  Object.values(courses)
+                    .flat()
+                    .filter(
+                      (course) => course.category_id === Number(category_id)
+                    )
+                    .map((course, index) => (
+                      <ClassCard key={course.id} courseData={course} />
+                    ))}
+                {/* {courses &&
+                  Object.values(courses)
+                    .flat()
+                    .filter((course) => course.category_id === category_id)
+                    .slice(0, 4)
+                    .map((course, index) => (
+                      <ClassCard key={course.id} courseData={course} />
+                    ))} */}
               </div>
-              {/* <div className={styles['classCards-aa']}>
-                <ClassCard /> */}
             </div>
           </div>
           <div className={styles['sec23-aa']}>
@@ -204,7 +228,6 @@ export default function ClassListCate() {
               </div>
               <div className={`${styles['btn-more']} d-flex`}>
                 <p>查看更多</p>
-                {/* <i class="edit-icon"></i> */}
                 <svg
                   className={styles['btn-more1']}
                   xmlns="http://www.w3.org/2000/svg"

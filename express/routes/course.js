@@ -25,28 +25,6 @@ router.get('/', async (req, res) => {
       })
     }
 
-    const [courseName] = await dbPromise
-      .execute(
-        `
-      SELECT 
-        \`course\`.\`course_id\`, 
-        \`course\`.\`course_name\`,
-        \`course_category\`.\`ch_name\` 
-      FROM 
-        \`course\`
-      JOIN 
-        \`course_category\` 
-      ON 
-        \`course\`.\`category_id\` = \`course_category\`.\`course_id\`;
-    `
-      )
-      .catch((err) => {
-        if (err) {
-          console.error(err)
-          return []
-        }
-      })
-
     return res.status(200).json({
       status: 'success',
       data: { courses: list },
