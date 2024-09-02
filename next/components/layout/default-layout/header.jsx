@@ -28,6 +28,7 @@ export default function Header() {
     handleRemove = () => {},
     handleShow = () => {},
     handleClose = () => {},
+    cartTotal,
   } = useCart()
 
   const { logout } = useAuth()
@@ -252,6 +253,7 @@ export default function Header() {
         handleRemove={handleRemove}
         remark={remark}
         setRemark={setRemark}
+        cartTotal={cartTotal}
       />
     </>
   )

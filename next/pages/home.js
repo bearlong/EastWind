@@ -10,6 +10,7 @@ import anime from 'animejs/lib/anime.min.js'
 import Swal from 'sweetalert2'
 import { useRouter } from 'next/router'
 import { AuthContext } from '@/context/AuthContext'
+import MouseMove from '@/components/mouseMove'
 
 export default function Home() {
   const router = useRouter()
@@ -219,6 +220,67 @@ export default function Home() {
         '東方智慧的象徵。九宮格內，百變的戰術。將帥一動，乾坤大挪移。車馬炮卒，各司其職。一步錯，全盤皆輸。簡單易學，樂趣無窮。',
     },
   ]
+
+  const [isFront, setIsFront] = useState(true)
+  const [deg, setDeg] = useState(0)
+
+  const [imgSrc, setImgSrc] = useState('/Ton.svg')
+
+  const mahjongArr = [
+    'Ton.svg',
+    'Shaa.svg',
+    'Pei.svg',
+    'Nan.svg',
+    'Chun.svg',
+    'Front.svg',
+    'Haku.svg',
+    'Hatsu.svg',
+    'Man1.svg',
+    'Man2.svg',
+    'Man3.svg',
+    'Man4.svg',
+    'Man5.svg',
+    'Man6.svg',
+    'Man7.svg',
+    'Man8.svg',
+    'Man9.svg',
+    'Pin1.svg',
+    'Pin2.svg',
+    'Pin3.svg',
+    'Pin4.svg',
+    'Pin5.svg',
+    'Pin6.svg',
+    'Pin7.svg',
+    'Pin8.svg',
+    'Pin9.svg',
+    'Sou1.svg',
+    'Sou2.svg',
+    'Sou3.svg',
+    'Sou4.svg',
+    'Sou5.svg',
+    'Sou6.svg',
+    'Sou7.svg',
+    'Sou8.svg',
+    'Sou9.svg',
+  ]
+
+  const handleClick = () => {
+    setIsFront((prevIsFront) => {
+      if (!prevIsFront) {
+        const randomIndex = Math.floor(Math.random() * mahjongArr.length)
+        setImgSrc(`/${mahjongArr[randomIndex]}`)
+      }
+      return !prevIsFront
+    })
+    setDeg((prevDeg) => prevDeg + 180)
+  }
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      handleClick()
+    }, 1500)
+
+    return () => clearInterval(intervalId)
+  }, [])
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -505,6 +567,7 @@ export default function Home() {
         </div>
       )}
       <main>
+        <MouseMove deg={deg} imgSrc={imgSrc} />
         {/* 主視覺 */}
         <section
           className={`${styles['hero-section-bo']} text-center d-flex justify-content-center align-items-center`}
