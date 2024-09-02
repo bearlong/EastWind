@@ -190,8 +190,6 @@ export default function Detail() {
                   </div>
                 </div>
               ))}
-
-            {/* <CourseInfo /> */}
           </div>
         </div>
         <div className={styles['texth2detail2-aa']}>
@@ -207,13 +205,6 @@ export default function Detail() {
               <Content key={course.id} contentData={course} />
             ))}
         </div>
-        {/* <div className={styles['classCards-aa']}>
-          {Object.values(courses)
-            .filter((course) => course.id === id)
-            .map((course) => (
-              <Content key={course.id} contentData={course} />
-            ))}
-        </div> */}
         <div className={styles['texth2detail2-aa']}>
           <div className={styles['texth2detail21-aa']}>
             <h2 style={{ paddingTop: '3rem' }} ref={chapterRef}>
@@ -390,104 +381,6 @@ export default function Detail() {
                 </svg>
               </div>
             </div>
-            {/* <div className={styles['sec2cardgroup-aa']}>
-              <Link href={`/course/classList`} className={styles['card-link']}>
-                <div className={styles['sec2classtCard-aa']}>
-                  <img
-                    src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                    alt=""
-                    className={styles['sec2CardImg-aa']}
-                  />
-                  <div className={styles['sec2cardBody-aa']}>
-                    <div className={styles['declassName-aa']}>
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p>劉業揚＆楊元翰</p>
-                    </div>
-                    <p
-                      style={{
-                        color: 'var(--text-color, #0e0e0e)',
-                        textAlign: 'center',
-                        alignSelf: 'stretch',
-                      }}
-                    >
-                      NT$450
-                    </p>
-                  </div>
-                </div>
-              </Link>
-              <Link href={`/course/classList`} className={styles['card-link']}>
-                <div className={styles['sec2classtCard-aa']}>
-                  <img
-                    src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                    alt=""
-                    className={styles['sec2CardImg-aa']}
-                  />
-                  <div className={styles['sec2cardBody-aa']}>
-                    <div className={styles['declassName-aa']}>
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p>劉業揚＆楊元翰</p>
-                    </div>
-                    <p
-                      style={{
-                        color: 'var(--text-color, #0e0e0e)',
-                        textAlign: 'center',
-                        alignSelf: 'stretch',
-                      }}
-                    >
-                      NT$450
-                    </p>
-                  </div>
-                </div>
-              </Link>
-              <Link href={`/course/classList`} className={styles['card-link']}>
-                <div className={styles['sec2classtCard-aa']}>
-                  <img
-                    src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                    alt=""
-                    className={styles['sec2CardImg-aa']}
-                  />
-                  <div className={styles['sec2cardBody-aa']}>
-                    <div className={styles['declassName-aa']}>
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p>劉業揚＆楊元翰</p>
-                    </div>
-                    <p
-                      style={{
-                        color: 'var(--text-color, #0e0e0e)',
-                        textAlign: 'center',
-                        alignSelf: 'stretch',
-                      }}
-                    >
-                      NT$450
-                    </p>
-                  </div>
-                </div>
-              </Link>
-              <Link href={`/course/classList`} className={styles['card-link']}>
-                <div className={styles['sec2classtCard-aa']}>
-                  <img
-                    src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                    alt=""
-                    className={styles['sec2CardImg-aa']}
-                  />
-                  <div className={styles['sec2cardBody-aa']}>
-                    <div className={styles['declassName-aa']}>
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p>劉業揚＆楊元翰</p>
-                    </div>
-                    <p
-                      style={{
-                        color: 'var(--text-color, #0e0e0e)',
-                        textAlign: 'center',
-                        alignSelf: 'stretch',
-                      }}
-                    >
-                      NT$450
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            </div> */}
             <Recommends />
             <div className={styles['btn-more-mini-r-aa']}>
               <div className={styles['Ellipse-r-aa']}>
