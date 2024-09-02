@@ -79,6 +79,8 @@ export default function Detail() {
     }
   }
 
+  
+
   // 樣式2: didMount
   // 首次render之後(after)執行一次，之後不會再執行
   useEffect(() => {
@@ -184,14 +186,22 @@ export default function Detail() {
                     </div>
                   </div>
                   <div className={styles['detextright6-aa']}>
-                    <button className={styles['BTNde1-aa']}>
+                    <button
+                      className={styles['BTNde1-aa']}
+                      onClick={() => {
+                        handleAdd(course, 'course', 1)
+                        handleShow()
+                      }}
+                    >
                       <div className={styles['BUTTONde1-aa']}>
                         <h5>立即購買</h5>
                       </div>
                     </button>
                     <button
                       className={styles['BTNde2-aa']}
-                      //  onClick={}
+                      onClick={() => {
+                        handleAdd(course, 'course', 1)
+                      }}
                     >
                       <div className={styles['BUTTONde2-aa']}>
                         <h5>加入購物車</h5>
