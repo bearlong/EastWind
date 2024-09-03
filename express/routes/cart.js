@@ -18,7 +18,7 @@ router.get('/:id', async (req, res) => {
   const id = req.params.id
   try {
     const [cart] = await dbPromise.execute(
-      'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
+      'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`ch_name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
       [id]
     )
     const [top] = await dbPromise.execute(
@@ -58,7 +58,7 @@ router.post('/:id/product/:oid', upload.none(), async (req, res) => {
 
     if (result.insertId) {
       const [cart] = await dbPromise.execute(
-        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
+        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`ch_name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
         [id]
       )
       let total = 0
@@ -102,7 +102,7 @@ router.post('/:id/course/:oid', upload.none(), async (req, res) => {
 
     if (result.insertId) {
       const [cart] = await dbPromise.execute(
-        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
+        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`ch_name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
         [id]
       )
       let total = 0
@@ -146,7 +146,7 @@ router.put('/:id/product/:oid', upload.none(), async (req, res) => {
     )
     if (result.changedRows >= 1) {
       const [cart] = await dbPromise.execute(
-        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
+        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`ch_name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
         [id]
       )
       total = 0
@@ -193,7 +193,7 @@ router.put('/:id/course/:oid', upload.none(), async (req, res) => {
 
     if (result.changedRows >= 1) {
       const [cart] = await dbPromise.execute(
-        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
+        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`ch_name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
         [id]
       )
       let total = 0
@@ -240,7 +240,7 @@ router.delete('/:id/product/:oid', upload.none(), async (req, res) => {
 
     if (result.affectedRows >= 1) {
       const [cart] = await dbPromise.execute(
-        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
+        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`ch_name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
         [id]
       )
       let total = 0
@@ -287,7 +287,7 @@ router.delete('/:id/course/:oid', upload.none(), async (req, res) => {
 
     if (result.affectedRows >= 1) {
       const [cart] = await dbPromise.execute(
-        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
+        'SELECT `cart`.*, COALESCE(`product`.`name`, `course`.`course_name`) AS `item_name`, COALESCE(`product`.`img`, `course`.`images`) AS `img`, COALESCE(`brand`.`name`, `course_category`.`ch_name`) AS `brand_name` FROM `cart` LEFT JOIN `product` ON `cart`.`object_id` = `product`.`id` AND `cart`.`object_type` = "product" LEFT JOIN `brand` ON `product`.`brand_id` = `brand`.`id` LEFT JOIN `course` ON `cart`.`object_id` = `course`.`id` AND `cart`.`object_type` = "course"  LEFT JOIN `course_category` ON `course`.`category_id` = `course_category`.`id` WHERE `user_id` = ?',
         [id]
       )
       let total = 0
