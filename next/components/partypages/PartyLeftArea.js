@@ -5,13 +5,13 @@ import ToKnow from '@/components/partypages/ToKnowCard'
 import RoomCard from '@/components/partypages/PageRoomCard'
 import styles from '@/styles/gw/_partyLeft.module.scss'
 
-export default function PartyLeftArea({partyData}) {
+export default function PartyLeftArea({partyData,user,handleFavToggle=()=> {}}) {
   return (
     <>
       <div className={styles.leftArea}>
         <RoomNav partyData={partyData}/>
         <PartyCard  partyData={partyData}/>
-        <RoomCard  partyData={partyData}/>
+        <RoomCard  handleFavToggle={handleFavToggle} user={user} partyData={partyData}/>
         <PhotoCard partyData={partyData}/>
         <ToKnow />
       </div>
