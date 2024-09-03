@@ -285,7 +285,6 @@ export default function ProductDetail({
                 type="button"
                 className={`${styles['btnRectangle']} ${styles['buy']}  mb-3`}
                 onClick={() => {
-                  console.log(data.stock)
                   if (!user) {
                     notifyAndRemove()
                   } else {

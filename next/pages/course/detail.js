@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useContext } from 'react'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 import Image from 'next/image'
@@ -9,7 +9,14 @@ import CourseInfo from '@/components/course/course-info'
 import Content from '@/components/course/content'
 import Recommends from '@/components/course/recommends'
 import PacmanLoader from 'react-spinners/PacmanLoader'
+import toast from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 import VideoPlayer from '@/components/course/video'
+import { Button } from 'react-bootstrap'
+import { AuthContext } from '@/context/AuthContext'
+import { useCart } from '@/hooks/use-cart'
+import { FaHeart } from 'react-icons/fa'
+import { CiHeart } from 'react-icons/ci'
 
 const override = {
   display: 'block',
@@ -18,33 +25,55 @@ const override = {
 }
 
 export default function Detail() {
+  const { handleAdd = () => {}, handleShow = () => {}, cart } = useCart()
+  const { user } = useContext(AuthContext)
   const [courses, setCourses] = useState([])
+
+  const [data, setData] = useState({
+    course: {
+      id: 0,
+      course_name: '',
+      category_id: 0,
+      content: [],
+      price: 0,
+      on_datetime: '0000-00-00',
+      off_datetime: null,
+      created_at: '0000-00-00',
+      updated_at: null,
+      images: '',
+      ch_name: '',
+    },
+  })
   const router = useRouter()
-  const [id, setId] = useState(null)
+  // const [id, setId] = useState(null)
   const [pages, setPages] = useState(1)
   const [category, setCategory] = useState({})
   const [videoUrl, setVideoUrl] = useState('')
   const [isPaused, setIsPaused] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
+  const [isActive, setIsActive] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false) // 用於控制顯示/隱藏
-  const { course_id, category_id } = router.query
+  const { course_id, category_id, id } = router.query
   const chapterRef = useRef(null)
 
   // 向伺服器連線的程式碼；向伺服器fetch獲取資料
   const getCourses = async () => {
-    // const apiURL = `http://localhost:3005/api/course/::id`
-    const apiURL = `http://localhost:3005/api/course`
+    const apiURL = `http://localhost:3005/api/course/${id}${
+      user ? `?uid=${user.id}` : ''
+    }`
+    console.log(apiURL)
+    console.log(user)
+    // const apiURL = `http://localhost:3005/api/course`
     try {
       const res = await fetch(apiURL)
       const data = await res.json()
 
-      console.log(data.data.courses)
-
       // 設定到狀態中 ==> 觸發re-render(進入update階段)
-      if (Array.isArray(data.data.courses)) {
-        setCourses(data.data.courses)
-        setCategory(data.data.courses)
+      if (data.status === 'success') {
+        setCourses(data.data.course)
+        // setCategory(data.data.courses)
         setVideoUrl(`/video/go3.mp4`)
+        console.log(data.data.courses)
 
         // setTimeout(() => {
         //   setIsLoading(false)
@@ -55,33 +84,36 @@ export default function Detail() {
     }
   }
 
-  const getCategory = async () => {
-    const apiURL = `http://localhost:3005/api/course`
-    try {
-      const res = await fetch(apiURL)
-      const data = await res.json()
+  // const getCategory = async () => {
+  //   const apiURL = `http://localhost:3005/api/course`
+  //   try {
+  //     const res = await fetch(apiURL)
+  //     const data = await res.json()
 
-      console.log(data.data.courses)
+  //     console.log(data.data.courses)
 
-      // 設定到狀態中 ==> 觸發re-render(進入update階段)
-      if (Array.isArray(data.data.courses)) {
-        setCourses(data.data.courses)
-      }
-    } catch (e) {
-      console.error(e)
-    }
-  }
+  //     // 設定到狀態中 ==> 觸發re-render(進入update階段)
+  //     if (Array.isArray(data.data.courses)) {
+  //       setCourses(data.data.courses)
+  //     }
+  //   } catch (e) {
+  //     console.error(e)
+  //   }
+  // }
 
   // 樣式2: didMount
   // 首次render之後(after)執行一次，之後不會再執行
   useEffect(() => {
-    getCourses(), getCategory()
-  }, [])
+    if (router.isReady) {
+      getCourses()
+      // , getCategory()
+    }
+  }, [router.isReady, router.query])
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    setId(parseInt(params.get('id'), 10)) // 獲取 id 查詢參數並轉換為數字
-  }, [])
+  // useEffect(() => {
+  //   const params = new URLSearchParams(window.location.search)
+  //   setId(parseInt(params.get('id'), 10)) // 獲取 id 查詢參數並轉換為數字
+  // }, [])
 
   // 滾動到 "章節" 的函數
   const scrollToChapter = () => {
@@ -100,6 +132,59 @@ export default function Detail() {
     setIsCollapsed((prev) => !prev) // 切換狀態
   }
 
+  const handleFavToggle = async (id, type) => {
+    const fav = courses.fav
+    console.log(fav)
+    const url = `http://localhost:3005/api/favorites/${id}`
+    const method = fav ? 'DELETE' : 'POST'
+    const body = JSON.stringify({
+      uid: user.id,
+      type: type,
+    })
+    try {
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      })
+      const result = await response.json()
+      if (result.status === 'success') {
+        toast.success(
+          `${method === 'POST' ? '商品已加入收藏' : '商品已移除收藏'}`,
+          {
+            style: {
+              border: `1px solid ${method === 'POST' ? '#55c57a' : '#d71515'}`,
+              padding: '16px',
+              fontSize: '16px',
+              color: '#0e0e0e',
+            },
+            iconTheme: {
+              primary: `${method === 'POST' ? '#55c57a' : '#d71515'}`,
+              secondary: '#ffffff',
+              fontSize: '16px',
+            },
+          }
+        )
+        const nextCourse = { ...courses, fav: !courses.fav }
+        setCourses(nextCourse)
+        // setData({ ...data, course: nextCourse })
+      } else {
+        console.log(result.data.message)
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const handleStyToggle = () => {
+    {
+      isActive ? <FaHeart fontSize={24} /> : <CiHeart fontSize={24} />
+    }
+    setIsActive((prev) => !prev)
+  }
+
   const loader = (
     <PacmanLoader
       color="#ff6600"
@@ -113,6 +198,8 @@ export default function Detail() {
 
   return (
     <>
+      <Toaster position="bottom-right" reverseOrder={false} />
+
       <div className={`${styles.container} ${styles['desktopdetail-aa']}`}>
         <div className={styles['detailsec1-aa']}>
           <div className={`${styles['text141-aa']} ${styles['text-hover']}`}>
@@ -127,7 +214,7 @@ export default function Detail() {
               {/* <Link href={`/course/classList`}> */}
               {/* <span> 麻將 </span> */}
               {/* </Link> */}
-              <CategoryLink />
+              <CategoryLink contentData={courses} />
               &gt;
               <span> 初級</span>
             </h6>
@@ -137,61 +224,121 @@ export default function Detail() {
               <VideoPlayer videoUrl={videoUrl} />
             </div>
 
-            {Object.values(courses)
-              .filter((course) => course.id === id)
-              .map((course) => (
-                <div className={styles['detextright1-aa']} key={course.id}>
-                  <div className={styles['detextright2-aa']}>
-                    <div className={styles['detextright1-aa']}>
-                      <h4>{course.course_name}</h4>
-                    </div>
-                  </div>
-                  <div className={styles['detextright3-aa']}>
-                    <div className={styles['textrighth51-aa']}>
-                      <h5>徐乃麟</h5>
-                    </div>
-                    <div className={styles['textrighth52-aa']}>
-                      <h5>類別：{course.ch_name}</h5>
-                    </div>
-                  </div>
-                  <div className={styles['detextright4-aa']}>
-                    {/* <h5>
+            <div className={styles['detextright1-aa']}>
+              <div className={styles['detextright2-aa']}>
+                <div className={styles['detextright1-aa']}>
+                  <h4>{courses.course_name}</h4>
+                </div>
+              </div>
+              <div className={styles['detextright3-aa']}>
+                <div className={styles['textrighth51-aa']}>
+                  <h5>徐乃麟</h5>
+                </div>
+                <button
+                  className={styles['fav1-aa']}
+                  onClick={() => {
+                    if (user) {
+                      handleFavToggle(courses.id, 'course')
+                      handleStyToggle
+                    } else {
+                      toast.error('請先登入會員')
+                      return
+                    }
+                  }}
+                  //   onClick={() => {
+                  //     handleFavToggle(courses.id, 'course')
+                  //   }}
+                >
+                  <h6>加入最愛</h6>
+                  <CiHeart fontSize={24} />
+                </button>
+
+                <div className={styles['textrighth52-aa']}>
+                  <h5>類別：{courses.category_name}</h5>
+                </div>
+              </div>
+              <div className={styles['detextright4-aa']}>
+                {/* <h5>
                       麻將證照攻略課程，教你麻將的程式語法與麻將證照攻略，循序漸進學習麻將開發環境的建置..
                     </h5> */}
-                    <h5>{course.content}</h5>
+                <h5>{courses.content}</h5>
+              </div>
+              <div className={styles['detextright5-aa']}>
+                <h4>NT$ {courses.price}</h4>
+                <div className={styles['chh6-aa']}>
+                  <div className={styles['chh61-aa']}>
+                    <button
+                      className={styles['chh62-aa']}
+                      onClick={scrollToChapter}
+                    >
+                      <h6>查看章節</h6>
+                    </button>
                   </div>
-                  <div className={styles['detextright5-aa']}>
-                    <h4>NT$ {course.price}</h4>
-                    <div className={styles['chh6-aa']}>
-                      <div className={styles['chh61-aa']}>
-                        <button
-                          className={styles['chh62-aa']}
-                          onClick={scrollToChapter}
-                        >
-                          <h6>查看章節</h6>
-                        </button>
-                      </div>
-                      <h6 style={{ color: 'var(--text-hover, #747474)' }}>
-                        總時長 60 分鐘
-                      </h6>
-                    </div>
-                  </div>
-                  <div className={styles['detextright6-aa']}>
-                    <div className={styles['BTNde1-aa']}>
-                      <div className={styles['BUTTONde1-aa']}>
-                        <h5>立即購買</h5>
-                      </div>
-                    </div>
-                    <div className={styles['BTNde2-aa']}>
-                      <div className={styles['BUTTONde2-aa']}>
-                        <h5>加入購物車</h5>
-                      </div>
-                    </div>
-                  </div>
+                  <h6 style={{ color: 'var(--text-hover, #747474)' }}>
+                    總時長 60 分鐘
+                  </h6>
                 </div>
-              ))}
+              </div>
+              <div className={styles['detextright6-aa']}>
+                <button
+                  className={styles['BTNde1-aa']}
+                  onClick={() => {
+                    if (user) {
+                      const itemExists = cart.find(
+                        (cartItem) =>
+                          cartItem.object_id === courses.id &&
+                          cartItem.object_type === 'course'
+                      )
+                      if (itemExists) {
+                        toast.error('此商品已在購物車中，無法再次加入')
+                        return
+                      }
+                      handleAdd(courses, 'course', 1)
+                      handleShow()
+                    } else {
+                      toast.error('請先登入會員')
+                      return
+                    }
+                  }}
 
-            {/* <CourseInfo /> */}
+                  // if (user) {
+                  //   handleAdd(courses, 'course', 1)
+                  //   handleShow()
+                  // } else {
+                  //   toast.error('請先登入會員')
+                  //   return
+                  // }
+                >
+                  <div className={styles['BUTTONde1-aa']}>
+                    <h5>立即購買</h5>
+                  </div>
+                </button>
+                <button
+                  className={styles['BTNde2-aa']}
+                  onClick={() => {
+                    if (user) {
+                      const itemExists = cart.find(
+                        (cartItem) =>
+                          cartItem.object_id === courses.id &&
+                          cartItem.object_type === 'course'
+                      )
+                      if (itemExists) {
+                        toast.error('此商品已在購物車中，無法再次加入')
+                        return
+                      }
+                      handleAdd(courses, 'course', 1)
+                    } else {
+                      toast.error('請先登入會員')
+                      return
+                    }
+                  }}
+                >
+                  <div className={styles['BUTTONde2-aa']}>
+                    <h5>加入購物車</h5>
+                  </div>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         <div className={styles['texth2detail2-aa']}>
@@ -201,19 +348,8 @@ export default function Detail() {
         </div>
 
         <div className={styles['classCards-aa']}>
-          {Object.values(courses)
-            .filter((course) => course.id === id)
-            .map((course) => (
-              <Content key={course.id} contentData={course} />
-            ))}
+          <Content contentData={courses} />
         </div>
-        {/* <div className={styles['classCards-aa']}>
-          {Object.values(courses)
-            .filter((course) => course.id === id)
-            .map((course) => (
-              <Content key={course.id} contentData={course} />
-            ))}
-        </div> */}
         <div className={styles['texth2detail2-aa']}>
           <div className={styles['texth2detail21-aa']}>
             <h2 style={{ paddingTop: '3rem' }} ref={chapterRef}>
@@ -390,104 +526,6 @@ export default function Detail() {
                 </svg>
               </div>
             </div>
-            {/* <div className={styles['sec2cardgroup-aa']}>
-              <Link href={`/course/classList`} className={styles['card-link']}>
-                <div className={styles['sec2classtCard-aa']}>
-                  <img
-                    src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                    alt=""
-                    className={styles['sec2CardImg-aa']}
-                  />
-                  <div className={styles['sec2cardBody-aa']}>
-                    <div className={styles['declassName-aa']}>
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p>劉業揚＆楊元翰</p>
-                    </div>
-                    <p
-                      style={{
-                        color: 'var(--text-color, #0e0e0e)',
-                        textAlign: 'center',
-                        alignSelf: 'stretch',
-                      }}
-                    >
-                      NT$450
-                    </p>
-                  </div>
-                </div>
-              </Link>
-              <Link href={`/course/classList`} className={styles['card-link']}>
-                <div className={styles['sec2classtCard-aa']}>
-                  <img
-                    src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                    alt=""
-                    className={styles['sec2CardImg-aa']}
-                  />
-                  <div className={styles['sec2cardBody-aa']}>
-                    <div className={styles['declassName-aa']}>
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p>劉業揚＆楊元翰</p>
-                    </div>
-                    <p
-                      style={{
-                        color: 'var(--text-color, #0e0e0e)',
-                        textAlign: 'center',
-                        alignSelf: 'stretch',
-                      }}
-                    >
-                      NT$450
-                    </p>
-                  </div>
-                </div>
-              </Link>
-              <Link href={`/course/classList`} className={styles['card-link']}>
-                <div className={styles['sec2classtCard-aa']}>
-                  <img
-                    src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                    alt=""
-                    className={styles['sec2CardImg-aa']}
-                  />
-                  <div className={styles['sec2cardBody-aa']}>
-                    <div className={styles['declassName-aa']}>
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p>劉業揚＆楊元翰</p>
-                    </div>
-                    <p
-                      style={{
-                        color: 'var(--text-color, #0e0e0e)',
-                        textAlign: 'center',
-                        alignSelf: 'stretch',
-                      }}
-                    >
-                      NT$450
-                    </p>
-                  </div>
-                </div>
-              </Link>
-              <Link href={`/course/classList`} className={styles['card-link']}>
-                <div className={styles['sec2classtCard-aa']}>
-                  <img
-                    src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                    alt=""
-                    className={styles['sec2CardImg-aa']}
-                  />
-                  <div className={styles['sec2cardBody-aa']}>
-                    <div className={styles['declassName-aa']}>
-                      <p>西洋棋國手教你下西洋棋</p>
-                      <p>劉業揚＆楊元翰</p>
-                    </div>
-                    <p
-                      style={{
-                        color: 'var(--text-color, #0e0e0e)',
-                        textAlign: 'center',
-                        alignSelf: 'stretch',
-                      }}
-                    >
-                      NT$450
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            </div> */}
             <Recommends />
             <div className={styles['btn-more-mini-r-aa']}>
               <div className={styles['Ellipse-r-aa']}>

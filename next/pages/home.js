@@ -8,6 +8,7 @@ import RoomSection from '@/components/home/RoomSection'
 import ProductSection from '@/components/home/ProductSection'
 import CourseSection from '@/components/home/CourseSection'
 import styles from '@/styles/boyu/home.module.scss'
+import MouseMove from '@/components/mouseMove'
 
 export default function Home() {
   const router = useRouter()
@@ -78,6 +79,7 @@ export default function Home() {
         </div>
       )}
       <main className={styles['body']}>
+        <MouseMove />
         {/* 主視覺 */}
         <HeroSection />
         {/* intro */}

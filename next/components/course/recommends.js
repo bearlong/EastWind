@@ -17,26 +17,26 @@ const CourseCard = ({ recommendData = {}, id }) => {
       key={id}
     >
       <div className={styles['sec2classtCard-aa']}>
-        {/* <img
+        <img
           src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
           alt="課程圖片"
           className={styles['sec2CardImg-aa']}
-        /> */}
+        />
 
-        <Image
+        {/* <Image
           src={`/images/aa/${id.images}` || ''}
           alt={id.course_name || ''}
           className={styles['sec2CardImg-aa']}
           width={280}
           height={175}
-        />
+        /> */}
 
         <div className={styles['sec2cardBody-aa']}>
           <div className={styles['declassName-aa']}>
-            {/* <p>西洋棋國手教你下西洋棋</p>
-            <p>劉業揚＆楊元翰</p> */}
-            <p>{id.course_name}</p>
-            <p>{id.ch_name}</p>
+            <p>西洋棋國手教你下西洋棋</p>
+            <p>劉業揚＆楊元翰</p>
+            {/* <p>{id.course_name}</p>
+            <p>{id.ch_name}</p> */}
           </div>
           <p
             style={{
@@ -45,8 +45,8 @@ const CourseCard = ({ recommendData = {}, id }) => {
               alignSelf: 'stretch',
             }}
           >
-            {/* NT$450 */}
-            {id.price}
+            NT$450
+            {/* {id.price} */}
           </p>
         </div>
       </div>

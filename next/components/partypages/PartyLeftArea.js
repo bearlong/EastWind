@@ -9,8 +9,8 @@ export default function PartyLeftArea({partyData}) {
   return (
     <>
       <div className={styles.leftArea}>
-        <RoomNav />
-        <PartyCard />
+        <RoomNav partyData={partyData}/>
+        <PartyCard  partyData={partyData}/>
         <RoomCard  partyData={partyData}/>
         <PhotoCard partyData={partyData}/>
         <ToKnow />

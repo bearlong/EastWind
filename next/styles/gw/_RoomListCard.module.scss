@@ -11,7 +11,6 @@ $card-bg: rgba(188, 188, 188, 0.485);
   width: 100%;
   border-radius: 10px;
   padding: 16px;
-  // margin-bottom: 16px;
   background-color: $card-bg;
 
   .cardBody {
@@ -19,14 +18,21 @@ $card-bg: rgba(188, 188, 188, 0.485);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
     }
 
-    .cardTitle {
-      font-size: 2rem; // 增加到 2rem
+    .company_name {
+      width: 250px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 2.5rem; // 增加到 2rem
       font-weight: bold;
       color: $black;
       margin: 0;
+    }
+    .location {
+      font-size: 1.5rem;
+      color: var(--background);
     }
 
     .badge {
@@ -37,19 +43,20 @@ $card-bg: rgba(188, 188, 188, 0.485);
       font-size: 1.5rem; // 增加到 1.5rem
     }
 
+    .test {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
     .info {
-      margin: 8px 0; // 稍微增加垂直間距
+      margin: 4px 0; // 稍微增加垂直間距
       color: $black;
       font-size: 1.5rem; // 增加到 1.5rem
-
-      &.location {
-        font-size: 2rem; // 地址使用 2rem
-      }
     }
 
     .buttonContainer {
       text-align: right;
-      margin-top: 12px; // 稍微增加頂部間距
     }
 
     .btn {
