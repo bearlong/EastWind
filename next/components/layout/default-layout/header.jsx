@@ -109,7 +109,7 @@ export default function Header() {
                   className={`h6 ${styles['nav-link-bo']}`}
                   href="/lobby/Entrance"
                 >
-                  棋牌室
+                  棋牌會館
                 </Link>
               </li>
               <li>
@@ -117,7 +117,7 @@ export default function Header() {
                   href="/product/productList"
                   className={`h6 ${styles['nav-link-bo']}`}
                 >
-                  商城
+                  線上商城
                 </Link>
               </li>
               <li>
@@ -203,7 +203,7 @@ export default function Header() {
                             className={`h6 ${styles['navigation-link-bo']}`}
                             onClick={onLinkClick} // 監聽點擊事件
                           >
-                            棋牌室
+                            棋牌會館
                           </Link>
                         </li>
                         <li className={styles['navigation-item-bo']}>
@@ -212,7 +212,7 @@ export default function Header() {
                             className={`h6 ${styles['navigation-link-bo']}`}
                             onClick={onLinkClick} // 監聽點擊事件
                           >
-                            商城
+                            線上商城
                           </Link>
                         </li>
                         <li className={styles['navigation-item-bo']}>

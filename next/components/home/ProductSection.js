@@ -193,7 +193,7 @@ export default function ProductSection() {
             <div
               className={`${styles['product-title-box-bo']} gap-3 d-flex flex-column justify-content-center align-items-start`}
             >
-              <div className={`${styles['product-text-type-bo']} h3`}>
+              <div className={`h3 ${styles['product-text-type-bo']} `}>
                 麻將類
               </div>
               <div
@@ -322,7 +322,7 @@ export default function ProductSection() {
             <div
               className={`${styles['product-title-box-bo']} gap-3 d-flex flex-column justify-content-center align-items-start`}
             >
-              <div className={`${styles['product-text-type-bo']} h3`}>
+              <div className={` h3 ${styles['product-text-type-bo']}`}>
                 桌遊類
               </div>
               <div

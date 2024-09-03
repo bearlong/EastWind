@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import Loading from '@/components/user/loading' // 引入 Loading 元件
 import ToTheTop from '@/components/icons/to-the-top'
 import HeaderAdmin from './headerAdmin.jsx'
 import Footer from '../default-layout/footer.jsx'

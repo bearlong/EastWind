@@ -1,7 +1,4 @@
 import { useState, useEffect, useRef, useContext } from 'react'
-import styles from '@/styles/boyu/home.module.scss'
-
-import anime from 'animejs/lib/anime.min.js'
 import Swal from 'sweetalert2'
 import { useRouter } from 'next/router'
 import { AuthContext } from '@/context/AuthContext'
@@ -10,6 +7,7 @@ import IntroSection from '@/components/home/IntroSection'
 import RoomSection from '@/components/home/RoomSection'
 import ProductSection from '@/components/home/ProductSection'
 import CourseSection from '@/components/home/CourseSection'
+import styles from '@/styles/boyu/home.module.scss'
 
 export default function Home() {
   const router = useRouter()
@@ -79,7 +77,7 @@ export default function Home() {
           <div className={styles['video-overlay-bo']}></div>
         </div>
       )}
-      <main>
+      <main className={styles['body']}>
         {/* 主視覺 */}
         <HeroSection />
         {/* intro */}

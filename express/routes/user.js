@@ -132,6 +132,10 @@ router.post('/login', upload.none(), async (req, res) => {
         .status(401)
         .json({ status: 'fail', message: '請確認密碼是否正確' })
     }
+
+    // 判斷是否為新用戶
+    const isNewUser = user[0].first_edit_completed === 0
+
     const accessToken = jwt.sign(
       { id: user[0].id, account: user[0].account },
       secretKey,
@@ -148,6 +152,7 @@ router.post('/login', upload.none(), async (req, res) => {
       accessToken,
       refreshToken,
       name: user[0].username,
+      isNewUser, // 確保將 isNewUser 返回給前端
     })
   } catch (error) {
     console.error('資料庫查詢失敗:', error)
