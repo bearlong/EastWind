@@ -40,7 +40,6 @@ router.get('/', async (req, res) => {
     size,
     style,
   }
-
   for (const key in filterArr) {
     if (filterArr[key]) {
       if (filterArr[key].includes(',')) {
@@ -53,23 +52,23 @@ router.get('/', async (req, res) => {
         if (!filter) {
           filter = ` WHERE ${fieldPrefix}${condition}`
         } else {
-          filter += ` ${isFilter ? 'OR' : 'AND'} ${fieldPrefix}${condition}`
+          filter += ` ${isFilter === true ? 'OR' : 'AND'} ${fieldPrefix}${condition}`
         }
       } else {
         if (!filter) {
           filter = ` Where ${key === 'size' || key === 'style' ? '`product_specifications`.' : ''}\`${key}\` = '${filterArr[key]}'`
         } else {
-          filter += ` ${isFilter ? 'OR' : 'AND'} ${key === 'size' || key === 'style' ? '`product_specifications`.' : ''}\`${key}\` = '${filterArr[key]}'`
+          filter += ` ${isFilter === true ? 'OR' : 'AND'} ${key === 'size' || key === 'style' ? '`product_specifications`.' : ''}\`${key}\` = '${filterArr[key]}'`
         }
       }
     }
   }
-
+  console.log(isFilter)
   if (search) {
     if (!filter) {
       filter = ` WHERE (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
     } else {
-      filter += ` ${isFilter ? 'OR' : 'AND'} (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
+      filter += ` ${isFilter === true ? 'OR' : 'AND'} (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
     }
   }
 
@@ -154,6 +153,8 @@ router.get('/', async (req, res) => {
         return []
       }
     })
+  // console.log(filter)
+  // console.log(isFilter)
 
   const [list] = await dbPromise
     .execute(
@@ -188,7 +189,6 @@ router.get('/', async (req, res) => {
   product['style'] = styleAll
   product['brand'] = brandAll
   product['category'] = categoryAll
-
   res.json(product)
 })
 

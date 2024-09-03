@@ -215,6 +215,8 @@ router.get('/:id', async (req, res) => {
   try {
     await checkAndUpdateExpiredParties();
     const { id } = req.params
+    const { uid } = req.query
+    console.log(uid, "0000");
     const query = `
     SELECT 
       p.*,
@@ -231,6 +233,7 @@ router.get('/:id', async (req, res) => {
       c.lobby,
       GROUP_CONCAT(DISTINCT CONCAT(st.name, ':', st.icon)) AS services,
       GROUP_CONCAT(DISTINCT cp.img) AS company_photos,
+      ${uid ? ' CASE WHEN favorite.object_id IS NOT NULL THEN TRUE ELSE FALSE END AS fav,' : ''}
 
       u1.username AS main_user_name,
       u2.username AS join1_user_name,
@@ -260,6 +263,10 @@ router.get('/:id', async (req, res) => {
       user u3 ON p.userID_join2 = u3.id
     LEFT JOIN 
       user u4 ON p.userID_join3 = u4.id
+
+      ${uid ? 'LEFT JOIN favorite ON favorite.object_id = c.id AND favorite.object_type = "company" AND favorite.user_id = ' + uid : ''}
+
+
     WHERE  
       p.id = ? 
       AND p.date >= CURDATE()
@@ -270,8 +277,8 @@ router.get('/:id', async (req, res) => {
       p.date ASC, p.start_at ASC;
     `
     const [party] = await connection.execute(query, [id])
-    console.log(party)
 
+    console.log(party);
     if (party.length === 0) {
       return res.status(404).json({ message: '沒有找到可加入的派對' })
     }
