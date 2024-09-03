@@ -520,3 +520,26 @@
     color: var(--bg-text-color);
   }
 }
+
+.load-more-box-bo {
+  color: var(--primary);
+  transition: 0.3s;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  justify-items: center;
+  align-items: center;
+  gap: 1.6rem;
+  grid-column: -1 / 1;
+
+  .progress {
+    width: 25rem;
+    --bs-progress-bar-bg: var(--primary);
+    height: 5px; /* 調整進度條的高度，使其更細 */
+  }
+  .progress-bar {
+    height: 5px; /* 調整進度條的高度，使其更細 */
+  }
+}

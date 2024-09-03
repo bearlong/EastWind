@@ -2,11 +2,12 @@ import { useState, useEffect, useContext } from 'react'
 import styles from '@/styles/boyu/user-favorite.module.scss'
 import UserCenterLayout from '@/components/layout/user-center-layout'
 import { FaMagnifyingGlass, FaPhone } from 'react-icons/fa6'
-import { PiDeskFill } from 'react-icons/pi'
 import { FaStar, FaHeart, FaMapMarkerAlt, FaClock } from 'react-icons/fa'
 import { AuthContext } from '@/context/AuthContext'
 import Link from 'next/link'
 import Swal from 'sweetalert2'
+import SearchBar from '@/components/user-favorite/SearchBar'
+import FavoriteTabs from '@/components/user-favorite/FavoriteTabs'
 
 export default function UserFavorite() {
   const [activeTab, setActiveTab] = useState('product') // 預設顯示 "課程"
@@ -16,13 +17,12 @@ export default function UserFavorite() {
   const [favorites, setFavorites] = useState([])
   const [searchQuery, setSearchQuery] = useState('') // 用來存儲用戶輸入值的狀態
   const [searchKeyword, setSearchKeyword] = useState('') // 新增搜尋關鍵字狀態
-
+  const [visibleCount, setVisibleCount] = useState(
+    activeTab === 'company' ? 6 : 8
+  ) // 預設顯示的項目數量
   // 當 activeTab 改變時從後端獲取對應的最愛資料
   useEffect(() => {
     const fetchFavorites = async () => {
-      const userId = user?.id
-      console.log(favorites)
-
       try {
         const response = await fetch(
           `http://localhost:3005/api/user-favorite/${userId}/${activeTab}?search=${encodeURIComponent(
@@ -33,6 +33,8 @@ export default function UserFavorite() {
 
         if (response.ok) {
           setFavorites(result.data.favorites)
+          // 重置 visibleCount 當 activeTab 改變時
+          setVisibleCount(activeTab === 'company' ? 6 : 8)
         } else {
           console.error(result.data.message)
         }
@@ -115,79 +117,44 @@ export default function UserFavorite() {
     }
   }
 
+  const LoadMore = () => {
+    setVisibleCount((prevCount) => {
+      const remainingItems = favorites.length - prevCount
+      const increment = activeTab === 'company' ? 6 : 8
+      return remainingItems > increment
+        ? prevCount + increment
+        : prevCount + remainingItems
+    })
+  }
+
   return (
     <div className={`${styles['user-favorite-box-bo']} w-100`}>
-      <div
-        className={`${styles['search-box-bo']} d-flex flex-column flex-sm-row justify-content-center align-items-center gap-lg-4 gap-3 `}
-      >
-        <h6>搜尋最愛</h6>
-        <input
-          type="text"
-          placeholder="請輸入關鍵字"
-          className={`${styles['input-search-bo']} p`}
-          value={searchQuery} // 綁定搜尋關鍵字
-          onChange={searchInputChange} // 更新搜尋關鍵字並監聽輸入
-        />
-        <button
-          className={`${styles['btn-search']} h6 d-flex justify-content-between align-items-center`}
-          onClick={triggerSearch} // 點擊後觸發搜尋
-        >
-          <FaMagnifyingGlass />
-        </button>
-      </div>
+      <SearchBar
+        searchQuery={searchQuery}
+        onSearchInputChange={searchInputChange}
+        onTriggerSearch={triggerSearch}
+      />
 
       <div className={`${styles['favorite-list-box-bo']} flex-column d-flex`}>
-        <div className={styles['favorite-list-head-bo']}>
-          <ul
-            className={`${styles['favorite-state-box-bo']} d-flex justify-content-around align-items-center text-center`}
-          >
-            <li>
-              <button
-                onClick={() => setActiveTab('product')}
-                className={`${styles['favorite-state-bo']} h5 ${
-                  activeTab === 'product' ? styles['state-choose-bo'] : ''
-                }`}
-              >
-                商品
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => setActiveTab('company')}
-                className={`${styles['favorite-state-bo']} h5 ${
-                  activeTab === 'company' ? styles['state-choose-bo'] : ''
-                }`}
-              >
-                棋牌室
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => setActiveTab('course')}
-                className={`${styles['favorite-state-bo']} h5 ${
-                  activeTab === 'course' ? styles['state-choose-bo'] : ''
-                }`}
-              >
-                課程
-              </button>
-            </li>
-          </ul>
-        </div>
+        <FavoriteTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
         <div
           className={`${styles['favorite-list-body-bo']} d-flex flex-column justify-content-center align-items-center gap-5`}
         >
           {favorites.length === 0 ? (
-            <div className="h5 p-5">尚未增加我的最愛</div>
+            searchKeyword ? (
+              <div className="h5 p-5">未查詢到相關最愛</div>
+            ) : (
+              <div className="h5 p-5">尚未增加我的最愛</div>
+            )
           ) : (
             <>
               {activeTab === 'course' && (
                 <div className={styles['favorite-course-box-bo']}>
-                  {favorites.map((favorite, index) => (
+                  {favorites.slice(0, visibleCount).map((favorite, index) => (
                     <Link
                       key={index}
-                      href={`  /course/classDetail?id=${favorite.id}`}
-                      className={`w-100`}
+                      href={`  /course/detail?id=${favorite.id}`}
                     >
                       <div
                         className={`${styles['courseCard']} d-flex flex-column justify-content-center align-items-center`}
@@ -223,57 +190,117 @@ export default function UserFavorite() {
                       </div>
                     </Link>
                   ))}
+                  {favorites.length > 0 && (
+                    <div className={styles['load-more-box-bo']}>
+                      {/* 顯示目前數量 / 全部數量和進度條 */}
+                      <p>
+                        {visibleCount > favorites.length
+                          ? favorites.length
+                          : visibleCount}{' '}
+                        / {favorites.length}
+                      </p>
+                      <div
+                        className={` ${styles.progress} progress`}
+                        role="progressbar"
+                      >
+                        <div
+                          className={` ${styles['progress-bar']} progress-bar`}
+                          style={{
+                            width: `${
+                              (visibleCount / favorites.length) * 100
+                            }%`,
+                          }}
+                        />
+                      </div>
+                      {visibleCount < favorites.length && (
+                        <button
+                          className={`${styles['btn-more']} d-flex`}
+                          onClick={LoadMore}
+                        >
+                          <p>查看更多</p>
+                          <i className={styles['edit-icon']} />
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
               {activeTab === 'product' && (
                 <div className={styles['favorite-product-box-bo']}>
-                  {favorites.map((favorite, index) => {
-                    return (
-                      <Link
-                        key={index}
-                        href={`/product/${favorite.id}`}
-                        className={`w-100`}
+                  {favorites.slice(0, visibleCount).map((favorite, index) => (
+                    <Link key={index} href={`/product/${favorite.id}`}>
+                      <div
+                        className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
                       >
-                        <div
-                          className={`${styles['productCard']} d-flex flex-column justify-content-center align-items-center`}
-                        >
-                          <div className={styles['productImgBox']}>
-                            <FaHeart
-                              className={` ${styles['product-icon-heart-bo']}
+                        <div className={styles['productImgBox']}>
+                          <FaHeart
+                            className={` ${styles['product-icon-heart-bo']}
                             `}
-                              onClick={(e) => {
-                                e.preventDefault() // 阻止預設行為，避免連結點擊
-                                removeFavorite(favorite.favorite_id)
-                              }}
-                            />
-                            <img
-                              src={`/images/product/${favorite.image}`}
-                              alt={favorite.name}
-                            />
-                          </div>
-                          <div className={`${styles['cardBody']} text-center`}>
-                            <div
-                              className={`${styles['productName']} d-flex flex-column justify-content-center align-items-center text-center`}
+                            onClick={(e) => {
+                              e.preventDefault() // 阻止預設行為，避免連結點擊
+                              removeFavorite(favorite.favorite_id)
+                            }}
+                          />
+                          <img
+                            src={`/images/product/${favorite.image}`}
+                            alt={favorite.name}
+                          />
+                        </div>
+                        <div className={`${styles['cardBody']} text-center`}>
+                          <div
+                            className={`${styles['productName']} d-flex flex-column justify-content-center align-items-center text-center`}
+                          >
+                            <p className={`p`}>{favorite.brand_name}</p>
+                            <p
+                              className={`h6 ${styles['productDescription']}  d-flex  justify-content-center align-items-center text-center`}
                             >
-                              <p className={`p`}>{favorite.brand_name}</p>
-                              <p
-                                className={`h6 ${styles['productDescription']}  d-flex  justify-content-center align-items-center text-center`}
-                              >
-                                {favorite.name}
-                              </p>
-                              <p className="p">NT$ {favorite.price}</p>
-                            </div>
+                              {favorite.name}
+                            </p>
+                            <p className="p">NT$ {favorite.price}</p>
                           </div>
                         </div>
-                      </Link>
-                    )
-                  })}
+                      </div>
+                    </Link>
+                  ))}
+                  {favorites.length > 0 && (
+                    <div className={styles['load-more-box-bo']}>
+                      {/* 顯示目前數量 / 全部數量和進度條 */}
+                      <p>
+                        {visibleCount > favorites.length
+                          ? favorites.length
+                          : visibleCount}{' '}
+                        / {favorites.length}
+                      </p>
+                      <div
+                        className={` ${styles.progress} progress`}
+                        role="progressbar"
+                      >
+                        <div
+                          className={` ${styles['progress-bar']} progress-bar`}
+                          style={{
+                            width: `${
+                              (visibleCount / favorites.length) * 100
+                            }%`,
+                          }}
+                        />
+                      </div>
+                      {visibleCount < favorites.length && (
+                        <button
+                          className={`${styles['btn-more']} d-flex`}
+                          onClick={LoadMore}
+                        >
+                          <p>查看更多</p>
+                          <i className={styles['edit-icon']} />
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
 
               {activeTab === 'company' && (
                 <div className={styles['favorite-company-box-bo']}>
-                  {favorites.map((favorite, index) => (
+                  {favorites.slice(0, visibleCount).map((favorite, index) => (
                     <Link
                       key={index}
                       href={`/lobby/Company/${favorite.id}`}
@@ -375,6 +402,39 @@ export default function UserFavorite() {
                       </div>
                     </Link>
                   ))}
+                  {favorites.length > 0 && (
+                    <div className={styles['load-more-box-bo']}>
+                      {/* 顯示目前數量 / 全部數量和進度條 */}
+                      <p>
+                        {visibleCount > favorites.length
+                          ? favorites.length
+                          : visibleCount}{' '}
+                        / {favorites.length}
+                      </p>
+                      <div
+                        className={` ${styles['progress']} progress`}
+                        role="progressbar"
+                      >
+                        <div
+                          className={` ${styles['progress-bar']} progress-bar`}
+                          style={{
+                            width: `${
+                              (visibleCount / favorites.length) * 100
+                            }%`,
+                          }}
+                        />
+                      </div>
+                      {visibleCount < favorites.length && (
+                        <button
+                          className={`${styles['btn-more']} d-flex`}
+                          onClick={LoadMore}
+                        >
+                          <p>查看更多</p>
+                          <i className={styles['edit-icon']} />
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </>

@@ -33,16 +33,22 @@ const useAuth = () => {
       })
 
       const result = await response.json()
+      console.log('Login result:', result) // 檢查是否有 isNewUser 參數
 
       if (result.status === 'success') {
         const newAccessToken = result.accessToken
         const newRefreshToken = result.refreshToken
+        const isNewUser = result.isNewUser // 接收 isNewUser
 
         setToken(newAccessToken)
-
         setLocalStorageTokens(newAccessToken, newRefreshToken)
 
-        return { success: true, token: newAccessToken, name: result.name }
+        return {
+          success: true,
+          token: newAccessToken,
+          name: result.name,
+          isNewUser,
+        }
       } else {
         return { success: false, message: result.message }
       }

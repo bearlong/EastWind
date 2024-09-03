@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'Nato Sans TC';
+  src: url('../public/fonts/NotoSansTC-SemiBold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
 /* 顏色系統 */
 :root {
   --primary: #b79347;
@@ -19,7 +26,7 @@
 
 /* 字體系統 */
 html {
-  font-family: 'Noto Sans TC', sans-serif;
+  font-family: 'Nato Sans TC', sans-serif;
   font-size: 62.5%;
 }
 
@@ -37,6 +44,7 @@ p,
 .h5,
 .h6,
 .p {
+  font-family: 'Nato Sans TC', sans-serif;
   font-weight: 900;
   margin: 0;
 }

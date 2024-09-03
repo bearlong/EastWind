@@ -333,8 +333,8 @@ export default function UserCoupons() {
                     >
                       {coupon.discount_type === 'percent'
                         ? coupon.discount_value % 10 === 0
-                          ? `打 ${coupon.discount_value / 10} 折`
-                          : `打 ${coupon.discount_value} 折`
+                          ? `打 ${10 - coupon.discount_value / 10} 折`
+                          : `打 ${10 - coupon.discount_value / 10} 折`
                         : `折 ${coupon.discount_value} 元`}
                     </h6>
                     <p

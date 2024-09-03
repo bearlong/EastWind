@@ -248,7 +248,7 @@ router.post('/send-welcome-coupon/:userId', async (req, res) => {
         '新會員優惠',
         welcomeCouponCode,
         'percent', // 折扣類型
-        90, // 折扣值
+        10, // 折扣值
         validFrom,
         validTo,
         0, // 低消
