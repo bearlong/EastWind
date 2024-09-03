@@ -1,6 +1,7 @@
+import React from 'react'
 import styles from '@/styles/boyu/user-booking.module.scss'
 
-export default function BookingFilter({ selectedStatus, changeStatus }) {
+export default function BookingStatusTabs({ selectedStatus, changeStatus }) {
   return (
     <div className={styles['booking-list-head-bo']}>
       <ul

@@ -1,3 +1,4 @@
+import React from 'react'
 import { FaSort, FaCheck } from 'react-icons/fa6'
 import styles from '@/styles/boyu/user-booking.module.scss'
 
