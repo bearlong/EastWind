@@ -133,7 +133,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: flex-end;
-  gap: 3rem;
+  gap: 3.5rem;
   align-self: stretch;
 }
 
@@ -149,6 +149,7 @@
   justify-content: space-between;
   align-items: flex-start;
   align-self: stretch;
+  white-space: nowrap;
 }
 
 .textrighth51-aa {
@@ -168,6 +169,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-left: 22rem;
+  white-space: nowrap;
   // gap: 0rem;
   padding: 0.5rem;
   background-color: var(--white);

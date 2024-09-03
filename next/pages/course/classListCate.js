@@ -23,8 +23,6 @@ export default function ClassListCate() {
       const res = await fetch(apiURL)
       const data = await res.json()
 
-      console.log(data.data.courses)
-
       // 設定到狀態中 ==> 觸發re-render(進入update階段)
       if (Array.isArray(data.data.courses)) {
         setCourses(data.data.courses)
@@ -54,15 +52,23 @@ export default function ClassListCate() {
       setPages((page) => page + 1)
     }
   }
-  console.log(Object.values(courses), category_id)
   return (
     <>
       <div className="container">
         <div className={styles['desktopList2-aa']}>
           <div className={styles['sec1-aa']}>
             <div className={styles['text12-aa']}>
-              {/* <h2>麻將 課程排行</h2> */}
-              <h2>{courses.ch_name} 課程排行</h2>
+              {courses &&
+                Object.values(courses)
+                  .flat()
+                  .filter(
+                    (course) => course.category_id === Number(category_id)
+                  )
+                  .slice(0, 1)
+                  .map((course, index) => {
+                    console.log(course)
+                    return <h2 key={course.id}>{course.ch_name}課程 排行</h2>
+                  })}
             </div>
             <div className={styles['classCards-aa']}>
               {courses &&
@@ -109,8 +115,15 @@ export default function ClassListCate() {
             </div>
           </div>
           <div className={styles['texth22-aa']}>
-            <h2>麻將課程 列表</h2>
-            {/* <h2>{courses.ch_name}課程 列表</h2> */}
+            {courses &&
+              Object.values(courses)
+                .flat()
+                .filter((course) => course.category_id === Number(category_id))
+                .slice(0, 1)
+                .map((course, index) => {
+                  console.log(course)
+                  return <h2 key={course.id}>{course.ch_name}課程 列表</h2>
+                })}
           </div>
           <div className={styles['sec2']}>
             <div className={styles['text2-aa']}>

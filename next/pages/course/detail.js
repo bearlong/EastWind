@@ -15,7 +15,7 @@ import VideoPlayer from '@/components/course/video'
 import { Button } from 'react-bootstrap'
 import { AuthContext } from '@/context/AuthContext'
 import { useCart } from '@/hooks/use-cart'
-import { FaHeart } from 'react-icons/fa6'
+import { FaHeart } from 'react-icons/fa'
 import { CiHeart } from 'react-icons/ci'
 
 const override = {
@@ -25,7 +25,7 @@ const override = {
 }
 
 export default function Detail() {
-  const { handleAdd = () => {}, handleShow = () => {} } = useCart()
+  const { handleAdd = () => {}, handleShow = () => {}, cart } = useCart()
   const { user } = useContext(AuthContext)
   const [courses, setCourses] = useState([])
 
@@ -51,6 +51,7 @@ export default function Detail() {
   const [videoUrl, setVideoUrl] = useState('')
   const [isPaused, setIsPaused] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
+  const [isActive, setIsActive] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false) // 用於控制顯示/隱藏
   const { course_id, category_id, id } = router.query
   const chapterRef = useRef(null)
@@ -177,6 +178,13 @@ export default function Detail() {
     }
   }
 
+  const handleStyToggle = () => {
+    {
+      isActive ? <FaHeart fontSize={24} /> : <CiHeart fontSize={24} />
+    }
+    setIsActive((prev) => !prev)
+  }
+
   const loader = (
     <PacmanLoader
       color="#ff6600"
@@ -206,7 +214,7 @@ export default function Detail() {
               {/* <Link href={`/course/classList`}> */}
               {/* <span> 麻將 </span> */}
               {/* </Link> */}
-              <CategoryLink />
+              <CategoryLink contentData={courses} />
               &gt;
               <span> 初級</span>
             </h6>
@@ -229,10 +237,19 @@ export default function Detail() {
                 <button
                   className={styles['fav1-aa']}
                   onClick={() => {
-                    handleFavToggle(courses.id, 'course')
+                    if (user) {
+                      handleFavToggle(courses.id, 'course')
+                      handleStyToggle
+                    } else {
+                      toast.error('請先登入會員')
+                      return
+                    }
                   }}
+                  //   onClick={() => {
+                  //     handleFavToggle(courses.id, 'course')
+                  //   }}
                 >
-                  <h5>加入最愛</h5>
+                  <h6>加入最愛</h6>
                   <CiHeart fontSize={24} />
                 </button>
 
@@ -266,9 +283,31 @@ export default function Detail() {
                 <button
                   className={styles['BTNde1-aa']}
                   onClick={() => {
-                    handleAdd(courses, 'course', 1)
-                    handleShow()
+                    if (user) {
+                      const itemExists = cart.find(
+                        (cartItem) =>
+                          cartItem.object_id === courses.id &&
+                          cartItem.object_type === 'course'
+                      )
+                      if (itemExists) {
+                        toast.error('此商品已在購物車中，無法再次加入')
+                        return
+                      }
+                      handleAdd(courses, 'course', 1)
+                      handleShow()
+                    } else {
+                      toast.error('請先登入會員')
+                      return
+                    }
                   }}
+
+                  // if (user) {
+                  //   handleAdd(courses, 'course', 1)
+                  //   handleShow()
+                  // } else {
+                  //   toast.error('請先登入會員')
+                  //   return
+                  // }
                 >
                   <div className={styles['BUTTONde1-aa']}>
                     <h5>立即購買</h5>
@@ -277,7 +316,21 @@ export default function Detail() {
                 <button
                   className={styles['BTNde2-aa']}
                   onClick={() => {
-                    handleAdd(courses, 'course', 1)
+                    if (user) {
+                      const itemExists = cart.find(
+                        (cartItem) =>
+                          cartItem.object_id === courses.id &&
+                          cartItem.object_type === 'course'
+                      )
+                      if (itemExists) {
+                        toast.error('此商品已在購物車中，無法再次加入')
+                        return
+                      }
+                      handleAdd(courses, 'course', 1)
+                    } else {
+                      toast.error('請先登入會員')
+                      return
+                    }
                   }}
                 >
                   <div className={styles['BUTTONde2-aa']}>
