@@ -10,6 +10,7 @@ import anime from 'animejs/lib/anime.min.js'
 import Swal from 'sweetalert2'
 import { useRouter } from 'next/router'
 import { AuthContext } from '@/context/AuthContext'
+import MouseMove from '@/components/mouseMove'
 
 export default function Home() {
   const router = useRouter()
@@ -505,6 +506,7 @@ export default function Home() {
         </div>
       )}
       <main>
+        <MouseMove />
         {/* 主視覺 */}
         <section
           className={`${styles['hero-section-bo']} text-center d-flex justify-content-center align-items-center`}

@@ -38,6 +38,7 @@ export default function Checkout() {
     handleRemoveAll = () => {},
     cartTotal,
   } = useCart()
+  console.log(cartTotal)
   const router = useRouter()
   const [delivery, setDelivery] = useState('宅配')
   const [deliveryPrice, setDeliveryPrice] = useState(60)
@@ -308,6 +309,7 @@ export default function Checkout() {
 
     formData.append('remark', remark)
     formData.append('cart', JSON.stringify(cart))
+    formData.append('email', user.email)
 
     const url = `http://localhost:3005/api/checkout/${user.id}`
     const method = 'POST'
@@ -464,6 +466,7 @@ export default function Checkout() {
     if (router.isReady && !loading) {
       const { transactionId, orderId, RtnMsg, CustomField1 } = router.query
       if (user) {
+        console.log(user)
         fetchUserInfo()
       } else if (!user && loading === false) {
         alert('請先登入會員')
