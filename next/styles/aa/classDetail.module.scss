@@ -164,6 +164,17 @@
   align-items: center;
 }
 
+.fav1-aa {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // gap: 0rem;
+  padding: 0.5rem;
+  background-color: var(--white);
+  color: var(--primary);
+  border: 0.5px solid var(--primary);
+}
+
 .detextright4-aa {
   color: var(--text-hover, #747474);
   display: flex;
