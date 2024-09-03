@@ -15,6 +15,7 @@ router.post('/', async (req, res) => {
     total_price,
     company_id,
     user_id, 
+    party_id,
   } = req.body
 
   console.log(
@@ -84,8 +85,8 @@ router.post('/', async (req, res) => {
     // 插入預訂記錄
     const insertQuery = `
       INSERT INTO booking_record 
-      (numerical_order,user_id, table_id, date, start_time, end_time, playroom_type, notes, total_price, status) 
-      VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (numerical_order,user_id, table_id, date, start_time, end_time, playroom_type, notes, total_price, status,party_id) 
+      VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?,?)
     `
 
     const [result] = await connection.execute(insertQuery, [
@@ -99,6 +100,7 @@ router.post('/', async (req, res) => {
       notes || null,
       total_price,
       'booked',
+      party_id
     ])
 
     if (result.affectedRows === 1) {

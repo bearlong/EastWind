@@ -53,14 +53,14 @@ export default function Party() {
   if (!partyData) return <div>找不到派對資料</div>
 
   return (
-    <>
+    
       <div className="container">
-        <BreadCrumb />
+        {/* <BreadCrumb /> */}
         <div className={styles.main}>
           <PartyLeftArea partyData={partyData} />
           <PartyRightArea user={user} partyData={partyData} />
         </div>
       </div>
-    </>
+    
   )
 }

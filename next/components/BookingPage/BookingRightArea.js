@@ -182,6 +182,7 @@ export default function BookingRightArea({ companyData, user }) {
           notes: bookingData.notes || '',
           total_price: totalPrice,
           company_id: companyData.id, // 添加公司 ID
+          party_id: null,
         }
 
         const result = await Swal.fire({
@@ -190,7 +191,9 @@ export default function BookingRightArea({ companyData, user }) {
             <p>日期: ${bookingData.date.toLocaleDateString()}</p>
             <p>開始時間: ${bookingData.start_time.toLocaleTimeString()}</p>
             <p>結束時間: ${bookingData.end_time.toLocaleTimeString()}</p>
-            <p>大廳類型: ${bookingData.playroom_type === '0' ? '大廳' : '包廂'}</p>
+            <p>大廳類型: ${
+              bookingData.playroom_type === '0' ? '大廳' : '包廂'
+            }</p>
             <p>總價: $${totalPrice.toFixed(2)}</p>
           `,
           icon: 'question',
@@ -198,7 +201,7 @@ export default function BookingRightArea({ companyData, user }) {
           confirmButtonColor: '#3085d6',
           cancelButtonColor: '#d33',
           confirmButtonText: '確認預定',
-          cancelButtonText: '取消'
+          cancelButtonText: '取消',
         })
         if (result.isConfirmed) {
           const response = await fetch('http://localhost:3005/api/booking', {
@@ -220,7 +223,7 @@ export default function BookingRightArea({ companyData, user }) {
             title: '預定成功！',
             text: `您的桌號是: ${bookingResult.tableId}`,
             icon: 'success',
-            confirmButtonText: '確定'
+            confirmButtonText: '確定',
           }).then((result) => {
             if (result.isConfirmed) {
               // 跳轉到其他頁面，例如用戶的訂單頁面
@@ -244,14 +247,13 @@ export default function BookingRightArea({ companyData, user }) {
         // const result = await response.json()
         // console.log('訂單已創建:', result)
         // alert(`預訂成功創建！您的桌號是: ${result.tableId}`)
-
       } catch (error) {
         console.error('創建訂單失敗:', error)
         Swal.fire({
           title: '錯誤',
           text: error.message || '提交訂單失敗，請稍後再試',
           icon: 'error',
-          confirmButtonText: '確定'
+          confirmButtonText: '確定',
         })
       }
     }
@@ -293,79 +295,64 @@ export default function BookingRightArea({ companyData, user }) {
           end_time: formatTime(bookingData.end_time),
         }
         console.log('Submitting party data:', partyData)
-  // 使用 Swal 顯示確認彈窗
-  const result = await Swal.fire({
-    title: '確認揪團',
-    html: `
+        // 使用 Swal 顯示確認彈窗
+        const result = await Swal.fire({
+          title: '確認揪團',
+          html: `
       <p>日期: ${bookingData.date.toLocaleDateString()}</p>
       <p>開始時間: ${formatTime(bookingData.start_time)}</p>
       <p>結束時間: ${formatTime(bookingData.end_time)}</p>
       <p>大廳類型: ${bookingData.playroom_type === '0' ? '大廳' : '包廂'}</p>
       <p>總價: $${totalPrice.toFixed(2)}</p>
     `,
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: '確認揪團',
-    cancelButtonText: '取消'
-  })
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: '確認揪團',
+          cancelButtonText: '取消',
+        })
 
-  if (result.isConfirmed) {
-    const response = await fetch('http://localhost:3005/api/hostParty', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(partyData),
-    })
-    if (!response.ok) {
-      throw new Error('Failed to submit booking')
-    }
-    const partyResult = await response.json()
-    console.log('派對已創建:', partyResult)
-    
-     // 顯示成功訊息並提供跳轉選項
-     Swal.fire({
-      title: '揪團成功！',
-      text: `您的桌號是: ${partyResult.numerical_order}`,
-      icon: 'success',
-      showCancelButton: true,
-      confirmButtonText: '前往用戶資料',
-      cancelButtonText: '查看派對詳情',
-      reverseButtons: true
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // 跳轉到用戶資料頁面
-        router.push('/user/user-center/party')
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        // 跳轉到派對詳情頁面
-        router.push(`/lobby/Party/${partyResult.id}`)  // 假設派對詳情頁面的路由是 /party/:id
-      }
-    })
-  }
-        // const response = await fetch('http://localhost:3005/api/hostParty', {
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //   },
+        if (result.isConfirmed) {
+          const response = await fetch('http://localhost:3005/api/hostParty', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(partyData),
+          })
+          if (!response.ok) {
+            throw new Error('Failed to submit booking')
+          }
+          const partyResult = await response.json()
+          console.log('派對已創建:', partyResult)
 
-        //   body: JSON.stringify(partyData),
-        // })
-        // if (!response.ok) {
-        //   throw new Error('Failed to submit booking')
-        // }
-        // const result = await response.json()
-        // console.log('派對已創建:', result)
-        // 這裡可以添加成功提示或重定向邏輯
-        // alert(`預訂成功創建！您的桌號是: ${result.numerical_order}`)
+          // 顯示成功訊息並提供跳轉選項
+          Swal.fire({
+            title: '揪團成功！',
+            text: `您的桌號是: ${partyResult.numerical_order}`,
+            icon: 'success',
+            showCancelButton: true,
+            confirmButtonText: '前往用戶資料',
+            cancelButtonText: '查看派對詳情',
+            reverseButtons: true,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // 跳轉到用戶資料頁面
+              router.push('/user/user-center/party')
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+              // 跳轉到派對詳情頁面
+              router.push(`/lobby/Party/${partyResult.id}`) // 假設派對詳情頁面的路由是 /party/:id
+            }
+          })
+        }
       } catch (error) {
         console.error('創建派對失敗:', error)
         Swal.fire({
           title: '錯誤',
           text: error.message || '提交派對失敗，請稍後再試',
           icon: 'error',
-          confirmButtonText: '確定'
+          confirmButtonText: '確定',
         })
       }
     }
@@ -375,8 +362,8 @@ export default function BookingRightArea({ companyData, user }) {
     <div
       className={`${styles.bookingRightArea} ${styles.stickyBooking} col-lg-4 col-md-6 col-sm-12`}
     >
-      {/* <PartyNav /> */}
-      <ul className="nav nav-tabs my-3" id="myTab" role="tablist">
+ 
+      <ul className="nav nav-tabs nav-fill " id="myTab" role="tablist">
         <li className="nav-item" role="presentation">
           <button
             className="nav-link active p"
@@ -416,7 +403,7 @@ export default function BookingRightArea({ companyData, user }) {
           aria-labelledby="booking-tab"
           tabIndex="0"
         >
-          <div className="card">
+          <div className=" card border-0 border-start border-end border-bottom">
             <div className="card-body">
               <h5 className="card-title mb-4">{companyData.name}</h5>
 
@@ -528,7 +515,7 @@ export default function BookingRightArea({ companyData, user }) {
           tabIndex="0"
         > */}
         <div
-          className="card tab-pane fade"
+          className="card tab-pane fade border-0 border-start border-end border-bottom"
           id="party-pane"
           role="tabpanel"
           aria-labelledby="party-tab"

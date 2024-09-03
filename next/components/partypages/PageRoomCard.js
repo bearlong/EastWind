@@ -49,10 +49,10 @@ export default function RoomCard({ companyData, partyData }) {
             <p>{data.tele}</p>
           </div>
           <div className={styles.mapImg}>
-            <img
+            {/* <img
               alt="mapimg"
               src="/images/gw/img/Google_Maps_icon_(2015-2020).svg.png"
-            />
+            /> */}
           </div>
         </div>
         <div>

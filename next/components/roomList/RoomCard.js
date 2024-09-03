@@ -3,8 +3,7 @@ import styles from '@/styles/gw/_RoomListCard.module.scss'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
-
-export default function RoomCard({ party=[] }) {
+export default function RoomCard({ party = [] }) {
   const formatDate = (dateTimeString) => {
     if (!dateTimeString) return '時間未知'
     const dateTime = new Date(dateTimeString)
@@ -30,49 +29,37 @@ export default function RoomCard({ party=[] }) {
   const duration = calculateDuration(party.start_time, party.end_time)
 
   return (
-
     <div className={styles.card}>
       <div className={styles.cardBody}>
         <div className={styles.flexContainer}>
-          <h6 className={styles.cardTitle}>
-            團號: {party.numerical_order || '未知'}
-          </h6>
+          <div className={styles.company_name}>
+          {party.company_name}
+          </div>
+
           <span className={styles.badge}>
             {typeof duration === 'number' ? `${duration} 小時` : duration}
           </span>
+
         </div>
-        <p className={`${styles.info} ${styles.location}`}>{party.company_name} {party.district} {party.city}</p>
-        <p className={styles.info}>開始時間：{startTime}</p>
-        <p className={styles.info}>玩家數: {party.player_count}/4</p>
-        <div className={styles.buttonContainer}>
-          <Link href={`/lobby/Party/${party.id}`}>
-            <button className={styles.btn}>馬上加入</button>
-          </Link>
+
+        <div className={styles.location}>
+          {party.district} {party.city}
+        </div>
+
+        <p className={styles.info}>團號: {party.numerical_order || '未知'}</p>
+        
+        <div className={styles.test}>
+          <div>
+            <p className={styles.info}>開始時間：{startTime}</p>
+            <p className={styles.info}>玩家數: {party.player_count}/4</p>
+          </div>
+          <div className={styles.buttonContainer}>
+            <Link href={`/lobby/Party/${party.id}`}>
+              <button className={styles.btn}>馬上加入</button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
-
-    // <div className={styles.card}>
-    //   <div className={styles['card-body']}>
-    //     <div className={styles['flex-container']}>
-    //       <h6 className={styles['card-title']}>
-    //         團號: {party.numerical_order || '未知'}
-    //       </h6>
-    //       <span className={`${styles.badge} ${styles['bg-primary']}`}>
-    //         {typeof duration === 'number' ? `${duration} 小時` : duration}
-    //       </span>
-    //     </div>
-    //     <p className={styles['card-subtitle']}>開始時間：{startTime}</p>
-    //     <div className={styles['flex-container']}>
-    //       <p>{party.company_name}{party.district}{party.city}</p>
-    //       <p>玩家數: {party.player_count}/4</p>
-    //     </div>
-    //     <div className={styles['flex-container']}>
-    //       <Link href={`/lobby/Party/${party.id}`}>
-    //         <button className={styles.btn}>馬上加入</button>
-    //       </Link>
-    //     </div>
-    //   </div>
-    // </div>
   )
 }

@@ -1,11 +1,12 @@
 import cardStyles from '@/styles/gw/_card.module.sass'
 
-export default function PartyCard() {
+export default function PartyCard({partyData}) {
+  
   return (
     <>
       <div className={cardStyles.Card} id="party">
-        <h6>桌號：MGM8555412DF</h6>
-        <h6>開團時間：2024/07/20 (sat) 18:00-22:00</h6>
+        <h6>團號：{partyData.numerical_order}</h6>
+        <h6>開團時間：{partyData.start_at}</h6>
         <p>台麻十六張</p>
         <div className="rulesBox d-flex justify-content-start gap-2">
           <p>特殊規則:</p>
