@@ -24,7 +24,14 @@ export default function Admin() {
   if (typeof window !== 'undefined') {
     router.push('/admin/chart')
   }
-  return <></>
+  return (
+    <>
+      <div className={styles.container}>
+        <h1>管理����面</h1>
+        <p>這��是管理����用��面，可以進行系統管理。</p>
+      </div>
+    </>
+  )
 }
 Admin.getLayout = function (page) {
   return <AdminCenterLayout>{page}</AdminCenterLayout>

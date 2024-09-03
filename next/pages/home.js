@@ -48,7 +48,7 @@ export default function Home() {
   // 檢查用戶 ID 是否為 62，若是則跳轉到管理頁面
   useEffect(() => {
     if (user && user.id === 62) {
-      router.push('http://localhost:3000/admin')
+      router.push('http://localhost:3000/admin/chart')
       Swal.fire({
         title: '登入成功！',
         html: `<span class="p">管理員 歡迎回來！</span>`,
