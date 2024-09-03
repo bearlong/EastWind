@@ -101,7 +101,9 @@
 /* 使用者圖片 */
 .user-img-bo {
   width: 14rem;
+  height: 14rem; /* 確保高度與寬度相同 */
   border-radius: 50%;
+  object-fit: cover; /* 確保圖片內容完整且不變形 */
 }
 
 /* 編輯圖片按鈕 */

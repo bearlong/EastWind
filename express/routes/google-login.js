@@ -26,8 +26,6 @@ router.post('/', async (req, res) => {
       first_edit_completed: 0,
     }
 
-    let isNewUser = false
-
     if (rows.length > 0) {
       // Google UID 存在，直接使用該使用者資料
       returnUser = {
@@ -37,7 +35,6 @@ router.post('/', async (req, res) => {
         first_edit_completed: rows[0].first_edit_completed,
       }
     } else {
-      // 如果 Google UID 不存在，檢查是否有匹配的 email
       [rows] = await dbPromise.execute(
         'SELECT id, username, first_edit_completed FROM user WHERE email = ?',
         [email]
@@ -69,7 +66,6 @@ router.post('/', async (req, res) => {
           google_uid: google_uid,
           first_edit_completed: 0, // 新插入的會員，未完成編輯
         }
-        isNewUser = true
       }
     }
 

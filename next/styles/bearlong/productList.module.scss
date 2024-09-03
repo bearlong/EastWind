@@ -1,10 +1,33 @@
+@font-face {
+  font-family: 'LXGW WenKai Mono TC';
+  src: url('../../public/fonts/LXGWWenKaiMonoTC-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'LXGW WenKai Mono TC';
+  src: url('../../public/fonts/LXGWWenKaiMonoTC-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
 .main {
   max-width: 1440px;
   margin: auto;
   padding: 0 4rem;
 }
 
+.loading {
+  height: 100vh;
+}
+
 .product-header-bl {
+  & h6,
+  & li {
+    font-family: 'LXGW WenKai Mono TC', sans-serif !important;
+  }
+
   background: var(--background);
   .subBar-bl {
     list-style: none;

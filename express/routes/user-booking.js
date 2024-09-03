@@ -3,6 +3,7 @@ import cors from 'cors'
 import multer from 'multer'
 import 'dotenv/config.js'
 import connection from '##/configs/mysql-promise.js'
+import transporter from '##/configs/mail.js'
 
 const upload = multer()
 const router = express.Router()
@@ -53,6 +54,7 @@ router.get('/:userId/:status', async (req, res) => {
       .json({ status: 'error', message: '缺少用戶 ID 或狀態' })
   }
 
+  // booking_record.party_id,
   try {
     let query = `
        SELECT 
@@ -111,6 +113,111 @@ router.get('/:userId/:status', async (req, res) => {
   }
 })
 
+const sendCancellationEmail = (email, bookingDetails) => {
+  // 將日期格式化為 YYYY / MM / DD
+  const formattedDate = new Date(bookingDetails.date)
+    .toISOString()
+    .slice(0, 10)
+    .replace(/-/g, ' / ')
+
+  // 將時間格式化為 HH : MM，並在冒號兩邊加入空格
+  const formattedStartTime = bookingDetails.start_time
+    .slice(0, 5)
+    .replace(':', ' : ')
+  const formattedEndTime = bookingDetails.end_time
+    .slice(0, 5)
+    .replace(':', ' : ')
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: '您的預訂已取消',
+    text: `尊敬的用戶，您的預訂號為 ${bookingDetails.order_number} 的預訂已取消。`,
+    html: `
+        <!DOCTYPE html>
+        <html lang="zh-TW">
+          <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+              }
+              .container {
+                width: 100%;
+                max-width: 550px;
+                margin: 0 auto;
+                background-color: #2b4d37;
+                padding: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+              }
+              .header {
+                text-align: center;
+                padding: 10px 0;
+                border-bottom: 1px solid #dddddd;
+              }
+              .header h1 {
+                color: #faf7f0;
+                margin: 0;
+                font-size: 24px;
+              }
+              .content {
+                margin: 20px 0;
+                line-height: 1.5;
+              }
+              .content p {
+                margin: 0 0 10px;
+              }
+              .content a {
+                display: inline-block;
+                padding: 10px 20px;
+                margin: 0 0 10px;
+                background-color: #b79347;
+                color: #faf7f0;
+                text-decoration: none;
+                border-radius: 5px;
+              }
+              p,
+              .p {
+                color: #faf7f0;
+                font-weight: 900;
+                font-size: 16px;
+                @media screen and (max-width: 768px) {
+                  font-size: 14px;
+                }
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>只欠東風 - 取消預訂通知</h1>
+              </div>
+              <div class="content">
+                <p>您好，</p>
+                <p>您的預訂號為 <strong>${bookingDetails.order_number}</strong> 的預訂已取消。</p>
+                <p>詳情如下：</p>
+                <p style="text-indent: 20px;">店家名稱：${bookingDetails.company_name}</p>
+                <p style="text-indent: 20px;">預訂日期：${formattedDate}</p>
+                <p style="text-indent: 20px;">開始時間：${formattedStartTime}</p>
+                <p style="text-indent: 20px;">結束時間：${formattedEndTime}</p>   
+                <p>如果您有任何問題，請隨時聯繫我們。</p>
+                <p>感謝您的使用！</p>
+                <p>敬上，</p>
+                <p>東風開發團隊。</p>
+              </div>
+            </div>
+          </body>
+        </html>
+    `,
+  }
+
+  return transporter.sendMail(mailOptions)
+}
+
 router.put('/cancel/:bookingId', async (req, res) => {
   const { bookingId } = req.params
 
@@ -119,17 +226,52 @@ router.put('/cancel/:bookingId', async (req, res) => {
   }
 
   try {
-    // 更新預訂狀態為已取消
+    // 獲取預訂信息並包括公司名稱以發送郵件
     const query = `
+      SELECT 
+        booking_record.numerical_order AS order_number,
+        booking_record.*,
+        company.name AS company_name
+      FROM 
+        booking_record
+      JOIN 
+        mahjong_table ON booking_record.table_id = mahjong_table.id
+      JOIN 
+        company ON mahjong_table.company_id = company.id
+      WHERE 
+        booking_record.id = ?
+    `
+
+    const [bookings] = await connection.execute(query, [bookingId])
+
+    const bookingDetails = bookings[0]
+
+    if (!bookingDetails) {
+      return res.status(404).json({ status: 'error', message: '找不到該預訂' })
+    }
+
+    // 更新預訂狀態為已取消
+    const updateQuery = `
       UPDATE booking_record
       SET status = 'cancelled'
       WHERE id = ?
     `
-    const [result] = await connection.execute(query, [bookingId])
+    const [result] = await connection.execute(updateQuery, [bookingId])
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ status: 'error', message: '找不到該預訂' })
     }
+
+    // 發送取消郵件
+    const [user] = await connection.execute(
+      `SELECT email FROM user WHERE id = ?`,
+      [bookingDetails.user_id]
+    )
+
+    const userEmail = user[0].email
+    console.log(bookingDetails)
+    console.log(user)
+    await sendCancellationEmail(userEmail, bookingDetails)
 
     res.status(200).json({ status: 'success', message: '預訂已取消' })
   } catch (err) {

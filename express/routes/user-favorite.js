@@ -127,28 +127,29 @@ router.get('/:userId/:type', async (req, res) => {
 
       case 'company':
         query = `
-          SELECT 
-              company.id , 
-              company.name AS name,
-              company.rating,
-              company.user_ratings_total AS user_rating_total,
-              company.address,
-              company.tele AS phone,
-              company.close_time,
-              MIN(company_photo.img) AS image,
-              favorite.id AS favorite_id
-          FROM 
-              favorite
-          JOIN 
-              company ON favorite.object_id = company.id
-          LEFT JOIN 
-              company_photo ON company_photo.room_id = company.id
-          WHERE 
-              favorite.user_id = ?
-              AND favorite.object_type = 'company'
-              ${search ? `AND (company.name LIKE ? OR company.address LIKE ?)` : ''}
-          GROUP BY 
-              company.id;
+      SELECT 
+          company.id, 
+          company.name,
+          MIN(company.rating) AS rating, -- 這裡可能需要使用聚合函數來處理
+          MIN(company.user_ratings_total) AS user_rating_total,
+          MIN(company.address) AS address,
+          MIN(company.tele) AS phone,
+          MIN(company.close_time) AS close_time,
+          MIN(company_photo.img) AS image,
+          favorite.id AS favorite_id
+      FROM 
+          favorite
+      JOIN 
+          company ON favorite.object_id = company.id
+      LEFT JOIN 
+          company_photo ON company_photo.room_id = company.id
+      WHERE 
+          favorite.user_id = ?
+          AND favorite.object_type = 'company'
+      ${search ? `AND (company.name LIKE ? OR company.address LIKE ?)` : ''}
+      GROUP BY 
+          company.id;
+
         `
         if (search) {
           params.push(`%${search}%`, `%${search}%`)

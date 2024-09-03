@@ -384,7 +384,7 @@ const storage = multer.diskStorage({
 // 初始化 multer 中間件
 const upload = multer({
   storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 文件大小限制2MB
+  limits: { fileSize: 2 * 1024 * 1024 }, // 檔案大小限制16MB
   fileFilter(req, file, cb) {
     const filetypes = /jpeg|jpg|png/
     const mimetype = filetypes.test(file.mimetype)
@@ -395,20 +395,40 @@ const upload = multer({
     if (mimetype && extname) {
       return cb(null, true)
     }
-    cb(new Error('只能上傳 jpeg, jpg, png 格式的圖片文件'))
+    cb(new Error('只能上傳 jpeg, jpg, png 格式的圖片檔案'))
   },
 })
 
 // 會員更換圖片 API
 router.post(
   '/update-avatar/:userId',
-  upload.single('avatar'),
+  (req, res, next) => {
+    upload.single('avatar')(req, res, function (err) {
+      if (err) {
+        if (
+          err instanceof multer.MulterError &&
+          err.code === 'LIMIT_FILE_SIZE'
+        ) {
+          return res.status(400).json({
+            status: 'fail',
+            message: '檔案大小超過限制，最大允許16MB',
+          })
+        } else if (err) {
+          return res.status(400).json({
+            status: 'fail',
+            message: err.message,
+          })
+        }
+      }
+      next()
+    })
+  },
   async (req, res) => {
     const { userId } = req.params
     const file = req.file
 
     if (!file) {
-      return res.status(400).json({ status: 'fail', message: '沒有上傳文件' })
+      return res.status(400).json({ status: 'fail', message: '沒有上傳檔案' })
     }
 
     const avatarFilename = `user${userId}` // 只儲存檔名
@@ -421,7 +441,6 @@ router.post(
 
       if (result.affectedRows > 0) {
         // 回傳更新後的 user_img 和 username
-
         const [updatedUser] = await connection.execute(
           'SELECT user_img, username FROM user WHERE id = ?',
           [userId]
@@ -430,7 +449,7 @@ router.post(
           status: 'success',
           message: '頭像已更新',
           filename: avatarFilename,
-          data: updatedUser[0], // 回傳更新的資料     data: updatedUser[0], // 回傳更新的資料
+          data: updatedUser[0], // 回傳更新的資料
         })
       } else {
         await fs.unlink(

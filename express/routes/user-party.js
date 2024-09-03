@@ -78,7 +78,6 @@ router.get('/:userId/:status', async (req, res) => {
       ORDER BY 
         party.date DESC,
         party.start_at DESC;
-
     `
     const [partys] = await connection.execute(query, [
       userId,
@@ -148,7 +147,6 @@ router.get('/join/:userId/:status', async (req, res) => {
       ORDER BY 
         party.date DESC,
         party.start_at DESC;
-
     `
     const [partys] = await connection.execute(query, [
       userId,
