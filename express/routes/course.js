@@ -25,37 +25,6 @@ router.get('/', async (req, res) => {
       })
     }
 
-    // const [courseName] = await dbPromise
-    //   .execute('SELECT `course_name` FROM `course` JOIN `course_category` ON ')
-    //   .catch((err) => {
-    //     if (err) {
-    //       console.error(err)
-    //       return []
-    //     }
-    //   })
-
-    const [courseName] = await dbPromise
-      .execute(
-        `
-      SELECT 
-        \`course\`.\`course_id\`, 
-        \`course\`.\`course_name\`,
-        \`course_category\`.\`ch_name\` 
-      FROM 
-        \`course\`
-      JOIN 
-        \`course_category\` 
-      ON 
-        \`course\`.\`category_id\` = \`course_category\`.\`course_id\`;
-    `
-      )
-      .catch((err) => {
-        if (err) {
-          console.error(err)
-          return []
-        }
-      })
-
     return res.status(200).json({
       status: 'success',
       data: { courses: list },
@@ -166,10 +135,17 @@ router.get('/', async (req, res) => {
 // 獲得單筆資料
 router.get('/:id', async (req, res, next) => {
   try {
-    const id = getIdParam(req)
-
+    const id = req.params.id
+    const { uid } = req.query
+    console.log(uid)
     const [courses] = await dbPromise.execute(
-      'SELECT `course`.*, `course_category`.`name` AS `category_name` FROM course JOIN `course_category` ON `course_category`.`id` = `course`.`category_id` WHERE `course`.`id` = ?',
+      // 'SELECT `course`.*, `course_category`.`name` AS `category_name` FROM course JOIN `course_category` ON `course_category`.`id` = `course`.`category_id` WHERE `course`.`id` = ?',
+      'SELECT `course`.*, `course_category`.`ch_name` AS `category_name`' +
+        `${uid ? ', CASE WHEN `favorite`.`id` IS NOT NULL THEN TRUE ELSE FALSE END AS `fav`' : ''}` +
+        ' FROM `course`' +
+        ' JOIN `course_category` ON `course_category`.`id` = `course`.`category_id`' +
+        `${uid ? ' LEFT JOIN `favorite` ON `favorite`.`id` = `course`.`id` AND `favorite`.`object_type` = "course" AND `favorite`.`user_id` = ' + uid : ''}` +
+        ' WHERE `course`.`id` = ?',
       [id]
     )
 
@@ -180,7 +156,7 @@ router.get('/:id', async (req, res, next) => {
         data: { id: '提供的課程ID不存在' },
       })
     }
-
+    console.log(courses[0])
     const course = courses[0]
     return res.status(200).json({ status: 'success', data: { course } })
   } catch (err) {

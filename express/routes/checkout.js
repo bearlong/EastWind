@@ -418,30 +418,11 @@ router.get('/ecpaypayment', async (req, res, next) => {
 </html>
 `
 
-  //res.json({ htmlContent })
   res.send(htmlContent)
-
-  // const htmlContent = `
-  // <!DOCTYPE html>
-  // <html>
-  // <head>
-  //     <title>全方位金流測試</title>
-  // </head>
-  // <body>
-  //     <form method="post" action="${APIURL}">
-  // ${inputs}
-  // <input type ="submit" value = "送出參數">
-  //     </form>
-  // <script>
-  //   document.forms[0].submit();
-  // </script>
-  // </body>
-  // </html>
-  // `
 })
 
 router.get('/:id', async (req, res) => {
-  const id = getIdParam(req)
+  const id = req.params.id
   try {
     const [userInfo] = await dbPromise.execute(
       'SELECT `username`, `city`, `address` FROM `user` WHERE `id` = ?',
@@ -508,7 +489,7 @@ router.post('/result', async (req, res, next) => {
 })
 
 router.post('/:id', upload.none(), async (req, res, next) => {
-  const user_id = getIdParam(req)
+  const user_id = req.params.id
   const uuid = uuidv4()
   const today = moment().format('YYYY-MM-DD')
   const {
@@ -522,6 +503,7 @@ router.post('/:id', upload.none(), async (req, res, next) => {
     discount_info,
     remark,
     cart,
+    email,
   } = req.body
   let mailArr = []
 
@@ -613,38 +595,11 @@ router.post('/:id', upload.none(), async (req, res, next) => {
     if (result.insertId) {
       const time = moment().format('YYYY-MM-DD HH:mm:ss')
       processCart(cartArray, result, mailArr)
-      // cartArray.forEach((cartItem) => {
-      //   mailArr.push({
-      //     name: cartItem.item_name,
-      //     quantity: cartItem.quantity,
-      //     price: cartItem.price,
-      //     total: Number(cartItem.quantity) * Number(cartItem.price),
-      //   })
-      //   const { object_id, object_type, quantity, price, item_name } = cartItem
 
-      //   dbPromise.execute(
-      //     'INSERT INTO `order_detail` (`id`, `name`, `order_id`, `object_id`, `object_type`, `quantity`,`price`) VALUES (NULL,?,?,?,?,?,?)',
-      //     [item_name, result.insertId, object_id, object_type, quantity, price]
-      //   )
-
-      //   if (object_type === 'product') {
-      //     const [product] = dbPromise.execute(
-      //       'SELECT * FROM `product` WHERE `id` = ?',
-      //       [object_id]
-      //     )
-
-      //     if (product[0].stock > 0) {
-      //       dbPromise.execute(
-      //         'UPDATE `product` SET `stock` = `stock` - ? WHERE `id` = ?',
-      //         [quantity, object_id]
-      //       )
-      //     }
-      //   }
-      // })
       let subTotal = 0
       const mailOptions = {
         from: `"只欠東風股份有限公司"<${process.env.SMTP_TO_EMAIL}>`,
-        to: 'a86774546@gmail.com',
+        to: `${email}`,
         subject: '感謝購買只欠東風的產品',
         text: '感謝購買只欠東風的產品，您的訂單已成功建立。',
         html: `
@@ -858,7 +813,7 @@ router.post('/:id', upload.none(), async (req, res, next) => {
 })
 
 router.put('/:id', upload.none(), async (req, res, next) => {
-  const user_id = getIdParam(req)
+  const user_id = req.params.id
   const { id, numerical_order } = req.body
   const time = moment().format('YYYY-MM-DD HH:mm:ss')
   console.log(id, numerical_order)

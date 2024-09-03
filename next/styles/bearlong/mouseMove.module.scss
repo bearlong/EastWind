@@ -1,0 +1,49 @@
+.content {
+  position: relative;
+  width: 30px;
+  height: 40px;
+  perspective: 500px;
+  transform-style: preserve-3d;
+  transition: transform 0.2s linear;
+  z-index: 999;
+  pointer-events: none;
+}
+
+.front,
+.back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 4px solid #76592a;
+  border-radius: 5px;
+  backface-visibility: hidden;
+  transform-style: preserve-3d; /* 確保 3D 變換效果正常應用 */
+  pointer-events: none;
+}
+
+.front {
+  background: #555;
+  overflow: hidden;
+  z-index: 2; /* 前面的 z-index 應該比背面高 */
+  user-select: none;
+  pointer-events: none;
+}
+
+.page {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  img {
+    transform: translateZ(0);
+    width: 24px;
+    user-select: none;
+    pointer-events: none;
+  }
+}
+
+.back {
+  background: #76592a;
+  transform: rotateY(180deg); /* 背面旋轉 180 度 */
+  z-index: 1; /* 背面的 z-index 應該比前面低 */
+}

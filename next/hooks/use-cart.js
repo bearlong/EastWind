@@ -50,6 +50,16 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
     fetchCart()
   }, [user])
 
+  useEffect(() => {
+    if (cart.length > 0) {
+      const total = cart.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      )
+      setCartTotal(total)
+    }
+  }, [cart])
+
   const handleAdd = async (object, type, quantity) => {
     console.log(object, type, quantity)
     const foundIndex = cart.findIndex(
