@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import styles from '@/styles/boyu/register.module.scss'
-import { FaXmark, FaCheck } from 'react-icons/fa6'
-import Link from 'next/link'
 import Swal from 'sweetalert2'
 import { useRouter } from 'next/router'
+import RegisterForm from '@/components/regitster/RegisterForm'
+import CompanyRegisterForm from '@/components/regitster/CompanyRegisterForm'
 
 export default function Register() {
   const router = useRouter()
@@ -33,6 +33,59 @@ export default function Register() {
     })
   }
 
+  const checkUniqueValues = async () => {
+    try {
+      const response = await fetch(
+        'http://localhost:3005/api/register/check-unique',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: formData.email,
+            account: formData.account,
+          }),
+        }
+      )
+
+      const result = await response.json()
+
+      if (result.emailExists) {
+        setEmailError('電子信箱已被註冊')
+      }
+
+      if (result.accountExists) {
+        setAccountError('帳號已被註冊')
+      }
+
+      return result.emailExists || result.accountExists
+    } catch (error) {
+      setGeneralError('伺服器錯誤，請稍後再試')
+      return true // 在錯誤情況下假設有錯，防止錯誤情況下繼續註冊
+    }
+  }
+
+  const validateCreds = () => {
+    const accountRegex = /^(?=.*[a-zA-Z]).{6,}$/
+    const passwordRegex = /^(?=.*[a-zA-Z]).{6,}$/
+
+    if (!accountRegex.test(formData.account)) {
+      setAccountError('帳號應至少6碼，且需包含至少一個英文字')
+      return false
+    }
+
+    if (!passwordRegex.test(formData.password)) {
+      setPasswordError('密碼應至少6碼，且需包含至少一個英文字')
+      return false
+    }
+
+    if (formData.account === formData.password) {
+      setAccountError('帳號和密碼不可相同')
+      return false
+    }
+
+    return true
+  }
+
   // 提交註冊表單的邏輯
   const submitForm = async (event) => {
     event.preventDefault()
@@ -42,11 +95,11 @@ export default function Register() {
       return
     }
 
-    // 重置錯誤訊息
+    // 清除之前的錯誤訊息
     setEmailError('')
     setAccountError('')
     setPasswordError('')
-    setCheckPasswordError('') // 重置確認密碼錯誤訊息
+    setCheckPasswordError('')
     setGeneralError('')
 
     // 驗證確認密碼是否一致
@@ -55,12 +108,25 @@ export default function Register() {
       return
     }
 
+    // 驗證帳號和密碼格式
+    if (!validateCreds()) {
+      return
+    }
+
+    // 檢查唯一性
+    const isUnique = await checkUniqueValues()
+
+    if (isUnique) {
+      return // 如果帳號或電子信箱已存在，直接返回，阻止提交
+    }
+
+    // 發送註冊請求
     try {
       const response = await fetch(
         'http://localhost:3005/api/register/register',
         {
           method: 'POST',
-          headers: { 'Content-type': 'application/json' },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
         }
       )
@@ -68,25 +134,36 @@ export default function Register() {
       const result = await response.json()
 
       if (result.status === 'success') {
-        // 顯示註冊成功的 SweetAlert
+        console.log('保存前的 formData:', formData)
+
+        // 先保存帳號和密碼到 localStorage
+        localStorage.setItem('registeredAccount', formData.account)
+        localStorage.setItem('registeredPassword', formData.password)
+
+        // 然後顯示成功提示框
         Swal.fire({
           title: '註冊成功！',
           html: `<span class="p">歡迎加入！</span>`,
           icon: 'success',
           customClass: {
-            popup: `${styles['swal-popup-bo']}`, // 自訂整個彈出視窗的 class
+            popup: `${styles['swal-popup-bo']}`,
             title: 'h6',
-            icon: `${styles['swal-icon-bo']}`, // 添加自定義 class
-            confirmButton: `${styles['swal-btn-bo']}`, // 添加自定義按鈕 class
+            icon: `${styles['swal-icon-bo']}`,
+            confirmButton: `${styles['swal-btn-bo']}`,
           },
-          confirmButtonText: '確認', // 修改按鈕文字
+          confirmButtonText: '確認',
         }).then(() => {
-          sessionStorage.setItem('registeredAccount', formData.account)
-          sessionStorage.setItem('registeredPassword', formData.password)
-          window.location.href = '/login' // 跳轉到登入頁面
+          console.log('localStorage 設置完成', {
+            account: localStorage.getItem('registeredAccount'),
+            password: localStorage.getItem('registeredPassword'),
+          })
+
+          // 清除 sessionStorage 中的 verifiedEmail 和 emailVerifiedStorage
+          sessionStorage.removeItem('verifiedEmail')
+          sessionStorage.removeItem('emailVerified')
+          router.push('/login')
         })
       } else {
-        // 顯示後端返回的錯誤訊息在表單中
         setEmailError(result.errors?.email || '')
         setAccountError(result.errors?.account || '')
         setPasswordError(result.errors?.password || '')
@@ -138,6 +215,7 @@ export default function Register() {
           },
           confirmButtonText: '確認', // 修改按鈕文字
         })
+        router.push('/login') // 跳轉到優惠券頁面
       } else {
         setEmailError(result.message)
       }
@@ -167,9 +245,6 @@ export default function Register() {
     if (router.isReady) {
       const verifiedEmail = sessionStorage.getItem('verifiedEmail')
       const emailVerifiedStorage = sessionStorage.getItem('emailVerified')
-
-      console.log('Verified Email:', verifiedEmail)
-      console.log('Email Verified From Storage:', emailVerifiedStorage)
 
       if (emailVerifiedStorage === 'true' && verifiedEmail) {
         setFormData((prevData) => ({
@@ -307,107 +382,17 @@ export default function Register() {
           <h3>註</h3>
           <h3>冊</h3>
         </div>
-        <div
-          className={`${styles['user-register-box-bo']} justify-content-center align-items-center`}
-          ref={userFormRef}
-        >
-          <form
-            onSubmit={submitForm}
-            className={`${styles['user-register-form-bo']} d-flex flex-column justify-content-center align-items-center`}
-          >
-            <div className={styles['form-group-bo']}>
-              <div
-                className={`${styles['email-box-bo']} d-flex justify-content-end align-items-start`}
-              >
-                <button
-                  type="button"
-                  onClick={SendEmail}
-                  className={`${styles['btn-get-CAPTCHA-bo']} btn`}
-                >
-                  點擊驗證
-                </button>
-              </div>
-              <input
-                name="email"
-                type="email"
-                className={`h6 ${styles['form-input-bo']} ${styles['input-email-bo']}`}
-                placeholder="電子信箱"
-                value={formData.email}
-                onChange={onInputChange}
-              />
-              {emailError && (
-                <div className={`p ${styles['text-error-bo']}`}>
-                  {emailError}
-                </div>
-              )}
-            </div>
-            <div className={styles['form-group-bo']}>
-              <input
-                name="account"
-                type="text"
-                className={`h6 ${styles['form-input-bo']}`}
-                placeholder="帳號"
-                value={formData.account}
-                onChange={onInputChange}
-              />
-              {accountError && (
-                <div className={`p ${styles['text-error-bo']}`}>
-                  {accountError}
-                </div>
-              )}
-            </div>
-            <div className={styles['form-group-bo']}>
-              <input
-                name="password"
-                type="password"
-                className={`h6 ${styles['form-input-bo']}`}
-                placeholder="密碼"
-                value={formData.password}
-                onChange={onInputChange}
-              />
-              {passwordError && (
-                <div className={`p ${styles['text-error-bo']}`}>
-                  {passwordError}
-                </div>
-              )}
-            </div>
-            <div className={styles['form-group-bo']}>
-              <input
-                name="checkPassword"
-                type="password"
-                className={`h6 ${styles['form-input-bo']}`}
-                placeholder="確認密碼"
-                value={formData.checkPassword}
-                onChange={onInputChange}
-              />
-              {checkPasswordError && (
-                <div className={`p ${styles['text-error-bo']}`}>
-                  {checkPasswordError}
-                </div>
-              )}
-            </div>
-          </form>
-
-          <div
-            className={`${styles['user-register-btn-box-bo']} d-flex justify-content-center align-items-center`}
-          >
-            <Link
-              href="/login"
-              className={`${styles['btn-user-register-bo']} btn h6 d-flex justify-content-between align-items-center`}
-            >
-              取消註冊
-              <FaXmark />
-            </Link>
-
-            <button
-              onClick={submitForm}
-              type="submit"
-              className={`${styles['btn-user-register-bo']} btn h6 d-flex justify-content-between align-items-center`}
-            >
-              確定註冊 <FaCheck />
-            </button>
-          </div>
-        </div>
+        <RegisterForm
+          formData={formData}
+          onInputChange={onInputChange}
+          emailError={emailError}
+          accountError={accountError}
+          passwordError={passwordError}
+          checkPasswordError={checkPasswordError}
+          submitForm={submitForm}
+          SendEmail={SendEmail}
+          userFormRef={userFormRef}
+        />
       </div>
 
       {/* 公司註冊區域 */}
@@ -421,60 +406,7 @@ export default function Register() {
           <h3>註</h3>
           <h3>冊</h3>
         </div>
-        <div
-          className={`${styles['company-register-box-bo']} justify-content-center align-items-center`}
-          ref={compFormRef}
-        >
-          <form
-            className={`${styles['company-register-form-bo']} d-flex flex-column gap-3 justify-content-center align-items-center`}
-          >
-            <div className={styles['form-group-bo']}>
-              <div
-                className={`${styles['email-box-bo']} d-flex justify-content-end align-items-start`}
-              >
-                <button className={`${styles['btn-get-CAPTCHA-bo']} btn`}>
-                  點擊驗證
-                </button>
-              </div>
-              <input
-                type="text"
-                className={`h6 ${styles['form-input-bo']} ${styles['input-taxID-bo']}`}
-                placeholder="統編"
-              />
-            </div>
-            <div className={styles['form-group-bo']}>
-              <input
-                type="text"
-                className={`h6 ${styles['form-input-bo']}`}
-                placeholder="帳號"
-              />
-            </div>
-            <div className={styles['form-group-bo']}>
-              <input
-                type="password"
-                className={`h6 ${styles['form-input-bo']}`}
-                placeholder="密碼"
-              />
-            </div>
-          </form>
-
-          <div
-            className={`${styles['company-register-btn-box-bo']} d-flex justify-content-center align-items-center`}
-          >
-            <button
-              className={`${styles['btn-company-register-bo']} btn h6 d-flex justify-content-between align-items-center`}
-            >
-              取消註冊
-              <FaXmark />
-            </button>
-            <button
-              className={`${styles['btn-company-register-bo']} btn h6 d-flex justify-content-between align-items=center`}
-            >
-              確定註冊
-              <FaCheck />
-            </button>
-          </div>
-        </div>
+        <CompanyRegisterForm compFormRef={compFormRef} />
       </div>
     </section>
   )

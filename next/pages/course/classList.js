@@ -3,256 +3,78 @@ import { useRouter } from 'next/router'
 import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
-import styles from '@/styles/aa/classList.scss'
+import styles from '@/styles/aa/classList.module.scss'
+import ClassCard from '@/components/course/card'
+import ClassGroup from '@/components/course/cards'
 
 export default function ClassList() {
+  // 注意1: 初始值至少要空陣列，初次render是用初始值
+  // 注意2: 應用執行過程中，一定要保持狀態資料類型都是陣列
+  const [courses, setCourses] = useState([])
   const router = useRouter()
+  const courseName = useState('')
+  const [pages, setPages] = useState(1)
   const { category_id } = router.query
-  const [classes, setClasses] = useState([])
-  const [pages, setPages] = useState()
-  const [filter, setFilter] = useState()
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  // classes狀態 -> 存儲從API獲取的課程數據
-  useEffect(() => {
-    fetchClasses()
-  }, [])
 
-  const fetchClasses = async () => {
+  // 向伺服器連線的程式碼；向伺服器fetch獲取資料
+  const getCourses = async () => {
+    const apiURL = `http://localhost:3005/api/course`
     try {
-      setLoading(true)
-      const response = await axios.get('實際的API端點')
-      setClasses(response.data)
-      setLoading(false)
-    } catch (err) {
-      setError('無法載入課程資料')
-      setLoading(false)
+      const res = await fetch(apiURL)
+      const data = await res.json()
+
+      console.log(data.data.courses)
+
+      // 設定到狀態中 ==> 觸發re-render(進入update階段)
+      if (Array.isArray(data.data.courses)) {
+        setCourses(data.data.courses)
+        console.log(data.data.courses)
+      }
+    } catch (e) {
+      console.error(e)
     }
   }
 
-  if (loading) return <div>載入中...</div>
-  if (error) return <div>{error}</div>
+  // 樣式2: didMount
+  // 首次render之後(after)執行一次，之後不會再執行
+  useEffect(() => {
+    getCourses()
+  }, [])
 
-  const getClasses = async () => {
-    let newClasses, error, url
-    // {.map((v, i) => {
-    //   return
-    // })}
+  // const handleCardClick = (course_id) => {
+  //   router.push(`/course/detail/${course_id}`)
+  // }
 
-    newClasses = await fetch(url)
-      .then((res) => res.json())
-      .then((results) => {
-        return results
-      })
-      .catch((err) => {
-        error = err
-        return undefined
-      })
-    if (error) {
-      return
+  const handleLoadMore = () => {
+    if (pages * 10 < courses.total) {
+      setPages((page) => page + 1)
     }
   }
 
   return (
     <>
       <div className="container">
-        <div className="desktop-list-aa">
-          <div className="class-header-aa">
-            <ul className="d-flex subBar-aa">
-              <li>
-                <a className="subNav" href="">
-                  <h6>西洋棋</h6>
-                </a>
-                <div className="subBarBody-aa d-none">
-                  <div className="d-flex">
-                    <div className="subBarDetail-aa">
-                      <h6 className="title">總覽</h6>
-                      <ul>
-                        <li>
-                          <a href="">啟蒙課程</a>
-                        </li>
-                        <li>
-                          <a href="">基礎課程</a>
-                        </li>
-                        <li>
-                          <a href="">進階課程</a>
-                        </li>
-                        <li>
-                          <a href="">高階課程</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li>
-                <a className="subNav" href="">
-                  <h6>麻將</h6>
-                </a>
-                <div className="subBarBody-aa d-none">
-                  <div className="d-flex">
-                    <div className="subBarDetail-aa">
-                      <h6 className="title">總覽</h6>
-                      <ul>
-                        <li>
-                          <a href="">啟蒙課程</a>
-                        </li>
-                        <li>
-                          <a href="">基礎課程</a>
-                        </li>
-                        <li>
-                          <a href="">進階課程</a>
-                        </li>
-                        <li>
-                          <a href="">高階課程</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li>
-                <a className="subNav" href="">
-                  <h6>圍棋</h6>
-                </a>
-                <div className="subBarBody-aa d-none">
-                  <div className="d-flex">
-                    <div className="subBarDetail-aa">
-                      <h6 className="title">總覽</h6>
-                      <ul>
-                        <li>
-                          <a href="">啟蒙課程</a>
-                        </li>
-                        <li>
-                          <a href="">基礎課程</a>
-                        </li>
-                        <li>
-                          <a href="">進階課程</a>
-                        </li>
-                        <li>
-                          <a href="">高階課程</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li>
-                <a className="subNav" href="">
-                  <h6>撲克</h6>
-                </a>
-                <div className="subBarBody-aa d-none">
-                  <div className="d-flex">
-                    <div className="subBarDetail-aa">
-                      <h6 className="title">總覽</h6>
-                      <ul>
-                        <li>
-                          <a href="">啟蒙課程</a>
-                        </li>
-                        <li>
-                          <a href="">基礎課程</a>
-                        </li>
-                        <li>
-                          <a href="">進階課程</a>
-                        </li>
-                        <li>
-                          <a href="">高階課程</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li>
-                <a className="subNav" href="">
-                  <h6>象棋</h6>
-                </a>
-                <div className="subBarBody-aa d-none">
-                  <div className="d-flex">
-                    <div className="subBarDetail-aa">
-                      <h6 className="title">總覽</h6>
-                      <ul>
-                        <li>
-                          <a href="">啟蒙課程</a>
-                        </li>
-                        <li>
-                          <a href="">基礎課程</a>
-                        </li>
-                        <li>
-                          <a href="">進階課程</a>
-                        </li>
-                        <li>
-                          <a href="">高階課程</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
-          <div className="sec1-aa">
-            <div className="text2-aa">
+        <div className={styles['className-aa']}>
+          <div className={styles['sec1-aa']}>
+            <div className={styles['text2-aa']}>
               <h2>課程排行</h2>
             </div>
-            <div className="classCards-aa">
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <div className="rank1">1</div>
-                  <img
-                    src="https://hahow-production.imgix.net/5fb4fc22563bc0262f9fb105?w=1000&sat=0&auto=format&s=f7cb3bd23dc48b1089edb34423906993"
-                    alt=""
-                  />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <div className="rank2">2</div>
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <div className="rank3">3</div>
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <div className="rank4">4</div>
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
+            <div className={styles['classCards-aa']}>
+              {Object.values(courses)
+                .flat()
+                .slice(0, 4)
+                .map((courseData, index) => (
+                  <Link
+                    href={`/course/detail/`}
+                    key={courseData.id}
+                    className={styles['card-link']}
+                  >
+                    <ClassCard courseData={courseData} rank={index + 1} />
+                  </Link>
+                ))}
             </div>
-            <div className="line-aa">
+
+            <div className={styles['line-aa']}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width={1298}
@@ -279,399 +101,199 @@ export default function ClassList() {
                 </defs>
               </svg>
             </div>
-            <div className="texth2-aa">
+            <div className={styles['texth2-aa']}>
               <h2>所有課程 列表</h2>
             </div>
-            <div className="text2-aa">
+            <div className={styles['text2-aa']}>
               <h2>西洋棋</h2>
             </div>
-            <div className="classCards-aa">
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
+            <div className={styles['classCards-aa']}>
+              {Object.values(courses)
+                .flat()
+                .filter((course) => course.category_id === 4)
+                .slice(0, 4)
+                .map((classItem, index) => (
+                  <ClassCard key={classItem.id} courseData={classItem} />
+                ))}
             </div>
-            <div className="btn-more d-flex">
-              <p>查看更多</p>
-              {/* <i class=""></i> */}
-              <svg
-                className="btn-more1"
-                xmlns="http://www.w3.org/2000/svg"
-                width={109}
-                height={14}
-                viewBox="0 0 109 14"
-                fill="none"
-              >
-                <path
-                  d="M43 11H83"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M82.8994 10.8995L72.9999 0.99998"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
-            <div className="text2-aa">
+            <Link href={`/course/classListCate?category_id=4`}>
+              <div className={`${styles['btn-more']} d-flex`}>
+                <p>查看更多</p>
+                <svg
+                  className={styles['btn-more1']}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={109}
+                  height={14}
+                  viewBox="0 0 109 14"
+                  fill="none"
+                >
+                  <path
+                    d="M43 11H83"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M82.8994 10.8995L72.9999 0.99998"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+            </Link>
+            <div className={styles['text2-aa']}>
               <h2>麻將</h2>
             </div>
-            <div className="classCards-aa">
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
+            <div className={styles['classCards-aa']}>
+              {Object.values(courses)
+                .flat()
+                .filter((course) => course.category_id === 2)
+                .slice(0, 4)
+                .map((classItem, index) => (
+                  <ClassCard key={classItem.id} courseData={classItem} />
+                ))}
             </div>
-            <div className="btn-more d-flex">
-              <p>查看更多</p>
-              {/* <i class="edit-icon"></i> */}
-              <svg
-                className="btn-more1"
-                xmlns="http://www.w3.org/2000/svg"
-                width={109}
-                height={14}
-                viewBox="0 0 109 14"
-                fill="none"
-              >
-                <path
-                  d="M43 11H83"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M82.8994 10.8995L72.9999 0.99998"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
-            <div className="text2-aa">
+            <Link href={`/course/classListCate?category_id=2`}>
+              <div className={`${styles['btn-more']} d-flex`}>
+                <p>查看更多</p>
+                <svg
+                  className={styles['btn-more1']}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={109}
+                  height={14}
+                  viewBox="0 0 109 14"
+                  fill="none"
+                >
+                  <path
+                    d="M43 11H83"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M82.8994 10.8995L72.9999 0.99998"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+            </Link>
+            <div className={styles['text2-aa']}>
               <h2>圍棋</h2>
             </div>
-            <div className="classCards-aa">
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
+            <div className={styles['classCards-aa']}>
+              {Object.values(courses)
+                .flat()
+                .filter((course) => course.category_id === 3)
+                .slice(0, 4)
+                .map((classItem, index) => (
+                  <ClassCard key={classItem.id} courseData={classItem} />
+                ))}
             </div>
-            <div className="btn-more d-flex">
-              <p>查看更多</p>
-              {/* <i class="edit-icon"></i> */}
-              <svg
-                className="btn-more1"
-                xmlns="http://www.w3.org/2000/svg"
-                width={109}
-                height={14}
-                viewBox="0 0 109 14"
-                fill="none"
-              >
-                <path
-                  d="M43 11H83"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M82.8994 10.8995L72.9999 0.99998"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
-            <div className="text2-aa">
+            <Link href={`/course/classListCate?category_id=3`}>
+              <div className={`${styles['btn-more']} d-flex`}>
+                <p>查看更多</p>
+                <svg
+                  className={styles['btn-more1']}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={109}
+                  height={14}
+                  viewBox="0 0 109 14"
+                  fill="none"
+                >
+                  <path
+                    d="M43 11H83"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M82.8994 10.8995L72.9999 0.99998"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+            </Link>
+            <div className={styles['text2-aa']}>
               <h2>撲克</h2>
             </div>
-            <div className="classCards-aa">
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
+            <div className={styles['classCards-aa']}>
+              {Object.values(courses)
+                .flat()
+                .filter((course) => course.category_id === 1)
+                .slice(0, 4)
+                .map((classItem, index) => (
+                  <ClassCard key={classItem.id} courseData={classItem} />
+                ))}
             </div>
-            <div className="btn-more d-flex">
-              <p>查看更多</p>
-              {/* <i class="edit-icon"></i> */}
-              <svg
-                className="btn-more1"
-                xmlns="http://www.w3.org/2000/svg"
-                width={109}
-                height={14}
-                viewBox="0 0 109 14"
-                fill="none"
-              >
-                <path
-                  d="M43 11H83"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M82.8994 10.8995L72.9999 0.99998"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
-            <div className="text2-aa">
+            <Link href={`/course/classListCate?category_id=1`}>
+              <div className={`${styles['btn-more']} d-flex`}>
+                <p>查看更多</p>
+                <svg
+                  className={styles['btn-more1']}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={109}
+                  height={14}
+                  viewBox="0 0 109 14"
+                  fill="none"
+                >
+                  <path
+                    d="M43 11H83"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M82.8994 10.8995L72.9999 0.99998"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+            </Link>
+            <div className={styles['text2-aa']}>
               <h2>象棋</h2>
             </div>
-            <div className="classCards-aa">
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
-              <div className="classCard-aa">
-                <div className="imgBox-aa">
-                  <img src="" alt="" />
-                </div>
-                <div className="cardBody-aa">
-                  <div className="className-aa">
-                    <p>西洋棋國手教你下西洋棋</p>
-                    <p className="classDescription-aa">劉業揚＆楊元翰</p>
-                  </div>
-                  <p>NT. 450</p>
-                </div>
-              </div>
+            <div className={styles['classCards-aa']}>
+              {Object.values(courses)
+                .flat()
+                .filter((course) => course.category_id === 5)
+                .slice(0, 4)
+                .map((classItem, index) => (
+                  <ClassCard key={classItem.id} courseData={classItem} />
+                ))}
             </div>
-            <div className="btn-more d-flex">
-              <p>查看更多</p>
-              {/* <i class="edit-icon"></i> */}
-              <svg
-                className="btn-more1"
-                xmlns="http://www.w3.org/2000/svg"
-                width={109}
-                height={14}
-                viewBox="0 0 109 14"
-                fill="none"
-              >
-                <path
-                  d="M43 11H83"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M82.8994 10.8995L72.9999 0.99998"
-                  stroke="#B79347"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
+            <Link href={`/course/classListCate?category_id=5`}>
+              <div className={`${styles['btn-more']} d-flex`}>
+                <p>查看更多</p>
+                <svg
+                  className={styles['btn-more1']}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={109}
+                  height={14}
+                  viewBox="0 0 109 14"
+                  fill="none"
+                >
+                  <path
+                    d="M43 11H83"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M82.8994 10.8995L72.9999 0.99998"
+                    stroke="#B79347"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+            </Link>
           </div>
         </div>
       </div>

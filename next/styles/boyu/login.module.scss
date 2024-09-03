@@ -122,6 +122,7 @@
   background-color: var(--primary);
   color: var(--bg-text-color);
   padding: 0.2rem 1.2rem;
+  margin-bottom: 1.2rem;
 }
 
 .btn-user-login-bo:hover {
@@ -342,4 +343,26 @@
   @media (max-width: 576px) {
     font-size: 1.4rem;
   }
+}
+
+.divider {
+  gap: 1.2rem;
+  text-align: center;
+  margin: 1.2rem 3rem;
+  color: var(--primary);
+
+  @media (max-width: 576px) {
+    margin: 1.2rem 1.6rem;
+  }
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 3px solid var(--primary);
+  }
+}
+
+.user-fast-login-bo {
+  color: var(--primary);
 }

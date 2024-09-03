@@ -1,23 +1,26 @@
 .playerCard {
   display: flex;
-  align-items: center; /* 垂直居中對齊 */
+  align-items: center;
   padding: 1em;
   background-color: var(--primary);
-  border-radius: 8px; // 加一個圓角效果
-
+  border-radius: 8px;
   max-height: 100px;
 
+  &.host {
+    background-color: var(--primary-dark); // 为主持人使用不同的背景色
+  }
+
   .playerImg {
-    width: 90px; /* 圓形的直徑 */
+    width: 90px;
     height: 90px;
-    border-radius: 50%; /* 使圖片成為圓形 */
-    overflow: hidden; /* 隱藏超出邊界的部分 */
-    margin-right: 2rem; /* 將圖片推到左邊 */
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 2rem;
     margin-left: 1rem;
     img {
       width: 100%;
       height: 100%;
-      object-fit: cover; /* 按比例縮放並裁剪圖片 */
+      object-fit: cover;
     }
   }
 
@@ -28,11 +31,18 @@
 
     .playerName {
       margin: 0;
-      font-size: 2.5rem; // 根據需要調整字體大小
+      font-size: 2.5rem;
       color: var(--white);
     }
     .playerType {
       font-size: 1.5rem;
+      color: var(--light-gray);
     }
   }
+}
+
+// 为空位添加特殊样式
+.playerCard .cardBody .playerName:contains('等待加入') {
+  color: var(--light-gray);
+  font-style: italic;
 }

@@ -1,4 +1,33 @@
+@font-face {
+  font-family: 'LXGW WenKai Mono TC';
+  src: url('../../public/fonts/LXGWWenKaiMonoTC-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'LXGW WenKai Mono TC';
+  src: url('../../public/fonts/LXGWWenKaiMonoTC-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+.main {
+  max-width: 1440px;
+  margin: auto;
+  padding: 0 4rem;
+}
+
+.loading {
+  height: 100vh;
+}
+
 .product-header-bl {
+  & h6,
+  & li {
+    font-family: 'LXGW WenKai Mono TC', sans-serif !important;
+  }
+
   background: var(--background);
   .subBar-bl {
     list-style: none;
@@ -31,6 +60,7 @@
   background: var(--background);
   position: absolute;
   z-index: 99;
+
   &:hover {
     display: block;
   }
@@ -65,6 +95,10 @@
     }
   }
 }
+.last-bl {
+  right: 0;
+  left: auto;
+}
 
 @media (max-width: 1440px) {
   .rightBar-bl {
@@ -84,6 +118,11 @@
     align-items: center;
     list-style: none;
     padding: 0 40px;
+  }
+
+  .swiper-slide {
+    display: flex;
+    flex-direction: column;
   }
 }
 
@@ -164,6 +203,16 @@
   }
 }
 
+.boxActive {
+  opacity: 1;
+  transition: 1;
+}
+
+.boxHidden {
+  opacity: 0;
+  transition: 1;
+}
+
 .top {
   width: 50px;
   height: 50px;
@@ -211,6 +260,9 @@
   --bs-body-color: var(--white);
   --bs-border-color: var(--primary);
   --bs-tertiary-bg: var(--primary);
+  input {
+    --bs-body-color: var(--bs-body-color);
+  }
   cursor: pointer;
   &:hover {
     --bs-tertiary-bg: var(--primary-dark);
@@ -281,6 +333,119 @@
       }
     }
   }
+  .progress {
+    width: 250px;
+    --bs-progress-bar-bg: var(--primary);
+  }
+}
+
+.offcanvas-pb {
+  --bs-offcanvas-width: 40%;
+  .orderBox-bl {
+    input[type='radio'] {
+      display: none;
+    }
+    .check {
+      display: none;
+      height: 2rem;
+    }
+    input[type='radio']:checked + label {
+      .check {
+        display: flex;
+      }
+    }
+  }
+  --bs-offcanvas-transition: 0.8s;
+  .chose {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 1.6rem;
+    background: var(--primary-dark);
+    color: var(--white);
+  }
+  .btn-close {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 2.5rem;
+    color: var(--primary-dark);
+    --bs-btn-close-bg: none;
+  }
+  .filterBarMain-bl {
+    max-height: 80%;
+    overflow: auto;
+  }
+  .filterBar-bl {
+    cursor: pointer;
+  }
+  .offcanvas-body {
+    width: 60%;
+    padding: 0 0 5rem;
+    margin: auto;
+  }
+  .filterBarSub-bl {
+    max-height: 0;
+    overflow: hidden;
+    transition: 0.8s;
+    .beCheck {
+      color: var(--primary);
+    }
+    .grid2 {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0px;
+    }
+    .grid3 {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0px;
+    }
+  }
+
+  .brandCheck,
+  .cateCheck,
+  .styleCheck,
+  .sizeCheck {
+    display: none;
+  }
+  .minus {
+    display: none;
+  }
+  .brandCheck:checked + label .plus,
+  .cateCheck:checked + label .plus,
+  .styleCheck:checked + label .plus,
+  .sizeCheck:checked + label .plus {
+    display: none;
+  }
+  .brandCheck:checked + label .minus,
+  .cateCheck:checked + label .minus,
+  .styleCheck:checked + label .minus,
+  .sizeCheck:checked + label .minus {
+    display: inline-block;
+  }
+
+  .brandCheck:checked ~ .filterBarSub-bl,
+  .cateCheck:checked ~ .filterBarSub-bl,
+  .styleCheck:checked ~ .filterBarSub-bl,
+  .sizeCheck:checked ~ .filterBarSub-bl {
+    max-height: 300px;
+  }
+
+  ul {
+    padding: 0;
+    font-size: 1.6rem;
+  }
+
+  li:hover {
+    color: var(--text-hover-color);
+  }
+
+  .liActive {
+    color: var(--text-hover-color);
+  }
 }
 
 .rangeBox-bl {
@@ -296,6 +461,10 @@
       --bs-btn-hover-border-color: var(--primary);
     }
   }
+  button {
+    width: 100%;
+    font-size: 1.6rem;
+  }
 }
 
 @media (max-width: 1400px) {
@@ -305,15 +474,24 @@
 }
 
 @media (max-width: 992px) {
+  .main {
+    padding: 0;
+  }
   .product-header-bl {
     .subBar-bl {
       padding: 2rem 0;
+      .subNav {
+        &:hover + .subBarBody-bl {
+          display: none;
+        }
+      }
     }
   }
 
   .products-bl {
     grid-template-columns: repeat(2, 1fr);
     padding: 0;
+    gap: 0rem;
   }
   .offcanvas-pb {
     --bs-offcanvas-width: 100%;

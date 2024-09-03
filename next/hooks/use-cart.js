@@ -4,12 +4,20 @@ import { AuthContext } from '@/context/AuthContext'
 const CartContext = createContext(null)
 
 export const CartProvider = ({ initialCartItems = [], children }) => {
+  let subtotal = 0
   const { user } = useContext(AuthContext)
   let items = initialCartItems
   const [cart, setCart] = useState(initialCartItems)
   const [top, setTop] = useState([])
   const [error, setError] = useState(null)
   const [remark, setRemark] = useState('')
+  const [show, setShow] = useState(false)
+  const [cartTotal, setCartTotal] = useState(0)
+
+  const handleClose = () => setShow(false)
+  const handleShow = () => {
+    setShow(true)
+  }
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -20,6 +28,10 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
             const response = await fetch(url)
             const result = await response.json()
             if (result.status === 'success') {
+              result.data.cart.forEach((cartItem) => {
+                subtotal += cartItem.quantity * cartItem.price
+              })
+              setCartTotal(subtotal)
               setCart(result.data.cart)
               setTop(result.data.top)
               setRemark('')
@@ -38,10 +50,22 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
     fetchCart()
   }, [user])
 
+  useEffect(() => {
+    if (cart.length > 0) {
+      const total = cart.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      )
+      setCartTotal(total)
+    }
+  }, [cart])
+
   const handleAdd = async (object, type, quantity) => {
+    console.log(object, type, quantity)
     const foundIndex = cart.findIndex(
       (v) => v.object_id === object.id && v.object_type === type
     )
+
     const url = `http://localhost:3005/api/cart/${user.id}/${type}/${object.id}`
     const method = foundIndex > -1 ? 'PUT' : 'POST'
     const updatedQuantity =
@@ -61,6 +85,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       const result = await response.json()
       if (result.status === 'success') {
         setCart(result.data.cart)
+        setCartTotal(result.data.total)
       }
     } catch (error) {
       setError(error.message)
@@ -87,6 +112,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       const result = await response.json()
       if (result.status === 'success') {
         setCart(result.data.cart)
+        setCartTotal(result.data.total)
       }
     } catch (error) {
       setError(error.message)
@@ -114,6 +140,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       const result = await response.json()
       if (result.status === 'success') {
         setCart(result.data.cart)
+        setCartTotal(result.data.total)
       }
     } catch (error) {
       setError(error.message)
@@ -138,6 +165,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       const result = await response.json()
       if (result.status === 'success') {
         setCart(result.data.cart)
+        setCartTotal(result.data.total)
       }
     } catch (error) {
       setError(error.message)
@@ -158,6 +186,7 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
       const result = await response.json()
       if (result.status === 'success') {
         setCart([])
+        setCartTotal(0)
       }
     } catch (error) {
       setError(error.message)
@@ -177,6 +206,10 @@ export const CartProvider = ({ initialCartItems = [], children }) => {
         handleDecrease,
         handleRemove,
         handleRemoveAll,
+        handleClose,
+        handleShow,
+        show,
+        cartTotal,
       }}
     >
       {children}

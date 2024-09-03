@@ -25,7 +25,6 @@
   @media (max-width: 576px) {
     align-items: start;
     gap: 0.8rem;
-    margin-bottom: 1.6rem;
   }
 }
 
@@ -63,6 +62,13 @@
   color: var(--primary);
 }
 
+.info-city-bo {
+  width: 8rem;
+
+  @media (max-width: 768px) {
+    width: 7rem;
+  }
+}
 /* 一般資訊 */
 
 .default-information-box-bo {
@@ -102,16 +108,19 @@
 }
 
 .user-img-bo {
-  width: 14rem;
-  border-radius: 50%;
+  width: 14rem; /* 確保寬度固定 */
+  height: 14rem; /* 確保高度與寬度相同 */
+  border-radius: 50%; /* 將正方形轉換為圓形 */
+  object-fit: cover; /* 確保圖片內容完整且不變形 */
 }
 
 .btn-edit-img {
+  color: var(--primary);
   cursor: pointer;
   position: absolute;
   font-size: 2.4rem;
-  bottom: -0.8rem;
-  right: -0.8rem;
+  bottom: -1.4rem;
+  right: -1.4rem;
 
   &:hover {
     color: var(--primary-dark);
@@ -304,6 +313,32 @@
 }
 
 .text-error-bo {
-  padding: 0 4rem;
+  padding-left: 6.4rem;
   color: var(--primary);
+  @media (max-width: 576px) {
+    padding-left: 0.4rem;
+  }
+}
+
+.btn-email-bo {
+  width: 8rem;
+  @media (max-width: 768px) {
+    width: 7rem;
+  }
+  border-radius: 5px;
+  color: var(--bg-text-color);
+  background-color: var(--primary);
+
+  &:hover {
+    background-color: var(--primary-dark);
+    color: var(--bg-text-color);
+  }
+}
+
+.input-select {
+  appearance: none; /* 移除瀏覽器預設的樣式 */
+}
+
+.info-correct-bo {
+  background-color: rgba(183, 148, 71, 0.2) !important;
 }

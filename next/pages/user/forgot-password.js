@@ -4,6 +4,8 @@ import { FaXmark, FaCheck } from 'react-icons/fa6'
 import Link from 'next/link'
 import Swal from 'sweetalert2'
 import { useRouter } from 'next/router'
+import ForgotPasswordForm from '@/components/forgot-password/ForgotPasswordForm'
+import CompanyForgotPasswordForm from '@/components/forgot-password/CompanyForgotPasswordForm'
 
 export default function ForgotPassword() {
   const router = useRouter()
@@ -72,7 +74,10 @@ export default function ForgotPassword() {
           setAccountError(result.message)
         }
 
-        if (result.message.includes('電子信箱')) {
+        if (
+          result.message.includes('電子信箱') ||
+          result.message.includes('匹配')
+        ) {
           setEmailError(result.message)
         }
       }
@@ -210,66 +215,16 @@ export default function ForgotPassword() {
           <h3>驗</h3>
           <h3>證</h3>
         </div>
-        <div
-          className={`${styles['user-forgot-box-bo']} justify-content-center align-items-center`}
-          ref={userFormRef}
-        >
-          <form
-            onSubmit={sendResetEmail}
-            className={`${styles['user-forgot-form-bo']} d-flex flex-column justify-content-center align-items-center`}
-          >
-            <div className={styles['form-group-bo']}>
-              <input
-                name="email"
-                type="email"
-                className={`h6 ${styles['form-input-bo']} ${styles['input-email-bo']}`}
-                placeholder="電子信箱"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              {emailError && (
-                <div className={`p ${styles['text-error-bo']}`}>
-                  {emailError}
-                </div>
-              )}
-            </div>
-            <div className={styles['form-group-bo']}>
-              <input
-                name="account"
-                type="text"
-                className={`h6 ${styles['form-input-bo']}`}
-                placeholder="帳號"
-                value={account}
-                onChange={(e) => setAccount(e.target.value)}
-              />
-              {accountError && (
-                <div className={`p ${styles['text-error-bo']}`}>
-                  {accountError}
-                </div>
-              )}
-            </div>
-          </form>
-
-          <div
-            className={`${styles['user-forgot-btn-box-bo']} d-flex justify-content-center align-items-center`}
-          >
-            <Link
-              href="/login"
-              className={`${styles['btn-user-forgot-bo']} btn h6 d-flex justify-content-between align-items-center`}
-            >
-              取消重設
-              <FaXmark />
-            </Link>
-
-            <button
-              onClick={sendResetEmail}
-              type="submit"
-              className={`${styles['btn-user-forgot-bo']} btn h6 d-flex justify-content-between align-items-center`}
-            >
-              驗證信箱 <FaCheck />
-            </button>
-          </div>
-        </div>
+        <ForgotPasswordForm
+          email={email}
+          account={account}
+          emailError={emailError}
+          accountError={accountError}
+          setEmail={setEmail}
+          setAccount={setAccount}
+          sendResetEmail={sendResetEmail}
+          userFormRef={userFormRef}
+        />
       </div>
 
       {/* 公司重設密碼區域 */}
@@ -280,65 +235,12 @@ export default function ForgotPassword() {
         <div className={`${styles['company-forgot-title-bo']} d-flex`}>
           <h3>企</h3>
           <h3>業</h3>
-          <h3>重</h3>
-          <h3>設</h3>
-          <h3>密</h3>
-          <h3>碼</h3>
+          <h3>信</h3>
+          <h3>箱</h3>
+          <h3>驗</h3>
+          <h3>證</h3>
         </div>
-        <div
-          className={`${styles['company-forgot-box-bo']} justify-content-center align-items-center`}
-          ref={compFormRef}
-        >
-          <form
-            className={`${styles['company-forgot-form-bo']} d-flex flex-column gap-3 justify-content-center align-items-center`}
-          >
-            <div className={styles['form-group-bo']}>
-              <div
-                className={`${styles['email-box-bo']} d-flex justify-content-end align-items-start`}
-              >
-                <button className={`${styles['btn-get-CAPTCHA-bo']} btn`}>
-                  點擊驗證
-                </button>
-              </div>
-              <input
-                type="text"
-                className={`h6 ${styles['form-input-bo']} ${styles['input-taxID-bo']}`}
-                placeholder="統編"
-              />
-            </div>
-            <div className={styles['form-group-bo']}>
-              <input
-                type="text"
-                className={`h6 ${styles['form-input-bo']}`}
-                placeholder="帳號"
-              />
-            </div>
-            <div className={styles['form-group-bo']}>
-              <input
-                type="password"
-                className={`h6 ${styles['form-input-bo']}`}
-                placeholder="密碼"
-              />
-            </div>
-          </form>
-
-          <div
-            className={`${styles['company-forgot-btn-box-bo']} d-flex justify-content-center align-items-center`}
-          >
-            <button
-              className={`${styles['btn-company-forgot-bo']} btn h6 d-flex justify-content-between align-items-center`}
-            >
-              取消註冊
-              <FaXmark />
-            </button>
-            <button
-              className={`${styles['btn-company-forgot-bo']} btn h6 d-flex justify-content-between align-items=center`}
-            >
-              確定註冊
-              <FaCheck />
-            </button>
-          </div>
-        </div>
+        <CompanyForgotPasswordForm compFormRef={compFormRef} />
       </div>
     </section>
   )

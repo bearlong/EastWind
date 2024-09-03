@@ -33,11 +33,13 @@
     }
   }
   .imgSmallBox-bl {
-    width: 90px;
-    height: 90px;
-    border: 3px solid transparent;
-    &:hover {
-      border: 3px solid var(--primary);
+    width: 90px !important;
+    height: 90px !important;
+    img {
+      border: 3px solid transparent;
+      &:hover {
+        border: 3px solid var(--primary);
+      }
     }
   }
   .active {
@@ -107,6 +109,15 @@
       font-size: 2.4rem;
       font-weight: 900;
       transition: 0.3s;
+      &:disabled {
+        border: 2px solid var(--text-hover-color);
+        color: var(--text-hover-color);
+        cursor: not-allowed;
+        &:hover {
+          border: 2px solid var(--text-hover-color);
+          color: var(--text-hover-color);
+        }
+      }
       &:hover {
         border-color: var(--primary-dark);
         color: var(--primary-dark);
@@ -119,6 +130,17 @@
       &:hover {
         background: var(--primary-dark);
         color: var(--white);
+      }
+      &:disabled {
+        background: var(--text-hover-color);
+        border: 2px solid var(--text-hover-color);
+        color: var(--white);
+        cursor: not-allowed;
+        &:hover {
+          background: var(--text-hover-color);
+          border: 2px solid var(--text-hover-color);
+          color: var(--white);
+        }
       }
     }
   }
@@ -432,8 +454,8 @@
       height: 315px;
     }
     .imgSmallBox-bl {
-      width: 60px;
-      height: 60px;
+      width: 60px !important;
+      height: 60px !important;
     }
     .productDetailContent-bl {
       padding-inline: 0;

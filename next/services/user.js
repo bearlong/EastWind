@@ -31,12 +31,37 @@ export const lineLoginRequest = async () => {
  * LINE Login登入用，處理line方登入後，向我們的伺服器進行登入動作。query為router.query
  */
 export const lineLoginCallback = async (query) => {
+  // 構造查詢字串
   const qs = new URLSearchParams({
     ...query,
   }).toString()
 
-  return await axiosInstance.get(`/line-login/callback?${qs}`)
+  try {
+    // 使用 fetch 發送 GET 請求到正確的後端 URL
+    const response = await fetch(
+      `http://localhost:3005/api/line-login/callback?${qs}`,
+      {
+        credentials: 'include', // 確保請求攜帶憑證（如 cookies）
+      }
+    )
+
+    if (!response.ok) {
+      // 如果 response 狀態碼不是 200-299，則手動拋出錯誤
+      const errorMessage = `HTTP error! status: ${response.status}, statusText: ${response.statusText}`
+      console.error(errorMessage)
+      throw new Error(errorMessage)
+    }
+
+    // 解析並返回 JSON 格式的響應數據
+    const data = await response.json()
+    return data // 返回數據，讓調用者使用
+  } catch (error) {
+    // 捕捉並記錄錯誤
+    console.error('Login Callback Error:', error.message || error)
+    throw error // 將錯誤拋出，以便外部處理
+  }
 }
+
 /**
  * LINE 登出用
  */

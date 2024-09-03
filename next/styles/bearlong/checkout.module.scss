@@ -50,9 +50,10 @@
   }
 
   .payment-radio-bo {
-    display: inline-block;
+    display: inline-flex;
     width: 100%;
     border: 2px solid var(--primary);
+    align-items: center;
     padding: 1.6rem 1rem;
     background: var(--primary-light);
   }
@@ -64,6 +65,16 @@
     border-radius: 50%;
     border: 2px solid var(--primary);
   }
+  label .logoBox {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    .img {
+      width: 100%;
+      height: 24px;
+      object-fit: cover;
+    }
+  }
 
   input[type='checkbox'],
   input[type='radio'] {
@@ -71,6 +82,14 @@
   }
   input:checked + label .circle {
     background: var(--primary);
+  }
+  .sevenBox-bl {
+    max-height: 0;
+    overflow: hidden;
+    transition: 0.5s;
+  }
+  .seven:checked ~ .sevenBox-bl {
+    max-height: 230px;
   }
 
   .cdNum {
@@ -127,7 +146,7 @@
     }
   }
 
-  .paypent-button-bo {
+  .payment-button-bo {
     width: 100%;
     background: var(--primary);
     color: var(--white);

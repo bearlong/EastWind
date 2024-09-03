@@ -6,12 +6,11 @@ import RoomCard from '../partypages/PageRoomCard'
 import styles from '@/styles/Booking/_bookingLeftArea.module.scss'
 
 export default function BookingLeftArea({ companyData }) {
-  // console.log(companyData);
   return (
     <div className={styles.leftArea}>
-      <RoomNav />
+      <RoomNav companyData={companyData} />
       <RoomCard companyData={companyData} />
-      <PhotoCard />
+      <PhotoCard companyData={companyData} />
       <ToKnow />
     </div>
   )

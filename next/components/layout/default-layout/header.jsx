@@ -1,30 +1,36 @@
 import { useContext, useEffect, useState } from 'react'
+import { useRouter } from 'next/router' // 引入 useRouter
+
 import styles from '@/styles/boyu/header.module.scss'
 import { IoHome } from 'react-icons/io5'
 import { FaUser, FaRightFromBracket } from 'react-icons/fa6'
 import { FaShoppingCart } from 'react-icons/fa'
 import { useCart } from '@/hooks/use-cart'
 import Cart from '@/components/cart'
-import useAuth from '@/hooks/user-auth-bo'
+import useAuth from '@/hooks/use-auth-bo'
 import Link from 'next/link'
 import { AuthContext } from '@/context/AuthContext'
 import Swal from 'sweetalert2'
 
 export default function Header() {
+  const [isChecked, setIsChecked] = useState(false) // 用於管理復選框狀態
+  const router = useRouter() // 使用 useRouter 取得 router 物件
+
   const {
     cart,
     top,
     error,
     remark,
+    show,
     setRemark,
     handleIncrease = () => {},
     handleDecrease = () => {},
     handleRemove = () => {},
+    handleShow = () => {},
+    handleClose = () => {},
+    cartTotal,
   } = useCart()
-  const [show, setShow] = useState(false)
 
-  const handleClose = () => setShow(false)
-  const handleShow = () => setShow(true)
   const { logout } = useAuth()
   const { user } = useContext(AuthContext)
 
@@ -64,16 +70,30 @@ export default function Header() {
     })
   }
 
+  const onLinkClick = () => {
+    setIsChecked(false) // 點擊連結後取消選取復選框
+  }
+
+  const onLogoClick = () => {
+    if (router.pathname === '/home') {
+      // 如果已經在 /home 路由，重整頁面
+      window.location.reload()
+    } else {
+      // 如果不在 /home 路由，則導航到 /home
+      router.push('/home')
+    }
+  }
+
   return (
     <>
       <header
         className={`${styles['header-bo']} fixed-top container-fluid sticky-top py-3`}
       >
         <div
-          className={`${styles['header-box-bo']}  container-fluid d-flex justify-content-between align-items-center ${styles['nav-bar-bo']}`}
+          className={`${styles['header-box-bo']}  container-fluid d-flex justify-content-between align-items-center`}
         >
           <div className={styles['logo-box-bo']}>
-            <Link href="/home">
+            <Link href="/home" onClick={onLogoClick}>
               <img
                 src="/images/boyu/logo.svg"
                 alt=""
@@ -81,24 +101,33 @@ export default function Header() {
               />
             </Link>
           </div>
-          <nav className={styles['nav-bar-bo']}>
+          <nav className={`${styles['nav-bar-bo']}  `}>
             <ul
               className={`d-flex justify-content-center align-items-center ${styles['nav-list-bo']}`}
             >
               <li>
-                <a className={`h6 ${styles['nav-link-bo']}`} href="">
-                  棋牌室
-                </a>
+                <Link
+                  className={`h6 ${styles['nav-link-bo']}`}
+                  href="/lobby/Entrance"
+                >
+                  棋牌會館
+                </Link>
               </li>
               <li>
-                <a className={`h6 ${styles['nav-link-bo']}`} href="">
-                  商城
-                </a>
+                <Link
+                  href="/product/productList"
+                  className={`h6 ${styles['nav-link-bo']}`}
+                >
+                  線上商城
+                </Link>
               </li>
               <li>
-                <a className={`h6 ${styles['nav-link-bo']}`} href="">
+                <Link
+                  href="/course/classList"
+                  className={`h6 ${styles['nav-link-bo']}`}
+                >
                   線上課程
-                </a>
+                </Link>
               </li>
             </ul>
           </nav>
@@ -108,24 +137,24 @@ export default function Header() {
             >
               <li>
                 <Link href="/home">
-                  <IoHome className={` ${styles['icon-bo']}`} />
+                  <IoHome className={` ${styles['icon-bo']} me-4 me-md-5`} />
                 </Link>
               </li>
               <li>
                 {user ? (
                   <Link href="/user/user-center/info">
-                    <FaUser className={` ${styles['icon-bo']}`} />
+                    <FaUser className={` ${styles['icon-bo']}  me-4 me-md-5`} />
                   </Link>
                 ) : (
                   <Link href="/login">
-                    <FaUser className={` ${styles['icon-bo']}`} />
+                    <FaUser className={` ${styles['icon-bo']}  me-4 me-md-5`} />
                   </Link>
                 )}
               </li>
               <li>
                 <div className="position-relative">
                   <FaShoppingCart
-                    className={` ${styles['icon-bo']}`}
+                    className={` ${styles['icon-bo']}  me-4 me-md-5`}
                     onClick={handleShow}
                   />
 
@@ -141,7 +170,9 @@ export default function Header() {
               {user && ( // 只有在 user 存在時才顯示登出按鈕
                 <li>
                   <Link href="" type="button" onClick={onLogout}>
-                    <FaRightFromBracket className={` ${styles['icon-bo']}`} />
+                    <FaRightFromBracket
+                      className={` ${styles['icon-bo']} me-4 me-md-0`}
+                    />
                   </Link>
                 </li>
               )}
@@ -153,6 +184,8 @@ export default function Header() {
                       type="checkbox"
                       className={styles['navigation-checkbox-bo']}
                       id="navi-toggle"
+                      checked={isChecked} // 使用狀態來控制是否選中
+                      onChange={() => setIsChecked(!isChecked)} // 變更狀態
                     />
                     <label
                       htmlFor="navi-toggle"
@@ -162,34 +195,35 @@ export default function Header() {
                         &nbsp;
                       </span>
                     </label>
-                    <div className={styles['navigation-background-bo']}>
-                      &nbsp;
-                    </div>
+                    <div className={styles['navigation-background-bo']}></div>
                     <nav className={styles['navigation-nav-bo']}>
                       <ul className={styles['navigation-list-bo']}>
                         <li className={styles['navigation-item-bo']}>
-                          <a
-                            href="#"
+                          <Link
+                            href="/lobby/Entrance"
                             className={`h6 ${styles['navigation-link-bo']}`}
+                            onClick={onLinkClick} // 監聽點擊事件
                           >
-                            棋牌室
-                          </a>
+                            棋牌會館
+                          </Link>
                         </li>
                         <li className={styles['navigation-item-bo']}>
-                          <a
-                            href="#"
+                          <Link
+                            href="/product/productList"
                             className={`h6 ${styles['navigation-link-bo']}`}
+                            onClick={onLinkClick} // 監聽點擊事件
                           >
-                            商城
-                          </a>
+                            線上商城
+                          </Link>
                         </li>
                         <li className={styles['navigation-item-bo']}>
-                          <a
-                            href="#"
+                          <Link
+                            href="/course/classList"
                             className={`h6 ${styles['navigation-link-bo']}`}
+                            onClick={onLinkClick} // 監聽點擊事件
                           >
                             線上課程
-                          </a>
+                          </Link>
                         </li>
                       </ul>
                     </nav>
@@ -219,6 +253,7 @@ export default function Header() {
         handleRemove={handleRemove}
         remark={remark}
         setRemark={setRemark}
+        cartTotal={cartTotal}
       />
     </>
   )

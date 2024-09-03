@@ -1,28 +1,40 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import styles from '@/styles/gw/_PartyRoomNav.module.scss'
+import { debounce } from 'lodash'
 
-const navItems = [
+const allNavItems = [
   { href: '#party', label: '揪團' },
   { href: '#roomInfo', label: '店家資訊' },
   { href: '#photo', label: '相片' },
-  { href: '#toKnow', label: '注意事項' },
+  // { href: '#toKnow', label: '注意事項' },
 ]
 
-export default function PartyRoomNav() {
+export default function PartyRoomNav({ partyData, companyData }) {
   const [activeSection, setActiveSection] = useState('')
+
+  const showPartyOption = !!partyData
+
+  const navItems = showPartyOption 
+    ? allNavItems 
+    : allNavItems.filter(item => item.href !== '#party')
+
+  const debouncedSetActiveSection = useCallback(
+    debounce((id) => setActiveSection(id), 100),
+    []
+  )
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setActiveSection(entry.target.id)
+            debouncedSetActiveSection(entry.target.id)
           }
         })
       },
       {
-        rootMargin: '-70px 0px -70% 0px', // 調整這個值以考慮頂部 padding
-        threshold: 0.3, // 當 30% 的元素可見時觸發
+        rootMargin: '-70px 0px -70% 0px',
+        threshold: 0.3,
       }
     )
 
@@ -32,15 +44,15 @@ export default function PartyRoomNav() {
     })
 
     return () => observer.disconnect()
-  }, [])
+  }, [debouncedSetActiveSection, navItems])
 
-  const handleClick = (e, href) => {
+  const handleClick = useCallback((e, href) => {
     e.preventDefault()
     const element = document.querySelector(href)
     if (element) {
       const navHeight =
         document.querySelector(`.${styles.roomNav}`)?.offsetHeight || 0
-      const containerPadding = 60 // 頂部容器的 padding
+      const containerPadding = 60
       const scrollPosition = element.offsetTop - navHeight - containerPadding
 
       window.scrollTo({
@@ -48,10 +60,16 @@ export default function PartyRoomNav() {
         behavior: 'smooth',
       })
     }
-  }
+  }, [])
+
+  const handleKeyDown = useCallback((e, href) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      handleClick(e, href)
+    }
+  }, [handleClick])
 
   return (
-    <nav className={styles.roomNav}>
+    <nav className={styles.roomNav} aria-label="頁面導航">
       <ul>
         {navItems.map(({ href, label }) => (
           <li key={href} className={styles.navItem}>
@@ -61,6 +79,9 @@ export default function PartyRoomNav() {
                 activeSection === href.slice(1) ? styles.navActive : ''
               } h6`}
               onClick={(e) => handleClick(e, href)}
+              onKeyDown={(e) => handleKeyDown(e, href)}
+              tabIndex={0}
+              aria-current={activeSection === href.slice(1) ? 'true' : 'false'}
             >
               {label}
             </a>

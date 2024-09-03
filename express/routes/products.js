@@ -40,7 +40,6 @@ router.get('/', async (req, res) => {
     size,
     style,
   }
-
   for (const key in filterArr) {
     if (filterArr[key]) {
       if (filterArr[key].includes(',')) {
@@ -53,23 +52,23 @@ router.get('/', async (req, res) => {
         if (!filter) {
           filter = ` WHERE ${fieldPrefix}${condition}`
         } else {
-          filter += ` ${isFilter ? 'OR' : 'AND'} ${fieldPrefix}${condition}`
+          filter += ` ${isFilter === true ? 'OR' : 'AND'} ${fieldPrefix}${condition}`
         }
       } else {
         if (!filter) {
           filter = ` Where ${key === 'size' || key === 'style' ? '`product_specifications`.' : ''}\`${key}\` = '${filterArr[key]}'`
         } else {
-          filter += ` ${isFilter ? 'OR' : 'AND'} ${key === 'size' || key === 'style' ? '`product_specifications`.' : ''}\`${key}\` = '${filterArr[key]}'`
+          filter += ` ${isFilter === true ? 'OR' : 'AND'} ${key === 'size' || key === 'style' ? '`product_specifications`.' : ''}\`${key}\` = '${filterArr[key]}'`
         }
       }
     }
   }
-
+  console.log(isFilter)
   if (search) {
     if (!filter) {
       filter = ` WHERE (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
     } else {
-      filter += ` ${isFilter ? 'OR' : 'AND'} (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
+      filter += ` ${isFilter === true ? 'OR' : 'AND'} (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
     }
   }
 
@@ -118,9 +117,9 @@ router.get('/', async (req, res) => {
   const product = {}
   const [top] = await dbPromise
     .execute(
-      'SELECT `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`,  MAX(`product_images`.`img`) AS `img2`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` FROM `product` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `product_images` ON `product_images`.`product_id` = `product`.`id` LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product"' +
+      'SELECT `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`,  MAX(`product_images`.`img`) AS `img2`, ROUND(AVG(`comment`.`star`), 1) AS `average_star`, COUNT(`comment`.`id`) AS `comment_count` FROM `product` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `product_images` ON `product_images`.`product_id` = `product`.`id` LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product"' +
         `${topFilter ? topFilter : ''}` +
-        ' GROUP BY `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name`, `brand`.`name` ORDER BY `average_star` DESC LIMIT 4'
+        ' GROUP BY `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name`, `brand`.`name` ORDER BY `average_star` DESC, `comment_count` DESC LIMIT 4'
     )
     .catch((err) => {
       if (err) {
@@ -154,12 +153,14 @@ router.get('/', async (req, res) => {
         return []
       }
     })
+  // console.log(filter)
+  // console.log(isFilter)
 
   const [list] = await dbPromise
     .execute(
-      'SELECT `product`.`id`, `product`.`name`, `product`.`price`, `product`.`create_at`, `product`.`img`, `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`, `product_specifications`.*,  MAX(`product_images`.`img`) AS `img2`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` FROM `product` JOIN `product_specifications` ON `product_specifications`.`product_id` = `product`.`id` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `product_images` ON `product_images`.`product_id` = `product`.`id` LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product"' +
+      'SELECT `product`.`id`, `product`.`name`, `product`.`price`, `product`.`stock`, `product`.`create_at`, `product`.`img`, `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`, `product_specifications`.*,  MAX(`product_images`.`img`) AS `img2`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` FROM `product` JOIN `product_specifications` ON `product_specifications`.`product_id` = `product`.`id` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `product_images` ON `product_images`.`product_id` = `product`.`id` LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product"' +
         `${filter ? filter : ''}` +
-        ' GROUP BY `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name`, `brand`.`name`' +
+        ' GROUP BY `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product`.`stock`, `product_category`.`name`, `brand`.`name`' +
         `${orderCondition ? orderCondition : ''}` +
         sqlPage
     )
@@ -188,234 +189,13 @@ router.get('/', async (req, res) => {
   product['style'] = styleAll
   product['brand'] = brandAll
   product['category'] = categoryAll
-
-  console.log(filter)
   res.json(product)
-
-  // 獲取query參數值
-  // const {
-  //   page = 1, // number,  用於 OFFSET =  (Number(page) - 1) * Number(perpage),
-  //   perpage = 10, // number, 用於 LIMIT
-  //   name_like = '', // string, 對應 name 欄位, `name LIKE '%name_like%'`
-  //   brand_ids = '', // string, 對應 brand_id 欄位,  `brand_id IN (brand_ids)`
-  //   cat_ids = '', // string, 對應 cat_id 欄位,  `cat_id IN (cat_ids)`
-  //   color_ids = '', // string, 對應 color 欄位,  `CONCAT(",", color, ",") REGEXP ",(1|2),"`
-  //   tag_ids = '', // string, 對應 tag 欄位,
-  //   size_ids = '', // string, 對應 size 欄位,
-  //   sort='price' // string, 排序欄位 用於 ORDER BY
-  //   order='asc' // string, 排序順序 用於 ORDER BY 'asc' | 'desc', 預設為'asc'
-  //   price_gte = 1500 // number, 對應 price 欄位, `price >= 1500`
-  //   price_lte = 100000 // number, 對應 price 欄位, `price <= 10000`
-  //   raw=true, //boolean, 代表只回傳products陣列
-  // } = req.query
-  // !!注意: 以下都要檢查各query參數值的正確性，或給定預設值，要不然可能會產生資料庫查詢錯誤
-  // 建立例如: `CONCAT(",", color, ",") REGEXP ",(1|2),"`
-  // const genConcatRegexp = (param, column) => {
-  //   return sequelize.where(
-  //     sequelize.fn('CONCAT', ',', sequelize.col(column), ','),
-  //     {
-  //       [Op.regexp]: `,(${param.split(',').join('|')}),`,
-  //     }
-  //   )
-  // }
-  // 建立各where條件從句用
-  // const genClause = (key, value) => {
-  //   switch (key) {
-  //     case 'name_like':
-  //       return {
-  //         name: {
-  //           [Op.like]: `%${value}%`,
-  //         },
-  //       }
-  //     case 'brand_ids':
-  //       return {
-  //         brand_id: value.split(',').map((v) => Number(v)),
-  //       }
-  //     case 'cat_ids':
-  //       return {
-  //         cat_id: value.split(',').map((v) => Number(v)),
-  //       }
-  //     case 'color_ids':
-  //       return genConcatRegexp(value, 'color')
-  //     case 'size_ids':
-  //       return genConcatRegexp(value, 'size')
-  //     case 'tag_ids':
-  //       return genConcatRegexp(value, 'tag')
-  //     case 'price_gte':
-  //       // 會有'0'字串的情況，注意要跳過此條件
-  //       if (!Number(value)) return ''
-  //       return {
-  //         price: {
-  //           [Op.gte]: Number(value),
-  //         },
-  //       }
-  //     case 'price_lte':
-  //       // 會有'0'字串的情況，注意要跳過此條件
-  //       if (!Number(value)) return ''
-  //       return {
-  //         price: {
-  //           [Op.lte]: Number(value),
-  //         },
-  //       }
-  //     default:
-  //       return ''
-  //   }
-  // }
-  // where各條件(以AND相連)
-  // const conditions = []
-  // for (const [key, value] of Object.entries(req.query)) {
-  //   if (value) {
-  //     conditions.push(genClause(key, value))
-  //   }
-  // }
-  // console.log(conditions)
-  // 分頁用
-  // const page = Number(req.query.page) || 1
-  // const perpage = Number(req.query.perpage) || 10
-  // const offset = (page - 1) * perpage
-  // const limit = perpage
-  // // 排序用
-  // const orderDirection = req.query.order || 'ASC'
-  // const order = req.query.sort
-  //   ? [[req.query.sort, orderDirection]]
-  //   : [['id', 'ASC']]
-  // 避免sql查詢錯誤導致後端當掉，使用try/catch語句
-  // try {
-  //   const { count, rows } = await Product.findAndCountAll({
-  //     where: { [Op.and]: conditions },
-  //     raw: true, // 只需要資料表中資料,
-  //     // logging: (msg) => console.log(msg.bgWhite),
-  //     offset,
-  //     limit,
-  //     order,
-  //   })
-  //   if (req.query.raw === 'true') {
-  //     return res.json(rows)
-  //   }
-  //   // 計算總頁數
-  //   const pageCount = Math.ceil(count / Number(perpage)) || 0
-  //   return res.json({
-  //     status: 'success',
-  //     data: {
-  //       total: count,
-  //       pageCount,
-  //       page,
-  //       perpage,
-  //       products: rows,
-  //     },
-  //   })
-  // } catch (e) {
-  //   console.log(e)
-  //   return res.json({
-  //     status: 'error',
-  //     message: '無法查詢到資料，查詢字串可能有誤',
-  //   })
-  // }
 })
-
-// 獲得所有資料，加入分頁與搜尋字串功能，單一資料表處理
-// products/qs?page=1&keyword=Ele&brand_ids=1&cat_ids=4,5,6,7,8&sizes=1,2&tags=3,4&colors=1,2&orderby=id,asc&perpage=10&price_range=1500,10000
-// router.get('/qs', async (req, res, next) => {
-//   // 獲取網頁的搜尋字串
-//   const {
-//     page,
-//     keyword,
-//     brand_ids,
-//     cat_ids,
-//     colors,
-//     tags,
-//     sizes,
-//     orderby,
-//     perpage,
-//     price_range,
-//   } = req.query
-
-//   // TODO: 這裡可以檢查各query string正確性或給預設值，檢查不足可能會產生查詢錯誤
-
-//   // 建立資料庫搜尋條件
-//   const conditions = []
-
-//   // 關鍵字，keyword 使用 `name LIKE '%keyword%'`
-//   conditions[0] = keyword ? `name LIKE '%${keyword}%'` : ''
-
-//   // 品牌，brand_ids 使用 `brand_id IN (4,5,6,7)`
-//   conditions[1] = brand_ids ? `brand_id IN (${brand_ids})` : ''
-
-//   // 分類，cat_ids 使用 `cat_id IN (1, 2, 3, 4, 5)`
-//   conditions[2] = cat_ids ? `cat_id IN (${cat_ids})` : ''
-
-//   // 顏色: FIND_IN_SET(1, color) OR FIND_IN_SET(2, color)
-//   conditions[3] = getFindInSet(colors, 'color')
-
-//   // 標籤: FIND_IN_SET(3, tag) OR FIND_IN_SET(2, tag)
-//   conditions[4] = getFindInSet(tags, 'tag')
-
-//   // 尺寸: FIND_IN_SET(3, size) OR FIND_IN_SET(2, size)
-//   conditions[5] = getFindInSet(sizes, 'size')
-
-//   // 價格
-//   conditions[6] = getBetween(price_range, 'price', 1500, 10000)
-
-//   // 各條件為AND相接(不存在時不加入where從句中)
-//   const where = getWhere(conditions, 'AND')
-
-//   // 排序用，預設使用id, asc
-//   const order = getOrder(orderby)
-
-//   // 分頁用
-//   // page預設為1，perpage預設為10
-//   const perpageNow = Number(perpage) || 10
-//   const pageNow = Number(page) || 1
-//   const limit = perpageNow
-//   // page=1 offset=0; page=2 offset= perpage * 1; ...
-//   const offset = (pageNow - 1) * perpageNow
-
-//   const sqlProducts = `SELECT * FROM product ${where} ${order} LIMIT ${limit} OFFSET ${offset}`
-//   const sqlCount = `SELECT COUNT(*) AS count FROM product ${where}`
-
-//   console.log(sqlProducts.bgWhite)
-
-//   const products = await sequelize.query(sqlProducts, {
-//     type: QueryTypes.SELECT, //執行為SELECT
-//     raw: true, // 只需要資料表中資料
-//   })
-
-//   const data = await sequelize.query(sqlCount, {
-//     type: QueryTypes.SELECT, //執行為SELECT
-//     raw: true, // 只需要資料表中資料
-//     plain: true, // 只需一筆資料
-//   })
-
-//   // 查詢
-//   // const total = await countWithQS(where)
-//   // const products = await getProductsWithQS(where, order, limit, offset)
-
-//   // json回傳範例
-//   //
-//   // {
-//   //   total: 100,
-//   //   perpage: 10,
-//   //   page: 1,
-//   //   data:[
-//   //     {id:123, name:'',...},
-//   //     {id:123, name:'',...}
-//   //   ]
-//   // }
-
-//   const result = {
-//     total: data.count,
-//     perpage: Number(perpage),
-//     page: Number(page),
-//     data: products,
-//   }
-
-//   res.json(result)
-// })
 
 // 獲得單筆資料
 router.get('/:id/comment/:star', async (req, res, next) => {
   // 轉為數字
-  const id = getIdParam(req)
+  const id = req.params.id
   const { star } = req.params
 
   const [comment] = await dbPromise
@@ -423,7 +203,8 @@ router.get('/:id/comment/:star', async (req, res, next) => {
       "SELECT * from comment WHERE `object_type` = 'product' AND `object_id` = " +
         id +
         ' AND `star` = ' +
-        star
+        star +
+        ' ORDER BY date DESC'
     )
     .catch((err) => {
       if (err) {
@@ -448,10 +229,10 @@ router.get('/:id/comment/:star', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
   // 轉為數字
-  const id = getIdParam(req)
+  const id = req.params.id
+
   const { uid } = req.query
   let cateId = 0
-  // , COUNT(`comment`.`id`) AS `comment_count`
   const [product] = await dbPromise
     .execute(
       'SELECT `product`.* , `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` , COUNT(`comment`.`id`) AS `comment_count` ' +
@@ -467,7 +248,6 @@ router.get('/:id', async (req, res, next) => {
         return []
       }
     })
-
   cateId = product[0].category_id
 
   const [specifications] = await dbPromise
@@ -490,8 +270,9 @@ router.get('/:id', async (req, res, next) => {
 
   const [comment] = await dbPromise
     .execute(
-      "SELECT * from comment WHERE `object_type` = 'product' AND `object_id` = " +
-        id
+      "SELECT `comment`.*, `user`.`username`, `user`.`user_img` from comment JOIN user ON `comment`.`user_id` = `user`.`id` WHERE `comment`.`object_type` = 'product' AND `comment`.`object_id` = " +
+        id +
+        '  ORDER BY date DESC'
     )
     .catch((err) => {
       if (err) {
@@ -516,7 +297,9 @@ router.get('/:id', async (req, res, next) => {
   const [like] = await dbPromise.execute(
     'SELECT `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name` AS `category_name`, `brand`.`name` AS `brand_name`,  MAX(`product_images`.`img`) AS `img2`, ROUND(AVG(`comment`.`star`), 1) AS `average_star` FROM `product` JOIN `product_category` ON `product_category`.`id` = `product`.`category_id` AND `product_category`.`valid` = 1 JOIN `brand` ON `brand`.`id` = `product`.`brand_id` AND `brand`.`valid` = 1 LEFT JOIN `product_images` ON `product_images`.`product_id` = `product`.`id` LEFT JOIN `comment` ON `comment`.`object_id` = `product`.`id` AND `comment`.`object_type` = "product" WHERE `category_id` = ' +
       cateId +
-      ' GROUP BY `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name`, `brand`.`name` ORDER BY `average_star` DESC LIMIT 4'
+      ' AND `product`.`id` != ' +
+      id +
+      ' GROUP BY `product`.`id`, `product`.`name`, `product`.`price`, `product`.`img`, `product_category`.`name`, `brand`.`name` ORDER BY RAND() LIMIT 4;'
   )
 
   // 只會回傳單筆資料

@@ -1,113 +1,119 @@
-// 變量定義
 $primary: var(--primary);
 $primary-dark: var(--primary-dark);
 $white: var(--white);
 $warning: #ffc107;
-$success: #28a745;
-$secondary: #6c757d;
+$black: #000000;
 $card-bg: rgba(188, 188, 188, 0.485);
 
 .card {
   max-width: 70rem;
   width: 100%;
+  height: 179.5px;
   border-radius: 10px;
   padding: 16px;
-  margin-bottom: 16px;
-  background-color: $white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  transition: transform 0.3s ease;
-  display: flex;
-  align-items: center;
-
-  &:hover {
-    transform: translateY(-5px);
-  }
-}
-
-.logoContainer {
-  width: 80px;
-  height: 80px;
-  margin-right: 16px;
-  overflow: hidden;
-  border-radius: 50%;
-  flex-shrink: 0; // 防止 logo 容器被壓縮
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f0f0f0; // 添加背景色，以防圖片較小時
-}
-
-.logo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; // 確保圖片填滿容器，同時保持比例
-  object-position: center; // 確保圖片居中
-}
-
-.logoFallback {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: $primary;
-  color: $white;
-  font-size: 2rem;
-  font-weight: bold;
+  background-color: $card-bg;
 }
 
 .cardBody {
-  flex: 1;
-}
+  .flexContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .badge {
+    background-color: $primary;
+    color: $white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 1.5rem; // 增加到 1.5rem
+  }
+  .logoAndName {
+    display: flex;
+    align-items: center;
+  }
 
-.cardInfo {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
+  .logoContainer {
+    width: 40px;
+    height: 40px;
+    margin-right: 12px;
+    overflow: hidden;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+  }
 
-.companyName {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: $primary-dark;
-  margin: 0;
-}
+  .logo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
 
-.rating {
-  display: flex;
-  align-items: center;
-
-  .ratingNumber {
-    font-size: 1.1rem;
+  .logoFallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $primary;
+    color: $white;
+    font-size: 1.5rem;
     font-weight: bold;
-    color: $warning;
   }
 
-  .ratingIcon {
-    color: $warning;
-    margin-left: 4px;
+  .companyName {
+    width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: $black;
+    margin: 0;
   }
-}
 
-.location {
-  font-size: 0.9rem;
-  color: $secondary;
-  margin: 0;
-}
+  .rating {
+    display: flex;
+    align-items: center;
 
-.bookButton {
-  background-color: $primary;
-  color: $white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+    .ratingNumber {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: $white;
+    }
 
-  &:hover {
-    background-color: $primary-dark;
+    .ratingIcon {
+      font-size: 1.5rem;
+      color: $white;
+      margin-left: 4px;
+    }
+  }
+
+  .info {
+    margin: 2px 0; // 減少垂直間距
+    color: $black;
+    flex: 1;
+    font-size: 1.5rem; // 減小其他信息的字體大小
+  }
+
+  .buttonContainer {
+    text-align: right;
+  }
+
+  .btn {
+    background-color: $primary;
+    padding: 10px 20px;
+    border-radius: 4px;
+    color: $white;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem; // 增加到 1.5rem
+    &:hover {
+      background-color: $primary-dark;
+    }
   }
 }
