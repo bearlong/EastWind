@@ -49,17 +49,6 @@ export default function MouseMove() {
     'Sou9.svg',
   ]
 
-  const handleClick = () => {
-    setIsAnimating(true)
-    setIsFront((prevIsFront) => {
-      if (!prevIsFront) {
-        const randomIndex = Math.floor(Math.random() * mahjongArr.length)
-        setImgSrc(`/${mahjongArr[randomIndex]}`)
-      }
-      return !prevIsFront
-    })
-    setDeg((prevDeg) => prevDeg + 180)
-  }
   //   const [deg, setDeg] = useState(0)
   //   const [isFront, setIsFront] = useState(true)
   //   const [imgSrc, setImgSrc] = useState('/Pei.svg')
