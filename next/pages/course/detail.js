@@ -276,7 +276,19 @@ export default function Detail() {
                           cartItem.object_type === 'course'
                       )
                       if (itemExists) {
-                        toast.error('此商品已在購物車中，無法再次加入')
+                        toast.error('此商品已在購物車中，無法再次加入', {
+                          style: {
+                            border: `1px solid #d71515`,
+                            padding: '16px',
+                            fontSize: '16px',
+                            color: '#0e0e0e',
+                          },
+                          iconTheme: {
+                            primary: `#d71515`,
+                            secondary: '#ffffff',
+                            fontSize: '16px',
+                          },
+                        })
                         return
                       }
                       handleAdd(courses, 'course', 1)
@@ -309,9 +321,35 @@ export default function Detail() {
                           cartItem.object_type === 'course'
                       )
                       if (itemExists) {
-                        toast.error('此商品已在購物車中，無法再次加入')
+                        toast.error('此商品已在購物車中，無法再次加入', {
+                          style: {
+                            border: `1px solid #d71515`,
+                            padding: '16px',
+                            fontSize: '16px',
+                            color: '#0e0e0e',
+                          },
+                          iconTheme: {
+                            primary: `#d71515`,
+                            secondary: '#ffffff',
+                            fontSize: '16px',
+                          },
+                        })
                         return
                       }
+
+                      toast.success('加入購物車成功', {
+                        style: {
+                          border: `1px solid #55c57a`,
+                          padding: '16px',
+                          fontSize: '16px',
+                          color: '#0e0e0e',
+                        },
+                        iconTheme: {
+                          primary: `#55c57a`,
+                          secondary: '#ffffff',
+                          fontSize: '16px',
+                        },
+                      })
                       handleAdd(courses, 'course', 1)
                     } else {
                       toast.error('請先登入會員')
