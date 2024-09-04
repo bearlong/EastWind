@@ -80,7 +80,6 @@ export default function ProductList() {
   const [favorite, setFavorite] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const getProducts = async (filtersArr) => {
-    setIsLoading(true) // 開始加載數據
     let newProducts, error
     const url = `http://localhost:3005/api/products?page=${pages}&${Object.entries(
       filtersArr
@@ -148,9 +147,6 @@ export default function ProductList() {
       setCateOption(initCateOptions)
       setStyleOption(initStyleOptions)
     }
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 500)
   }
 
   const getFavorite = async () => {
@@ -348,22 +344,13 @@ export default function ProductList() {
     }
   }
 
-  // const loader = (
-  //   <FadeLoader
-  //     color="#2b4d37"
-  //     loading={isLoading}
-  //     cssOverride={override}
-  //     size={40}
-  //     aria-label="Loading Spinner"
-  //     data-testid="loader"
-  //   />
-  // )
-
   useEffect(() => {
     getProducts(filters)
   }, [filters, pages, favorite])
 
   useEffect(() => {
+    setIsLoading(true) // 開始加載數據
+
     if (router.isReady) {
       const filter = {
         brand_id: brand_id || '',
@@ -376,8 +363,12 @@ export default function ProductList() {
         orderBy: orderBy || '',
         isFilter: false,
       }
-      getFavorite()
       setFilters(filter)
+      getFavorite()
+
+      setTimeout(() => {
+        setIsLoading(false)
+      }, 500)
     }
   }, [router.isReady, router.query])
 

@@ -54,6 +54,10 @@ export default function ProductDetail({
     })
   }
 
+  useEffect(() => {
+    setQuantity(1)
+  }, [data])
+
   return (
     <>
       <div className={styles['productDetailSection1-bl']}>

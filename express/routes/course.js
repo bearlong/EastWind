@@ -13,6 +13,24 @@ import sequelize from '#configs/db.js'
 const router = express.Router()
 // GET 獲得所有資料，加入分頁與搜尋字串功能，單一資料表處理
 router.get('/', async (req, res) => {
+  let { search } = req.query
+  let filter
+
+  // if (search) {
+  //   if (!filter) {
+  //     filter = ` WHERE (\`course\`.\`course_name\` LIKE '%${search}%' OR \`course_category\`.\`name\` LIKE '%${search}%')`
+  //   } else {
+  //     filter += ` ${isFilter ? 'OR' : 'AND'} (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
+  //   }
+  // }
+  // if (search) {
+  //   if (!filter) {
+  //     filter = ` WHERE (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
+  //   } else {
+  //     filter += ` ${isFilter ? 'OR' : 'AND'} (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
+  //   }
+  // }
+
   try {
     const [list] = await dbPromise.execute(
       'SELECT `course`.*,`course_category`.`ch_name` FROM `course` JOIN `course_category` ON `course`.`category_id` = `course_category`.`course_id`;'
@@ -144,7 +162,7 @@ router.get('/:id', async (req, res, next) => {
         `${uid ? ', CASE WHEN `favorite`.`id` IS NOT NULL THEN TRUE ELSE FALSE END AS `fav`' : ''}` +
         ' FROM `course`' +
         ' JOIN `course_category` ON `course_category`.`id` = `course`.`category_id`' +
-        `${uid ? ' LEFT JOIN `favorite` ON `favorite`.`id` = `course`.`id` AND `favorite`.`object_type` = "course" AND `favorite`.`user_id` = ' + uid : ''}` +
+        `${uid ? ' LEFT JOIN `favorite` ON `favorite`.`object_id` = `course`.`id` AND `favorite`.`object_type` = "course" AND `favorite`.`user_id` = ' + uid : ''}` +
         ' WHERE `course`.`id` = ?',
       [id]
     )
@@ -156,7 +174,15 @@ router.get('/:id', async (req, res, next) => {
         data: { id: '提供的課程ID不存在' },
       })
     }
-    console.log(courses[0])
+    console.log(
+      'SELECT `course`.*, `course_category`.`ch_name` AS `category_name`' +
+        `${uid ? ', CASE WHEN `favorite`.`id` IS NOT NULL THEN TRUE ELSE FALSE END AS `fav`' : ''}` +
+        ' FROM `course`' +
+        ' JOIN `course_category` ON `course_category`.`id` = `course`.`category_id`' +
+        `${uid ? ' LEFT JOIN `favorite` ON `favorite`.`id` = `course`.`id` AND `favorite`.`object_type` = "course" AND `favorite`.`user_id` = ' + uid : ''}` +
+        ' WHERE `course`.`id` = ?',
+      id
+    )
     const course = courses[0]
     return res.status(200).json({ status: 'success', data: { course } })
   } catch (err) {

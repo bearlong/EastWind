@@ -15,7 +15,7 @@ import VideoPlayer from '@/components/course/video'
 import { Button } from 'react-bootstrap'
 import { AuthContext } from '@/context/AuthContext'
 import { useCart } from '@/hooks/use-cart'
-import { FaHeart } from 'react-icons/fa'
+import { FaHeart } from 'react-icons/fa6'
 import { CiHeart } from 'react-icons/ci'
 
 const override = {
@@ -61,7 +61,6 @@ export default function Detail() {
     const apiURL = `http://localhost:3005/api/course/${id}${
       user ? `?uid=${user.id}` : ''
     }`
-    console.log(apiURL)
     console.log(user)
     // const apiURL = `http://localhost:3005/api/course`
     try {
@@ -84,23 +83,6 @@ export default function Detail() {
     }
   }
 
-  // const getCategory = async () => {
-  //   const apiURL = `http://localhost:3005/api/course`
-  //   try {
-  //     const res = await fetch(apiURL)
-  //     const data = await res.json()
-
-  //     console.log(data.data.courses)
-
-  //     // 設定到狀態中 ==> 觸發re-render(進入update階段)
-  //     if (Array.isArray(data.data.courses)) {
-  //       setCourses(data.data.courses)
-  //     }
-  //   } catch (e) {
-  //     console.error(e)
-  //   }
-  // }
-
   // 樣式2: didMount
   // 首次render之後(after)執行一次，之後不會再執行
   useEffect(() => {
@@ -108,12 +90,7 @@ export default function Detail() {
       getCourses()
       // , getCategory()
     }
-  }, [router.isReady, router.query])
-
-  // useEffect(() => {
-  //   const params = new URLSearchParams(window.location.search)
-  //   setId(parseInt(params.get('id'), 10)) // 獲取 id 查詢參數並轉換為數字
-  // }, [])
+  }, [router.isReady, router.query, user])
 
   // 滾動到 "章節" 的函數
   const scrollToChapter = () => {
@@ -178,9 +155,12 @@ export default function Detail() {
     }
   }
 
-  const handleStyToggle = () => {
+  const handleStyToggle = async () => {
     {
       isActive ? <FaHeart fontSize={24} /> : <CiHeart fontSize={24} />
+    }
+    {
+      isActive ? `加入` : `移除`
     }
     setIsActive((prev) => !prev)
   }
@@ -239,18 +219,20 @@ export default function Detail() {
                   onClick={() => {
                     if (user) {
                       handleFavToggle(courses.id, 'course')
-                      handleStyToggle
+                      handleStyToggle()
                     } else {
                       toast.error('請先登入會員')
                       return
                     }
                   }}
-                  //   onClick={() => {
-                  //     handleFavToggle(courses.id, 'course')
-                  //   }}
                 >
-                  <h6>加入最愛</h6>
-                  <CiHeart fontSize={24} />
+                  {/* <h6>加入最愛</h6> */}
+                  <h6>{isActive ? `移除` : `加入`}收藏</h6>
+                  {isActive ? (
+                    <FaHeart fontSize={24} />
+                  ) : (
+                    <CiHeart fontSize={24} />
+                  )}
                 </button>
 
                 <div className={styles['textrighth52-aa']}>
@@ -290,7 +272,19 @@ export default function Detail() {
                           cartItem.object_type === 'course'
                       )
                       if (itemExists) {
-                        toast.error('此商品已在購物車中，無法再次加入')
+                        toast.error('此商品已在購物車中，無法再次加入', {
+                          style: {
+                            border: `1px solid #d71515`,
+                            padding: '16px',
+                            fontSize: '16px',
+                            color: '#0e0e0e',
+                          },
+                          iconTheme: {
+                            primary: `#d71515`,
+                            secondary: '#ffffff',
+                            fontSize: '16px',
+                          },
+                        })
                         return
                       }
                       handleAdd(courses, 'course', 1)
@@ -323,9 +317,35 @@ export default function Detail() {
                           cartItem.object_type === 'course'
                       )
                       if (itemExists) {
-                        toast.error('此商品已在購物車中，無法再次加入')
+                        toast.error('此商品已在購物車中，無法再次加入', {
+                          style: {
+                            border: `1px solid #d71515`,
+                            padding: '16px',
+                            fontSize: '16px',
+                            color: '#0e0e0e',
+                          },
+                          iconTheme: {
+                            primary: `#d71515`,
+                            secondary: '#ffffff',
+                            fontSize: '16px',
+                          },
+                        })
                         return
                       }
+
+                      toast.success('加入購物車成功', {
+                        style: {
+                          border: `1px solid #55c57a`,
+                          padding: '16px',
+                          fontSize: '16px',
+                          color: '#0e0e0e',
+                        },
+                        iconTheme: {
+                          primary: `#55c57a`,
+                          secondary: '#ffffff',
+                          fontSize: '16px',
+                        },
+                      })
                       handleAdd(courses, 'course', 1)
                     } else {
                       toast.error('請先登入會員')
@@ -526,7 +546,7 @@ export default function Detail() {
                 </svg>
               </div>
             </div>
-            <Recommends />
+            <Recommends contentData={courses} />
             <div className={styles['btn-more-mini-r-aa']}>
               <div className={styles['Ellipse-r-aa']}>
                 <svg
