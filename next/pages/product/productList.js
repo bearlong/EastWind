@@ -363,11 +363,12 @@ export default function ProductList() {
         orderBy: orderBy || '',
         isFilter: false,
       }
+      setFilters(filter)
+      getFavorite()
+
       setTimeout(() => {
         setIsLoading(false)
       }, 500)
-      getFavorite()
-      setFilters(filter)
     }
   }, [router.isReady, router.query])
 
