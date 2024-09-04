@@ -39,6 +39,7 @@ router.get('/active/:userId', async (req, res) => {
       'SELECT coupons.* FROM `coupons` ' +
         'LEFT JOIN `coupons_for_user` ON coupons.id = coupons_for_user.coupon_id AND coupons_for_user.user_id = ? ' +
         'WHERE coupons_for_user.coupon_id IS NULL AND coupons.name != "新會員優惠" ' +
+        'AND coupons.valid_to > NOW()' +
         'ORDER BY coupons.id DESC',
       [userId]
     )
@@ -60,7 +61,7 @@ router.get('/unused/:userId', async (req, res) => {
       'SELECT `coupons_for_user`.*, `coupons`.`name`, `coupons`.`discount_type`, `coupons`.`discount_value`, `coupons`.`valid_from`, `coupons`.`valid_to`, `coupons`.`limit_value` ' +
         'FROM `coupons_for_user` ' +
         'INNER JOIN `coupons` ON `coupons_for_user`.`coupon_id` = `coupons`.`id` ' +
-        'WHERE `coupons_for_user`.`user_id` = ? AND `coupons_for_user`.`status` = "unused" AND `coupons`.`valid_to` >= CURDATE() ' +
+        'WHERE `coupons_for_user`.`user_id` = ? AND `coupons_for_user`.`status` = "unused" AND `coupons`.`valid_to` > NOW() ' +
         'ORDER BY `coupons`.`id` DESC',
       [userId]
     )
@@ -103,11 +104,9 @@ router.post('/add/:userId', async (req, res) => {
   try {
     // 檢查優惠券是否存在且在有效期內
     const [coupon] = await connection.query(
-      'SELECT * FROM `coupons` WHERE `id` = ? AND `valid_from` <= NOW() AND `valid_to` >= NOW() LIMIT 1',
+      'SELECT * FROM `coupons` WHERE `id` = ? AND `valid_from` <= NOW() AND `valid_to` > NOW() LIMIT 1',
       [couponId]
     )
-
-    console.log('Coupon query result:', coupon) // 檢查查詢結果
 
     // 如果沒有找到符合條件的優惠券，返回 404 錯誤
     if (!coupon || coupon.length === 0) {
@@ -115,7 +114,7 @@ router.post('/add/:userId', async (req, res) => {
         .status(404)
         .json({ status: 'fail', message: '優惠券不存在或不可領取' })
     }
-
+    console.log('Coupon query result:', coupon) // 檢查查詢結果
     // 檢查用戶是否已經領取過此優惠券
     const [existing] = await connection.query(
       'SELECT * FROM `coupons_for_user` WHERE `user_id` = ? AND `coupon_id` = ? LIMIT 1',
@@ -152,7 +151,7 @@ router.post('/redeem-code/:userId', async (req, res) => {
   try {
     // 檢查優惠券代碼是否存在且在有效期內
     const [coupon] = await connection.query(
-      'SELECT * FROM `coupons` WHERE `code` = ? AND `valid_from` <= NOW() AND `valid_to` >= NOW() LIMIT 1',
+      'SELECT * FROM `coupons` WHERE `code` = ? AND `valid_from` < NOW() AND `valid_to` > NOW() LIMIT 1',
       [code]
     )
 

@@ -80,12 +80,17 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params
+    const { uid } = req.query
+
     const query = `
   SELECT 
     c.*, 
     ROUND(c.rating, 1) AS rating,
     GROUP_CONCAT(DISTINCT cp.img) AS company_photos,
     GROUP_CONCAT(DISTINCT CONCAT(st.name, ':', st.icon)) AS services
+
+    ${uid ? ',CASE WHEN favorite.object_id IS NOT NULL THEN TRUE ELSE FALSE END AS fav ' : ''}
+
   FROM 
     company c
   LEFT JOIN 
@@ -94,13 +99,16 @@ router.get('/:id', async (req, res) => {
     services_for_company sfc ON c.id = sfc.company_id
   LEFT JOIN
     services_tags st ON sfc.services_id = st.id
+ 
+    ${uid ? 'LEFT JOIN favorite ON favorite.object_id = c.id AND favorite.object_type = "company" AND favorite.user_id = ' + uid : ''}
+
   WHERE 
     c.id = ? AND c.valid = '1'
   GROUP BY 
     c.id
 `
     const [company] = await connection.execute(query, [id])
-
+console.log(company);
     if (company.length === 0) {
       return res.status(404).json({ message: '找不到該公司' })
     }

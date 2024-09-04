@@ -2,6 +2,20 @@
   display: flex;
   align-items: center;
 }
+.open {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  .favIcon {
+    font-size: 2rem;
+  }
+  button {
+    background-color: #fff;
+    border-radius: 50%;
+    padding: 1rem;
+    border: 0;
+  }
+}
 .logoArea {
   img {
     max-height: 8rem; /* 設置最大高度 */

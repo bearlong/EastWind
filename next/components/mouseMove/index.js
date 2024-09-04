@@ -17,8 +17,6 @@ export default function MouseMove() {
     'Pei.svg',
     'Nan.svg',
     'Chun.svg',
-    'Front.svg',
-    'Haku.svg',
     'Hatsu.svg',
     'Man1.svg',
     'Man2.svg',

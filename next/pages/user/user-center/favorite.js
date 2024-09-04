@@ -304,7 +304,7 @@ export default function UserFavorite() {
                     <Link
                       key={index}
                       href={`/lobby/Company/${favorite.id}`}
-                      className={`w-100`}
+                      className={`w-100 d-flex justify-content-center align-items-center`}
                     >
                       <div
                         className={`${styles['company-card-bo']}  d-flex flex-column justify-content-start align-items-center gap-2`}

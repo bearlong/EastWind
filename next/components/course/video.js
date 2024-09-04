@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import styles from '@/styles/aa/classDetail.module.scss'
 
-const VideoPlayer = ({ videoUrl }) => {
+const VideoPlayer = ({ videoUrl, thumbnailUrl }) => {
   const videoRef = useRef(null)
   const [isPaused, setIsPaused] = useState(true)
 
@@ -27,6 +27,7 @@ const VideoPlayer = ({ videoUrl }) => {
         controlsList="nodownload nofullscreen"
         disablePictureInPicture
         width="100%"
+        // poster={thumbnailUrl}
       />
       {isPaused && (
         <div className={styles['play-icon']}>
