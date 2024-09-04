@@ -2,44 +2,65 @@ import styles from '@/styles/gw/_RoomCard.module.scss'
 import cardStyles from '@/styles/gw/_card.module.sass'
 
 import { TiStarFullOutline } from 'react-icons/ti'
-import { FaAngleDown } from 'react-icons/fa'
-
+import { FaAngleDown, FaHeart, FaPlus } from 'react-icons/fa'
 import Server from '../serverIcon/server'
 
-export default function RoomCard({ companyData, partyData }) {
-  console.log(partyData)
+import toast from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
+
+export default function RoomCard({
+  companyData,
+  partyData,
+  user,
+  handleFavToggle = () => {},
+}) {
   const data = companyData || partyData
-  console.log(data)
-  // console.log(companyData.services);
   const services = data.services || []
+
+  console.log(companyData)
+
   return (
     <div className={cardStyles.Card} id="roomInfo">
-      <div className={styles.roomTitle}>
-        <div className={styles.logoArea}>
-          <img
-            alt="logo"
-            src="/images/gw/img/Mahjong-masters-logo-transparent-horizontal-300x176.png"
-          />
+      <div className={styles.open}>
+        <div className={styles.roomTitle}>
+          <div className={styles.logoArea}>
+            <img
+              alt="logo"
+              src="/images/gw/img/Mahjong-masters-logo-transparent-horizontal-300x176.png"
+            />
+          </div>
+
+          <div className={styles.nameArea}>
+            <div className={styles.rate}>
+              <div className="star">
+                {[...Array(5)].map((_, i) => (
+                  <TiStarFullOutline key={i} className={styles.starIcon} />
+                ))}
+                {`${data.name ? data.rating : data.rating}`}
+              </div>
+            </div>
+
+            <div className="title">
+              <h3 className="title">{`${
+                data.name ? data.name : data.company_name
+              }`}</h3>
+            </div>
+          </div>
         </div>
 
-        <div className={styles.nameArea}>
-          <div className={styles.rate}>
-            <div className="star">
-              {[...Array(5)].map((_, i) => (
-                <TiStarFullOutline key={i} className={styles.starIcon} />
-              ))}
-              {`${data.name ? data.rating : data.rating}`}
-            </div>
-            <div className="gap-5">
-              <i className="fa-regular fa-heart faSz mx-2" />
-              <i className="fa-solid fa-thumbs-up faSz" />
-            </div>
-          </div>
-          <div className="title">
-            <h3 className="title">{`${
-              data.name ? data.name : data.company_name
-            }`}</h3>
-          </div>
+        <div>
+          {user ? (
+            <button
+              onClick={() => {
+                const id = data.company_id ? data.company_id : data.id
+                handleFavToggle(id, 'company')
+              }}
+            >
+              {data.fav ? <FaHeart className={styles.favIcon} color="red" /> : <FaPlus  className={styles.favIcon} />}
+            </button>
+          ) : (
+            ''
+          )}
         </div>
       </div>
       <div className={styles.roomAdBox}>
