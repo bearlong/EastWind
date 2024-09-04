@@ -64,7 +64,7 @@
 .text141-aa {
   display: flex;
   flex-direction: row;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: flex-start;
   align-self: stretch;
 }
@@ -140,7 +140,7 @@
 
 .detextright2-aa {
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
   align-self: stretch;
 }
