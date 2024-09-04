@@ -4,7 +4,7 @@ import Image from 'next/image'
 import styles from '@/styles/aa/classDetail.module.scss'
 
 const generateRandomId = () => {
-  return Math.floor(Math.random() * 50) + 1
+  return Math.floor(Math.random() * 80) + 1
 }
 
 // 單個卡片組件
@@ -59,10 +59,17 @@ const CourseCard = ({ contentData = {} }) => {
 // 主組件
 const Recommends = () => {
   const cards = Array.from({ length: 4 }, () => generateRandomId())
+
   // const cards = .map(() => ({
   //   ...card,
   //   id: generateRandomId(),
   // }))
+
+  // const Recommends = ({ coursesData = [] }) => {
+  //   const cards =
+  //     coursesData.length > 0
+  //       ? coursesData
+  //       : Array.from({ length: 4 }, () => ({ id: generateRandomId() }))
 
   return (
     <div className={styles['sec2cardgroup-aa']}>

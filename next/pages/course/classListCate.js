@@ -10,7 +10,6 @@ import { useLocation } from 'react-router-dom'
 export default function ClassListCate() {
   const router = useRouter()
   const [id, setId] = useState(null)
-  // const [category_id, setCategory_id] = useState(null)
   const { category_id } = router.query
   const [courses, setCourses] = useState({ list: [] })
   const [pages, setPages] = useState()
@@ -37,15 +36,6 @@ export default function ClassListCate() {
   useEffect(() => {
     getCourses()
   }, [])
-
-  // useEffect(() => {
-  //   const params = new URLSearchParams(window.location.search)
-  //   setId(parseInt(params.get('category_id'), 10))
-  // }, [])
-
-  // const handleCardClick = (courseId) => {
-  //   router.push(`/course/detail/${courseId}`)
-  // }
 
   const handleLoadMore = () => {
     if (pages * 8 < courses.total) {
@@ -128,9 +118,9 @@ export default function ClassListCate() {
           <div className={styles['sec2']}>
             <div className={styles['text2-aa']}>
               <div className={styles['navBarContent-aa']}>
-                <h5>36 課程</h5>
+                {/* <h5>36 課程</h5> */}
                 {/* <h5>{courses.total} 課程</h5> */}
-                <div className={styles['iconGroup-aa']}>
+                {/* <div className={styles['iconGroup-aa']}>
                   <div className={styles['button22']}>
                     <div className={styles['button23-aa']}>
                       <div className={styles['vector3-aa']}>
@@ -177,7 +167,7 @@ export default function ClassListCate() {
                       />
                     </svg>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
             <div className={styles['cardgroup22-aa']}>
@@ -191,19 +181,11 @@ export default function ClassListCate() {
                     .map((course, index) => (
                       <ClassCard key={course.id} courseData={course} />
                     ))}
-                {/* {courses &&
-                  Object.values(courses)
-                    .flat()
-                    .filter((course) => course.category_id === category_id)
-                    .slice(0, 4)
-                    .map((course, index) => (
-                      <ClassCard key={course.id} courseData={course} />
-                    ))} */}
               </div>
             </div>
           </div>
           <div className={styles['sec23-aa']}>
-            <button className={styles['loadMore-aa']} onClick={handleLoadMore}>
+            {/* <button className={styles['loadMore-aa']} onClick={handleLoadMore}>
               <div className={styles['text23-aa']}>
                 <h6>16/36</h6>
               </div>
@@ -263,7 +245,7 @@ export default function ClassListCate() {
                   />
                 </svg>
               </div>
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
