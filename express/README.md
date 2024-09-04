@@ -361,6 +361,102 @@ The response payload is optional and it typically describes and links to the res
   }
 }
 ````
+#### 我的最愛 RESTful API 文件
+
+基本資訊
+  - 基礎 URL: /favorites
+  - 內容類型: application/json
+1. 取得購物車內容
+  - 路徑: GET /favorites
+  - 描述: 取得指定用戶的所有收藏。
+  - 請求參數:
+    - id (string): 用戶 ID
+     - 回應:
+    - 狀態碼 200 OK
+````json
+{
+  "status": "success",
+  "data": {
+    "message": "已取得最愛",
+    "fav": [ /* 購物車項目數據 */ ],
+  }
+}
+````
+    - 狀態碼 400 Bad Request
+````json
+{
+  "status": "error",
+  "data": {
+    "message": "錯誤訊息"
+  }
+}
+````
+
+2. 新增收藏
+  - 路徑: POST /favorites/:id
+  - 描述: 將指定 ID 的項目新增至指定會員的最愛。
+  - 路徑參數:
+    - id (string): 產品 ID
+- **請求數據**:
+  ```json
+  {
+    "uid": "(string)",  // 會員ID
+    "type": "(string)"  // 項目類型
+  }
+````
+  - 回應:
+    - 狀態碼 201 Created
+````json
+{
+  "status": "success",
+  "data": {
+    "message": "新增成功",
+    "fav": [ /* 更新後的最愛項目數據 */ ]
+  }
+}
+````
+    狀態碼 400 Bad Request
+````json
+{
+  "status": "error",
+  "data": {
+    "message": "該產品已在收藏內"
+  }
+}
+````
+
+3. 移除收藏
+  - 路徑: DELETE /favorites/:id
+  - 描述: 從指定會員的最愛中刪除指定項目。
+  - 路徑參數:
+    - id (string): 產品 ID
+  - **請求數據**:
+  ```json
+  {
+    "uid": "(string)",  // 會員ID
+    "type": "(string)"  // 項目類型
+  }
+  ````
+  - 回應:
+    - 狀態碼 200 OK
+````json
+{
+  "status": "success",
+  "data": {
+    "message": "刪除成功",
+    "fav": [ /* 更新後的最愛項目數據 */ ]
+  }
+}
+````
+    狀態碼 400 Bad Request
+````json
+{
+  "status": "error",
+  "data": {
+    "message": "收藏內無該商品，刪除失敗"
+  }
+}
+````
 
 
 

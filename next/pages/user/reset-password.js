@@ -4,7 +4,8 @@ import { FaXmark, FaCheck } from 'react-icons/fa6'
 import Link from 'next/link'
 import Swal from 'sweetalert2'
 import { useRouter } from 'next/router'
-
+import UserResetPasswordForm from '@/components/reset-password/UserResetPasswordForm'
+import CompanyResetPasswordForm from '@/components/reset-password/CompanyResetPasswordForm'
 export default function ResetPassword() {
   const router = useRouter()
 
@@ -120,47 +121,49 @@ export default function ResetPassword() {
   useEffect(() => {
     const userBox = userBoxRef.current
     const userForm = userFormRef.current
-    const userInputs = userForm.querySelectorAll('input')
+    if (userForm) {
+      const userInputs = userForm.querySelectorAll('input')
 
-    const toggleFormActive = (event) => {
-      if (!userForm.contains(event.target)) {
-        userForm.classList.toggle(styles.active)
+      const toggleFormActive = (event) => {
+        if (!userForm.contains(event.target)) {
+          userForm.classList.toggle(styles.active)
+        }
       }
-    }
 
-    const deactivateForm = () => {
-      if (!userForm.classList.contains(styles['form-focused'])) {
-        userForm.classList.remove(styles.active)
+      const deactivateForm = () => {
+        if (!userForm.classList.contains(styles['form-focused'])) {
+          userForm.classList.remove(styles.active)
+        }
       }
-    }
 
-    const focusInput = () => {
-      userBox.classList.add(styles.hover)
-      userForm.classList.add(styles['form-focused'])
-    }
-
-    const blurInput = () => {
-      userForm.classList.remove(styles['form-focused'])
-      if (!userForm.contains(document.activeElement)) {
-        userBox.classList.remove(styles.hover)
+      const focusInput = () => {
+        userBox.classList.add(styles.hover)
+        userForm.classList.add(styles['form-focused'])
       }
-    }
 
-    userBox.addEventListener('click', toggleFormActive)
-    userBox.addEventListener('mouseleave', deactivateForm)
+      const blurInput = () => {
+        userForm.classList.remove(styles['form-focused'])
+        if (!userForm.contains(document.activeElement)) {
+          userBox.classList.remove(styles.hover)
+        }
+      }
 
-    userInputs.forEach((input) => {
-      input.addEventListener('focus', focusInput)
-      input.addEventListener('blur', blurInput)
-    })
+      userBox.addEventListener('click', toggleFormActive)
+      userBox.addEventListener('mouseleave', deactivateForm)
 
-    return () => {
-      userBox.removeEventListener('click', toggleFormActive)
-      userBox.removeEventListener('mouseleave', deactivateForm)
       userInputs.forEach((input) => {
-        input.removeEventListener('focus', focusInput)
-        input.removeEventListener('blur', blurInput)
+        input.addEventListener('focus', focusInput)
+        input.addEventListener('blur', blurInput)
       })
+
+      return () => {
+        userBox.removeEventListener('click', toggleFormActive)
+        userBox.removeEventListener('mouseleave', deactivateForm)
+        userInputs.forEach((input) => {
+          input.removeEventListener('focus', focusInput)
+          input.removeEventListener('blur', blurInput)
+        })
+      }
     }
   }, [])
 
@@ -171,47 +174,50 @@ export default function ResetPassword() {
   useEffect(() => {
     const companyBox = compBoxRef.current
     const companyForm = compFormRef.current
-    const companyInputs = companyForm.querySelectorAll('input')
+    // const companyInputs = companyForm.querySelectorAll('input')
 
-    const toggleFormActive = (event) => {
-      if (!companyForm.contains(event.target)) {
-        companyForm.classList.toggle(styles.active)
+    if (companyForm) {
+      const companyInputs = companyForm.querySelectorAll('input')
+      const toggleFormActive = (event) => {
+        if (!companyForm.contains(event.target)) {
+          companyForm.classList.toggle(styles.active)
+        }
       }
-    }
 
-    const deactivateForm = () => {
-      if (!companyForm.classList.contains(styles['form-focused'])) {
-        companyForm.classList.remove(styles.active)
+      const deactivateForm = () => {
+        if (!companyForm.classList.contains(styles['form-focused'])) {
+          companyForm.classList.remove(styles.active)
+        }
       }
-    }
 
-    const focusInput = () => {
-      companyBox.classList.add(styles.hover)
-      companyForm.classList.add(styles['form-focused'])
-    }
-
-    const blurInput = () => {
-      companyForm.classList.remove(styles['form-focused'])
-      if (!companyForm.contains(document.activeElement)) {
-        companyBox.classList.remove(styles.hover)
+      const focusInput = () => {
+        companyBox.classList.add(styles.hover)
+        companyForm.classList.add(styles['form-focused'])
       }
-    }
 
-    companyBox.addEventListener('click', toggleFormActive)
-    companyBox.addEventListener('mouseleave', deactivateForm)
+      const blurInput = () => {
+        companyForm.classList.remove(styles['form-focused'])
+        if (!companyForm.contains(document.activeElement)) {
+          companyBox.classList.remove(styles.hover)
+        }
+      }
 
-    companyInputs.forEach((input) => {
-      input.addEventListener('focus', focusInput)
-      input.addEventListener('blur', blurInput)
-    })
+      companyBox.addEventListener('click', toggleFormActive)
+      companyBox.addEventListener('mouseleave', deactivateForm)
 
-    return () => {
-      companyBox.removeEventListener('click', toggleFormActive)
-      companyBox.removeEventListener('mouseleave', deactivateForm)
       companyInputs.forEach((input) => {
-        input.removeEventListener('focus', focusInput)
-        input.removeEventListener('blur', blurInput)
+        input.addEventListener('focus', focusInput)
+        input.addEventListener('blur', blurInput)
       })
+
+      return () => {
+        companyBox.removeEventListener('click', toggleFormActive)
+        companyBox.removeEventListener('mouseleave', deactivateForm)
+        companyInputs.forEach((input) => {
+          input.removeEventListener('focus', focusInput)
+          input.removeEventListener('blur', blurInput)
+        })
+      }
     }
   }, [])
 
@@ -233,64 +239,16 @@ export default function ResetPassword() {
           <h3>密</h3>
           <h3>碼</h3>
         </div>
-        <div
-          className={`${styles['user-forgot-box-bo']} justify-content-center align-items-center`}
-          ref={userFormRef}
-        >
-          <form
-            onSubmit={resetPassword}
-            className={`${styles['user-forgot-form-bo']} d-flex flex-column justify-content-center align-items-center`}
-          >
-            <div className={styles['form-group-bo']}>
-              <input
-                type="password"
-                className={`h6 ${styles['form-input-bo']} `}
-                placeholder="新密碼"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              {passwordError && (
-                <div className={`p ${styles['text-error-bo']}`}>
-                  {passwordError}
-                </div>
-              )}
-            </div>
-            <div className={styles['form-group-bo']}>
-              <input
-                type="password"
-                className={`h6 ${styles['form-input-bo']} }`}
-                placeholder="確認密碼"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-              {confirmPasswordError && (
-                <div className={`p ${styles['text-error-bo']}`}>
-                  {confirmPasswordError}
-                </div>
-              )}
-            </div>
-          </form>
-
-          <div
-            className={`${styles['user-forgot-btn-box-bo']} d-flex justify-content-center align-items-center`}
-          >
-            <Link
-              href="/login"
-              className={`${styles['btn-user-forgot-bo']} btn h6 d-flex justify-content-between align-items-center`}
-            >
-              取消重設
-              <FaXmark />
-            </Link>
-
-            <button
-              onClick={resetPassword}
-              type="submit"
-              className={`${styles['btn-user-forgot-bo']} btn h6 d-flex justify-content-between align-items-center`}
-            >
-              重設密碼 <FaCheck />
-            </button>
-          </div>
-        </div>
+        <UserResetPasswordForm
+          password={password}
+          confirmPassword={confirmPassword}
+          passwordError={passwordError}
+          confirmPasswordError={confirmPasswordError}
+          setPassword={setPassword}
+          setConfirmPassword={setConfirmPassword}
+          resetPassword={resetPassword}
+          userFormRef={userFormRef}
+        />
       </div>
 
       {/* 公司重設密碼區域 */}
@@ -306,7 +264,11 @@ export default function ResetPassword() {
           <h3>密</h3>
           <h3>碼</h3>
         </div>
-        <div
+        <CompanyResetPasswordForm
+          resetPassword={resetPassword}
+          compFormRef={compFormRef}
+        />
+        {/* <div
           className={`${styles['company-forgot-box-bo']} justify-content-center align-items-center`}
           ref={compFormRef}
         >
@@ -362,7 +324,7 @@ export default function ResetPassword() {
               </button>
             </div>
           </form>
-        </div>
+        </div> */}
       </div>
     </section>
   )

@@ -30,7 +30,7 @@ export default function Entrance() {
         className="bookingBox"
       />
       <RoomOption
-        text="我要組團"
+        text="我要參團"
         imageUrl="/images/gw/img/002.jpg"
         onClick={handlePartyClick}
         className="partyRoom"

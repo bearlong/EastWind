@@ -14,7 +14,7 @@ export default function ProductNav() {
           </li>
           <li>
             <Link className={styles['subNav']} href="productList?category_id=1">
-              <h6>麻將牌</h6>
+              <h6>各式麻將</h6>
             </Link>
             <div className={styles['subBarBody-bl']}>
               <div className="d-flex">
@@ -95,7 +95,7 @@ export default function ProductNav() {
           </li>
           <li>
             <Link className={styles['subNav']} href="productList?category_id=2">
-              <h6>排尺</h6>
+              <h6>麻將牌尺</h6>
             </Link>
             <div className={styles['subBarBody-bl']}>
               <div className="d-flex">
@@ -155,7 +155,7 @@ export default function ProductNav() {
           </li>
           <li>
             <Link className={styles['subNav']} href="productList?category_id=3">
-              <h6>麻將桌</h6>
+              <h6>電動麻將桌</h6>
             </Link>
             <div className={styles['subBarBody-bl']}>
               <div className="d-flex">
@@ -234,7 +234,7 @@ export default function ProductNav() {
           </li>
           <li>
             <Link className={styles['subNav']} href="productList?category_id=4">
-              <h6>周邊</h6>
+              <h6>其他周邊</h6>
             </Link>
             <div
               className={`${styles['subBarBody-bl']} ${styles['rightBar-bl']}`}
@@ -281,7 +281,7 @@ export default function ProductNav() {
           </li>
           <li>
             <Link className={styles['subNav']} href="productList?category_id=5">
-              <h6>桌遊</h6>
+              <h6>各式桌遊</h6>
             </Link>
             <div className={`${styles['subBarBody-bl']} ${styles['last-bl']}`}>
               <div className="d-flex">

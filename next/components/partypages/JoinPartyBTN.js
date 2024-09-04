@@ -10,63 +10,7 @@ export default function JoinPartyBTN({ partyData, user }) {
     (partyData.userID_join1 === user.id ||
       partyData.userID_join2 === user.id ||
       partyData.userID_join3 === user.id)
-  // const handleJoinLeave = async () => {
-  //   try {
-  //     if (!user) {
-  //       Swal.fire({
-  //         title: '請先登入',
-  //         text: '您需要先登入才能加入或離開隊伍。',
-  //         icon: 'warning',
-  //         showCancelButton: true,
-  //         confirmButtonColor: '#3085d6',
-  //         cancelButtonColor: '#d33',
-  //         confirmButtonText: '前往登入',
-  //         cancelButtonText: '取消',
-  //       }).then((result) => {
-  //         if (result.isConfirmed) {
-  //           // 重定向到登入頁面的邏輯
-  //           router.push('/login')
-  //           console.log('重定向到登入頁面')
-  //         }
-  //       })
-  //       return
-  //     }
-  //     if (isJoined) {
-  //       // 處理離開隊伍的邏輯
-  //       const response = await fetch(`http://localhost:3005/api/parties/${partyData.id}/leave`, {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //         body: JSON.stringify({ userId: user.id }),
-  //       })
 
-  //       if (!response.ok) throw new Error('離開隊伍失敗')
-
-  //       Swal.fire('成功', '您已成功離開隊伍', 'success')
-  //       router.reload() // 重新加載頁面以更新資料
-  //       console.log('離開隊伍')
-  //     } else {
-  //       // 處理加入隊伍的邏輯
-  //       const response = await fetch(`http://localhost:3005/api/parties/${partyData.id}/join`, {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //         body: JSON.stringify({ userId: user.id }),
-  //       })
-
-  //       if (!response.ok) throw new Error('加入隊伍失敗')
-
-  //       Swal.fire('成功', '您已成功加入隊伍', 'success')
-  //       router.reload() // 重新加載頁面以更新資料
-  //       console.log('加入隊伍')
-  //     }
-  //   } catch (error) {
-  //     console.error('操作失敗:', error)
-  //     Swal.fire('錯誤', error.message, 'error')
-  //   }
-  // }
   const handleJoinLeave = async () => {
     try {
       if (!user) {
@@ -153,7 +97,7 @@ export default function JoinPartyBTN({ partyData, user }) {
   }
   console.log(partyData)
 
-  if (isCompleted) {
+  if (isCompleted && !isHost) {
     return null
   }
   return (

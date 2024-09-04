@@ -22,11 +22,12 @@ import ProductNav from '@/components/product/product-nav'
 import { AuthContext } from '@/context/AuthContext'
 import toast from 'react-hot-toast'
 import { Toaster } from 'react-hot-toast'
-import { FadeLoader } from 'react-spinners'
+// import { FadeLoader } from 'react-spinners'
 import ProductCard from '@/components/product/productCard'
 import ToTheTop from '@/components/icons/to-the-top'
 import { Autoplay } from 'swiper/modules'
 import Carousel from '@/components/product/carousel'
+import Loading from '@/components/loader/loading'
 
 const override = {
   display: 'block',
@@ -79,6 +80,7 @@ export default function ProductList() {
   const [favorite, setFavorite] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const getProducts = async (filtersArr) => {
+    setIsLoading(true) // 開始加載數據
     let newProducts, error
     const url = `http://localhost:3005/api/products?page=${pages}&${Object.entries(
       filtersArr
@@ -346,16 +348,16 @@ export default function ProductList() {
     }
   }
 
-  const loader = (
-    <FadeLoader
-      color="#2b4d37"
-      loading={isLoading}
-      cssOverride={override}
-      size={40}
-      aria-label="Loading Spinner"
-      data-testid="loader"
-    />
-  )
+  // const loader = (
+  //   <FadeLoader
+  //     color="#2b4d37"
+  //     loading={isLoading}
+  //     cssOverride={override}
+  //     size={40}
+  //     aria-label="Loading Spinner"
+  //     data-testid="loader"
+  //   />
+  // )
 
   useEffect(() => {
     getProducts(filters)
@@ -413,8 +415,11 @@ export default function ProductList() {
   return (
     <>
       <ProductNav />
+
       {isLoading ? (
-        loader
+        <div className={styles.loading}>
+          <Loading />
+        </div>
       ) : (
         <main className={styles.main}>
           <div className={styles['topSection-bl']}>

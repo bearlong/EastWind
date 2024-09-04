@@ -54,6 +54,10 @@ export default function ProductDetail({
     })
   }
 
+  useEffect(() => {
+    setQuantity(1)
+  }, [data])
+
   return (
     <>
       <div className={styles['productDetailSection1-bl']}>
@@ -285,7 +289,6 @@ export default function ProductDetail({
                 type="button"
                 className={`${styles['btnRectangle']} ${styles['buy']}  mb-3`}
                 onClick={() => {
-                  console.log(data.stock)
                   if (!user) {
                     notifyAndRemove()
                   } else {

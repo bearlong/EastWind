@@ -6,12 +6,12 @@ import {
   FaSort,
   FaBan,
   FaXmark,
-  FaCommentDots,
   FaMagnifyingGlass,
   FaMoneyBill,
   FaShop,
   FaCheck,
   FaPhone,
+  FaUserGroup,
 } from 'react-icons/fa6'
 import { FaStar, FaMapMarkerAlt, FaChevronDown } from 'react-icons/fa'
 import Link from 'next/link'
@@ -22,6 +22,8 @@ export default function UserBooking() {
   const { user } = useContext(AuthContext)
   const [selectedStatus, setSelectedStatus] = useState('booked')
   const [booking, setBooking] = useState([])
+
+  const [visibleCount, setVisibleCount] = useState(5) // 預設顯示的項目數量
 
   const [searchQuery, setSearchQuery] = useState('') // 用來存儲用戶輸入值的狀態
   const [searchKeyword, setSearchKeyword] = useState('') // 新增搜尋關鍵字狀態
@@ -81,6 +83,8 @@ export default function UserBooking() {
               end_time: formatTime(booking.end_time),
             }))
             setBooking(transformedBookings)
+            // 重置 visibleCount 當 activeTab 改變時
+            setVisibleCount(5)
           } else {
             console.error('Failed to fetch bookings:', data.message)
           }
@@ -108,7 +112,7 @@ export default function UserBooking() {
 
   const cancelBooking = (bookingId) => {
     Swal.fire({
-      title: '你確定要取消預訂嗎？',
+      title: '您確定要取消預訂嗎？',
       html: `<span class="p">取消後將無法恢復！</span>`,
       icon: 'warning',
       showCancelButton: true,
@@ -131,7 +135,7 @@ export default function UserBooking() {
             if (data.status === 'success') {
               Swal.fire({
                 title: '已取消！',
-                html: `<span class="p">你的預訂已被取消。</span>`,
+                html: `<span class="p">您的預訂已被取消，請前往信箱查看詳情。</span>`,
                 icon: 'success',
                 confirmButtonText: '確認',
                 customClass: {
@@ -181,6 +185,16 @@ export default function UserBooking() {
             })
           })
       }
+    })
+  }
+
+  const LoadMore = () => {
+    setVisibleCount((prevCount) => {
+      const remainingItems = booking.length - prevCount
+      const increment = 5
+      return remainingItems > increment
+        ? prevCount + increment
+        : prevCount + remainingItems
     })
   }
 
@@ -299,7 +313,6 @@ export default function UserBooking() {
                 </div>
               </div>
             </div>
-
             <div className={styles['booking-list-th-bo']}>
               <ul className="text-center">
                 <li
@@ -324,7 +337,11 @@ export default function UserBooking() {
               </ul>
             </div>
             {booking.length === 0 ? (
-              <div className="h5 p-5">尚未有訂位紀錄</div>
+              searchKeyword ? (
+                <div className="h5 p-5">未查詢到相關結果</div>
+              ) : (
+                <div className="h5 p-5">尚未有訂位紀錄</div>
+              )
             ) : (
               booking.map((item) => (
                 <div
@@ -356,6 +373,20 @@ export default function UserBooking() {
                           </div>
                         </div>
                         {selectedStatus === 'booked' && (
+                          /* (item.party_id ? (
+                            <Link
+                              href={`/lobby/Party/${item.party_id}`}
+                              className={`${styles['btn-party-bo']} btn h6 d-flex justify-content-center align-items-center gap-2`}
+                            >
+                              <FaUserGroup />
+                              <div
+                                className={`${styles['btn-party-text-bo']} d-flex justify-content-center align-items-center text-center`}
+                              >
+                                <p>參團</p>
+                                <p>詳情</p>
+                              </div>
+                            </Link>
+                          ) : */
                           <button
                             className={`${styles['btn-cancel-bo']} btn h6 d-flex justify-content-center align-items-center gap-2`}
                             onClick={() => cancelBooking(item.id)}
@@ -427,7 +458,7 @@ export default function UserBooking() {
 
                         <div className="d-flex flex-row flex-sm-column justify-content-between align-items-center gap-3">
                           <Link
-                            href={`/lobby/Company/${item.id}`}
+                            href={`/lobby/Company/${item.company_id}`}
                             className={`${styles['btn-shop-detail']} btn p d-flex justify-content-center align-items-center`}
                           >
                             <FaMagnifyingGlass
@@ -440,18 +471,6 @@ export default function UserBooking() {
                               <p>詳情</p>
                             </div>
                           </Link>
-
-                          <button
-                            className={`${styles['btn-QR-code']} btn p d-flex justify-content-center align-items-center`}
-                          >
-                            <FaStar />
-                            <div
-                              className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
-                            >
-                              <p>評價</p>
-                              <p>店家</p>
-                            </div>
-                          </button>
                         </div>
                       </div>
                     </div>
@@ -485,20 +504,34 @@ export default function UserBooking() {
                         </div>
                         <div></div>
                         <div className="d-flex justify-content-center align-items-center gap-4 ">
-                          {selectedStatus === 'booked' && (
-                            <button
-                              className={`${styles['btn-cancel-bo']} btn h6 d-flex justify-content-center align-items-center gap-2`}
-                              onClick={() => cancelBooking(item.id)}
-                            >
-                              <FaBan />
-                              <div
-                                className={`${styles['btn-cancel-text-bo']} d-flex justify-content-center align-items-center text-center`}
+                          {selectedStatus === 'booked' &&
+                            (item.party_id ? (
+                              <Link
+                                href={`/lobby/Party/${item.party_id}`}
+                                className={`${styles['btn-party-bo']} btn h6 d-flex justify-content-center align-items-center gap-2`}
                               >
-                                <p>取消</p>
-                                <p>預訂</p>
-                              </div>
-                            </button>
-                          )}
+                                <FaUserGroup />
+                                <div
+                                  className={`${styles['btn-party-text-bo']} d-flex justify-content-center align-items-center text-center`}
+                                >
+                                  <p>參團</p>
+                                  <p>詳情</p>
+                                </div>
+                              </Link>
+                            ) : (
+                              <button
+                                className={`${styles['btn-cancel-bo']} btn h6 d-flex justify-content-center align-items-center gap-2`}
+                                onClick={() => cancelBooking(item.id)}
+                              >
+                                <FaBan />
+                                <div
+                                  className={`${styles['btn-cancel-text-bo']} d-flex justify-content-center align-items-center text-center`}
+                                >
+                                  <p>取消</p>
+                                  <p>預訂</p>
+                                </div>
+                              </button>
+                            ))}
                           {selectedStatus === 'completed' && (
                             <div
                               className={` ${styles['state-text-bo']} h6 d-flex justify-content-center align-items-center gap-2`}
@@ -558,7 +591,7 @@ export default function UserBooking() {
 
                         <div className="d-flex flex-row flex-sm-column justify-content-between align-items-center gap-3">
                           <Link
-                            href={`/lobby/Company/${item.id}`}
+                            href={`/lobby/Company/${item.company_id}`}
                             className={`${styles['btn-shop-detail']} btn p d-flex justify-content-center align-items-center`}
                           >
                             <FaMagnifyingGlass
@@ -571,18 +604,6 @@ export default function UserBooking() {
                               <p>詳情</p>
                             </div>
                           </Link>
-
-                          <button
-                            className={`${styles['btn-QR-code']} btn p d-flex justify-content-center align-items-center`}
-                          >
-                            <FaStar />
-                            <div
-                              className={`${styles['btn-text-bo']} d-flex justify-content-center align-items-center text-center`}
-                            >
-                              <p>評價</p>
-                              <p>店家</p>
-                            </div>
-                          </button>
                         </div>
                       </div>
                     </div>

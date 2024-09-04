@@ -238,26 +238,34 @@ export default function Cart({
                             <div
                               className={`${styles['cart-product-number-bo']}  d-flex justify-content-between align-items-center`}
                             >
-                              <FaMinus
-                                className="me-5 p"
-                                onClick={() => {
-                                  if (v.quantity <= 1) {
-                                    notifyAndRemove(v)
-                                  } else {
-                                    handleDecrease(v)
-                                  }
-                                }}
-                              />
+                              {v.object_type !== 'course' ? (
+                                <FaMinus
+                                  className="me-5 p"
+                                  onClick={() => {
+                                    if (v.quantity <= 1) {
+                                      notifyAndRemove(v)
+                                    } else {
+                                      handleDecrease(v)
+                                    }
+                                  }}
+                                />
+                              ) : (
+                                ''
+                              )}
 
                               <h6 className={styles['quantity']}>
-                                {v.quantity}
+                                {v.object_type !== 'course' ? v.quantity : ''}
                               </h6>
-                              <FaPlus
-                                className="ms-5 p"
-                                onClick={() => {
-                                  handleIncrease(v)
-                                }}
-                              />
+                              {v.object_type !== 'course' ? (
+                                <FaPlus
+                                  className="ms-5 p"
+                                  onClick={() => {
+                                    handleIncrease(v)
+                                  }}
+                                />
+                              ) : (
+                                ''
+                              )}
                             </div>
                             <div className={styles['product-price-bo']}>
                               <h6>NT$ {v.price}</h6>

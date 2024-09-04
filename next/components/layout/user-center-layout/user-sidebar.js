@@ -108,8 +108,8 @@ export default function UserSidebar() {
       case 'order':
         return '歷史訂單'
 
-      case 'course':
-        return '課程'
+      // case 'course':
+      //   return '課程'
 
       case 'favorite':
         return '我的最愛'
@@ -216,7 +216,7 @@ export default function UserSidebar() {
               </Link>
             </li>
 
-            {/* 選單項目：課程 */}
+            {/* 選單項目：課程
             <li>
               <Link
                 href="/user/user-center/course"
@@ -229,7 +229,7 @@ export default function UserSidebar() {
                 <ImBook />
                 課程
               </Link>
-            </li>
+            </li> */}
 
             {/* 選單項目：我的最愛 */}
             <li>
@@ -377,7 +377,7 @@ export default function UserSidebar() {
                     </Link>
                   </li>
                 )}
-                {firstLink !== 'course' && (
+                {/* {firstLink !== 'course' && (
                   <li>
                     <Link
                       href="/user/user-center/course"
@@ -393,7 +393,7 @@ export default function UserSidebar() {
                       課程
                     </Link>
                   </li>
-                )}
+                )} */}
                 {firstLink !== 'favorite' && (
                   <li>
                     <Link

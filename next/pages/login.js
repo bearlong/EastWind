@@ -1,46 +1,35 @@
 import { useContext, useEffect, useRef, useState } from 'react'
 import styles from '@/styles/boyu/login.module.scss'
-import { FaCheck } from 'react-icons/fa6'
 import useAuth from '@/hooks/use-auth-bo'
 import useFirebase from '@/hooks/use-firebase-bo'
 import Swal from 'sweetalert2'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
-import GoogleLogo from '@/components/icons/google-logo'
-import LineLogo from '@/components/icons/line-logo'
-import GoogleLogoHover from '@/components/icons/google-logo-hover'
-import LineLogoHover from '@/components/icons/line-logo-hover' // 引入Line logo的hover狀態
 import { AuthContext } from '@/context/AuthContext'
-import axios from 'axios'
-import {
-  lineLoginRequest,
-  lineLogout,
-  lineLoginCallback,
-  getUserById,
-  parseJwt,
-} from '@/services/user'
+import { lineLoginCallback } from '@/services/user'
+import LoginForm from '@/components/login/LoginForm'
+import CompanyLoginForm from '@/components/login/CompanyLoginForm'
 
 export default function Login() {
   const router = useRouter()
 
   // 定義狀態來管理表單輸入值和錯誤訊息
-  const [account, setAccount] = useState('')
-  const [password, setPassword] = useState('')
-  const [accountError, setAccountError] = useState('')
-  const [passwordError, setPasswordError] = useState('')
+  const [account, setAccount] = useState('') // 保存帳號的狀態
+  const [password, setPassword] = useState('') // 保存密碼的狀態
+  const [accountError, setAccountError] = useState('') // 保存帳號錯誤訊息的狀態
+  const [passwordError, setPasswordError] = useState('') // 保存密碼錯誤訊息的狀態
   const { login } = useAuth() // 從 useAuth 中解構獲取  和 setUser
   const { loginGoogle } = useFirebase() // 使用 Google 登入功能
-  const { setUser, user, setToken, setAuth, initUserData } =
-    useContext(AuthContext)
-  const [isHovered, setIsHovered] = useState(false)
-  const [isLineHovered, setIsLineHovered] = useState(false) // 定義 Line hover 狀態
+  const { setUser } = useContext(AuthContext) // 獲取 AuthContext 中的上下文資料
+  const [isHovered, setIsHovered] = useState(false) // 定義 Google logo 的 hover 狀態
+  const [isLineHovered, setIsLineHovered] = useState(false) // 定義 Line logo 的 hover 狀態
 
   // 從 localStorage 中讀取賬號並設置到狀態中
   useEffect(() => {
-    const storedAccount = localStorage.getItem('savedAccount') || ''
+    const storedAccount = localStorage.getItem('savedAccount') || '' // 從 localStorage 取得已保存的帳號
     setAccount(storedAccount)
   }, [])
 
+  // 如果已註冊過帳號，從 localStorage 讀取帳號和密碼
   useEffect(() => {
     const storedAccount = localStorage.getItem('registeredAccount') || ''
     const storedPassword = localStorage.getItem('registeredPassword') || ''
@@ -74,7 +63,7 @@ export default function Login() {
       const result = await login(account, password) // 等待登入結果
 
       if (result.success) {
-        onLoginSuccess(result.name)
+        onLoginSuccess(result.name, result.isNewUser) // 確保這裡傳遞了 isNewUser
       } else {
         // 根據返回的錯誤訊息設置相應的錯誤狀態
         if (result.message.includes('帳號')) {
@@ -85,7 +74,7 @@ export default function Login() {
         }
       }
     } catch (error) {
-      setAccountError('發生未知錯誤，請稍後再試')
+      setAccountError('發生未知錯誤，請稍後再試') // 捕獲異常並設置錯誤訊息
     }
   }
 
@@ -110,9 +99,11 @@ export default function Login() {
       console.log('Login Result:', result)
 
       if (result.status === 'success') {
+        // 保存登錄的 Token
         localStorage.setItem('refreshToken', result.refreshToken)
         localStorage.setItem('accessToken', result.accessToken)
 
+        // 設置用戶資料
         setUser({
           id: result.id,
           name: result.name,
@@ -121,6 +112,7 @@ export default function Login() {
         })
 
         if (result.isNewUser) {
+          // 如果是新用戶，顯示歡迎提示並跳轉到主頁
           localStorage.setItem('showWelcomeAlert', 'true')
           window.location.href = '/home'
         } else {
@@ -141,6 +133,7 @@ export default function Login() {
           })
         }
       } else {
+        // 顯示 Google 登入失敗提示
         Swal.fire({
           title: 'Google 登入失敗',
           html: `<span class="p">請稍後再試</span>`,
@@ -171,74 +164,7 @@ export default function Login() {
     }
   }
 
-  // 處理登出
-  // const handleLineLogout = async () => {
-  //   if (!auth.isAuth) return
-
-  //   const res = await lineLogout(auth.userData.line_uid)
-
-  //   console.log(res.data)
-
-  //   // 成功登出個回復初始會員狀態
-  //   if (res.data.status === 'success') {
-  //     toast.success('已成功登出')
-
-  //     setAuth({
-  //       isAuth: false,
-  //       userData: initUserData,
-  //     })
-  //   } else {
-  //     toast.error(`登出失敗`)
-  //   }
-  // }
-
-  // 處理line登入後，要向伺服器進行登入動作
-  const callbackLineLogin = async (query) => {
-    try {
-      // 從 localStorage 中取回保存的 `state` 和 `nonce`
-      const savedState = localStorage.getItem('lineLoginState')
-      const savedNonce = localStorage.getItem('lineLoginNonce')
-
-      console.log(query)
-      // 比對從 URL 中獲得的 `state` 和保存的是否相符
-      if (query.state !== savedState) {
-        throw new Error('Authorization failed. State does not match.')
-      }
-
-      // 清除 localStorage 中的 `state` 和 `nonce`
-      localStorage.removeItem('lineLoginState')
-      localStorage.removeItem('lineLoginNonce')
-
-      // 發送回調請求至後端
-      const res = await lineLoginCallback(query)
-
-      if (res.status === 'error') {
-        throw new Error(res.message || 'Authorization failed.')
-      }
-
-      // 處理回應邏輯
-      if (res.status === 'success' && res.data) {
-        const { accessToken, refreshToken } = res.data
-        localStorage.setItem('accessToken', accessToken)
-        localStorage.setItem('refreshToken', refreshToken)
-
-        // 進一步處理，例如設置用戶狀態
-        // ...
-      } else {
-        throw new Error('Line 登入失敗')
-      }
-    } catch (error) {
-      console.error('Line login callback error:', error)
-      Swal.fire({
-        title: '登入錯誤',
-        html: `<span class="p">${error.message || '發生未知錯誤'}</span>`,
-        icon: 'error',
-        confirmButtonText: '確認',
-      })
-    }
-  }
-
-  // 處理登入
+  // 處理 Line 登入邏輯
   const goLineLogin = async () => {
     try {
       const response = await fetch(
@@ -255,64 +181,78 @@ export default function Login() {
       const data = await response.json()
 
       if (data.url) {
-        // 在重定向之前，將 `line_login_state` 和 `line_login_nonce` 保存到 localStorage
-        localStorage.setItem('lineLoginState', data.state)
-        localStorage.setItem('lineLoginNonce', data.nonce)
-
-        window.location.href = data.url
+        window.location.href = data.url // 重定向至 Line 登錄頁面
       }
     } catch (error) {
       console.error('Login Error:', error)
     }
   }
 
+  // 處理 Line 登入後的回調邏輯，將用戶信息傳遞至後端
+  const callbackLineLogin = async (query) => {
+    try {
+      const res = await lineLoginCallback(query)
+
+      // 處理回應邏輯
+      if (res.status === 'success' && res.data) {
+        const { accessToken, refreshToken, returnUser, isNewUser } = res.data
+        localStorage.setItem('accessToken', accessToken)
+        localStorage.setItem('refreshToken', refreshToken)
+
+        // 設置用戶資料
+        setUser({
+          id: returnUser.id,
+          name: returnUser.username,
+          google_uid: returnUser.google_uid,
+          line_uid: returnUser.line_uid,
+          isNewUser, // 設定使用者狀態是否為新會員
+        })
+
+        if (isNewUser) {
+          // 如果是新用戶，顯示歡迎提示並跳轉到主頁
+          localStorage.setItem('showWelcomeAlert', 'true')
+          window.location.href = '/home'
+        } else {
+          // 顯示歡迎回來提示
+          Swal.fire({
+            title: '登入成功！',
+            html: `<span class="p">${returnUser.username} 歡迎回來！</span>`,
+            icon: 'success',
+            customClass: {
+              popup: `${styles['swal-popup-bo']}`,
+              title: 'h6',
+              icon: `${styles['swal-icon-bo']}`,
+              confirmButton: `${styles['swal-btn-bo']}`,
+            },
+            confirmButtonText: '確認',
+          }).then(() => {
+            window.location.href = '/home'
+          })
+        }
+      } else {
+        throw new Error('Line 登入失敗')
+      }
+    } catch (error) {
+      console.error('Line login callback error:', error)
+      // 錯誤處理邏輯
+    }
+  }
+
+  // 從 line 登入畫面後回調到本頁面用
   useEffect(() => {
     if (router.isReady) {
+      // 判斷是否有 query.code，若無則不處理
       if (!router.query.code) return
-
+      // 發送至後端伺服器得到 line 會員資料
       callbackLineLogin(router.query)
     }
   }, [router.isReady, router.query])
 
-  // 從line登入畫面後回調到本頁面用
-  useEffect(() => {
-    // 水合作用(hydration)保護，以免得不到window全域物件
-    if (router.isReady) {
-      // 判斷是否有query.code(網址上沒有code是進登入頁的時候)
-      if (!router.query.code) return
-
-      const qs = new URLSearchParams({
-        ...router.query,
-      }).toString()
-
-      const cbUrl = `http://localhost:3000/login/callback?${qs}`
-
-      // 發送至後端伺服器得到line會員資料
-      callbackLineLogin(cbUrl)
-    }
-    // eslint-disable-next-line
-}, [router.isReady, router.query])
-
   // 成功登入後的處理邏輯
-  const onLoginSuccess = (name) => {
-    const registeredAccount = localStorage.getItem('registeredAccount')
-    if (registeredAccount && registeredAccount === account) {
-      localStorage.removeItem('registeredAccount')
-      localStorage.removeItem('registeredPassword')
-      Swal.fire({
-        title: '註冊成功！',
-        html: `<span class="p">歡迎加入！請先填寫會員資料。</span>`,
-        icon: 'info',
-        customClass: {
-          popup: `${styles['swal-popup-bo']}`,
-          title: 'h6',
-          icon: `${styles['swal-icon-bo']}`,
-          confirmButton: `${styles['swal-btn-bo']}`,
-        },
-        confirmButtonText: '確認',
-      }).then(() => {
-        router.push('/user/user-center/info-edit')
-      })
+  const onLoginSuccess = (name, isNewUser) => {
+    if (isNewUser) {
+      localStorage.setItem('showWelcomeAlert', 'true')
+      window.location.href = '/home'
     } else {
       Swal.fire({
         title: '登入成功！',
@@ -325,6 +265,9 @@ export default function Login() {
           confirmButton: `${styles['swal-btn-bo']}`,
         },
         confirmButtonText: '確認',
+      }).then(() => {
+        localStorage.removeItem('resetAccount')
+        localStorage.removeItem('savedAccount')
       })
     }
   }
@@ -338,29 +281,32 @@ export default function Login() {
   useEffect(() => {
     const userBox = userBoxRef.current
     const userForm = userFormRef.current
+
+    if (!userBox || !userForm) return
+
     const userInputs = userForm.querySelectorAll('input')
 
     const toggleFormActive = (event) => {
       if (!userForm.contains(event.target)) {
-        userForm.classList.toggle(styles.active)
+        userForm.classList.toggle(styles.active) // 點擊時切換表單的 active 樣式
       }
     }
 
     const deactivateForm = () => {
       if (!userForm.classList.contains(styles['form-focused'])) {
-        userForm.classList.remove(styles.active)
+        userForm.classList.remove(styles.active) // 當表單未聚焦時，移除 active 樣式
       }
     }
 
     const focusInput = () => {
       userBox.classList.add(styles.hover)
-      userForm.classList.add(styles['form-focused'])
+      userForm.classList.add(styles['form-focused']) // 當輸入框獲得焦點時添加 focused 樣式
     }
 
     const blurInput = () => {
       userForm.classList.remove(styles['form-focused'])
       if (!userForm.contains(document.activeElement)) {
-        userBox.classList.remove(styles.hover)
+        userBox.classList.remove(styles.hover) // 當輸入框失去焦點且不在表單內時移除 hover 樣式
       }
     }
 
@@ -386,29 +332,32 @@ export default function Login() {
   useEffect(() => {
     const companyBox = compBoxRef.current
     const companyForm = compFormRef.current
+
+    if (!companyBox || !companyForm) return
+
     const companyInputs = companyForm.querySelectorAll('input')
 
     const toggleFormActive = (event) => {
       if (!companyForm.contains(event.target)) {
-        companyForm.classList.toggle(styles.active)
+        companyForm.classList.toggle(styles.active) // 點擊時切換表單的 active 樣式
       }
     }
 
     const deactivateForm = () => {
       if (!companyForm.classList.contains(styles['form-focused'])) {
-        companyForm.classList.remove(styles.active)
+        companyForm.classList.remove(styles.active) // 當表單未聚焦時，移除 active 樣式
       }
     }
 
     const focusInput = () => {
       companyBox.classList.add(styles.hover)
-      companyForm.classList.add(styles['form-focused'])
+      companyForm.classList.add(styles['form-focused']) // 當輸入框獲得焦點時添加 focused 樣式
     }
 
     const blurInput = () => {
       companyForm.classList.remove(styles['form-focused'])
       if (!companyForm.contains(document.activeElement)) {
-        companyBox.classList.remove(styles.hover)
+        companyBox.classList.remove(styles.hover) // 當輸入框失去焦點且不在表單內時移除 hover 樣式
       }
     }
 
@@ -446,94 +395,23 @@ export default function Login() {
           <h3>登</h3>
           <h3>入</h3>
         </div>
-        <form
-          className={`${styles['user-login-box-bo']} justify-content-center align-items-center`}
-          ref={userFormRef}
-        >
-          <div
-            className={`${styles['user-login-form-bo']} d-flex flex-column justify-content-center align-items-center`}
-          >
-            <div className={styles['form-group-bo']}>
-              <input
-                name="account"
-                type="text"
-                className={`h6 ${styles['form-input-bo']}`}
-                placeholder="帳號"
-                value={account}
-                onChange={(e) => setAccount(e.target.value)}
-              />
-              {accountError && (
-                <div className={`p ${styles['text-error-bo']}`}>
-                  {accountError}
-                </div>
-              )}
-            </div>
-            <div className={styles['form-group-bo']}>
-              <input
-                name="password"
-                type="password"
-                className={`h6 ${styles['form-input-bo']}`}
-                placeholder="密碼"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              {passwordError && (
-                <div className={`p ${styles['text-error-bo']}`}>
-                  {passwordError}
-                </div>
-              )}
-            </div>
-          </div>
-          <div
-            className={`${styles['user-login-option-bo']} d-flex justify-content-center align-items-center h6 mb-5`}
-          >
-            <ul className="d-flex gap-3  justify-content-center align-items-center">
-              <li>
-                <Link href="/user/forgot-password">忘記密碼</Link>
-              </li>
-              <li>|</li>
-              <li>
-                <Link href="/user/register">立即註冊</Link>
-              </li>
-              <li>|</li>
-              <li>
-                <button
-                  type="button"
-                  className={` btn h6 d-flex  justify-content-center  align-items-center`}
-                  onClick={onGoogleLoginSuccess} // 直接調用 onGoogleLoginSuccess
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
-                >
-                  {isHovered ? <GoogleLogoHover /> : <GoogleLogo />}
-                </button>
-              </li>
-              <li>|</li>
-              <li>
-                <button
-                  type="button"
-                  className={` btn h6 d-flex  justify-content-center  align-items-center`}
-                  onClick={goLineLogin} // 直接調用 onGoogleLoginSuccess
-                  onMouseEnter={() => setIsLineHovered(true)} // Line hover 狀態邏輯
-                  onMouseLeave={() => setIsLineHovered(false)} // Line hover 狀態邏輯
-                >
-                  {isLineHovered ? <LineLogoHover /> : <LineLogo />}
-                </button>
-              </li>
-            </ul>
-          </div>
-          <div
-            className={`${styles['user-login-btn-bo']} d-flex justify-content-center align-items-center`}
-          >
-            <button
-              type="button"
-              className={`${styles['btn-user-login-bo']}  btn h6 d-flex justify-content-between align-items-center`}
-              onClick={onLogin}
-            >
-              登入
-              <FaCheck />
-            </button>
-          </div>
-        </form>
+        <div></div>
+        <LoginForm
+          account={account}
+          setAccount={setAccount}
+          password={password}
+          setPassword={setPassword}
+          accountError={accountError}
+          passwordError={passwordError}
+          onLogin={onLogin}
+          onGoogleLoginSuccess={onGoogleLoginSuccess}
+          userFormRef={userFormRef}
+          goLineLogin={goLineLogin}
+          isHovered={isHovered}
+          setIsHovered={setIsHovered}
+          isLineHovered={isLineHovered}
+          setIsLineHovered={setIsLineHovered}
+        />
       </div>
 
       {/* 公司登入區域 */}
@@ -547,70 +425,16 @@ export default function Login() {
           <h3>登</h3>
           <h3>入</h3>
         </div>
-        <div
-          className={`${styles['company-login-box-bo']} justify-content-center align-items-center`}
-          ref={compFormRef}
-        >
-          <div
-            className={`${styles['company-login-form-bo']} d-flex flex-column gap-3 justify-content-center align-items-center`}
-          >
-            <div className={styles['form-group-bo']}>
-              <input
-                name="account"
-                type="text"
-                className={`h6 ${styles['form-input-bo']}`}
-                placeholder="帳號"
-                value={account}
-                onChange={(e) => setAccount(e.target.value)}
-              />
-              {accountError && (
-                <div className={`p ${styles['text-error-bo']}`}>
-                  {accountError}
-                </div>
-              )}
-            </div>
-            <div className={styles['form-group-bo']}>
-              <input
-                name="password"
-                type="password"
-                className={`h6 ${styles['form-input-bo']}`}
-                placeholder="密碼"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              {passwordError && (
-                <div className={`p ${styles['text-error-bo']}`}>
-                  {passwordError}
-                </div>
-              )}
-            </div>
-          </div>
-          <div
-            className={`${styles['company-login-option-bo']} d-flex justify-content-center align-items-center h6`}
-          >
-            <ul className="d-flex gap-3">
-              <li>
-                <a href="">忘記密碼</a>
-              </li>
-              <li>|</li>
-              <li>
-                <a href="">立即註冊</a>
-              </li>
-            </ul>
-          </div>
-          <div
-            className={`${styles['company-login-btn-bo']} d-flex justify-content-center align-items-center`}
-          >
-            <button
-              type="button"
-              className={`${styles['btn-user-login-bo']}  btn h6 d-flex justify-content-between align-items-center`}
-              onClick={onLogin}
-            >
-              登入
-              <FaCheck />
-            </button>
-          </div>
-        </div>
+        <CompanyLoginForm
+          account={account}
+          setAccount={setAccount}
+          password={password}
+          setPassword={setPassword}
+          accountError={accountError}
+          passwordError={passwordError}
+          onLogin={onLogin}
+          compFormRef={compFormRef}
+        />
       </div>
     </section>
   )

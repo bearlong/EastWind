@@ -3,6 +3,7 @@ import 'dotenv/config.js'
 import connection from '##/configs/mysql-promise.js'
 import { generateBookingNumber } from '../utils/idGenerator.js'
 import fetch from 'node-fetch'
+import { checkAndUpdateExpiredParties } from '../utils/partyUtils.js'
 
 const router = express.Router()
 //判定區域
@@ -82,6 +83,7 @@ async function reorderPartyMembers(partyId) {
 }
 
 async function createBookingForFullParty(partyData) {
+
   const bookingNumber = generateBookingNumber('DB')
   const bookingPayload = {
     numerical_order: bookingNumber,
@@ -97,6 +99,7 @@ async function createBookingForFullParty(partyData) {
     company_id: partyData.company_id,
     user_id: partyData.userID_main, // 假設主揪ID為用戶ID
     status: 'full',
+    party_id:partyData.id,
   }
 
   try {
@@ -129,6 +132,7 @@ async function createBookingForFullParty(partyData) {
 //抓取派對總數
 router.get('/', async (req, res) => {
   try {
+    await checkAndUpdateExpiredParties();
     //頁面規則
     const page = parseInt(req.query.page) || 1
     const limit = parseInt(req.query.limit) || 9
@@ -209,7 +213,10 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
+    await checkAndUpdateExpiredParties();
     const { id } = req.params
+    const { uid } = req.query
+    console.log(uid, "0000");
     const query = `
     SELECT 
       p.*,
@@ -226,6 +233,7 @@ router.get('/:id', async (req, res) => {
       c.lobby,
       GROUP_CONCAT(DISTINCT CONCAT(st.name, ':', st.icon)) AS services,
       GROUP_CONCAT(DISTINCT cp.img) AS company_photos,
+      ${uid ? ' CASE WHEN favorite.object_id IS NOT NULL THEN TRUE ELSE FALSE END AS fav,' : ''}
 
       u1.username AS main_user_name,
       u2.username AS join1_user_name,
@@ -255,6 +263,10 @@ router.get('/:id', async (req, res) => {
       user u3 ON p.userID_join2 = u3.id
     LEFT JOIN 
       user u4 ON p.userID_join3 = u4.id
+
+      ${uid ? 'LEFT JOIN favorite ON favorite.object_id = c.id AND favorite.object_type = "company" AND favorite.user_id = ' + uid : ''}
+
+
     WHERE  
       p.id = ? 
       AND p.date >= CURDATE()
@@ -265,8 +277,8 @@ router.get('/:id', async (req, res) => {
       p.date ASC, p.start_at ASC;
     `
     const [party] = await connection.execute(query, [id])
-    console.log(party)
 
+    console.log(party);
     if (party.length === 0) {
       return res.status(404).json({ message: '沒有找到可加入的派對' })
     }
@@ -297,6 +309,7 @@ router.post('/:id/join', async (req, res) => {
   const { userId } = req.body
 
   try {
+    await checkAndUpdateExpiredParties();
     // 檢查派對是否存在且有空位
     const [party] = await connection.execute(
       'SELECT * FROM party WHERE id = ? AND date >= CURDATE() AND status IN ("waiting", "full") AND (userID_join1 = 0 OR userID_join2 = 0 OR userID_join3 = 0)',
@@ -334,6 +347,7 @@ router.post('/:id/leave', async (req, res) => {
   const { userId } = req.body
   console.log('Debug: Leaving party', { id, userId })
   try {
+    await checkAndUpdateExpiredParties();
     // 首先，獲取派對信息
     const [party] = await connection.execute(
       'SELECT * FROM party WHERE id = ? AND status IN ("waiting", "full")',
@@ -390,7 +404,6 @@ router.post('/:id/leave', async (req, res) => {
   }
 })
 
-// 更新：取消派對
 router.post('/:id/cancel', async (req, res) => {
   const { id } = req.params
   const { userId } = req.body
@@ -419,8 +432,7 @@ router.post('/:id/cancel', async (req, res) => {
     // 開始一個事務
     await conn.beginTransaction()
 
-   // try {
-      // 更新派對狀態為 cancelled
+  
       await conn.execute(
         'UPDATE party SET status = "cancelled" WHERE id = ?',
         [id]
@@ -438,11 +450,7 @@ router.post('/:id/cancel', async (req, res) => {
       await conn.commit()
 
       res.status(200).json({ message: '派對已成功取消' })
-    // } catch (error) {
-      // 如果出現錯誤，回滾事務
-      // await connection.rollback()
-      // throw error
-    // }
+
   } catch (error) {
     await conn.rollback()
     throw error
@@ -450,4 +458,5 @@ router.post('/:id/cancel', async (req, res) => {
     res.status(200).json({ error: '取消派對時發生錯誤' })
   }
 })
+
 export default router

@@ -38,43 +38,13 @@ const LineLogin = new line_login({
 // ------------ 產生登入網址路由 ------------
 router.get('/login', LineLogin.authJson())
 
-// ------------ Line 登出路由 ------------
-router.get('/logout', async (req, res) => {
-  if (!req.query.line_uid) {
-    return res.json({ status: 'error', message: '缺少必要資料' })
-  }
-
-  const [rows] = await dbPromise.execute(
-    'SELECT line_access_token FROM user WHERE line_uid = ?',
-    [req.query.line_uid]
-  )
-
-  if (rows.length === 0) {
-    return res.json({ status: 'error', message: '未找到該使用者' })
-  }
-
-  const line_access_token = rows[0].line_access_token
-  await LineLogin.revoke_access_token(line_access_token)
-  return res.json({ status: 'success', data: null })
-})
-
 // ------------ Line 登入回調路由 ------------
 router.get(
   '/callback',
   LineLogin.callback(
     async (req, res, next, token_response) => {
       try {
-        // // 檢查是否已處理回調
-        // if (req.session.isCallbackProcessed) {
-        //   console.log('回調已處理，跳過重複執行')
-        //   return res.json({
-        //     status: 'error',
-        //     message: 'Callback already processed.',
-        //   })
-        // }
-
-        // // 標記回調已處理
-        // req.session.isCallbackProcessed = true
+        console.log(token_response)
 
         const line_uid = token_response.id_token.sub
 
@@ -83,30 +53,35 @@ router.get(
           username: '',
           google_uid: '',
           line_uid: '',
+          first_edit_completed: 0, // 新增欄位，預設未完成首次編輯
         }
 
         let [rows] = await dbPromise.execute(
-          'SELECT id, username, google_uid, line_uid FROM user WHERE line_uid = ?',
+          'SELECT id, username, google_uid, line_uid, first_edit_completed FROM user WHERE line_uid = ?',
           [line_uid]
         )
 
         if (rows.length > 0) {
+          // 找到已有使用者，判定為原會員
           const dbUser = rows[0]
           returnUser = {
             id: dbUser.id,
             username: dbUser.username,
             google_uid: dbUser.google_uid,
             line_uid: dbUser.line_uid,
+            first_edit_completed: dbUser.first_edit_completed,
           }
         } else {
+          // 沒有找到使用者，插入新使用者，設定first_edit_completed為0
           const [result] = await dbPromise.execute(
-            'INSERT INTO user (username, email, line_uid, line_access_token, photo_url) VALUES (?, ?, ?, ?, ?)',
+            'INSERT INTO user (username, email, line_uid, line_access_token, photo_url, first_edit_completed) VALUES (?, ?, ?, ?, ?, ?)',
             [
               token_response.id_token.name,
               '',
               line_uid,
               token_response.access_token,
               token_response.id_token.picture,
+              0, // 新使用者未完成首次編輯
             ]
           )
 
@@ -115,6 +90,7 @@ router.get(
             username: token_response.id_token.name,
             google_uid: '',
             line_uid,
+            first_edit_completed: 0, // 新使用者，預設未完成首次編輯
           }
         }
 
@@ -133,13 +109,17 @@ router.get(
           { expiresIn: '7d' }
         )
 
-        // 確保返回的 JSON 結構正確
+        // 使用httpOnly cookie來讓瀏覽器端儲存access token
+        res.cookie('accessToken', accessToken, { httpOnly: true })
+
+        // 確保回傳的 JSON 結構正確
         return res.json({
           status: 'success',
           data: {
             returnUser,
             accessToken,
             refreshToken,
+            isNewUser: returnUser.first_edit_completed === 0, // 判定是否為新會員
           },
         })
       } catch (error) {

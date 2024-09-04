@@ -8,10 +8,6 @@ import RoomSearch from '@/components/roomList/RoomSearch'
 import styles from '@/styles/gw/_Lobby.module.scss'
 import { useRouter } from 'next/router'
 
-
-
-
-
 export default function Lobby() {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
@@ -22,11 +18,11 @@ export default function Lobby() {
   const [totalItems, setTotalItems] = useState(0)
   const [searchTerm, setSearchTerm] = useState('')
 
-  const [selectedArea, setSelectedArea] = useState(null);
+  const [selectedArea, setSelectedArea] = useState(null)
   const itemsPerPage = 9
   const router = useRouter()
 
-  const fetchData = async (view, page = 1, search = '',area = null) => {
+  const fetchData = async (view, page = 1, search = '', area = null) => {
     setLoading(true)
     setError(null)
     try {
@@ -63,67 +59,76 @@ export default function Lobby() {
     }
   }
 
-
   useEffect(() => {
-    const view = router.query.view || 'join';
-  if (view !== activeView) {
+    const view = router.query.view || 'join'
+    if (view !== activeView) {
+      setActiveView(view)
+      fetchData(view, 1, searchTerm, selectedArea)
+    }
+  }, [router.query.view, activeView, fetchData, searchTerm, selectedArea])
 
-    setActiveView(view);
-    fetchData(view, 1, searchTerm,selectedArea);
-  }
-}, [router.query.view, activeView, fetchData, searchTerm,selectedArea]);
+  const handleSearch = useCallback(
+    (term) => {
+      setSearchTerm(term)
+      setCurrentPage(1)
+      fetchData(activeView, 1, term, selectedArea)
+    },
+    [activeView, fetchData, selectedArea]
+  )
 
-const handleSearch = useCallback((term) => {
-  setSearchTerm(term);
-  setCurrentPage(1);
-  fetchData(activeView, 1, term,selectedArea);
-}, [activeView, fetchData,selectedArea]);
+  const handleViewChange = useCallback(
+    (view) => {
+      router.push(`/lobby/Lobby?view=${view}`, undefined, { shallow: true })
+    },
+    [router]
+  )
 
-const handleViewChange = useCallback((view) => {
-  router.push(`/lobby/Lobby?view=${view}`, undefined, { shallow: true });
-}, [router]);
+  const handlePageChange = useCallback(
+    (newPage) => {
+      setCurrentPage(newPage)
+      fetchData(activeView, newPage, searchTerm, selectedArea)
+    },
+    [activeView, searchTerm, fetchData, selectedArea]
+  )
 
+  const handleAreaChange = useCallback(
+    (area) => {
+      setSelectedArea(area)
+      setCurrentPage(1)
+      fetchData(activeView, 1, searchTerm, area)
+    },
+    [activeView, fetchData, searchTerm]
+  )
 
-const handlePageChange = useCallback((newPage) => {
-  setCurrentPage(newPage);
-  fetchData(activeView, newPage, searchTerm,selectedArea);
-}, [activeView, searchTerm, fetchData,selectedArea]);
-
-const handleAreaChange = useCallback((area) => {
-  setSelectedArea(area);
-  setCurrentPage(1);
-  fetchData(activeView, 1, searchTerm, area);
-}, [activeView, fetchData, searchTerm]);
-
-
-const renderedCards = data.map(item => 
-  activeView === 'join' 
-    ? <RoomCard key={item.id} party={item} /> 
-    : <CompanyCard key={item.id} company={item} />
-);
+  const renderedCards = data.map((item) =>
+    activeView === 'join' ? (
+      <RoomCard key={item.id} party={item} />
+    ) : (
+      <CompanyCard key={item.id} company={item} />
+    )
+  )
 
   return (
     <div className="container">
-    <div className={styles.topBar}>
-      <JoinBTN activeView={activeView} onViewChange={handleViewChange} />
-      <RoomSearch onSearch={handleSearch} />
-      <BTNGroup onAreaChange={handleAreaChange} selectedArea={selectedArea}/>
-      <div className={styles.totalCount}>
-        共 <span className={styles.numberContainer}>{totalItems}</span> 個{activeView === 'join' ? '揪團' : '店家'}
+      <div className={styles.topBar}>
+        <JoinBTN activeView={activeView} onViewChange={handleViewChange} />
+        <RoomSearch onSearch={handleSearch} />
+        <BTNGroup onAreaChange={handleAreaChange} selectedArea={selectedArea} />
+        <div className={styles.totalCount}>
+          共 <span className={styles.numberContainer}>{totalItems}</span> 個
+          {activeView === 'join' ? '揪團' : '店家'}
+        </div>
       </div>
+
+      <div className={styles.cardArea}>{renderedCards}</div>
+
+      <PageNext
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
+      />
     </div>
-  
-    <div className={styles.cardArea}>
-      {renderedCards}
-    </div>
-  
-    <PageNext
-      currentPage={currentPage}
-      totalPages={totalPages}
-      onPageChange={handlePageChange}
-      totalItems={totalItems}
-      itemsPerPage={itemsPerPage}
-    />
-  </div>
   )
 }
