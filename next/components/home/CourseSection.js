@@ -42,6 +42,7 @@ export default function CourseSection() {
       hoverTitle: '麻將',
       hoverDescription:
         '四人對戰的智慧與運氣比拼。十六張牌，千變萬化的組合。運籌帷幄，笑聲與勝利齊飛。東南西北，牌桌上的江湖。抓牌、出牌，牌局隨時翻轉。在麻將中找到策略的樂趣。',
+      link: '/course/classListCate?category_id=2', // 更改這裡
     },
     {
       title: '西洋棋',
@@ -49,6 +50,7 @@ export default function CourseSection() {
       hoverTitle: '西洋棋',
       hoverDescription:
         '策略與智力的終極對決。六種棋子，各有千秋。從開局到殘局，步步為營。黑白棋盤，世界的縮影。一招致勝，或步步為營。掌握棋局，掌握勝利的關鍵。',
+      link: '/course/classListCate?category_id=4', // 更改這裡
     },
     {
       title: '撲克牌',
@@ -56,6 +58,7 @@ export default function CourseSection() {
       hoverTitle: '撲克牌',
       hoverDescription:
         '隨時隨地的娛樂選擇。五十二張牌，無限可能。比大小，玩策略，樂趣無窮。從德州撲克到大老二。每一場遊戲都有驚喜。與朋友共享的最佳選擇。',
+      link: '/course/classListCate?category_id=1', // 更改這裡
     },
     {
       title: '圍棋',
@@ -63,6 +66,7 @@ export default function CourseSection() {
       hoverTitle: '圍棋',
       hoverDescription:
         '黑白棋子，簡單又深奧。天地之間，無窮的變化。每一手棋，都是智力的較量。角、邊、中央，圍棋的三要素。掌控全局，或局部突破。讓自己沉浸在古老智慧中。',
+      link: '/course/classListCate?category_id=3', // 更改這裡
     },
     {
       title: '象棋',
@@ -70,6 +74,7 @@ export default function CourseSection() {
       hoverTitle: '象棋',
       hoverDescription:
         '東方智慧的象徵。九宮格內，百變的戰術。將帥一動，乾坤大挪移。車馬炮卒，各司其職。一步錯，全盤皆輸。簡單易學，樂趣無窮。',
+      link: '/course/classListCate?category_id=5', // 更改這裡
     },
   ]
 
@@ -256,7 +261,7 @@ export default function CourseSection() {
                 >
                   <Link
                     ref={addToRefs}
-                    href={`/course/classListCate?category_id=${index}`}
+                    href={course.link}
                     className={`${styles['course-card-bo']} justify-content-center align-items-center`}
                     onMouseEnter={() => {
                       setBackgroundVideo(`/video/course-type-${index + 1}.mp4`)

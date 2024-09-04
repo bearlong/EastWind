@@ -396,3 +396,24 @@
     color: var(--bg-text-color);
   }
 }
+
+.btn-party-bo {
+  background-color: var(--primary);
+  color: var(--bg-text-color);
+
+  @media (max-width: 576px) {
+    width: 7rem;
+  }
+
+  &:hover {
+    background-color: var(--primary-dark);
+    color: var(--bg-text-color);
+  }
+
+  .btn-party-text-bo {
+    flex-direction: row;
+    @media (max-width: 1015px) {
+      flex-direction: column;
+    }
+  }
+}

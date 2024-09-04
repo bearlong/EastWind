@@ -70,6 +70,7 @@ router.get('/:userId/:status', async (req, res) => {
           booking_record.playroom_type,
           booking_record.notes,
           booking_record.total_price,
+          booking_record.party_id,
           mahjong_table.id AS table_id,
           mahjong_table.company_id AS company_id,
           company.name AS company_name,

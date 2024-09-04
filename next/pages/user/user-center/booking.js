@@ -226,82 +226,12 @@ export default function UserBooking() {
               activeSortIndex={activeSortIndex}
               sortByIndex={sortByIndex}
             />
-            {/* <div className="d-flex justify-content-end align-items-center d-md-none">
-              <button
-                className={`${styles['btn-sort-bo']} btn p`}
-                type="button"
-                data-bs-toggle="offcanvas"
-                data-bs-target="#offcanvasRight"
-                aria-controls="offcanvasRight"
-              >
-                排序方式
-                <FaSort />
-              </button>
 
-              <div
-                className={`${styles['offcanvas-bo']} offcanvas offcanvas-end`}
-                tabIndex="-1"
-                id="offcanvasRight"
-                aria-labelledby="offcanvasRightLabel"
-              >
-                <div className="offcanvas-header">
-                  <button
-                    type="button"
-                    className="btn-close"
-                    data-bs-dismiss="offcanvas"
-                    aria-label="Close"
-                  ></button>
-                </div>
-                <div className="offcanvas-body">
-                  <ul
-                    className={`${styles['sort-list-bo']} d-flex flex-column justify-content-center align-items-start`}
-                  >
-                    <li className="h5">排序方式</li>
-                    {sortOptions.map((option, index) => (
-                      <li
-                        key={index}
-                        className={`h6 d-flex justify-content-between align-items-center gap-5 ${styles['sort-list-li-bo']}`}
-                        onClick={() => sortByIndex(index)}
-                      >
-                        {option.label}
-                        <FaCheck
-                          className={` ${
-                            activeSortIndex === index ? '' : 'd-none'
-                          }`}
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div> */}
             <BookingTableHeader
               activeSortIndex={activeSortIndex}
               sortByIndex={sortByIndex}
             />
-            {/* <div className={styles['booking-list-th-bo']}>
-              <ul className="text-center">
-                <li
-                  className="p d-flex justify-content-center align-items-center text-center gap-3"
-                  onClick={() => sortByIndex(activeSortIndex === 1 ? 0 : 1)} // 切換排序方式
-                >
-                  預訂編號 <FaSort />
-                </li>
-                <li
-                  className="p d-flex justify-content-center align-items-center text-center gap-3"
-                  onClick={() => sortByIndex(activeSortIndex === 3 ? 2 : 3)} // 切換排序方式
-                >
-                  棋牌室 <FaSort />
-                </li>
-                <li
-                  className="p d-flex justify-content-center align-items-center text-center gap-3"
-                  onClick={() => sortByIndex(activeSortIndex === 5 ? 4 : 5)} // 切換排序方式
-                >
-                  預訂時間 <FaSort />
-                </li>
-                <li className="p d-flex justify-content-center align-items-center text-center gap-3"></li>
-              </ul>
-            </div> */}
+
             <BookingList
               booking={booking}
               selectedStatus={selectedStatus}

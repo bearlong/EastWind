@@ -39,20 +39,34 @@ export default function BookingItem({ item, selectedStatus, cancelBooking }) {
                 <h6> {item.end_time}</h6>
               </div>
             </div>
-            {selectedStatus === 'booked' && (
-              <button
-                className={`${styles['btn-cancel-bo']} btn h6 d-flex justify-content-center align-items-center gap-2`}
-                onClick={() => cancelBooking(item.id)}
-              >
-                <FaBan />
-                <div
-                  className={`${styles['btn-cancel-text-bo']} d-flex justify-content-center align-items-center text-center`}
+            {selectedStatus === 'booked' &&
+              (item.party_id ? (
+                <Link
+                  href={`/lobby/Party/${item.party_id}`}
+                  className={`${styles['btn-party-bo']} btn h6 d-flex justify-content-center align-items-center gap-2`}
                 >
-                  <p>取消</p>
-                  <p>預訂</p>
-                </div>
-              </button>
-            )}
+                  <FaUserGroup />
+                  <div
+                    className={`${styles['btn-party-text-bo']} d-flex justify-content-center align-items-center text-center`}
+                  >
+                    <p>參團</p>
+                    <p>詳情</p>
+                  </div>
+                </Link>
+              ) : (
+                <button
+                  className={`${styles['btn-cancel-bo']} btn h6 d-flex justify-content-center align-items-center gap-2`}
+                  onClick={() => cancelBooking(item.id)}
+                >
+                  <FaBan />
+                  <div
+                    className={`${styles['btn-cancel-text-bo']} d-flex justify-content-center align-items-center text-center`}
+                  >
+                    <p>取消</p>
+                    <p>預訂</p>
+                  </div>
+                </button>
+              ))}
             {selectedStatus === 'completed' && (
               <div
                 className={`${styles['state-text-bo']} h6 d-flex justify-content-center align-items-center gap-2`}
