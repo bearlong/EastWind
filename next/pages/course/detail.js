@@ -61,7 +61,6 @@ export default function Detail() {
     const apiURL = `http://localhost:3005/api/course/${id}${
       user ? `?uid=${user.id}` : ''
     }`
-    console.log(apiURL)
     console.log(user)
     // const apiURL = `http://localhost:3005/api/course`
     try {
@@ -108,7 +107,7 @@ export default function Detail() {
       getCourses()
       // , getCategory()
     }
-  }, [router.isReady, router.query])
+  }, [router.isReady, router.query, user])
 
   // useEffect(() => {
   //   const params = new URLSearchParams(window.location.search)
@@ -239,15 +238,12 @@ export default function Detail() {
                   onClick={() => {
                     if (user) {
                       handleFavToggle(courses.id, 'course')
-                      handleStyToggle
+                      handleStyToggle()
                     } else {
                       toast.error('請先登入會員')
                       return
                     }
                   }}
-                  //   onClick={() => {
-                  //     handleFavToggle(courses.id, 'course')
-                  //   }}
                 >
                   <h6>加入最愛</h6>
                   <CiHeart fontSize={24} />
