@@ -159,7 +159,15 @@ router.get('/:id', async (req, res, next) => {
         data: { id: '提供的課程ID不存在' },
       })
     }
-    console.log(courses[0])
+    console.log(
+      'SELECT `course`.*, `course_category`.`ch_name` AS `category_name`' +
+        `${uid ? ', CASE WHEN `favorite`.`id` IS NOT NULL THEN TRUE ELSE FALSE END AS `fav`' : ''}` +
+        ' FROM `course`' +
+        ' JOIN `course_category` ON `course_category`.`id` = `course`.`category_id`' +
+        `${uid ? ' LEFT JOIN `favorite` ON `favorite`.`id` = `course`.`id` AND `favorite`.`object_type` = "course" AND `favorite`.`user_id` = ' + uid : ''}` +
+        ' WHERE `course`.`id` = ?',
+      id
+    )
     const course = courses[0]
     return res.status(200).json({ status: 'success', data: { course } })
   } catch (err) {

@@ -60,7 +60,6 @@ export default function Detail() {
     const apiURL = `http://localhost:3005/api/course/${id}${
       user ? `?uid=${user.id}` : ''
     }`
-    console.log(apiURL)
     console.log(user)
     try {
       const res = await fetch(apiURL)
@@ -88,7 +87,7 @@ export default function Detail() {
       getCourses()
       // , getCategory()
     }
-  }, [router.isReady, router.query])
+  }, [router.isReady, router.query, user])
 
   // 滾動到 "章節" 的函數
   const scrollToChapter = () => {

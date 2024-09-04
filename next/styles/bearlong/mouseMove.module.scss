@@ -1,7 +1,8 @@
 .content {
   position: relative;
-  width: 30px;
-  height: 40px;
+  // padding: 0.4rem;
+  width: 4rem;
+  height: 5rem;
   perspective: 500px;
   transform-style: preserve-3d;
   transition: transform 0.2s linear;
@@ -14,15 +15,16 @@
   position: absolute;
   width: 100%;
   height: 100%;
-  border: 4px solid var(--primary);
+  border: 3px solid rgb(183, 148, 71);
+  padding: 3px;
   border-radius: 5px;
   backface-visibility: hidden;
-  transform-style: preserve-3d; /* 確保 3D 變換效果正常應用 */
+  transform-style: preserve-3d; /* 確保 3D 變換效 果正常應用 */
   pointer-events: none;
 }
 
 .front {
-  background: #555;
+  background: rgba(183, 148, 71, 0.3);
   overflow: hidden;
   z-index: 2; /* 前面的 z-index 應該比背面高 */
   user-select: none;
@@ -34,16 +36,19 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  display: block;
+
   img {
-    transform: translateZ(0);
-    width: 24px;
+    width: 100%; /* 確保圖片不會超出容器 */
+    height: 100%; /* 確保圖片不會超出容器 */
+    object-fit: cover; /* 保持圖片比例，並確保其完全顯示在容器內 */
     user-select: none;
     pointer-events: none;
   }
 }
 
 .back {
-  background: var(--primary);
+  background: rgba(183, 148, 71, 0.8);
   transform: rotateY(180deg); /* 背面旋轉 180 度 */
   z-index: 1; /* 背面的 z-index 應該比前面低 */
 }
