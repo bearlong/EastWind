@@ -13,6 +13,24 @@ import sequelize from '#configs/db.js'
 const router = express.Router()
 // GET 獲得所有資料，加入分頁與搜尋字串功能，單一資料表處理
 router.get('/', async (req, res) => {
+  let { search } = req.query
+  let filter
+
+  // if (search) {
+  //   if (!filter) {
+  //     filter = ` WHERE (\`course\`.\`course_name\` LIKE '%${search}%' OR \`course_category\`.\`name\` LIKE '%${search}%')`
+  //   } else {
+  //     filter += ` ${isFilter ? 'OR' : 'AND'} (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
+  //   }
+  // }
+  // if (search) {
+  //   if (!filter) {
+  //     filter = ` WHERE (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
+  //   } else {
+  //     filter += ` ${isFilter ? 'OR' : 'AND'} (\`product\`.\`name\` LIKE '%${search}%' OR \`brand\`.\`name\` LIKE '%${search}%' OR \`product_category\`.\`name\` LIKE '%${search}%')`
+  //   }
+  // }
+
   try {
     const [list] = await dbPromise.execute(
       'SELECT `course`.*,`course_category`.`ch_name` FROM `course` JOIN `course_category` ON `course`.`category_id` = `course_category`.`course_id`;'
