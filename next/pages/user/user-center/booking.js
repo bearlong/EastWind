@@ -2,19 +2,6 @@ import React, { useState, useContext, useEffect } from 'react'
 import UserCenterLayout from '@/components/layout/user-center-layout'
 import { AuthContext } from '@/context/AuthContext'
 import styles from '@/styles/boyu/user-booking.module.scss'
-import {
-  FaSort,
-  FaBan,
-  FaXmark,
-  FaMagnifyingGlass,
-  FaMoneyBill,
-  FaShop,
-  FaCheck,
-  FaPhone,
-  FaUserGroup,
-} from 'react-icons/fa6'
-import { FaMapMarkerAlt, FaChevronDown } from 'react-icons/fa'
-import Link from 'next/link'
 import Swal from 'sweetalert2'
 import BookingStatusTabs from '@/components/user-booking/BookingStatusTabs'
 import SearchBox from '@/components/user-booking/SearchBox'

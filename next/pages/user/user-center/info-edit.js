@@ -466,12 +466,12 @@ export default function UserInfoEdit() {
     const file = event.target.files[0]
 
     if (file) {
-      // 檢查文件大小是否超過 2MB
-      const maxFileSize = 2 * 1024 * 1024 // 2MB
+      // 檢查文件大小是否超過 5MB
+      const maxFileSize = 5 * 1024 * 1024 // 2MB
       if (file.size > maxFileSize) {
         Swal.fire({
           title: '檔案過大',
-          html: `<span class="p">請選擇小於 2MB 的圖片檔案。</span>`,
+          html: `<span class="p">請選擇小於 5MB 的圖片檔案。</span>`,
           icon: 'error',
           customClass: {
             popup: `${styles['swal-popup-bo']}`, // 自訂整個彈出視窗的 class

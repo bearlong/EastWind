@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
 import styles from '@/styles/boyu/forgot.module.scss'
-import { FaXmark, FaCheck } from 'react-icons/fa6'
-import Link from 'next/link'
 import Swal from 'sweetalert2'
 import { useRouter } from 'next/router'
 import UserResetPasswordForm from '@/components/reset-password/UserResetPasswordForm'

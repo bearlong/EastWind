@@ -384,7 +384,7 @@ const storage = multer.diskStorage({
 // 初始化 multer 中間件
 const upload = multer({
   storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 檔案大小限制16MB
+  limits: { fileSize: 5 * 1024 * 1024 }, // 檔案大小限制16MB
   fileFilter(req, file, cb) {
     const filetypes = /jpeg|jpg|png/
     const mimetype = filetypes.test(file.mimetype)

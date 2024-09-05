@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import Swal from 'sweetalert2'
 import { useRouter } from 'next/router'
 import { AuthContext } from '@/context/AuthContext'
@@ -27,6 +27,7 @@ export default function Home() {
     localStorage.removeItem('registeredAccount')
     localStorage.removeItem('registeredPassword')
     localStorage.removeItem('savedAccount')
+    localStorage.removeItem('resetAccount')
   }, [])
 
   // 檢查是否需要顯示 SweetAlert
