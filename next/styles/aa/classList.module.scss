@@ -69,6 +69,8 @@
 
 .container {
   margin: 0 auto;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 .desktop-list-aa {
@@ -95,7 +97,7 @@
 
 .texth2-aa {
   display: flex;
-  width: 100vw;
+  width: 96vw;
   padding: 2.5rem 0px 0px 7.5rem;
   align-items: center;
   gap: 52.5rem;

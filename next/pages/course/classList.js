@@ -54,7 +54,7 @@ export default function ClassList() {
   return (
     <>
       <div className="container">
-        <div className={styles['className-aa']}>
+        <div className={styles['desktop-list-aa']}>
           <div className={styles['sec1-aa']}>
             <div className={styles['text2-aa']}>
               <h2>課程排行</h2>

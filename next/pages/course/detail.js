@@ -200,8 +200,6 @@ export default function Detail() {
               </Link>
               &gt;
               <CategoryLink contentData={courses} />
-              {/* &gt;
-              <span> 初級</span> */}
             </h6>
           </div>
           <div className={styles['desec1box-aa']}>
@@ -220,7 +218,7 @@ export default function Detail() {
               </div>
               <div className={styles['detextright3-aa']}>
                 <div className={styles['textrighth51-aa']}>
-                  {/* <h5>徐乃麟</h5> */}
+                  <h5>上架日期: {courses.on_datetime}</h5>
                 </div>
                 <button
                   className={styles['fav1-aa']}
