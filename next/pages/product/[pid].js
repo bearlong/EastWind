@@ -14,6 +14,7 @@ import toast from 'react-hot-toast'
 import { Toaster } from 'react-hot-toast'
 import { FadeLoader } from 'react-spinners'
 import ProductDetail from '@/components/product/productDetail'
+import Loading from '@/components/loader/loading'
 
 const override = {
   display: 'block',
@@ -175,14 +176,9 @@ export default function Detail() {
   }
 
   const loader = (
-    <FadeLoader
-      color="#2b4d37"
-      loading={isLoading}
-      cssOverride={override}
-      size={40}
-      aria-label="Loading Spinner"
-      data-testid="loader"
-    />
+    <div className={styles.loading}>
+      <Loading />
+    </div>
   )
 
   useEffect(() => {

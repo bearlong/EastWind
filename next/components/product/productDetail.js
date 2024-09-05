@@ -56,7 +56,7 @@ export default function ProductDetail({
 
   useEffect(() => {
     setQuantity(1)
-  }, [data])
+  }, [data.product.id])
 
   return (
     <>

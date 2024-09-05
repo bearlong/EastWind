@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { useRouter } from 'next/router'
 import styles from './admin-siderbar.module.scss'
-import { FaUserCircle, FaAddressCard } from 'react-icons/fa'
-import { FaChevronDown, FaChartLine, FaVideo, FaTruck } from 'react-icons/fa6'
+import { FaChevronDown, FaChartLine, FaTruck } from 'react-icons/fa6'
 import Link from 'next/link'
 import { AuthContext } from '@/context/AuthContext'
 import { BsChatDots } from 'react-icons/bs'
@@ -53,9 +52,6 @@ export default function AdminSidebar() {
       case 'chat':
         return <BsChatDots />
 
-      case 'uploadVideo':
-        return <FaVideo />
-
       default:
         return null
     }
@@ -73,9 +69,6 @@ export default function AdminSidebar() {
 
       case 'chat':
         return '客服中心'
-
-      case 'uploadVideo':
-        return '課程上傳'
 
       default:
         return ''
@@ -139,21 +132,6 @@ export default function AdminSidebar() {
                 }`}
               >
                 <FaTruck /> 客服中心
-              </Link>
-            </li>
-
-            {/* 選單項目：訂桌紀錄 */}
-            <li>
-              <Link
-                href="/admin/uploadVideo"
-                className={`${
-                  styles['user-sidebar-link-bo']
-                } h6 d-flex align-items-center gap-4 ${
-                  activeLink === 'uploadVideo' ? styles['user-link-active'] : ''
-                }`}
-              >
-                <FaVideo />
-                課程上傳
               </Link>
             </li>
           </ul>
@@ -251,24 +229,6 @@ export default function AdminSidebar() {
                     >
                       <BsChatDots />
                       客服中心
-                    </Link>
-                  </li>
-                )}
-                {firstLink !== 'uploadVideo' && (
-                  <li>
-                    <Link
-                      href="/admin/uploadVideo"
-                      onClick={() => updateActiveLink('booking')}
-                      className={`${
-                        styles['user-sidebar-link-bo']
-                      } h6 d-flex align-items-center gap-4 ${
-                        activeLink === 'uploadVideo'
-                          ? styles['user-link-active']
-                          : ''
-                      }`}
-                    >
-                      <FaVideo />
-                      課程上傳
                     </Link>
                   </li>
                 )}

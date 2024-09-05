@@ -250,6 +250,8 @@ export default function Login() {
 
   // 成功登入後的處理邏輯
   const onLoginSuccess = (name, isNewUser) => {
+    localStorage.removeItem('registeredAccount')
+    localStorage.removeItem('registeredPassword')
     if (isNewUser) {
       localStorage.setItem('showWelcomeAlert', 'true')
       window.location.href = '/home'
@@ -266,8 +268,8 @@ export default function Login() {
         },
         confirmButtonText: '確認',
       }).then(() => {
-        localStorage.removeItem('resetAccount')
-        localStorage.removeItem('savedAccount')
+        localStorage.removeItem('registeredAccount')
+        localStorage.removeItem('registeredPassword')
       })
     }
   }

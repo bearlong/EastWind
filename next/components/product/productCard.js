@@ -47,6 +47,13 @@ export default function ProductCard({
               alt=""
             />
           </div>
+          <div
+            className={`${styles['imgBox']} ${styles['soldOut']} ${
+              product.stock > 0 ? `d-none` : ''
+            }`}
+          >
+            <div className={`${styles['soldOutInfo']} p`}>Sold Out</div>
+          </div>
           <div className={`${styles['heart']} ${user ? '' : 'd-none'}`}>
             {product.fav ? (
               <FaHeart

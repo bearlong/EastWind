@@ -242,3 +242,14 @@
     display: none;
   }
 }
+
+@media (max-width: 576px) {
+  .cart-bo {
+    .cart-body-bo {
+      height: 45svh;
+      .cart-product-title-bo h6 {
+        width: 200px;
+      }
+    }
+  }
+}

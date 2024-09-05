@@ -163,6 +163,31 @@
     top: 0;
     opacity: 0;
   }
+  .soldOut {
+    position: absolute;
+    left: 5px;
+    top: 0;
+    opacity: 0.7;
+    z-index: 5;
+    background: #000;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+    .soldOutInfo {
+      width: 70px;
+      height: 70px;
+      padding-inline: 5px;
+      border-radius: 100%;
+      background: #ccc;
+      opacity: 1;
+      display: grid;
+      justify-content: center;
+      align-content: center;
+      text-align: center;
+      color: var(--primary-dark);
+    }
+  }
   .swiperImg {
     position: relative;
     .secondImg {
@@ -199,6 +224,11 @@
     }
     .secondImg {
       opacity: 1;
+    }
+    .soldOut {
+      opacity: 0.7;
+      z-index: 5;
+      background: #000;
     }
   }
 }
@@ -286,6 +316,7 @@
   position: absolute;
   right: 25px;
   top: 20px;
+  z-index: 10;
   color: var(--primary);
 }
 
@@ -510,6 +541,9 @@
       top: 15px;
     }
     .secondImg {
+      left: 0;
+    }
+    .soldOut {
       left: 0;
     }
   }

@@ -1,3 +1,7 @@
+.loading {
+  height: 100vh;
+}
+
 .payment-bl {
   --bs-gutter-x: 0;
   height: calc(100vh - 66px);
@@ -173,6 +177,9 @@
   color: var(--primary);
   padding-inline: 6.4rem;
 }
+.cart-hidden-bo {
+  padding-inline: 2rem;
+}
 
 .cart-bo {
   color: var(--primary);
@@ -249,13 +256,14 @@
     height: auto;
   }
   .payment-section-bo {
-    padding-top: 12rem;
+    padding-top: 5rem;
     height: auto;
   }
   .cart-section-bo {
     background: var(--bg-text-color);
     position: fixed;
-    z-index: 20;
+    z-index: 1000;
+    top: 0;
     right: 0;
     height: auto;
     padding-inline: 2rem;
@@ -276,6 +284,16 @@
     input[name='checkCart']:checked ~ .cart-body-bo {
       max-height: 100vh;
       overflow-y: auto;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .cart-bo {
+    .cart-body-bo {
+      .cart-product-title-bo h6 {
+        width: 200px;
+      }
     }
   }
 }

@@ -52,3 +52,14 @@
   transform: rotateY(180deg); /* 背面旋轉 180 度 */
   z-index: 1; /* 背面的 z-index 應該比前面低 */
 }
+
+@media (max-width: 768px) {
+  .content {
+    display: none;
+  }
+
+  .front,
+  .back {
+    display: none;
+  }
+}

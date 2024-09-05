@@ -50,7 +50,6 @@ export default function Detail() {
   const [videoUrl, setVideoUrl] = useState(`/video/go3.mp4`)
   const [isPaused, setIsPaused] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
-  const [isActive, setIsActive] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const { course_id, category_id, id } = router.query
   const chapterRef = useRef(null)
@@ -154,12 +153,11 @@ export default function Detail() {
 
   const handleStyToggle = async () => {
     {
-      isActive ? <FaHeart fontSize={24} /> : <CiHeart fontSize={24} />
+      courses.fav ? <FaHeart fontSize={24} /> : <CiHeart fontSize={24} />
     }
     {
-      isActive ? `加入` : `移除`
+      courses.fav ? `加入` : `移除`
     }
-    setIsActive((prev) => !prev)
   }
 
   // const loader = (
@@ -236,8 +234,8 @@ export default function Detail() {
                     }
                   }}
                 >
-                  <h6>{isActive ? `移除` : `加入`}收藏</h6>
-                  {isActive ? (
+                  <h6>{courses.fav ? `移除` : `加入`}收藏</h6>
+                  {courses.fav ? (
                     <FaHeart fontSize={24} />
                   ) : (
                     <CiHeart fontSize={24} />

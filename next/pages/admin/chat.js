@@ -191,17 +191,20 @@ export default function Chat() {
                           key={index}
                           className={`${styles['messageBox-bl']} d-flex align-items-center mb-3`}
                         >
-                          <Image
-                            src={`/images/boyu/users/${
-                              user.userInfo.user_img
-                                ? user.userInfo.user_img
-                                : ''
-                            }.jpg`}
-                            alt="user"
-                            width={40}
-                            height={40}
-                            className="rounded-circle me-2"
-                          />
+                          <div className={`${styles['userImg']}  me-2`}>
+                            <Image
+                              src={`/images/boyu/users/${
+                                user.userInfo.user_img
+                                  ? user.userInfo.user_img
+                                  : ''
+                              }.jpg`}
+                              alt="user"
+                              width={40}
+                              height={40}
+                              className="rounded-circle"
+                            />
+                          </div>
+
                           <div
                             className={`${styles['client-bl']} px-4 py-2 me-2`}
                           >
@@ -248,15 +251,18 @@ export default function Chat() {
                     }}
                   >
                     <div className="d-flex align-items-center me-3">
-                      <Image
-                        src={`/images/boyu/users/${
-                          v.userInfo.user_img ? v.userInfo.user_img : ''
-                        }.jpg`}
-                        alt="user"
-                        width={40}
-                        height={40}
-                        className="rounded-circle me-3"
-                      />
+                      <div className={`${styles['userImg']}  me-3`}>
+                        <Image
+                          src={`/images/boyu/users/${
+                            v.userInfo.user_img ? v.userInfo.user_img : ''
+                          }.jpg`}
+                          alt="user"
+                          width={40}
+                          height={40}
+                          className="rounded-circle "
+                        />
+                      </div>
+
                       <h6>{v.userInfo.username}</h6>
                     </div>
                     <p className={`${styles['message']} text-start p`}>
