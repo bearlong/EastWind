@@ -266,8 +266,8 @@ export default function Login() {
         },
         confirmButtonText: '確認',
       }).then(() => {
-        localStorage.removeItem('resetAccount')
-        localStorage.removeItem('savedAccount')
+        localStorage.removeItem('registeredAccount')
+        localStorage.removeItem('registeredPassword')
       })
     }
   }
