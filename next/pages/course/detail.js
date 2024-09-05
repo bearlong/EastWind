@@ -45,14 +45,13 @@ export default function Detail() {
     },
   })
   const router = useRouter()
-  // const [id, setId] = useState(null)
   const [pages, setPages] = useState(1)
   const [category, setCategory] = useState({})
-  const [videoUrl, setVideoUrl] = useState('')
+  const [videoUrl, setVideoUrl] = useState(`/video/go3.mp4`)
   const [isPaused, setIsPaused] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
   const [isActive, setIsActive] = useState(false)
-  const [isCollapsed, setIsCollapsed] = useState(false) // 用於控制顯示/隱藏
+  const [isCollapsed, setIsCollapsed] = useState(false)
   const { course_id, category_id, id } = router.query
   const chapterRef = useRef(null)
 
@@ -62,7 +61,6 @@ export default function Detail() {
       user ? `?uid=${user.id}` : ''
     }`
     console.log(user)
-    // const apiURL = `http://localhost:3005/api/course`
     try {
       const res = await fetch(apiURL)
       const data = await res.json()
@@ -71,12 +69,11 @@ export default function Detail() {
       if (data.status === 'success') {
         setCourses(data.data.course)
         // setCategory(data.data.courses)
-        setVideoUrl(`/video/go3.mp4`)
         console.log(data.data.courses)
 
-        // setTimeout(() => {
-        //   setIsLoading(false)
-        // }, 1000)
+        setTimeout(() => {
+          setIsLoading(false)
+        }, 0)
       }
     } catch (e) {
       console.error(e)
@@ -165,21 +162,34 @@ export default function Detail() {
     setIsActive((prev) => !prev)
   }
 
-  const loader = (
-    <PacmanLoader
-      color="#ff6600"
-      loading={isLoading}
-      cssOverride={override}
-      size={30}
-      aria-label="Loading Spinner"
-      data-testid="loader"
-    />
-  )
+  // const loader = (
+  //   <PacmanLoader
+  //     color="#ff6600"
+  //     loading={isLoading}
+  //     cssOverride={override}
+  //     size={30}
+  //     aria-label="Loading Spinner"
+  //     data-testid="loader"
+  //     z-index={999}
+  //   />
+  // )
+  const Loader = ({ isLoading, color = '#ff6600', size = 30 }) => {
+    return (
+      <PacmanLoader
+        color={color}
+        loading={isLoading}
+        cssOverride={override}
+        size={size}
+        aria-label="Loading Spinner"
+        data-testid="loader"
+        z-index={999}
+      />
+    )
+  }
 
   return (
     <>
       <Toaster position="bottom-right" reverseOrder={false} />
-
       <div className={`${styles.container} ${styles['desktopdetail-aa']}`}>
         <div className={styles['detailsec1-aa']}>
           <div className={`${styles['text141-aa']} ${styles['text-hover']}`}>
@@ -191,17 +201,17 @@ export default function Detail() {
                 <span>所有課程 </span>
               </Link>
               &gt;
-              {/* <Link href={`/course/classList`}> */}
-              {/* <span> 麻將 </span> */}
-              {/* </Link> */}
               <CategoryLink contentData={courses} />
-              &gt;
-              <span> 初級</span>
+              {/* &gt;
+              <span> 初級</span> */}
             </h6>
           </div>
           <div className={styles['desec1box-aa']}>
             <div className={styles['de1-ins-aa']}>
-              <VideoPlayer videoUrl={videoUrl} />
+              <VideoPlayer
+                videoUrl={videoUrl}
+                // thumbnailUrl="../../public/images/aa/${courses.images}"
+              />
             </div>
 
             <div className={styles['detextright1-aa']}>
@@ -212,7 +222,7 @@ export default function Detail() {
               </div>
               <div className={styles['detextright3-aa']}>
                 <div className={styles['textrighth51-aa']}>
-                  <h5>徐乃麟</h5>
+                  {/* <h5>徐乃麟</h5> */}
                 </div>
                 <button
                   className={styles['fav1-aa']}
@@ -226,7 +236,6 @@ export default function Detail() {
                     }
                   }}
                 >
-                  {/* <h6>加入最愛</h6> */}
                   <h6>{isActive ? `移除` : `加入`}收藏</h6>
                   {isActive ? (
                     <FaHeart fontSize={24} />
@@ -240,25 +249,22 @@ export default function Detail() {
                 </div>
               </div>
               <div className={styles['detextright4-aa']}>
-                {/* <h5>
-                      麻將證照攻略課程，教你麻將的程式語法與麻將證照攻略，循序漸進學習麻將開發環境的建置..
-                    </h5> */}
                 <h5>{courses.content}</h5>
               </div>
               <div className={styles['detextright5-aa']}>
                 <h4>NT$ {courses.price}</h4>
                 <div className={styles['chh6-aa']}>
-                  <div className={styles['chh61-aa']}>
+                  {/* <div className={styles['chh61-aa']}>
                     <button
                       className={styles['chh62-aa']}
                       onClick={scrollToChapter}
                     >
                       <h6>查看章節</h6>
                     </button>
-                  </div>
-                  <h6 style={{ color: 'var(--text-hover, #747474)' }}>
+                  </div> */}
+                  {/* <h6 style={{ color: 'var(--text-hover, #747474)' }}>
                     總時長 60 分鐘
-                  </h6>
+                  </h6> */}
                 </div>
               </div>
               <div className={styles['detextright6-aa']}>
@@ -294,14 +300,6 @@ export default function Detail() {
                       return
                     }
                   }}
-
-                  // if (user) {
-                  //   handleAdd(courses, 'course', 1)
-                  //   handleShow()
-                  // } else {
-                  //   toast.error('請先登入會員')
-                  //   return
-                  // }
                 >
                   <div className={styles['BUTTONde1-aa']}>
                     <h5>立即購買</h5>
@@ -367,10 +365,10 @@ export default function Detail() {
           </div>
         </div>
 
-        <div className={styles['classCards-aa']}>
+        <div className={`${styles['classCards-aa']} pb-5`}>
           <Content contentData={courses} />
         </div>
-        <div className={styles['texth2detail2-aa']}>
+        {/* <div className={styles['texth2detail2-aa']}>
           <div className={styles['texth2detail21-aa']}>
             <h2 style={{ paddingTop: '3rem' }} ref={chapterRef}>
               章節
@@ -448,8 +446,6 @@ export default function Detail() {
                     />
                   </svg>
                 </div>
-                {/*  style="background-color: #FAF7F0;"> */}
-                {/* <i class="fa-thin fa-circle-up"</i> */}
               </button>
             </div>
           </div>
@@ -581,7 +577,7 @@ export default function Detail() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </>
   )
