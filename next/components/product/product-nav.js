@@ -9,7 +9,7 @@ export default function ProductNav() {
         <ul className={` d-flex ${styles['subBar-bl']} `}>
           <li>
             <Link className={styles['subNav']} href="productList">
-              <h6>總攬</h6>
+              <h6>總覽</h6>
             </Link>
           </li>
           <li>

@@ -368,7 +368,7 @@ export default function ProductList() {
 
       setTimeout(() => {
         setIsLoading(false)
-      }, 500)
+      }, 800)
     }
   }, [router.isReady, router.query])
 

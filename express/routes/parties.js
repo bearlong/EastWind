@@ -27,7 +27,7 @@ async function checkAndUpdatePartyStatus(partyId) {
   const [party] = await connection.execute('SELECT * FROM party WHERE id = ?', [
     partyId,
   ])
-console.log(party);
+  console.log(party)
 
   if (party.length > 0) {
     const partyData = party[0]
@@ -37,7 +37,7 @@ console.log(party);
       partyData.userID_join2 !== 0 &&
       partyData.userID_join3 !== 0
 
-    if (allPositionsFilled ) {
+    if (allPositionsFilled) {
       await connection.execute(
         'UPDATE party SET status = "full" WHERE id = ?',
         [partyId]
@@ -83,7 +83,6 @@ async function reorderPartyMembers(partyId) {
 }
 
 async function createBookingForFullParty(partyData) {
-
   const bookingNumber = generateBookingNumber('DB')
   const bookingPayload = {
     numerical_order: bookingNumber,
@@ -99,7 +98,7 @@ async function createBookingForFullParty(partyData) {
     company_id: partyData.company_id,
     user_id: partyData.userID_main, // 假設主揪ID為用戶ID
     status: 'full',
-    party_id:partyData.id,
+    party_id: partyData.id,
   }
 
   try {
@@ -132,7 +131,7 @@ async function createBookingForFullParty(partyData) {
 //抓取派對總數
 router.get('/', async (req, res) => {
   try {
-    await checkAndUpdateExpiredParties();
+    await checkAndUpdateExpiredParties()
     //頁面規則
     const page = parseInt(req.query.page) || 1
     const limit = parseInt(req.query.limit) || 9
@@ -171,6 +170,7 @@ router.get('/', async (req, res) => {
       (p.userID_join2 != 0) +
       (p.userID_join3 != 0)
     ) < 4
+     AND p.status ='waiting'
 
     `
 
@@ -213,10 +213,10 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    await checkAndUpdateExpiredParties();
+    await checkAndUpdateExpiredParties()
     const { id } = req.params
     const { uid } = req.query
-    console.log(uid, "0000");
+    console.log(uid, '0000')
     const query = `
     SELECT 
       p.*,
@@ -278,7 +278,7 @@ router.get('/:id', async (req, res) => {
     `
     const [party] = await connection.execute(query, [id])
 
-    console.log(party);
+    console.log(party)
     if (party.length === 0) {
       return res.status(404).json({ message: '沒有找到可加入的派對' })
     }
@@ -309,7 +309,7 @@ router.post('/:id/join', async (req, res) => {
   const { userId } = req.body
 
   try {
-    await checkAndUpdateExpiredParties();
+    await checkAndUpdateExpiredParties()
     // 檢查派對是否存在且有空位
     const [party] = await connection.execute(
       'SELECT * FROM party WHERE id = ? AND date >= CURDATE() AND status IN ("waiting", "full") AND (userID_join1 = 0 OR userID_join2 = 0 OR userID_join3 = 0)',
@@ -347,7 +347,7 @@ router.post('/:id/leave', async (req, res) => {
   const { userId } = req.body
   console.log('Debug: Leaving party', { id, userId })
   try {
-    await checkAndUpdateExpiredParties();
+    await checkAndUpdateExpiredParties()
     // 首先，獲取派對信息
     const [party] = await connection.execute(
       'SELECT * FROM party WHERE id = ? AND status IN ("waiting", "full")',
@@ -432,25 +432,22 @@ router.post('/:id/cancel', async (req, res) => {
     // 開始一個事務
     await conn.beginTransaction()
 
-  
+    await conn.execute('UPDATE party SET status = "cancelled" WHERE id = ?', [
+      id,
+    ])
+
+    // 如果派對已經有預訂（狀態為 completed），則取消相應的預訂
+    if (partyData.status === 'completed' && partyData.booking_id) {
       await conn.execute(
-        'UPDATE party SET status = "cancelled" WHERE id = ?',
-        [id]
+        'UPDATE booking_record SET status = "cancelled" WHERE id = ?',
+        [partyData.booking_id]
       )
+    }
 
-      // 如果派對已經有預訂（狀態為 completed），則取消相應的預訂
-      if (partyData.status === 'completed' && partyData.booking_id) {
-        await conn.execute(
-          'UPDATE booking_record SET status = "cancelled" WHERE id = ?',
-          [partyData.booking_id]
-        )
-      }
+    // 提交事務
+    await conn.commit()
 
-      // 提交事務
-      await conn.commit()
-
-      res.status(200).json({ message: '派對已成功取消' })
-
+    res.status(200).json({ message: '派對已成功取消' })
   } catch (error) {
     await conn.rollback()
     throw error

@@ -11,6 +11,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { useShip711StoreOpener } from '@/hooks/use-ship-711-store'
 import { FadeLoader } from 'react-spinners'
+import Loading from '@/components/loader/loading'
 
 const override = {
   display: 'block',
@@ -110,6 +111,10 @@ export default function Checkout() {
     'http://localhost:3005/api/shipment/711',
     { enableLocalStorage: false }
   )
+
+  const handleToTop = () => {
+    window.scrollTo(0, 0)
+  }
   const notifyAndRemove = (numerical_order) => {
     Swal.fire({
       position: 'center',
@@ -426,14 +431,9 @@ export default function Checkout() {
   }
 
   const loader = (
-    <FadeLoader
-      color="#2b4d37"
-      loading={payLoading}
-      cssOverride={override}
-      size={40}
-      aria-label="Loading Spinner"
-      data-testid="loader"
-    />
+    <div className={styles.loading}>
+      <Loading />
+    </div>
   )
 
   useEffect(() => {
@@ -588,7 +588,9 @@ export default function Checkout() {
   if (loading) {
     return (
       <>
-        <p>與伺服器連線同步中...</p>
+        <div className={styles.loading}>
+          <Loading />
+        </div>
       </>
     )
   }
@@ -1308,6 +1310,7 @@ export default function Checkout() {
             <button
               className={`${styles['payment-button-bo']}  h5 d-flex justify-content-center align-items-center mb-5`}
               onClick={(e) => {
+                handleToTop()
                 handleSubmit(e)
               }}
             >
