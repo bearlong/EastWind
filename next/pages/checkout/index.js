@@ -20,7 +20,7 @@ const override = {
 
 export default function Checkout() {
   const { user, loading } = useContext(AuthContext)
-  let subTotal = 0
+
   let totalPrice
   const [couponTemplate, setCouponTemplate] = useState(null)
   const initSendForm = {
@@ -38,7 +38,6 @@ export default function Checkout() {
     handleRemoveAll = () => {},
     cartTotal,
   } = useCart()
-  console.log(cartTotal)
   const router = useRouter()
   const [delivery, setDelivery] = useState('宅配')
   const [deliveryPrice, setDeliveryPrice] = useState(60)
@@ -498,14 +497,14 @@ export default function Checkout() {
       if (coupon) {
         const discount = coupon.discount_value
         if (discount >= 100) {
-          totalPrice = subTotal - discount + deliveryPrice
+          totalPrice = cartTotal - discount + deliveryPrice
         } else {
           totalPrice =
-            Math.round(subTotal * ((100 - discount) / 100)) + deliveryPrice
+            Math.round(cartTotal * ((100 - discount) / 100)) + deliveryPrice
         }
         setTotal(totalPrice)
       } else {
-        setTotal(subTotal + deliveryPrice)
+        setTotal(cartTotal + deliveryPrice)
       }
     }
   }, [couponSelect, deliveryPrice])
@@ -870,7 +869,7 @@ export default function Checkout() {
                 <div className={`${styles['payment-card-form-bo']} px-3`}>
                   <div className="row my-3">
                     <p className="mb-3">卡號</p>
-                    <div className="col-2">
+                    <div className="col-3 col-sm-2">
                       <input
                         type="text"
                         className={`${styles['cdNum']} ${styles['form-control-bl']} form-control`}
@@ -888,7 +887,7 @@ export default function Checkout() {
                         }}
                       />
                     </div>
-                    <div className="col-2">
+                    <div className="col-3 col-sm-2">
                       <input
                         type="text"
                         className={`${styles['cdNum']} ${styles['form-control-bl']} form-control`}
@@ -906,7 +905,7 @@ export default function Checkout() {
                         }}
                       />
                     </div>
-                    <div className="col-2">
+                    <div className="col-3 col-sm-2">
                       <input
                         type="text"
                         className={`${styles['cdNum']} ${styles['form-control-bl']} form-control`}
@@ -924,7 +923,7 @@ export default function Checkout() {
                         }}
                       />
                     </div>
-                    <div className="col-2">
+                    <div className="col-3 col-sm-2">
                       <input
                         type="text"
                         className={`${styles['cdNum']} ${styles['form-control-bl']} form-control`}
@@ -942,7 +941,9 @@ export default function Checkout() {
                         }}
                       />
                     </div>
-                    <div className={`${styles['city-select-bo']}  mb-3 col-4`}>
+                    <div
+                      className={`${styles['city-select-bo']}  mb-3 mt-5 mt-sm-0 col-4`}
+                    >
                       <select
                         className={`${styles['form-select-bl']} form-select`}
                         id="cardSelect"
@@ -1283,7 +1284,7 @@ export default function Checkout() {
                 className={`${styles['subtotal-price-box-bo']} d-flex justify-content-between align-items-center my-3`}
               >
                 <p>小計</p>
-                <p>NT$ {subTotal}</p>
+                <p>NT$ {cartTotal}</p>
               </div>
               <div
                 className={`${styles['delivery-price-box-bo']} d-flex justify-content-between align-items-center mb-3`}
@@ -1295,7 +1296,7 @@ export default function Checkout() {
                 className={`${styles['total-price-box-bo']} d-flex justify-content-between align-items-center mb-3`}
               >
                 <h6>總計</h6>
-                <h6>NT$ {subTotal + deliveryPrice}</h6>
+                <h6>NT$ {cartTotal + deliveryPrice}</h6>
               </div>
               <div
                 className={`${styles['discount-price-box-bo']}  d-flex justify-content-between align-items-center mb-3`}
@@ -1327,13 +1328,15 @@ export default function Checkout() {
                 id="checkCart"
                 className="d-none"
               />
-              <label htmlFor="checkCart" className="d-inline d-md-none p">
+              <label
+                htmlFor="checkCart"
+                className={`${styles['cart-hidden-bo']}  d-inline d-md-none p `}
+              >
                 顯示商品
                 <i className="fa-solid fa-chevron-down p" />
               </label>
               <div className={`${styles['cart-body-bo']} mb-5`}>
                 {cart.map((v) => {
-                  subTotal += Number(v.price) * Number(v.quantity)
                   return (
                     <div
                       key={v.id}
@@ -1381,7 +1384,7 @@ export default function Checkout() {
                   className={`${styles['subtotal-price-box-bo']} d-flex justify-content-between align-items-center mb-3`}
                 >
                   <p>小計</p>
-                  <p>NT$ {subTotal}</p>
+                  <p>NT$ {cartTotal}</p>
                 </div>
                 <div
                   className={`${styles['delivery-price-box-bo']} d-flex justify-content-between align-items-center mb-3`}
@@ -1393,7 +1396,7 @@ export default function Checkout() {
                   className={`${styles['total-price-box-bo']} d-flex justify-content-between align-items-center mb-3`}
                 >
                   <h6>總計</h6>
-                  <h6>NT$ {subTotal + deliveryPrice}</h6>
+                  <h6>NT$ {cartTotal + deliveryPrice}</h6>
                 </div>
                 <div
                   className={`${
