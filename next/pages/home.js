@@ -22,6 +22,13 @@ export default function Home() {
     setIsClient(true)
   }, [])
 
+  // 清除 localStorage 中的指定項目
+  useEffect(() => {
+    localStorage.removeItem('registeredAccount')
+    localStorage.removeItem('registeredPassword')
+    localStorage.removeItem('savedAccount')
+  }, [])
+
   // 檢查是否需要顯示 SweetAlert
   useEffect(() => {
     if (localStorage.getItem('showWelcomeAlert') === 'true') {
