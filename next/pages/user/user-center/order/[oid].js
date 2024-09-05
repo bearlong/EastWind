@@ -215,7 +215,10 @@ export default function OrderDetail() {
             <div
               className={`${styles['orderNumber-bl']} d-flex align-items-center justify-content-between`}
             >
-              <p>訂單編號: {orderInfo.numerical_order}</p>
+              <p>
+                訂單編號: <br className="d-block d-sm-none" />{' '}
+                {orderInfo.numerical_order}
+              </p>
               <span className="mx-3 d-none d-md-inline"> |</span>
               <span
                 className={`${styles['statusLight-bl']}`}
