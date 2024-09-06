@@ -6,6 +6,7 @@ export default function BookingList({
   booking,
   selectedStatus,
   cancelBooking,
+  user,
 }) {
   return (
     <div>
@@ -14,6 +15,7 @@ export default function BookingList({
       ) : (
         booking.map((item) => (
           <BookingItem
+            user={user}
             key={item.order_number}
             item={item}
             selectedStatus={selectedStatus}

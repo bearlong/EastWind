@@ -67,13 +67,52 @@ export default function UserBooking() {
         .then((response) => response.json())
         .then((data) => {
           if (data.status === 'success') {
-            const transformedBookings = data.data.bookings.map((booking) => ({
+            // 處理 bookings 並加入 members 資料
+
+            const bookingsWithMembers = data.data.bookings.map((booking) => {
+              return {
+                ...booking,
+                members: [
+                  {
+                    role: '主揪',
+                    name: booking.main_username,
+                    id: booking.user_main,
+                  },
+                  booking.join1_username
+                    ? {
+                        role: '參團',
+                        name: booking.join1_username,
+                        id: booking.user_join1,
+                      }
+                    : null,
+                  booking.join2_username
+                    ? {
+                        role: '參團',
+                        name: booking.join2_username,
+                        id: booking.user_join2,
+                      }
+                    : null,
+                  booking.join3_username
+                    ? {
+                        role: '參團',
+                        name: booking.join3_username,
+                        id: booking.user_join3,
+                      }
+                    : null,
+                ].filter((member) => member !== null), // 過濾掉空的成員
+              }
+            })
+
+            // 處理時間格式和價格
+            const transformedBookings = bookingsWithMembers.map((booking) => ({
               ...booking,
               playroom_type: booking.playroom_type === 0 ? '大廳' : '包廂',
               price: Math.floor(booking.total_price),
               start_time: formatTime(booking.start_time),
               end_time: formatTime(booking.end_time),
             }))
+
+            // 更新狀態
             setBooking(transformedBookings)
             // 重置 visibleCount 當 activeTab 改變時
             setVisibleCount(5)
@@ -220,6 +259,7 @@ export default function UserBooking() {
             />
 
             <BookingList
+              user={user}
               booking={booking}
               selectedStatus={selectedStatus}
               cancelBooking={cancelBooking}
