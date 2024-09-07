@@ -3,73 +3,99 @@ const router = express.Router()
 
 // 檢查空物件, 轉換req.params為數字
 import { getIdParam } from '#db-helpers/db-tool.js'
+import dbPromise from '##/configs/mysql-promise.js'
+import multer from 'multer'
 
 import authenticate from '#middlewares/authenticate.js'
 import sequelize from '#configs/db.js'
 const { Favorite } = sequelize.models
+const upload = multer()
 
 // 獲得某會員id的有加入到我的最愛清單中的商品id們
 // 此路由只有登入會員能使用
-router.get('/', authenticate, async (req, res) => {
-  const pids = await Favorite.findAll({
-    attributes: ['pid'],
-    where: {
-      uid: req.user.id,
-    },
-    raw: true, //只需要資料
-  })
+router.get('/', async (req, res) => {
+  const { id } = req.query
+  try {
+    const [fav] = await dbPromise.execute(
+      'SELECT * FROM `favorite` WHERE `user_id` = ?',
+      [id]
+    )
 
-  // 將結果中的pid取出變為一個純資料的陣列
-  const favorites = pids.map((v) => v.pid)
-
-  res.json({ status: 'success', data: { favorites } })
+    res
+      .status(200)
+      .json({ status: 'success', data: { message: '已取得最愛', fav } })
+  } catch (err) {
+    res.status(400).json({ status: 'error', data: { message: err.message } })
+  }
 })
 
-router.put('/:id', authenticate, async (req, res, next) => {
-  const pid = getIdParam(req)
-  const uid = req.user.id
+router.post('/:id', upload.none(), async (req, res, next) => {
+  const oid = req.params.id
+  const { uid, type } = req.body
+  try {
+    const [existingItem] = await dbPromise.execute(
+      'SELECT * FROM `favorite` WHERE `user_id` = ? AND `object_id` = ? AND `object_type` = ?',
+      [uid, oid, type]
+    )
 
-  const existFav = await Favorite.findOne({ where: { pid, uid } })
-  if (existFav) {
-    return res.json({ status: 'error', message: '資料已經存在，新增失敗' })
+    if (existingItem.length > 0) {
+      return res
+        .status(400)
+        .json({ status: 'error', data: { message: '該產品已在收藏內' } })
+    }
+    const [result] = await dbPromise.execute(
+      'INSERT INTO `favorite` (`id`, `user_id`, `object_id`, `object_type`) VALUES (NULL, ?, ?, ?)',
+      [uid, oid, type]
+    )
+    if (result.insertId) {
+      const [fav] = await dbPromise.execute(
+        'SELECT * FROM `favorite` WHERE `user_id` = ? AND `object_type` = ?',
+        [uid, type]
+      )
+      res
+        .status(201)
+        .json({ status: 'success', data: { message: '新增成功', fav } })
+    } else {
+      res.status(400).json({ status: 'error', data: { message: '新增失敗' } })
+    }
+  } catch (err) {
+    res.status(400).json({ status: 'error', data: { message: err.message } })
   }
-
-  const newFav = await Favorite.create({ pid, uid })
-
-  // console.log(newFav.id)
-
-  // 沒有新增到資料
-  if (!newFav.id) {
-    return res.json({
-      status: 'error',
-      message: '新增失敗',
-    })
-  }
-
-  return res.json({ status: 'success', data: null })
 })
 
-router.delete('/:id', authenticate, async (req, res, next) => {
-  const pid = getIdParam(req)
-  const uid = req.user.id
+router.delete('/:id', upload.none(), async (req, res, next) => {
+  const oid = req.params.id
+  const { uid, type } = req.body
+  try {
+    const [existingItem] = await dbPromise.execute(
+      'SELECT * FROM `favorite` WHERE `user_id` = ? AND `object_id` = ? AND `object_type` = ?',
+      [uid, oid, type]
+    )
 
-  const affectedRows = await Favorite.destroy({
-    where: {
-      pid,
-      uid,
-    },
-  })
-
-  // 沒有刪除到任何資料 -> 失敗或沒有資料被刪除
-  if (!affectedRows) {
-    return res.json({
-      status: 'error',
-      message: '刪除失敗',
-    })
+    if (existingItem.length <= 0) {
+      return res.status(400).json({
+        status: 'error',
+        data: { message: '收藏內無該商品，刪除失敗' },
+      })
+    }
+    const [result] = await dbPromise.execute(
+      'DELETE FROM `favorite` WHERE `user_id` = ? AND `object_id` = ? AND `object_type` = ?',
+      [uid, oid, type]
+    )
+    if (result.affectedRows >= 1) {
+      const [fav] = await dbPromise.execute(
+        'SELECT * FROM `favorite` WHERE `user_id` = ? AND `object_type` = ?',
+        [uid, type]
+      )
+      res
+        .status(200)
+        .json({ status: 'success', data: { message: '刪除成功', fav } })
+    } else {
+      res.status(400).json({ status: 'error', data: { message: '刪除失敗' } })
+    }
+  } catch (err) {
+    res.status(400).json({ status: 'error', data: { message: err.message } })
   }
-
-  // 成功
-  return res.json({ status: 'success', data: null })
 })
 
 export default router

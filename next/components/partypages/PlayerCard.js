@@ -1,13 +1,18 @@
-export default function () {
+import styles from "@/styles/gw/_PlayerCard.module.scss";
+
+export default function PlayerCard({ name, img, type }) {
+
   return (
-    <div className="playerCard gap-3 bg-light">
-      <div className="playerImg">
-        <img alt="" className="img-fluid" src="/img/001.JPG" />
-      </div>
-      <div className="cardBody">
-        <h5>name</h5>
-        <p>vicchen</p>
-      </div>
+    <div className={`${styles.playerCard} ${styles[type]}`}>
+    <div className={styles.playerImg}>
+      <img src={`/images/boyu/users/${img}.jpg`} alt={name} />
     </div>
-  )
+    <div className={styles.cardBody}>
+      <h3 className={styles.playerName}>{name}</h3>
+      <span className={styles.playerType}>
+        {type === 'host' ? '主揪' : '參團'}
+      </span>
+    </div>
+  </div>
+  );
 }

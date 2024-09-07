@@ -1,16 +1,24 @@
-.RoomCard {
-  border-radius: 10px;
-  padding: 16px;
-  margin-bottom: 16px;
-  background-color: rgba(188, 188, 188, 0.485);
-}
 .roomTitle {
   display: flex;
   align-items: center;
 }
+.open {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  .favIcon {
+    font-size: 2rem;
+  }
+  button {
+    background-color: #fff;
+    border-radius: 50%;
+    padding: 1rem;
+    border: 0;
+  }
+}
 .logoArea {
   img {
-    max-height: 8em; /* 設置最大高度 */
+    max-height: 8rem; /* 設置最大高度 */
     width: auto;
     object-fit: contain;
     margin-right: 8px; /* 添加間距以分開圖片和文字 */

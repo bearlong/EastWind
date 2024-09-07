@@ -1,339 +1,396 @@
-import React from 'react'
-import Carousel from '@/components/product/carousel'
+import React, { useState, useEffect, useContext } from 'react'
 import ProductNav from '@/components/product/product-nav'
 import Image from 'next/image'
 import Link from 'next/link'
-import { FaHeart, FaStar, FaPlus, FaMinus } from 'react-icons/fa6'
+import { FaStar, FaRegStar, FaChevronDown, FaChevronUp } from 'react-icons/fa6'
 import styles from '@/styles/bearlong/productDetail.module.scss'
+import { useRouter } from 'next/router'
+import StarRating from '@/components/product/starRating'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { AuthContext } from '@/context/AuthContext'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import toast from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
+import { FadeLoader } from 'react-spinners'
+import ProductDetail from '@/components/product/productDetail'
+import Loading from '@/components/loader/loading'
+
+const override = {
+  display: 'block',
+  margin: '50vh auto',
+  borderColor: 'red',
+}
 
 export default function Detail() {
+  const { user } = useContext(AuthContext)
+  const router = useRouter()
+  const { pid } = router.query
+  const [data, setData] = useState({
+    product: {
+      id: 0,
+      name: '',
+      content: [],
+      brand_id: 0,
+      category_id: 0,
+      stock: 0,
+      price: 0,
+      on_time: '0000-00-00',
+      off_time: null,
+      create_at: '0000-00-00',
+      update_at: null,
+      img: '',
+      category_name: '',
+      brand_name: '',
+      average_star: null,
+    },
+    specifications: {},
+    img2: [],
+    like: [],
+  })
+  const [comment, setComment] = useState({ star: 0, content: [] })
+  const [starCount, setStarCount] = useState({
+    5: 0,
+    4: 0,
+    3: 0,
+    2: 0,
+    1: 0,
+  })
+  const [isLoading, setIsLoading] = useState(true)
+  const MySwal = withReactContent(Swal)
+
+  const getProduct = async (id) => {
+    let newData, error
+    console.log(id)
+    const url =
+      'http://localhost:3005/api/products/' +
+      id +
+      `${user ? `?uid=${user.id}` : ''}`
+    newData = await fetch(url)
+      .then((res) => res.json())
+      .then((result) => {
+        if (result.status === 'success') {
+          return result.data
+        }
+      })
+      .catch((err) => {
+        error = err
+        return undefined
+      })
+
+    if (error) {
+      return
+    }
+    if (newData) {
+      const product = newData.product[0]
+      const specifications = newData.specifications[0]
+      newData.product = product
+      newData.specifications = specifications
+      const paragraphs = newData.product.content.split('\r\n')
+      newData.product.content = paragraphs
+      const mainImage = {
+        id: 'main',
+        product_id: newData.product.id, // 這裡假設只有一個 product
+        img: newData.product.img,
+      }
+      newData.img2.unshift(mainImage)
+      console.log(newData.img2)
+      setData(newData)
+      setComment(newData.comment)
+
+      const updatedStarCount = {
+        5: 0,
+        4: 0,
+        3: 0,
+        2: 0,
+        1: 0,
+      }
+      console.log(newData.starCount)
+
+      newData.starCount.forEach(({ star, count }) => {
+        if (updatedStarCount[star] !== undefined) {
+          updatedStarCount[star] = count
+        }
+      })
+
+      setStarCount(updatedStarCount)
+    }
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 300)
+  }
+
+  const sortedStarCount = Object.entries(starCount).sort(
+    ([starA], [starB]) => [starB] - [starA]
+  )
+
+  const handleStarChange = (star) => {
+    const nextContent = data.comment.content.filter(
+      (item) => item.star === Math.round(star)
+    )
+    setComment({ content: nextContent, star })
+  }
+
+  const handleFavToggle = async (object_id, type) => {
+    const fav = data.product.fav
+    const url = `http://localhost:3005/api/favorites/${object_id}`
+    const method = fav ? 'DELETE' : 'POST'
+    const body = JSON.stringify({
+      uid: user.id,
+      type: type,
+    })
+    try {
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      })
+      const result = await response.json()
+      if (result.status === 'success') {
+        toast.success(
+          `${method === 'POST' ? '商品已加入收藏!' : '商品已移除收藏!'}`,
+          {
+            style: {
+              border: `1px solid ${method === 'POST' ? '#55c57a' : '#d71515'}`,
+              padding: '16px',
+              fontSize: '16px',
+              color: '#0e0e0e',
+            },
+            iconTheme: {
+              primary: `${method === 'POST' ? '#55c57a' : '#d71515'}`,
+              secondary: '#ffffff',
+              fontSize: '16px',
+            },
+          }
+        )
+        const nextProduct = { ...data.product, fav: !data.product.fav }
+        setData({ ...data, product: nextProduct })
+      } else {
+        console.log(result.data.message)
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const loader = (
+    <div className={styles.loading}>
+      <Loading />
+    </div>
+  )
+
+  useEffect(() => {
+    if (router.isReady) {
+      getProduct(pid)
+    }
+  }, [router.isReady, router.query])
   return (
     <>
       <ProductNav />
-      <main className={styles['main']}>
-        <div className={styles['productDetailSection1-bl']}>
-          <p className="my-lg-5 my-3">
-            首頁/麻將牌/馬丘麻將精裝組-金馬59聯名款
-          </p>
-          <div className="d-flex flex-md-row flex-column justify-content-between">
-            <div
-              className={`${styles['imgGroup-bl']} d-flex flex-column-reverse flex-lg-row me-0 me-lg-3`}
-            >
-              <div
-                className={`${styles['imgSmall-bl']}  mx-lg-5 d-flex flex-lg-column mt-3 mt-lg-0 justify-content-between justify-content-lg-start`}
-              >
-                <div
-                  className={`${styles['imgSmallBox-bl']} ${styles['active']}  mb-3`}
-                >
-                  <img
-                    src="./images/product/970_65fbaa6c41532.jpg.webp"
-                    alt=""
-                  />
+
+      {isLoading ? (
+        loader
+      ) : (
+        <main className={styles['main']}>
+          <ProductDetail data={data} handleFavToggle={handleFavToggle} />
+
+          <Toaster position="bottom-right" reverseOrder={false} />
+          <div className={`${styles['productDetailSection2-bl']}  row`}>
+            <div className={` col-12 col-md-8`}>
+              <div className={`  mb-5`}>
+                <div className={styles['underLine-bl']}>
+                  <h6>產品敘述:</h6>
                 </div>
-                <div className={`${styles['imgSmallBox-bl']} mb-3`}>
-                  <img src="./images/product/H900-1-1.png" alt="" />
-                </div>
-                <div className={`${styles['imgSmallBox-bl']} mb-3`}>
-                  <img
-                    src="./images/product/sg-11134201-22110-1tms94aehojv91.jpg"
-                    alt=""
-                  />
-                </div>
-                <div className={`${styles['imgSmallBox-bl']} mb-3`}>
-                  <img src="./images/product/E1165097506068 (1).jpg" alt="" />
-                </div>
+                {data.product.content.map(
+                  (v, i) => v.trim() !== '' && <p key={i}>{v}</p>
+                )}
               </div>
-              <div
-                className={`${styles['imgMain-bl']} align-self-center align-self-md-stretch`}
-              >
-                <img src="./images/product/970_65fbaa6c41532.jpg.webp" alt="" />
+              <div className={` mb-5`}>
+                <div className={styles['underLine-bl']}>
+                  <h6>商品評論:</h6>
+                </div>
+                <div
+                  className={`${styles['star-bl']}   d-flex justify-content-between align-items-center flex-column flex-md-row`}
+                >
+                  <div className={`${styles['starBox-bl']}   mb-3 mb-md-0`}>
+                    <h5>
+                      {data.product.average_star
+                        ? `${data.product.average_star} / 5`
+                        : '尚無評價'}
+                    </h5>
+                    <div className={styles['starBox-bl']}>
+                      <FaRegStar fontSize={24} style={{ color: '#b79347' }} />
+                      <FaRegStar fontSize={24} style={{ color: '#b79347' }} />
+                      <FaRegStar fontSize={24} style={{ color: '#b79347' }} />
+                      <FaRegStar fontSize={24} style={{ color: '#b79347' }} />
+                      <FaRegStar fontSize={24} style={{ color: '#b79347' }} />
+                      <div
+                        className={`${styles['starRating-bl']} ${
+                          data.product.average_star ? '' : 'd-none'
+                        }`}
+                        style={{
+                          width: `${(data.product.average_star / 5) * 100}%`,
+                        }}
+                      >
+                        <FaStar fontSize={24} style={{ color: '#b79347' }} />
+                        <FaStar fontSize={24} style={{ color: '#b79347' }} />
+                        <FaStar fontSize={24} style={{ color: '#b79347' }} />
+                        <FaStar fontSize={24} style={{ color: '#b79347' }} />
+                        <FaStar fontSize={24} style={{ color: '#b79347' }} />
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles['btnBox-bl']}>
+                    <button
+                      onClick={() => {
+                        setComment(data.comment)
+                      }}
+                      className={`${styles['btnComment']} ${
+                        comment.star === 0 ? `${styles['active']}` : ''
+                      }`}
+                    >
+                      全部
+                    </button>
+                    {sortedStarCount.map(([star, count]) => (
+                      <button
+                        key={[star]}
+                        onClick={() => {
+                          handleStarChange(star)
+                        }}
+                        className={`${styles['btnComment']} ${
+                          comment.star === star ? `${styles['active']}` : ''
+                        }`}
+                        disabled={count === 0}
+                      >
+                        {star}星({count})
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <input
+                  id="collapse"
+                  className={`${styles['collapse']} d-none`}
+                  type="checkbox"
+                  hidden=""
+                  defaultChecked=""
+                />
+                <label htmlFor="collapse" className={styles['collapseButton']}>
+                  <FaChevronDown fontSize={24} className={styles['down']} />
+                  <FaChevronUp fontSize={24} className={styles['up']} />
+                </label>
+                <div className={styles['fold']}>
+                  <div className={styles['commentBox-bl']}>
+                    {comment.content.map((value) => {
+                      return (
+                        <div
+                          key={value.id}
+                          className={`${styles['commentCard-bl']} ${styles['underLine-bl']} d-flex`}
+                        >
+                          <div className={`${styles['pic-bl']} me-3`}>
+                            <Image
+                              src={`/images/boyu/users/${value.user_img}.jpg`}
+                              width={280}
+                              height={280}
+                              alt=""
+                            />
+                          </div>
+                          <div className="cardBody-bl">
+                            <div className={`${styles['userInfo-bl']} mb-4`}>
+                              <p>{value.username}</p>
+                              <StarRating initRating={value.star} />
+                              <p>{value.date}</p>
+                            </div>
+                            <div>
+                              <p>{value.content}</p>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
-            <div
-              className={`${styles['productDetailContent-bl']} d-flex justify-content-between flex-column`}
-            >
-              <div className={styles['titleGroup-bl']}>
-                <p>馬丘machill</p>
-                <div className={`${styles['productName-bl']} m-0`}>
-                  <h5>馬丘麻將精裝組-金馬59聯名款</h5>
-                </div>
-                <div
-                  className={`${styles['score-bl']} d-flex justify-content-between mb-2`}
-                >
-                  <div
-                    className={`${styles['productStar']} d-flex align-items-center`}
-                  >
-                    <p className="me-2">4.7</p>
-                    <i className="fas fa-star" />
-                    <i className="fas fa-star" />
-                    <i className="fas fa-star" />
-                    <i className="fas fa-star" />
-                    <i className="fas fa-star" />
-                    <p className="ms-2">(48)</p>
-                  </div>
-                  <div
-                    className={`${styles['like']} d-flex align-items-center`}
-                  >
-                    <i className="fa-solid fa-heart" />
-                    <p className="ms-2">已收藏</p>
-                  </div>
-                </div>
-                <h5>
-                  NT$ <span>5,180</span>
-                </h5>
-              </div>
-              <div className={styles['category']}>
-                <p className="mb-2">
-                  類別: <span>麻將牌</span>
-                </p>
-                <p className="mb-2">
-                  顏色: <span>白</span>
-                </p>
-                <p className="mb-2">
-                  尺寸: <span>3.3mm</span>
-                </p>
-              </div>
-              <div className="my-3 my-md-0">
-                <p className="mb-2">
-                  庫存數量: <span>30</span>
-                </p>
-                <div
-                  className={`${styles['amount-bl']} d-flex justify-content-between`}
-                >
-                  <h5>數量</h5>
-                  <div
-                    className={`${styles['plusMinus']} d-flex align-items-center`}
-                  >
-                    <i className="fa-solid fa-minus me-5" />
-                    <h5 className={styles['amount']}>1</h5>
-                    <i className="fa-solid fa-plus ms-5" />
-                  </div>
-                </div>
-              </div>
-              <div
-                className={`${styles['buttonGroup-bl']} d-flex justify-content-between flex-column`}
-              >
-                <div
-                  type="button"
-                  className={`${styles['btnRectangle']} ${styles['buy']}  mb-3`}
-                >
-                  立即購買
-                </div>
-                <div
-                  type="button"
-                  className={`${styles['btnRectangle']} ${styles['cartPlus']}`}
-                >
-                  加入購物車
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className={`${styles['productDetailSection2-bl']}  row`}>
-          <div className={`${styles['section2Left-bl']}  col-12 col-md-8`}>
-            <div className={`${styles['detailContent-bl']}   mb-5`}>
+            <div className={`${styles['section2Right-bl']} col-12 col-md-4 `}>
               <div className={styles['underLine-bl']}>
-                <h6>產品敘述:</h6>
+                <h6>你可能也會喜歡:</h6>
               </div>
-              <p>
-                ・金馬馬丘麻將 1 副(144張)
-                <br />
-                ・金馬 59 紀念麻將 1 張<br />
-                ・空白麻將 1 張<br />
-                ・玫瑰金方向環 1 個<br />
-                ・骰子 6 顆<br />
-                ・牌尺 4 支(白色x3、透明x1)
-              </p>
-            </div>
-            <div className={`${styles['comment-bl']}   mb-5`}>
-              <div className={styles['underLine-bl']}>
-                <h6>商品評論:</h6>
-              </div>
-              <div
-                className={`${styles['star-bl']}   d-flex justify-content-between flex-column flex-md-row`}
-              >
-                <div className={`${styles['starBox-bl']}   mb-3 mb-md-0`}>
-                  <h5>4.7 / 5</h5>
-                  <i className="fas fa-star" />
-                  <i className="fas fa-star" />
-                  <i className="fas fa-star" />
-                  <i className="fas fa-star" />
-                  <i className="fas fa-star" />
-                </div>
-                <div className={styles['btnBox-bl']}>
-                  <div
-                    className={`${styles['btnComment']}  ${styles['active']} `}
-                  >
-                    全部
-                  </div>
-                  <div className={styles['btnComment']}>5星(40)</div>
-                  <div className={styles['btnComment']}>4星(3)</div>
-                  <div className={styles['btnComment']}>3星(5)</div>
-                  <div className={styles['btnComment']}>2星</div>
-                  <div className={styles['btnComment']}>1星</div>
-                </div>
-              </div>
-              <label htmlFor="collapse" className={styles['collapseButton']}>
-                <i className="fa-solid fa-chevron-down h5 my-3" />
-                <i className="fa-solid fa-chevron-up d-none h5 my-3" />
-              </label>
-              <input
-                id="collapse"
-                className={styles['collapse']}
-                type="checkbox"
-                hidden=""
-                defaultChecked=""
-              />
-              <div className={styles['fold']}>
-                <div className={styles['commentBox-bl']}>
-                  <div
-                    className={`${styles['commentCard-bl']} ${styles['underLine-bl']} d-flex`}
-                  >
-                    <div className={`${styles['pic-bl']} me-3`}>
-                      <img src="./images/web/pic/18.jpg" alt="" />
-                    </div>
-                    <div className={styles['cardBody-bl']}>
-                      <div className={`${styles['userInfo-bl']} mb-4`}>
-                        <p>poxxxxin</p>
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <p>2024-07-11</p>
-                      </div>
-                      <div className={styles['commentContent-bl']}>
-                        <p>讚讚攢五星好評，老鐵六六六</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="commentCard-bl underLine-bl d-flex">
-                    <div className="pic-bl me-3">
-                      <img src="./images/web/pic/18.jpg" alt="" />
-                    </div>
-                    <div className="cardBody-bl">
-                      <div className="userInfo-bl mb-4">
-                        <p>poxxxxin</p>
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <p>2024-07-11</p>
-                      </div>
-                      <div className="commentContent-bl">
-                        <p>讚讚攢五星好評，老鐵六六六</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="commentCard-bl underLine-bl d-flex">
-                    <div className="pic-bl me-3">
-                      <img src="./images/web/pic/18.jpg" alt="" />
-                    </div>
-                    <div className="cardBody-bl">
-                      <div className="userInfo-bl mb-4">
-                        <p>poxxxxin</p>
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <i className="fas fa-star" />
-                        <p>2024-07-11</p>
-                      </div>
-                      <div className="commentContent-bl">
-                        <p>
-                          這款麻將牌具備高品質的材質，手感極佳，每次摸牌都能感受到流暢的質感。細緻的雕刻和清晰的字樣，不僅提升了遊戲的體驗，也讓每一局麻將都變得更加精彩。無論是家庭聚會還是朋友相聚，這款麻將都是您最佳的選擇。帶上它，讓您的麻將之夜更加難忘。
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div className={`mb-5`}>
+                <Swiper
+                  spaceBetween={10}
+                  slidesPerView={2}
+                  direction="horizontal"
+                  autoHeight={true}
+                  loop={false}
+                  breakpoints={{
+                    576: {
+                      slidesPerView: 2,
+                      spaceBetween: 20,
+                      direction: 'horizontal',
+                    },
+                    768: {
+                      slidesPerView: 4,
+                      spaceBetween: 20,
+                      direction: 'vertical',
+                    },
+                  }}
+                  className={styles.swiper}
+                >
+                  {data.like.map((product) => {
+                    return (
+                      <SwiperSlide key={product.id} className={styles.column1}>
+                        <Link href={`/product/${product.id}`}>
+                          <div
+                            className={`${styles['productCard']} swiper-slide`}
+                          >
+                            <div className={styles['swiperImg']}>
+                              <div className={styles['imgBox']}>
+                                <Image
+                                  src={`../../images/product/${product.img}`}
+                                  width={280}
+                                  height={280}
+                                  alt=""
+                                />
+                              </div>
+                              <div
+                                className={`${styles['imgBox']} ${styles['secondImg']}`}
+                              >
+                                <Image
+                                  src={
+                                    product.img2
+                                      ? `../../images/product/${product.img2}`
+                                      : '../../images/boyu/logo.svg'
+                                  }
+                                  width={280}
+                                  height={280}
+                                  alt=""
+                                />
+                              </div>
+                            </div>
+                            <div className={styles['cardBody']}>
+                              <div className={styles['productName-bl']}>
+                                <p>{product.brand_name}</p>
+                                <p
+                                  className={` ${styles['productDescription']}`}
+                                >
+                                  {product.name}
+                                </p>
+                              </div>
+                              <p>NT. {product.price}</p>
+                            </div>
+                          </div>
+                        </Link>
+                      </SwiperSlide>
+                    )
+                  })}
+                </Swiper>
               </div>
             </div>
           </div>
-          <div className="col-12 col-md-4 section2Right-bl">
-            <div className="underLine-bl">
-              <h6>你可能也會喜歡:</h6>
-            </div>
-            <div className="products-bl swiper">
-              <div className="swiper-wrapper column1">
-                <div className="productCard swiper-slide">
-                  <div className="swiperImg">
-                    <div className="imgBox">
-                      <img src="./images/product/015.jpg" alt="" />
-                    </div>
-                    <div className="imgBox secondImg">
-                      <img src="./images/product/019.jpg" alt="" />
-                    </div>
-                  </div>
-                  <div className="cardBody">
-                    <div className="productName-bl">
-                      <p>馬丘machill</p>
-                      <p className="productDescription">
-                        馬丘麻將【電動麻將桌用版】
-                      </p>
-                    </div>
-                    <div className="star d-flex justify-content-center gap-1">
-                      <p>
-                        4.7 <i className="fa-solid fa-star" />
-                      </p>
-                    </div>
-                    <p>NT. 2,500</p>
-                  </div>
-                </div>
-                <div className="productCard swiper-slide">
-                  <div className="swiperImg">
-                    <div className="imgBox">
-                      <img src="./images/product/015.jpg" alt="" />
-                    </div>
-                    <div className="imgBox secondImg">
-                      <img src="./images/product/019.jpg" alt="" />
-                    </div>
-                  </div>
-                  <div className="cardBody">
-                    <div className="productName-bl">
-                      <p>馬丘machill</p>
-                      <p className="productDescription">
-                        馬丘麻將【電動麻將桌用版】
-                      </p>
-                    </div>
-                    <div className="star d-flex justify-content-center gap-1">
-                      <p>
-                        4.7 <i className="fa-solid fa-star" />
-                      </p>
-                    </div>
-                    <p>NT. 2,500</p>
-                  </div>
-                </div>
-                <div className="productCard swiper-slide">
-                  <div className="swiperImg">
-                    <div className="imgBox">
-                      <img src="./images/product/015.jpg" alt="" />
-                    </div>
-                    <div className="imgBox secondImg">
-                      <img src="./images/product/019.jpg" alt="" />
-                    </div>
-                  </div>
-                  <div className="cardBody">
-                    <div className="productName-bl">
-                      <p>馬丘machill</p>
-                      <p className="productDescription">
-                        馬丘麻將【電動麻將桌用版】
-                      </p>
-                    </div>
-                    <div className="star d-flex justify-content-center gap-1">
-                      <p>
-                        4.7 <i className="fa-solid fa-star" />
-                      </p>
-                    </div>
-                    <p>NT. 2,500</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
+        </main>
+      )}
     </>
   )
 }

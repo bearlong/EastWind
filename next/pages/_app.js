@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 // 樣式
 import '@/styles/globals.scss'
 import '@/styles/product.scss'
@@ -7,15 +7,16 @@ import '@/styles/loader.scss'
 import '@/styles/public.scss'
 import '@/styles/Normalize.scss'
 // 載入購物車context
-import { CartProvider } from '@/hooks/use-cart-state'
+import { CartProvider } from '@/hooks/use-cart'
 // 載入認証用context
-import { AuthProvider } from '@/hooks/use-auth'
+import { AuthProvider } from '@/context/AuthContext'
+
 // 載入動畫context
-import { LoaderProvider } from '@/hooks/use-loader'
+// import { LoaderProvider } from '@/hooks/use-loader'
 
 import DefaultLayout from '@/components/layout/default-layout'
 // 自訂用載入動畫元件
-import { CatLoader, NoLoader } from '@/hooks/use-loader/components'
+// import { CatLoader, NoLoader } from '@/hooks/use-loader/components'
 
 export default function MyApp({ Component, pageProps }) {
   // 導入bootstrap的JS函式庫
@@ -30,9 +31,9 @@ export default function MyApp({ Component, pageProps }) {
 
   return (
     <AuthProvider>
-      <LoaderProvider close={2} CustomLoader={CatLoader}>
-        <CartProvider>{getLayout(<Component {...pageProps} />)}</CartProvider>
-      </LoaderProvider>
+      {/* <LoaderProvider close={2} CustomLoader={CatLoader}> */}
+      <CartProvider>{getLayout(<Component {...pageProps} />)}</CartProvider>
+      {/* </LoaderProvider> */}
     </AuthProvider>
   )
 }

@@ -1,29 +1,26 @@
-import Navbar from './navbar'
-import Footer from './footer'
-import Sidebar from './sidebar'
 import Head from 'next/head'
+import ToTheTop from '@/components/icons/to-the-top'
+import HeaderAdmin from './headerAdmin.jsx'
+import Footer from '../default-layout/footer.jsx'
+import AdminSidebar from './admin-sidebar.js'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 
-export default function AdminLayout({ title = '', children }) {
+export default function AdminCenterLayout({ title = '只欠東風', children }) {
   return (
     <>
-      <Head>
+      <HeaderAdmin>
         <title>{title}</title>
         <meta name="viewport" content="width=device-width" />
-      </Head>
-      <div className="col-lg-12 mx-auto p-2 py-md-2">
-        <Navbar />
-        <main className="flex-shrink-0 mt-3">
-          <div className="container">
-            <div className="row g-5">
-              <div className="col-md-3 d-none d-sm-block">
-                <Sidebar />
-              </div>
-              <div className="col-md-9">{children}</div>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </div>
+      </HeaderAdmin>
+      <main className="flex-shrink-0">
+        <section className="d-flex flex-column flex-md-row">
+          <AdminSidebar />
+          <ToTheTop />
+          {children}
+        </section>
+      </main>
+      <Footer />
     </>
   )
 }

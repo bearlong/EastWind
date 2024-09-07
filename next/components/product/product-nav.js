@@ -9,12 +9,12 @@ export default function ProductNav() {
         <ul className={` d-flex ${styles['subBar-bl']} `}>
           <li>
             <Link className={styles['subNav']} href="productList">
-              <h6>預覽全部</h6>
+              <h6>總覽</h6>
             </Link>
           </li>
           <li>
             <Link className={styles['subNav']} href="productList?category_id=1">
-              <h6>麻將牌</h6>
+              <h6>麻將</h6>
             </Link>
             <div className={styles['subBarBody-bl']}>
               <div className="d-flex">
@@ -95,7 +95,7 @@ export default function ProductNav() {
           </li>
           <li>
             <Link className={styles['subNav']} href="productList?category_id=2">
-              <h6>排尺</h6>
+              <h6>牌尺</h6>
             </Link>
             <div className={styles['subBarBody-bl']}>
               <div className="d-flex">
@@ -219,19 +219,13 @@ export default function ProductNav() {
                   <h6 className={styles['title']}>類別</h6>
                   <ul>
                     <li>
-                      <Link href="productList?category_id=3&style=餐桌款">
-                        餐桌款
-                      </Link>
+                      <Link href="productList?style=餐桌款">餐桌款</Link>
                     </li>
                     <li>
-                      <Link href="productList?category_id=3&style=折疊款">
-                        折疊款
-                      </Link>
+                      <Link href="productList?style=折疊款">折疊款</Link>
                     </li>
                     <li>
-                      <Link href="productList?category_id=3&style=套裝款">
-                        套裝款
-                      </Link>
+                      <Link href="productList?style=套裝款">套裝款</Link>
                     </li>
                   </ul>
                 </div>
@@ -289,9 +283,7 @@ export default function ProductNav() {
             <Link className={styles['subNav']} href="productList?category_id=5">
               <h6>桌遊</h6>
             </Link>
-            <div
-              className={`${styles['subBarBody-bl']} ${styles['rightBar-bl']}`}
-            >
+            <div className={`${styles['subBarBody-bl']} ${styles['last-bl']}`}>
               <div className="d-flex">
                 <div>
                   <h6 className={styles['title']}>精選推薦</h6>
@@ -313,34 +305,22 @@ export default function ProductNav() {
                   <h6 className={styles['title']}>類別</h6>
                   <ul>
                     <li>
-                      <Link href="productList?category_id=5&style=台灣元素">
-                        台灣元素
-                      </Link>
+                      <Link href="productList?style=台灣元素">台灣元素</Link>
                     </li>
                     <li>
-                      <Link href="productList?category_id=5&style=策略">
-                        策略
-                      </Link>
+                      <Link href="productList?style=策略">策略</Link>
                     </li>
                     <li>
-                      <Link href="productList?category_id=5&style=派對">
-                        派對
-                      </Link>
+                      <Link href="productList?style=派對">派對</Link>
                     </li>
                     <li>
-                      <Link href="productList?category_id=5&style=RPG">
-                        RPG
-                      </Link>
+                      <Link href="productList?style=RPG">RPG</Link>
                     </li>
                     <li>
-                      <Link href="productList?category_id=5&style=家庭">
-                        家庭
-                      </Link>
+                      <Link href="productList?style=家庭">家庭</Link>
                     </li>
                     <li>
-                      <Link href="productList?category_id=5&style=親子">
-                        親子
-                      </Link>
+                      <Link href="productList?style=親子">親子</Link>
                     </li>
                   </ul>
                 </div>
@@ -349,17 +329,6 @@ export default function ProductNav() {
           </li>
         </ul>
       </div>
-      <style jsx>
-        {`
-          @media (max-width: 992px) {
-            .product-header-bl {
-              .subBar-bl {
-                padding: 2rem 0;
-              }
-            }
-          }
-        `}
-      </style>
     </>
   )
 }

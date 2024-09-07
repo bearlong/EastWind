@@ -54,10 +54,15 @@
 
 /* 導航菜單樣式 */
 .navigation-nav-bo {
+  display: none;
+
+  @media screen and (max-width: 576px) {
+    display: block;
+  }
   height: 100vh; /* 設置導航高度 */
   position: fixed; /* 設置固定定位 */
   top: 0; /* 設置距頂部0 */
-  left: 0; /* 設置距左邊0 */
+  left: -200px; /* 設置距左邊0 */
   z-index: 1500; /* 設置堆疊順序 */
   opacity: 0; /* 設置透明度 */
   width: 0; /* 設置寬度 */
@@ -68,7 +73,7 @@
 .navigation-list-bo {
   position: absolute; /* 設置絕對定位 */
   top: 50%; /* 設置距頂部50% */
-  left: 50%; /* 設置距左邊50% */
+  left: calc(50% + 200px); /* 設置距左邊50% */
   transform: translate(-50%, -50%); /* 設置位移 */
   list-style: none; /* 設置列表樣式 */
   text-align: center; /* 設置文字對齊方式 */
@@ -77,13 +82,14 @@
 
 /* 導航項目樣式 */
 .navigation-item-bo {
+  display: none;
   margin: 1rem; /* 設置外邊距 */
 }
 
 /* 導航鏈接樣式 */
 .navigation-link-bo:link,
 .navigation-link-bo:visited {
-  display: inline-block; /* 設置行內塊 */
+  display: none;
   padding: 0.6rem 1.2rem; /* 設置內邊距 */
   color: var(--bg-text-color); /* 設置文字顏色 */
   text-decoration: none; /* 去除文字裝飾 */
@@ -165,4 +171,16 @@
   .navigation-icon-bo::after {
   top: 0; /* 設置距頂部0 */
   transform: rotate(-135deg); /* 設置旋轉角度 */
+}
+
+/* 將所有鏈接項目和鏈接預設隱藏 */
+.navigation-item-bo,
+.navigation-link-bo {
+  display: none;
+}
+
+/* 當復選框被選中時，顯示導航項目和鏈接 */
+.navigation-checkbox-bo:checked ~ .navigation-nav-bo .navigation-item-bo,
+.navigation-checkbox-bo:checked ~ .navigation-nav-bo .navigation-link-bo {
+  display: block; /* 或 inline-block 取決於你的需求 */
 }
