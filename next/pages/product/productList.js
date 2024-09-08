@@ -365,6 +365,8 @@ export default function ProductList() {
       }
       setFilters(filter)
       getFavorite()
+      setPages(1)
+      setSearchValue('')
 
       setTimeout(() => {
         setIsLoading(false)
@@ -982,6 +984,8 @@ export default function ProductList() {
                 <button
                   className={`${styles['btn-primary']} btn btn-primary mb-3`}
                   onClick={() => {
+                    setSearchValue('')
+
                     handleFilterSubmit()
                   }}
                 >
@@ -990,6 +994,7 @@ export default function ProductList() {
                 <button
                   className="btn btn-light"
                   onClick={() => {
+                    setSearchValue('')
                     handleCheckboxGroupAll()
                   }}
                 >
