@@ -54,7 +54,6 @@ router.get('/:userId/:status', async (req, res) => {
       .json({ status: 'error', message: '缺少用戶 ID 或狀態' })
   }
 
-  // booking_record.party_id,
   try {
     let query = `
        SELECT 
@@ -77,7 +76,15 @@ router.get('/:userId/:status', async (req, res) => {
           company.tele AS company_tele,
           company.address AS company_address,
           user.username AS username,
-          (SELECT COUNT(*) FROM mahjong_table WHERE company_id = company.id AND id <= mahjong_table.id) AS table_number
+          (SELECT COUNT(*) FROM mahjong_table WHERE company_id = company.id AND id <= mahjong_table.id) AS table_number,
+          party.userID_main as user_main,
+          user_main.username as main_username,
+          party.userID_join1 as user_join1,
+          COALESCE(user_join1.username, '') as join1_username,
+          party.userID_join2 as user_join2,
+          COALESCE(user_join2.username, '') as join2_username,
+          party.userID_join3 as user_join3,
+          COALESCE(user_join3.username, '') as join3_username
       FROM 
           booking_record
       JOIN 
@@ -86,11 +93,20 @@ router.get('/:userId/:status', async (req, res) => {
           company ON mahjong_table.company_id = company.id
       JOIN 
           user ON booking_record.user_id = user.id
+      LEFT JOIN 
+          party ON booking_record.party_id = party.id
+      LEFT JOIN 
+          user AS user_main ON party.userID_main = user_main.id
+      LEFT JOIN 
+          user AS user_join1 ON party.userID_join1 = user_join1.id
+      LEFT JOIN 
+          user AS user_join2 ON party.userID_join2 = user_join2.id
+      LEFT JOIN 
+          user AS user_join3 ON party.userID_join3 = user_join3.id
       WHERE 
           booking_record.user_id = ? AND booking_record.status = ?
     `
 
-    // 如果有搜尋關鍵字，添加搜尋條件
     if (search) {
       query +=
         ' AND (company.name LIKE ? OR booking_record.numerical_order LIKE ?)'
@@ -107,7 +123,23 @@ router.get('/:userId/:status', async (req, res) => {
       : [userId, status]
 
     const [bookings] = await connection.execute(query, queryParams)
-    res.status(200).json({ status: 'success', data: { bookings } })
+
+    // 將成員資料組合成陣列
+    const bookingsWithMembers = bookings.map((booking) => {
+      return {
+        ...booking,
+        members: [
+          { id: booking.user_main, username: booking.main_username },
+          { id: booking.user_join1, username: booking.join1_username },
+          { id: booking.user_join2, username: booking.join2_username },
+          { id: booking.user_join3, username: booking.join3_username },
+        ].filter((member) => member.username), // 過濾掉空的成員
+      }
+    })
+
+    res
+      .status(200)
+      .json({ status: 'success', data: { bookings: bookingsWithMembers } })
   } catch (err) {
     console.error('Database query failed:', err.stack || err.message)
     res.status(500).json({ status: 'error', message: err.message })
