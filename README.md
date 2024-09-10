@@ -41,7 +41,7 @@ EX: Commit  mm/dd 簡要描述更新的內容<br/>
 
 # Project Team Members and Responsibilities
 
-## 陳功吳 (組長) - [d123469@gmail.com](mailto:d123469@gmail.com)
+## 陳功吾 (組長) - [d123469@gmail.com](mailto:d123469@gmail.com)
 
 - **頁面切版**: 棋牌室入口頁面、揪團/訂桌列表及詳細、參團列表及詳細
 - **React 程式開發**: 揪團/訂桌列表及詳細、參團列表及詳細、棋牌室收藏
