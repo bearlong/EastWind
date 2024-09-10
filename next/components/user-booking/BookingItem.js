@@ -20,6 +20,11 @@ export default function BookingItem({
   selectedStatus,
   cancelBooking,
 }) {
+  // 檢查 user 和 item 是否存在
+  if (!user || !item) {
+    return null // 如果資料不存在，返回空
+  }
+
   // 如果有 party_id，使用 Party Layout
   if (item.party_id) {
     return (
