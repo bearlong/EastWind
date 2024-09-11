@@ -44,7 +44,7 @@ async function processCart(cartArray, result, mailArr) {
       price: cartItem.price,
       total: Number(cartItem.quantity) * Number(cartItem.price),
     })
-
+    console.log('mailArr', mailArr)
     const { object_id, object_type, quantity, price, item_name } = cartItem
 
     // 插入 order_detail 資料
@@ -594,8 +594,8 @@ router.post('/:id', upload.none(), async (req, res, next) => {
     )
     if (result.insertId) {
       const time = moment().format('YYYY-MM-DD HH:mm:ss')
-      processCart(cartArray, result, mailArr)
-
+      await processCart(cartArray, result, mailArr)
+      console.log(mailArr)
       let subTotal = 0
       const mailOptions = {
         from: `"只欠東風股份有限公司"<${process.env.SMTP_TO_EMAIL}>`,
